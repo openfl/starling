@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package starling.display
+package starling.display;
 {
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
@@ -41,12 +41,12 @@ import starling.textures.Texture;
  *  
  *  @see starling.textures.TextureAtlas
  */    
-public class MovieClip extends Image implements IAnimatable
+class MovieClip extends Image implements IAnimatable
 {
-    private var mTextures:Vector.<Texture>;
-    private var mSounds:Vector.<Sound>;
-    private var mDurations:Vector.<Float>;
-    private var mStartTimes:Vector.<Float>;
+    private var mTextures:Array<Texture>;
+    private var mSounds:Array<Sound>;
+    private var mDurations:Array<Number>;
+    private var mStartTimes:Array<Number>;
     
     private var mDefaultFrameDuration:Float;
     private var mCurrentTime:Float;
@@ -57,7 +57,7 @@ public class MovieClip extends Image implements IAnimatable
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
      *  The movie will have the size of the first frame. */  
-    public function MovieClip(textures:Vector.<Texture>, fps:Float=12)
+    public function MovieClip(textures:Array<Texture>, fps:Float=12)
     {
         if (textures.length > 0)
         {
@@ -70,7 +70,7 @@ public class MovieClip extends Image implements IAnimatable
         }
     }
     
-    private function init(textures:Vector.<Texture>, fps:Float):Void
+    private function init(textures:Array<Texture>, fps:Float):Void
     {
         if (fps <= 0) throw new ArgumentError("Invalid fps: " + fps);
         var numFrames:Int = textures.length;
@@ -81,9 +81,9 @@ public class MovieClip extends Image implements IAnimatable
         mCurrentTime = 0.0;
         mCurrentFrame = 0;
         mTextures = textures.concat();
-        mSounds = new Vector.<Sound>(numFrames);
-        mDurations = new Vector.<Float>(numFrames);
-        mStartTimes = new Vector.<Float>(numFrames);
+        mSounds = new Array<Sound>(numFrames);
+        mDurations = new Array<Number>(numFrames);
+        mStartTimes = new Array<Number>(numFrames);
         
         for (var i:Int=0; i<numFrames; ++i)
         {
@@ -113,7 +113,7 @@ public class MovieClip extends Image implements IAnimatable
         mDurations.splice(frameID, 0, duration);
         
         if (frameID > 0 && frameID == numFrames) 
-            mStartTimes[frameID] = mStartTimes[Int(frameID-1)] + mDurations[Int(frameID-1)];
+            mStartTimes[frameID] = mStartTimes[int(frameID-1)] + mDurations[int(frameID-1)];
         else
             updateStartTimes();
     }
@@ -205,8 +205,8 @@ public class MovieClip extends Image implements IAnimatable
         mStartTimes.length = 0;
         mStartTimes[0] = 0;
         
-        for (var i:Int=1; i<numFrames; ++i)
-            mStartTimes[i] = mStartTimes[Int(i-1)] + mDurations[Int(i-1)];
+        for (i in 1 ... numFrames)
+            mStartTimes[i] = mStartTimes[int(i-1)] + mDurations[int(i-1)];
     }
     
     // IAnimatable
@@ -281,35 +281,41 @@ public class MovieClip extends Image implements IAnimatable
     // properties  
     
     /** The total duration of the clip in seconds. */
-    public function get totalTime():Float 
+    public var totalTime(get, never):Float;
+    public function get_totalTime():Float 
     {
         var numFrames:Int = mTextures.length;
-        return mStartTimes[Int(numFrames-1)] + mDurations[Int(numFrames-1)];
+        return mStartTimes[int(numFrames-1)] + mDurations[int(numFrames-1)];
     }
     
     /** The time that has passed since the clip was started (each loop starts at zero). */
-    public function get currentTime():Float { return mCurrentTime; }
+    public var currentTime(get, never):Float;
+    public function get_currentTime():Float { return mCurrentTime; }
     
     /** The total number of frames. */
-    public function get numFrames():Int { return mTextures.length; }
+    public var numFrames(get, never):Int;
+    public function get_numFrames():Int { return mTextures.length; }
     
     /** Indicates if the clip should loop. */
-    public function get loop():Bool { return mLoop; }
-    public function set loop(value:Bool):Void { mLoop = value; }
+    public var loop(get, set):Bool;
+    public function get_loop():Bool { return mLoop; }
+    public function set_loop(value:Bool):Void { mLoop = value; }
     
     /** If enabled, no new sounds will be started during playback. Sounds that are already
      *  playing are not affected. */
-    public function get muted():Bool { return mMuted; }
-    public function set muted(value:Bool):Void { mMuted = value; }
+    public var muted(get, set):Bool;
+    public function get_muted():Bool { return mMuted; }
+    public function set_muted(value:Bool):Void { mMuted = value; }
 
     /** The index of the frame that is currently displayed. */
-    public function get currentFrame():Int { return mCurrentFrame; }
-    public function set currentFrame(value:Int):Void
+    public var currentFrame(get, set):Int;
+    public function get_currentFrame():Int { return mCurrentFrame; }
+    public function set_currentFrame(value:Int):Void
     {
         mCurrentFrame = value;
         mCurrentTime = 0.0;
         
-        for (var i:Int=0; i<value; ++i)
+        for (i in 0 ... value)
             mCurrentTime += getFrameDuration(i);
         
         texture = mTextures[mCurrentFrame];
@@ -319,8 +325,9 @@ public class MovieClip extends Image implements IAnimatable
     /** The default number of frames per second. Individual frames can have different 
      *  durations. If you change the fps, the durations of all frames will be scaled 
      *  relatively to the previous value. */
-    public function get fps():Float { return 1.0 / mDefaultFrameDuration; }
-    public function set fps(value:Float):Void
+    public var fps(get, set):Float;
+    public function get_fps():Float { return 1.0 / mDefaultFrameDuration; }
+    public function set_fps(value:Float):Void
     {
         if (value <= 0) throw new ArgumentError("Invalid fps: " + value);
         
@@ -340,7 +347,8 @@ public class MovieClip extends Image implements IAnimatable
     
     /** Indicates if the clip is still playing. Returns <code>false</code> when the end 
      *  is reached. */
-    public function get isPlaying():Bool 
+    public var isPlaying(get, never):Bool;
+    public function get_isPlaying():Bool 
     {
         if (mPlaying)
             return mLoop || mCurrentTime < totalTime;
@@ -349,7 +357,8 @@ public class MovieClip extends Image implements IAnimatable
     }
 
     /** Indicates if a (non-looping) movie has come to its end. */
-    public function get isComplete():Bool
+    public var isComplete(get, never):Bool;
+    public function get_isComplete():Bool
     {
         return !mLoop && mCurrentTime >= totalTime;
     }

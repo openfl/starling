@@ -8,9 +8,7 @@
 //
 // =================================================================================================
 
-package starling.text
-{
-import flash.utils.Dictionary;
+package starling.text;
 
 import starling.display.Image;
 import starling.textures.Texture;
@@ -19,17 +17,17 @@ import starling.textures.Texture;
  *  <em>You don't have to use this class directly in most cases. 
  *  The TextField class contains methods that handle bitmap fonts for you.</em>    
  */ 
-public class BitmapChar
+class BitmapChar
 {
     private var mTexture:Texture;
     private var mCharID:Int;
     private var mXOffset:Float;
     private var mYOffset:Float;
     private var mXAdvance:Float;
-    private var mKernings:Dictionary;
+    private var mKernings:Map<Int, Float>;
     
     /** Creates a char with a texture and its properties. */
-    public function BitmapChar(id:Int, texture:Texture, 
+    public function new(id:Int, texture:Texture, 
                                xOffset:Float, yOffset:Float, xAdvance:Float)
     {
         mCharID = id;
@@ -44,7 +42,7 @@ public class BitmapChar
     public function addKerning(charID:Int, amount:Float):Void
     {
         if (mKernings == null)
-            mKernings = new Dictionary();
+            mKernings = new Map<Int, Float>();
         
         mKernings[charID] = amount;
     }
@@ -52,7 +50,7 @@ public class BitmapChar
     /** Retrieve kerning information relative to the given character ID. */
     public function getKerning(charID:Int):Float
     {
-        if (mKernings == null || mKernings[charID] == undefined) return 0.0;
+        if (mKernings == null || mKernings[charID] == null) return 0.0;
         else return mKernings[charID];
     }
     
@@ -63,24 +61,30 @@ public class BitmapChar
     }
     
     /** The unicode ID of the char. */
-    public function get charID():Int { return mCharID; }
+    public var charID(get, never):Int;
+    public function get_charID():Int { return mCharID; }
     
     /** The number of points to move the char in x direction on character arrangement. */
-    public function get xOffset():Float { return mXOffset; }
+    public var xOffset(get, never):Float;
+    public function get_xOffset():Float { return mXOffset; }
     
     /** The number of points to move the char in y direction on character arrangement. */
-    public function get yOffset():Float { return mYOffset; }
+    public var yOffset(get, never):Float;
+    public function get_yOffset():Float { return mYOffset; }
     
     /** The number of points the cursor has to be moved to the right for the next char. */
-    public function get xAdvance():Float { return mXAdvance; }
+    public var xAdvance(get, never):Float;
+    public function get_xAdvance():Float { return mXAdvance; }
     
     /** The texture of the character. */
-    public function get texture():Texture { return mTexture; }
+    public var texture(get, never):Texture;
+    public function get_texture():Texture { return mTexture; }
     
     /** The width of the character in points. */
-    public function get width():Float { return mTexture.width; }
+    public var width(get, never):Float;
+    public function get_width():Float { return mTexture.width; }
     
     /** The height of the character in points. */
-    public function get height():Float { return mTexture.height; }
-}
+    public var height(get, never):Float;
+    public function get_height():Float { return mTexture.height; }
 }

@@ -8,24 +8,26 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.TextureBase;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import flash.utils.ByteArray;
-import flash.utils.getQualifiedClassName;
+package starling.textures;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.ArgumentError;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
+import openfl.utils.ByteArray;
+import openfl.Vector;
+import starling.utils.TextureUtils;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.utils.Color;
 import starling.utils.VertexData;
-import starling.utils.getNextPowerOfTwo;
+import starling.utils.PowerOfTwo;
 
 /** <p>A texture stores the information that represents an image. It cannot be added to the
  *  display list directly; instead it has to be mapped onto a display object. In Starling, 
@@ -34,7 +36,7 @@ import starling.utils.getNextPowerOfTwo;
  *  <strong>Texture Formats</strong>
  *  
  *  <p>Since textures can be created from a "BitmapData" object, Starling supports any bitmap
- *  format that is supported by Flash. And since you can render any Flash display object into
+ *  format that is supported by openfl. And since you can render any Flash display object into
  *  a BitmapData object, you can use this to display non-Starling content in Starling - e.g.
  *  Shape objects.</p>
  *  
@@ -100,16 +102,16 @@ import starling.utils.getNextPowerOfTwo;
  *  @see starling.utils.AssetManager
  *  @see TextureAtlas
  */ 
-public class Texture
+class Texture
 {
     /** @private */
-    public function Texture()
+    public function new()
     {
-        if (Capabilities.isDebugger && 
-            getQualifiedClassName(this) == "starling.textures::Texture")
-        {
-            throw new AbstractClassError();
-        }
+        //if (Capabilities.isDebugger && 
+        //    getQualifiedClassName(this) == "starling.textures::Texture")
+        //{
+        //    throw new AbstractClassError();
+        //}
     }
     
     /** Disposes the underlying texture data. Note that not all textures need to be disposed: 
@@ -128,32 +130,32 @@ public class Texture
      *                  with ATF data.
      *  @param options: Specifies options about the texture settings, e.g. scale factor.
      */
-    public static function fromData(data:Object, options:TextureOptions=null):Texture
+    public static function fromData(data:Dynamic, options:TextureOptions=null):Texture
     {
         var texture:Texture = null;
         
-        if (data is Bitmap)  data = (data as Bitmap).bitmapData;
+        if (Std.is(data, Bitmap))  data = cast(data, Bitmap).bitmapData;
         if (options == null) options = new TextureOptions();
         
-        if (data is Class)
+        if (Std.is(data, Class))
         {
-            texture = fromEmbeddedAsset(data as Class,
+            texture = fromEmbeddedAsset(cast(data, Class<Dynamic>),
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
-        else if (data is BitmapData)
+        else if (Std.is(data, BitmapData))
         {
-            texture = fromBitmapData(data as BitmapData,
+            texture = fromBitmapData(cast(data, BitmapData),
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
-        else if (data is ByteArray)
+        else if (Std.is(data, ByteArray))
         {
-            texture = fromAtfData(data as ByteArray,
+            texture = fromAtfData(cast(data, ByteArray),
                 options.scale, options.mipMapping, options.onReady, options.repeat);
         }
         else
-            throw new ArgumentError("Unsupported 'data' type: " + getQualifiedClassName(data));
+            throw new ArgumentError("Unsupported 'data' type: " + Type.getClassName(data));
         
         return texture;
     }
@@ -171,33 +173,33 @@ public class Texture
      *  @param format:  the context3D texture format to use. Ignored for ATF data.
      *  @param repeat:  the repeat value of the texture. Only useful for power-of-two textures.
      */
-    public static function fromEmbeddedAsset(assetClass:Class, mipMapping:Bool=true,
+    public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool=true,
                                              optimizeForRenderToTexture:Bool=false,
                                              scale:Float=1, format:String="bgra",
                                              repeat:Bool=false):Texture
     {
         var texture:Texture;
-        var asset:Object = new assetClass();
+        var asset = Type.createEmptyInstance(assetClass);
         
-        if (asset is Bitmap)
+        if (Std.is(asset, Bitmap))
         {
-            texture = Texture.fromBitmap(asset as Bitmap, mipMapping, false, scale, format, repeat);
+            texture = Texture.fromBitmap(cast(asset, Bitmap), mipMapping, false, scale, format, repeat);
             texture.root.onRestore = function():Void
             {
-                texture.root.uploadBitmap(new assetClass());
+                texture.root.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
-        else if (asset is ByteArray)
+        else if (Std.is(asset, ByteArray))
         {
-            texture = Texture.fromAtfData(asset as ByteArray, scale, mipMapping, null, repeat);
+            texture = Texture.fromAtfData(cast(asset, ByteArray), scale, mipMapping, null, repeat);
             texture.root.onRestore = function():Void
             {
-                texture.root.uploadAtfData(new assetClass()); 
+                texture.root.uploadAtfData(Type.createInstance(assetClass, []));
             };
         }
         else
         {
-            throw new ArgumentError("Invalid asset type: " + getQualifiedClassName(asset));
+            throw new ArgumentError("Invalid asset type: " + Type.getClassName(asset));
         }
         
         asset = null; // avoid that object stays in memory (through 'onRestore' functions)
@@ -270,14 +272,14 @@ public class Texture
      *  asynchronously. It can only be used when the callback has been executed. This is the
      *  expected function definition: <code>function(texture:Texture):Void;</code></p> */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true, 
-                                       async:Function=null, repeat:Bool=false):Texture
+                                       async:Dynamic->Void=null, repeat:Bool=false):Texture
     {
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
         
         var atfData:AtfData = new AtfData(data);
-        var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
-            atfData.width, atfData.height, atfData.format, false);
+        var nativeTexture:openfl.display3D.textures.Texture = context.createTexture(
+            atfData.width, atfData.height, TextureUtils.ToContext3DTextureFormat(atfData.format), false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format, 
             atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1, 
             false, false, scale, repeat);
@@ -336,23 +338,23 @@ public class Texture
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:String="bgra", repeat:Bool=false):Texture
-    {
-        if (scale <= 0) scale = Starling.contentScaleFactor;
+    {	
+        if (scale <= 0) scale = Starling.current.contentScaleFactor;
         
         var actualWidth:Int, actualHeight:Int;
-        var nativeTexture:flash.display3D.textures.TextureBase;
-        var context:Context3D = Starling.context;
+        var nativeTexture:openfl.display3D.textures.TextureBase;
+        var context:Context3D = Starling.current.context;
         
         if (context == null) throw new MissingContextError();
         
-        var origWidth:Int  = width  * scale;
-        var origHeight:Int = height * scale;
-        var potWidth:Int   = getNextPowerOfTwo(origWidth);
-        var potHeight:Int  = getNextPowerOfTwo(origHeight);
+        var origWidth:Int  = Std.int(width  * scale);
+        var origHeight:Int = Std.int(height * scale);
+        var potWidth:Int   = PowerOfTwo.getNextPowerOfTwo(origWidth);
+        var potHeight:Int  = PowerOfTwo.getNextPowerOfTwo(origHeight);
         var isPot:Bool  = (origWidth == potWidth && origHeight == potHeight);
         var useRectTexture:Bool = !mipMapping && !repeat &&
             Starling.current.profile != "baselineConstrained" &&
-            "createRectangleTexture" in context && format.indexOf("compressed") == -1;
+            Reflect.hasField(context, "createRectangleTexture") && format != "compressed";
         
         if (useRectTexture)
         {
@@ -361,15 +363,15 @@ public class Texture
             
             // Rectangle Textures are supported beginning with AIR 3.8. By calling the new
             // methods only through those lookups, we stay compatible with older SDKs.
-            nativeTexture = context["createRectangleTexture"](
-                actualWidth, actualHeight, format, optimizeForRenderToTexture);
+            nativeTexture = Reflect.callMethod(context, Reflect.getProperty(context, "createRectangleTexture"), [
+                actualWidth, actualHeight, format, optimizeForRenderToTexture]); // TODO:
         }
         else
         {
             actualWidth  = potWidth;
             actualHeight = potHeight;
             
-            nativeTexture = context.createTexture(actualWidth, actualHeight, format,
+            nativeTexture = context.createTexture(actualWidth, actualHeight, TextureUtils.ToContext3DTextureFormat(format),
                                                   optimizeForRenderToTexture);
         }
         
@@ -416,7 +418,7 @@ public class Texture
      *  @param stride: the distance (in vector elements) of consecutive UV pairs.
      *  @param count: the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
-    public function adjustTexCoords(texCoords:Vector.<Float>,
+    public function adjustTexCoords(texCoords:Vector<Float>,
                                     startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         // override in subclasses
@@ -428,41 +430,52 @@ public class Texture
      *  Only SubTextures can have a frame.
      *
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    public function get frame():Rectangle { return null; }
+    public var frame(get, never):Rectangle;
+    public function get_frame():Rectangle { return null; }
     
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
      *  Note: this only works in textures with sidelengths that are powers of two and 
      *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
-    public function get repeat():Bool { return false; }
+    public var repeat(get, never):Bool;
+    public function get_repeat():Bool { return false; }
     
     /** The width of the texture in points. */
-    public function get width():Float { return 0; }
+    public var width(get, never):Float;
+    public function get_width():Float { return 0; }
     
     /** The height of the texture in points. */
-    public function get height():Float { return 0; }
+    public var height(get, never):Float;
+    public function get_height():Float { return 0; }
 
     /** The width of the texture in pixels (without scale adjustment). */
-    public function get nativeWidth():Float { return 0; }
+    public var nativeWidth(get, never):Float;
+    public function get_nativeWidth():Float { return 0; }
     
     /** The height of the texture in pixels (without scale adjustment). */
-    public function get nativeHeight():Float { return 0; }
+    public var nativeHeight(get, never):Float;
+    public function get_nativeHeight():Float { return 0; }
     
     /** The scale factor, which influences width and height properties. */
-    public function get scale():Float { return 1.0; }
+    public var scale(get, never):Float;
+    public function get_scale():Float { return 1.0; }
     
     /** The Stage3D texture object the texture is based on. */
-    public function get base():TextureBase { return null; }
+    public var base(get, never):TextureBase;
+    public function get_base():TextureBase { return null; }
     
     /** The concrete texture the texture is based on. */
-    public function get root():ConcreteTexture { return null; }
+    public var root(get, never):ConcreteTexture;
+    public function get_root():ConcreteTexture { return null; }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
-    public function get format():String { return Context3DTextureFormat.BGRA; }
+    public var format(get, never):String;
+    public function get_format():String { return "bgra"; }
     
     /** Indicates if the texture contains mip maps. */ 
-    public function get mipMapping():Bool { return false; }
+    public var mipMapping(get, never):Bool;
+    public function get_mipMapping():Bool { return false; }
     
     /** Indicates if the alpha values are premultiplied into the RGB values. */
-    public function get premultipliedAlpha():Bool { return false; }
-}
+    public var premultipliedAlpha(get, never):Bool;
+    public function get_premultipliedAlpha():Bool { return false; }
 }

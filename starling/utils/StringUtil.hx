@@ -9,10 +9,20 @@
 // =================================================================================================
 
 package starling.utils;
+class StringUtil
 {
-/** Converts an angle from radions into degrees. */
-public function rad2deg(rad:Float):Float
+// TODO: add number formatting options
+
+/** Formats a String in .Net-style, with curly braces ("{0}"). Does not support any 
+ *  number formatting options yet. */
+public static function formatString(format:String, args:Array<Dynamic>):String
 {
-    return rad / Math.PI * 180.0;            
+    for (i in 0 ... args.length)
+	{
+		var r:EReg = new EReg("\\{" + i + "\\}", "g");
+        format = r.replace(format, args[i]);
+	}
+    
+    return format;
 }
 }

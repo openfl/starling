@@ -8,22 +8,21 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
-import flash.events.Event;
-import flash.events.EventDispatcher;
-import flash.system.Capabilities;
-import flash.utils.getDefinitionByName;
+package starling.utils;
+import openfl.errors.Error;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
+import openfl.Lib;
+import openfl.system.Capabilities;
 
 import starling.errors.AbstractClassError;
 
 /** A utility class with methods related to the current platform and runtime. */
-public class SystemUtil
+class SystemUtil
 {
     private static var sInitialized:Bool = false;
     private static var sApplicationActive:Bool = true;
-    private static var sWaitingCalls:Array = [];
-    private static var sPlatform:String;
+    private static var sWaitingCalls:Array<Dynamic> = new Array<Dynamic>();
     private static var sAIR:Bool;
     
     /** @private */
@@ -36,15 +35,11 @@ public class SystemUtil
         if (sInitialized) return;
         
         sInitialized = true;
-        sPlatform = Capabilities.version.substr(0, 3);
         
         try
         {
-            var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
-            var nativeApp:EventDispatcher = nativeAppClass["nativeApplication"] as EventDispatcher;
-            
-            nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
-            nativeApp.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);
+            Lib.current.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
+            Lib.current.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);
             
             sAIR = true;
         }
@@ -54,35 +49,36 @@ public class SystemUtil
         }
     }
     
-    private static function onActivate(event:Object):Void
+    private static function onActivate(event:Dynamic):Void
     {
         sApplicationActive = true;
         
-        for each (var call:Array in sWaitingCalls)
-            call[0].apply(null, call[1]);
+        for(call in sWaitingCalls)
+            Reflect.callMethod(null, call[0], [call[1]]);
         
         sWaitingCalls = [];
     }
     
-    private static function onDeactivate(event:Object):Void
+    private static function onDeactivate(event:Dynamic):Void
     {
         sApplicationActive = false;
     }
     
     /** Executes the given function with its arguments the next time the application is active.
      *  (If it <em>is</em> active already, the call will be executed right away.) */
-    public static function executeWhenApplicationIsActive(call:Function, ...args):Void
+    public static function executeWhenApplicationIsActive(call:Array<Dynamic>->Void, args:Array<Dynamic>):Void
     {
         initialize();
         
-        if (sApplicationActive) call.apply(null, args);
+        if (sApplicationActive) call(args);
         else sWaitingCalls.push([call, args]);
     }
 
     /** Indicates if the application is currently active. On Desktop, this means that it has
      *  the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
      *  returns true. */
-    public static function get isApplicationActive():Bool
+    public static var isApplicationActive(get, never):Bool;
+    public static function get_isApplicationActive():Bool
     {
         initialize();
         return sApplicationActive;
@@ -90,7 +86,8 @@ public class SystemUtil
 
     /** Indicates if the code is executed in an Adobe AIR runtime (true)
      *  or Flash plugin/projector (false). */
-    public static function get isAIR():Bool
+    public static var isAIR(get, never):Bool;
+    public static function get_isAIR():Bool
     {
         initialize();
         return sAIR;
@@ -99,19 +96,28 @@ public class SystemUtil
     /** Indicates if the code is executed on a Desktop computer with Windows, OS X or Linux
      *  operating system. If the method returns 'false', it's probably a mobile device
      *  or a Smart TV. */
-    public static function get isDesktop():Bool
+    public static var isDesktop(get, never):Bool;
+    public static function get_isDesktop():Bool
     {
         initialize();
-        return /(WIN|MAC|LNX)/.exec(sPlatform) != null;
+        #if (cpp || neko)
+        return ~/(WIN|MAC|LNX)/.match(Sys.systemName());
+        #else
+        return true;
+        #end
     }
     
     /** Returns the three-letter platform string of the current system. These are
      *  the most common platforms: <code>WIN, MAC, LNX, IOS, AND, QNX</code>. Except for the
      *  last one, which indicates "Blackberry", all should be self-explanatory. */
-    public static function get platform():String
+    public static var platform(get, never):String;
+    public static function get_platform():String
     {
         initialize();
-        return sPlatform;
+        #if (cpp || neko)
+        return Sys.systemName();
+        #else
+        return "";
+        #end
     }
-}
 }

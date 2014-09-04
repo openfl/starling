@@ -8,24 +8,22 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.Context3DVertexBufferFormat;
-import flash.display3D.IndexBuffer3D;
-import flash.display3D.Program3D;
-import flash.display3D.VertexBuffer3D;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
-import flash.utils.Dictionary;
-import flash.utils.getQualifiedClassName;
+package starling.display;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DVertexBufferFormat;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.Program3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.errors.Error;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
-import starling.core.starling_internal;
 import starling.errors.MissingContextError;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
@@ -34,8 +32,6 @@ import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.MatrixUtil;
 import starling.utils.VertexData;
-
-use namespace starling_internal;
 
 /** Optimizes rendering of a number of quads with an identical state.
  * 
@@ -63,12 +59,12 @@ use namespace starling_internal;
  *
  *  @see Sprite  
  */ 
-public class QuadBatch extends DisplayObject
+class QuadBatch extends DisplayObject
 {
     /** The maximum number of quads that can be displayed by one QuadBatch. */
-    public static const MAX_NUM_QUADS:Int = 16383;
+    inline public static var MAX_NUM_QUADS:Int = 16383;
     
-    private static const QUAD_PROGRAM_NAME:String = "QB_q";
+    inline private static var QUAD_PROGRAM_NAME:String = "QB_q";
     
     private var mNumQuads:Int;
     private var mSyncRequired:Bool;
@@ -79,25 +75,26 @@ public class QuadBatch extends DisplayObject
     private var mSmoothing:String;
     
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Vector.<UInt>;
+    private var mIndexData:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
     /** The raw vertex data of the quad. After modifying its contents, call
      *  'onVertexDataChanged' to upload the changes to the vertex buffers. Don't change the
      *  size of this object manually; instead, use the 'capacity' property of the QuadBatch. */
-    protected var mVertexData:VertexData;
+    private var mVertexData:VertexData;
 
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:Vector.<Float> = new <Float>[1.0, 1.0, 1.0, 1.0];
+    private static var sRenderAlpha:Array<Float> = [1.0, 1.0, 1.0, 1.0];
     private static var sRenderMatrix:Matrix3D = new Matrix3D();
-    private static var sProgramNameCache:Dictionary = new Dictionary();
+    private static var sProgramNameCache:Map<UInt, String> = new Map<UInt, String>();
     
     /** Creates a new QuadBatch instance with empty batch data. */
-    public function QuadBatch()
+    public function new()
     {
+        super();
         mVertexData = new VertexData(0, true);
-        mIndexData = new <UInt>[];
+        mIndexData = new Vector<UInt>(0, false);
         mNumQuads = 0;
         mTinted = false;
         mSyncRequired = false;
@@ -117,19 +114,19 @@ public class QuadBatch extends DisplayObject
         destroyBuffers();
         
         mVertexData.numVertices = 0;
-        mIndexData.length = 0;
+        mIndexData = [];
         mNumQuads = 0;
         
         super.dispose();
     }
     
-    private function onContextCreated(event:Object):Void
+    private function onContextCreated(event:Dynamic):Void
     {
         createBuffers();
     }
     
     /** Call this method after manually changing the contents of 'mVertexData'. */
-    protected function onVertexDataChanged():Void
+    private function onVertexDataChanged():Void
     {
         mSyncRequired = true;
     }
@@ -162,7 +159,7 @@ public class QuadBatch extends DisplayObject
 
         var numVertices:Int = mVertexData.numVertices;
         var numIndices:Int = mIndexData.length;
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
 
         if (numVertices == 0) return;
         if (context == null)  throw new MissingContextError();
@@ -178,13 +175,13 @@ public class QuadBatch extends DisplayObject
     
     private function destroyBuffers():Void
     {
-        if (mVertexBuffer)
+        if (mVertexBuffer != null)
         {
             mVertexBuffer.dispose();
             mVertexBuffer = null;
         }
 
-        if (mIndexBuffer)
+        if (mIndexBuffer != null)
         {
             mIndexBuffer.dispose();
             mIndexBuffer = null;
@@ -217,14 +214,14 @@ public class QuadBatch extends DisplayObject
         if (mSyncRequired) syncBuffers();
         
         var pma:Bool = mVertexData.premultipliedAlpha;
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         var tinted:Bool = mTinted || (parentAlpha != 1.0);
         
         sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = pma ? parentAlpha : 1.0;
         sRenderAlpha[3] = parentAlpha;
         
         MatrixUtil.convertTo3D(mvpMatrix, sRenderMatrix);
-        RenderSupport.setBlendFactors(pma, blendMode ? blendMode : this.blendMode);
+        RenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.blendMode);
         
         context.setProgram(getProgram(tinted));
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
@@ -236,7 +233,7 @@ public class QuadBatch extends DisplayObject
             context.setVertexBufferAt(1, mVertexBuffer, VertexData.COLOR_OFFSET, 
                                       Context3DVertexBufferFormat.FLOAT_4);
         
-        if (mTexture)
+        if (mTexture != null)
         {
             context.setTextureAt(0, mTexture.base);
             context.setVertexBufferAt(2, mVertexBuffer, VertexData.TEXCOORD_OFFSET, 
@@ -245,7 +242,7 @@ public class QuadBatch extends DisplayObject
         
         context.drawTriangles(mIndexBuffer, 0, mNumQuads * 2);
         
-        if (mTexture)
+        if (mTexture != null)
         {
             context.setTextureAt(0, null);
             context.setVertexBufferAt(2, null);
@@ -290,9 +287,9 @@ public class QuadBatch extends DisplayObject
         if (mNumQuads + 1 > mVertexData.numVertices / 4) expand();
         if (mNumQuads == 0) 
         {
-            this.blendMode = blendMode ? blendMode : quad.blendMode;
+            this.blendMode = blendMode != null ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = texture ? (quad.tinted || parentAlpha != 1.0) : false;
+            mTinted = texture != null ? (quad.tinted || parentAlpha != 1.0) : false;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
@@ -322,7 +319,7 @@ public class QuadBatch extends DisplayObject
         if (mNumQuads + numQuads > capacity) capacity = mNumQuads + numQuads;
         if (mNumQuads == 0) 
         {
-            this.blendMode = blendMode ? blendMode : quadBatch.blendMode;
+            this.blendMode = blendMode != null ? blendMode : quadBatch.blendMode;
             mTexture = quadBatch.mTexture;
             mTinted = tinted;
             mSmoothing = quadBatch.mSmoothing;
@@ -403,7 +400,7 @@ public class QuadBatch extends DisplayObject
     /** Updates the color of a specific quad. */
     public function setQuadColor(quadID:Int, color:UInt):Void
     {
-        for (var i:Int=0; i<4; ++i)
+        for (i in 0 ... 4)
             mVertexData.setColor(quadID * 4 + i, color);
         
         mSyncRequired = true;
@@ -418,7 +415,7 @@ public class QuadBatch extends DisplayObject
     /** Updates the alpha value of a specific quad. */
     public function setQuadAlpha(quadID:Int, alpha:Float):Void
     {
-        for (var i:Int=0; i<4; ++i)
+        for (i in 0 ... 4)
             mVertexData.setAlpha(quadID * 4 + i, alpha);
         
         mSyncRequired = true;
@@ -449,7 +446,7 @@ public class QuadBatch extends DisplayObject
     /** @inheritDoc */
     public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
-        if (mNumQuads)
+        if (mNumQuads != 0)
         {
             if (mBatchable)
                 support.batchQuadBatch(this, parentAlpha);
@@ -469,13 +466,13 @@ public class QuadBatch extends DisplayObject
      *  used to render the container very efficiently. The 'flatten'-method of the Sprite 
      *  class uses this method internally. */
     public static function compile(object:DisplayObject, 
-                                   quadBatches:Vector.<QuadBatch>):Void
+                                   quadBatches:Array<QuadBatch>):Void
     {
         compileObject(object, quadBatches, -1, new Matrix());
     }
     
     private static function compileObject(object:DisplayObject, 
-                                          quadBatches:Vector.<QuadBatch>,
+                                          quadBatches:Array<QuadBatch>,
                                           quadBatchID:Int,
                                           transformationMatrix:Matrix,
                                           alpha:Float=1.0,
@@ -487,9 +484,9 @@ public class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = object as DisplayObjectContainer;
-        var quad:Quad = object as Quad;
-        var batch:QuadBatch = object as QuadBatch;
+        var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
+        var quad:Quad = cast(object, Quad);
+        var batch:QuadBatch = cast(object, QuadBatch);
         var filter:FragmentFilter = object.filter;
         
         if (quadBatchID == -1)
@@ -503,7 +500,7 @@ public class QuadBatch extends DisplayObject
             else quadBatches[0].reset();
         }
         
-        if (filter && !ignoreCurrentFilter)
+        if (filter != null && !ignoreCurrentFilter)
         {
             if (filter.mode == FragmentFilterMode.ABOVE)
             {
@@ -520,12 +517,12 @@ public class QuadBatch extends DisplayObject
                     transformationMatrix, alpha, blendMode, true);
             }
         }
-        else if (container)
+        else if (container != null)
         {
             var numChildren:Int = container.numChildren;
             var childMatrix:Matrix = new Matrix();
             
-            for (i=0; i<numChildren; ++i)
+            for (i in 0 ... numChildren)
             {
                 var child:DisplayObject = container.getChildAt(i);
                 if (child.hasVisibleArea)
@@ -539,18 +536,18 @@ public class QuadBatch extends DisplayObject
                 }
             }
         }
-        else if (quad || batch)
+        else if (quad != null || batch != null)
         {
             var texture:Texture;
             var smoothing:String;
             var tinted:Bool;
             var numQuads:Int;
             
-            if (quad)
+            if (quad != null)
             {
-                var image:Image = quad as Image;
-                texture = image ? image.texture : null;
-                smoothing = image ? image.smoothing : null;
+                var image:Image = cast(quad, Image);
+                texture = image != null ? image.texture : null;
+                smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;
                 numQuads = 1;
             }
@@ -573,21 +570,26 @@ public class QuadBatch extends DisplayObject
                 quadBatch.reset();
             }
             
-            if (quad)
+            if (quad != null)
                 quadBatch.addQuad(quad, alpha, texture, smoothing, transformationMatrix, blendMode);
             else
                 quadBatch.addQuadBatch(batch, alpha, transformationMatrix, blendMode);
         }
         else
         {
-            throw new Error("Unsupported display object: " + getQualifiedClassName(object));
+            throw new Error("Unsupported display object: " + Type.getClassName(Type.getClass(object)));
         }
         
         if (isRootObject)
         {
             // remove unused batches
-            for (i=quadBatches.length-1; i>quadBatchID; --i)
+            //for (i=quadBatches.length-1; i>quadBatchID; --i)
+            i = quadBatches.length - 1;
+            while (i > quadBatchID)
+            {
                 quadBatches.pop().dispose();
+                --i;
+            }
         }
         
         return quadBatchID;
@@ -596,39 +598,46 @@ public class QuadBatch extends DisplayObject
     // properties
     
     /** Returns the number of quads that have been added to the batch. */
-    public function get numQuads():Int { return mNumQuads; }
+    public var numQuads(get, never):Int;
+    public function get_numQuads():Int { return mNumQuads; }
     
     /** Indicates if any vertices have a non-white color or are not fully opaque. */
-    public function get tinted():Bool { return mTinted; }
+    public var tinted(get, never):Bool;
+    public function get_tinted():Bool { return mTinted; }
     
     /** The texture that is used for rendering, or null for pure quads. Note that this is the
      *  texture instance of the first added quad; subsequently added quads may use a different
      *  instance, as long as the base texture is the same. */ 
-    public function get texture():Texture { return mTexture; }
+    public var texture(get, never):Texture;
+    public function get_texture():Texture { return mTexture; }
     
     /** The TextureSmoothing used for rendering. */
-    public function get smoothing():String { return mSmoothing; }
+    public var smoothing(get, never):String;
+    public function get_smoothing():String { return mSmoothing; }
     
     /** Indicates if the rgb values are stored premultiplied with the alpha value. */
-    public function get premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
+    public var premultipliedAlpha(get, never):Bool;
+    public function get_premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
     
     /** Indicates if the batch itself should be batched on rendering. This makes sense only
      *  if it contains only a small number of quads (we recommend no more than 16). Otherwise,
      *  the CPU costs will exceed any gains you get from avoiding the additional draw call.
      *  @default false */
-    public function get batchable():Bool { return mBatchable; }
-    public function set batchable(value:Bool):Void { mBatchable = value; } 
+    public var batchable(get, set):Bool;
+    public function get_batchable():Bool { return mBatchable; }
+    public function set_batchable(value:Bool):Bool { return mBatchable = value; } 
     
     /** Indicates the number of quads for which space is allocated (vertex- and index-buffers).
      *  If you add more quads than what fits into the current capacity, the QuadBatch is
      *  expanded automatically. However, if you know beforehand how many vertices you need,
      *  you can manually set the right capacity with this method. */
-    public function get capacity():Int { return mVertexData.numVertices / 4; }
-    public function set capacity(value:Int):Void
+    public var capacity(get, set):Int;
+    public function get_capacity():Int { return Std.int(mVertexData.numVertices / 4); }
+    public function set_capacity(value:Int):Int
     {
         var oldCapacity:Int = capacity;
         
-        if (value == oldCapacity) return;
+        if (value == oldCapacity) return Std.int(mVertexData.numVertices / 4);
         else if (value == 0) throw new Error("Capacity must be > 0");
         else if (value > MAX_NUM_QUADS) value = MAX_NUM_QUADS;
         if (mNumQuads > value) mNumQuads = value;
@@ -636,18 +645,19 @@ public class QuadBatch extends DisplayObject
         mVertexData.numVertices = value * 4;
         mIndexData.length = value * 6;
         
-        for (var i:Int=oldCapacity; i<value; ++i)
+        for (i in oldCapacity ... value)
         {
-            mIndexData[Int(i*6  )] = i*4;
-            mIndexData[Int(i*6+1)] = i*4 + 1;
-            mIndexData[Int(i*6+2)] = i*4 + 2;
-            mIndexData[Int(i*6+3)] = i*4 + 1;
-            mIndexData[Int(i*6+4)] = i*4 + 3;
-            mIndexData[Int(i*6+5)] = i*4 + 2;
+            mIndexData[Std.int(i*6  )] = i*4;
+            mIndexData[Std.int(i*6+1)] = i*4 + 1;
+            mIndexData[Std.int(i*6+2)] = i*4 + 2;
+            mIndexData[Std.int(i*6+3)] = i*4 + 1;
+            mIndexData[Std.int(i*6+4)] = i*4 + 3;
+            mIndexData[Std.int(i*6+5)] = i*4 + 2;
         }
 
         destroyBuffers();
         mSyncRequired = true;
+        return Std.int(mVertexData.numVertices / 4);
     }
 
     // program management
@@ -657,13 +667,13 @@ public class QuadBatch extends DisplayObject
         var target:Starling = Starling.current;
         var programName:String = QUAD_PROGRAM_NAME;
         
-        if (mTexture)
+        if (mTexture != null)
             programName = getImageProgramName(tinted, mTexture.mipMapping, 
                 mTexture.repeat, mTexture.format, mSmoothing);
         
         var program:Program3D = target.getProgram(programName);
         
-        if (!program)
+        if (program == null)
         {
             // this is the input data we'll pass to the shaders:
             // 
@@ -677,7 +687,7 @@ public class QuadBatch extends DisplayObject
             var vertexShader:String;
             var fragmentShader:String;
 
-            if (!mTexture) // Quad-Shaders
+            if (mTexture == null) // Quad-Shaders
             {
                 vertexShader =
                     "m44 op, va0, vc1 \n" + // 4x4 matrix transform to output clipspace
@@ -702,7 +712,7 @@ public class QuadBatch extends DisplayObject
                     :
                     "tex  oc,  v1, fs0 <???> \n";  // sample texture 0
                 
-                fragmentShader = fragmentShader.replace("<???>",
+                fragmentShader = StringTools.replace(fragmentShader, "<???>",
                     RenderSupport.getTextureLookupFlags(
                         mTexture.format, mTexture.mipMapping, mTexture.repeat, smoothing));
             }
@@ -729,7 +739,7 @@ public class QuadBatch extends DisplayObject
         else if (smoothing == TextureSmoothing.TRILINEAR)
             bitField |= 1 << 4;
         
-        if (format == Context3DTextureFormat.COMPRESSED)
+        if (format == "compressed")
             bitField |= 1 << 5;
         else if (format == "compressedAlpha")
             bitField |= 1 << 6;
@@ -738,11 +748,10 @@ public class QuadBatch extends DisplayObject
         
         if (name == null)
         {
-            name = "QB_i." + bitField.toString(16);
+            name = "QB_i." + StringTools.hex(bitField);
             sProgramNameCache[bitField] = name;
         }
         
         return name;
     }
-}
 }

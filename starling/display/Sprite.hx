@@ -8,11 +8,11 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+package starling.display;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import starling.utils.Max;
 
 import starling.core.RenderSupport;
 import starling.events.Event;
@@ -20,7 +20,7 @@ import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
 
 /** Dispatched on all children when the object is flattened. */
-[Event(name="flatten", type="starling.events.Event")]
+//[Event(name="flatten", type="starling.events.Event")]
 
 /** A Sprite is the most lightweight, non-abstract container class.
  *  <p>Use it as a simple means of grouping objects together in one coordinate system, or
@@ -49,9 +49,9 @@ import starling.utils.RectangleUtil;
  *  @see DisplayObject
  *  @see DisplayObjectContainer
  */
-public class Sprite extends DisplayObjectContainer
+class Sprite extends DisplayObjectContainer
 {
-    private var mFlattenedContents:Vector.<QuadBatch>;
+    private var mFlattenedContents:Array<QuadBatch>;
     private var mFlattenRequested:Bool;
     private var mClipRect:Rectangle;
     
@@ -61,7 +61,7 @@ public class Sprite extends DisplayObjectContainer
     private static var sHelperRect:Rectangle = new Rectangle();
     
     /** Creates an empty sprite. */
-    public function Sprite()
+    public function new()
     {
         super();
     }
@@ -75,9 +75,10 @@ public class Sprite extends DisplayObjectContainer
     
     private function disposeFlattenedContents():Void
     {
-        if (mFlattenedContents)
+        if (mFlattenedContents != null)
         {
-            for (var i:Int=0, max:Int=mFlattenedContents.length; i<max; ++i)
+            var max:Int = mFlattenedContents.length;
+            for (i in 0 ... max)
                 mFlattenedContents[i].dispose();
             
             mFlattenedContents = null;
@@ -113,7 +114,8 @@ public class Sprite extends DisplayObjectContainer
     }
     
     /** Indicates if the sprite was flattened. */
-    public function get isFlattened():Bool 
+    public var isFlattened(get, never):Bool;
+    public function get_isFlattened():Bool 
     { 
         return (mFlattenedContents != null) || mFlattenRequested; 
     }
@@ -122,11 +124,13 @@ public class Sprite extends DisplayObjectContainer
      *  Only pixels within that rectangle will be drawn. 
      *  <strong>Note:</strong> clip rects are axis aligned with the screen, so they
      *  will not be rotated or skewed if the Sprite is. */
-    public function get clipRect():Rectangle { return mClipRect; }
-    public function set clipRect(value:Rectangle):Void 
+    public var clipRect(get, set):Rectangle;
+    public function get_clipRect():Rectangle { return mClipRect; }
+    public function set_clipRect(value:Rectangle):Rectangle 
     {
-        if (mClipRect && value) mClipRect.copyFrom(value);
-        else mClipRect = (value ? value.clone() : null);
+        if (mClipRect != null && value != null) mClipRect.copyFrom(value);
+        else mClipRect = (value != null ? value.clone() : null);
+        return mClipRect;
     }
 
     /** Returns the bounds of the container's clipRect in the given coordinate space, or
@@ -136,14 +140,14 @@ public class Sprite extends DisplayObjectContainer
         if (mClipRect == null) return null;
         if (resultRect == null) resultRect = new Rectangle();
         
-        var x:Float, y:Float;
-        var minX:Float =  Float.MAX_VALUE;
-        var maxX:Float = -Float.MAX_VALUE;
-        var minY:Float =  Float.MAX_VALUE;
-        var maxY:Float = -Float.MAX_VALUE;
+        var x:Float = 0.0, y:Float = 0.0;
+        var minX:Float =  Max.MAX_VALUE;
+        var maxX:Float = -Max.MAX_VALUE;
+        var minY:Float =  Max.MAX_VALUE;
+        var maxY:Float = -Max.MAX_VALUE;
         var transMatrix:Matrix = getTransformationMatrix(targetSpace, sHelperMatrix);
         
-        for (var i:Int=0; i<4; ++i)
+        for (i in 0 ... 4)
         {
             switch(i)
             {
@@ -170,7 +174,7 @@ public class Sprite extends DisplayObjectContainer
         var bounds:Rectangle = super.getBounds(targetSpace, resultRect);
         
         // if we have a scissor rect, intersect it with our bounds
-        if (mClipRect)
+        if (mClipRect != null)
             RectangleUtil.intersect(bounds, getClipRect(targetSpace, sHelperRect), 
                                     bounds);
         
@@ -189,7 +193,7 @@ public class Sprite extends DisplayObjectContainer
     /** @inheritDoc */
     public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
-        if (mClipRect)
+        if (mClipRect != null)
         {
             var clipRect:Rectangle = support.pushClipRect(getClipRect(stage, sHelperRect));
             if (clipRect.isEmpty())
@@ -200,10 +204,10 @@ public class Sprite extends DisplayObjectContainer
             }
         }
         
-        if (mFlattenedContents || mFlattenRequested)
+        if (mFlattenedContents != null || mFlattenRequested)
         {
             if (mFlattenedContents == null)
-                mFlattenedContents = new <QuadBatch>[];
+                mFlattenedContents = new Array<QuadBatch>();
             
             if (mFlattenRequested)
             {
@@ -219,7 +223,7 @@ public class Sprite extends DisplayObjectContainer
             support.finishQuadBatch();
             support.raiseDrawCount(numBatches);
             
-            for (var i:Int=0; i<numBatches; ++i)
+            for (i in 0 ... numBatches)
             {
                 var quadBatch:QuadBatch = mFlattenedContents[i];
                 var blendMode:String = quadBatch.blendMode == BlendMode.AUTO ?
@@ -229,8 +233,7 @@ public class Sprite extends DisplayObjectContainer
         }
         else super.render(support, parentAlpha);
         
-        if (mClipRect)
+        if (mClipRect != null)
             support.popClipRect();
     }
-}
 }

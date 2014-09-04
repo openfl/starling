@@ -8,23 +8,23 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.Context3DVertexBufferFormat;
-import flash.display3D.IndexBuffer3D;
-import flash.display3D.Program3D;
-import flash.display3D.VertexBuffer3D;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import flash.utils.getQualifiedClassName;
+package starling.filters;
+import haxe.ds.Vector;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DVertexBufferFormat;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.Program3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
-import starling.core.starling_internal;
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
 import starling.display.Image;
@@ -37,10 +37,10 @@ import starling.textures.Texture;
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
 import starling.utils.VertexData;
-import starling.utils.getNextPowerOfTwo;
+import starling.utils.PowerOfTwo;
 
 /** The FragmentFilter class is the base class for all filter effects in Starling.
- *  All other filters of this package extend this class. You can attach them to any display
+ *  All other filters of this package extend; this class. You can attach them to any display
  *  object through the 'filter' property.
  * 
  *  <p>A fragment filter works in the following way:</p>
@@ -54,7 +54,7 @@ import starling.utils.getNextPowerOfTwo;
  *  </ol>
  * 
  *  <p>All of this is set up by the abstract FragmentFilter class. Concrete subclasses
- *  just need to override the protected methods 'createPrograms', 'activate' and 
+ *  just need to override the private methods 'createPrograms', 'activate' and 
  *  (optionally) 'deactivate' to create and execute its custom shader code. Each filter
  *  can be configured to either replace the original object, or be drawn below or above it.
  *  This can be done through the 'mode' property, which accepts one of the Strings defined
@@ -64,22 +64,22 @@ import starling.utils.getNextPowerOfTwo;
  *  will get slower and require more resources; and caching will lead to undefined
  *  results.</p>
  */ 
-public class FragmentFilter
+class FragmentFilter
 {
     /** The minimum size of a filter texture. */
-    private const MIN_TEXTURE_SIZE:Int = 64;
+    private inline static var MIN_TEXTURE_SIZE:Int = 64;
     
     /** All filter processing is expected to be done with premultiplied alpha. */
-    protected const PMA:Bool = true;
+    private inline static var PMA:Bool = true;
     
     /** The standard vertex shader code. It will be used automatically if you don't create
      *  a custom vertex shader yourself. */
-    protected const STD_VERTEX_SHADER:String = 
+    private inline static var STD_VERTEX_SHADER:String = 
         "m44 op, va0, vc0 \n" + // 4x4 matrix transform to output space
         "mov v0, va1      \n";  // pass texture coordinates to fragment program
     
     /** The standard fragment shader code. It just forwards the texture color to the output. */
-    protected const STD_FRAGMENT_SHADER:String =
+    private inline static var STD_FRAGMENT_SHADER:String =
         "tex oc, v0, fs0 <2d, clamp, linear, mipnone>"; // just forward texture color
     
     private var mVertexPosAtID:Int = 0;
@@ -88,7 +88,7 @@ public class FragmentFilter
     private var mMvpConstantID:Int = 0;
     
     private var mNumPasses:Int;
-    private var mPassTextures:Vector.<Texture>;
+    private var mPassTextures:Vector<Texture>;
 
     private var mMode:String;
     private var mResolution:Float;
@@ -99,7 +99,7 @@ public class FragmentFilter
     
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Vector.<UInt>;
+    private var mIndexData:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
     private var mCacheRequested:Bool;
@@ -114,13 +114,13 @@ public class FragmentFilter
     
     /** Creates a new Fragment filter with the specified number of passes and resolution.
      *  This constructor may only be called by the constructor of a subclass. */
-    public function FragmentFilter(numPasses:Int=1, resolution:Float=1.0)
+    public function new(numPasses:Int=1, resolution:Float=1.0)
     {
-        if (Capabilities.isDebugger && 
+        /*if (Capabilities.isDebugger && 
             getQualifiedClassName(this) == "starling.filters::FragmentFilter")
         {
             throw new AbstractClassError();
-        }
+        }*/
         
         if (numPasses < 1) throw new ArgumentError("At least one pass is required.");
         
@@ -136,8 +136,14 @@ public class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        mIndexData = new <UInt>[0, 1, 2, 1, 3, 2];
-        mIndexData.fixed = true;
+        mIndexData = new Vector(6);
+        mIndexData[0] = 0;
+        mIndexData[1] = 1;
+        mIndexData[2] = 2;
+        mIndexData[3] = 1;
+        mIndexData[4] = 3;
+        mIndexData[5] = 2;
+        //mIndexData.fixed = true;
         
         createPrograms();
         
@@ -151,20 +157,20 @@ public class FragmentFilter
     public function dispose():Void
     {
         Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
-        if (mVertexBuffer) mVertexBuffer.dispose();
-        if (mIndexBuffer)  mIndexBuffer.dispose();
+        if (mVertexBuffer != null) mVertexBuffer.dispose();
+        if (mIndexBuffer != null)  mIndexBuffer.dispose();
         disposePassTextures();
         disposeCache();
     }
     
-    private function onContextCreated(event:Object):Void
+    private function onContextCreated(event:Dynamic):Void
     {
         mVertexBuffer = null;
         mIndexBuffer  = null;
         mPassTextures = null;
         
         createPrograms();
-        if (mCache) cache();
+        if (mCache != null) cache();
     }
     
     /** Applies the filter on a certain display object, rendering the output into the current 
@@ -186,7 +192,7 @@ public class FragmentFilter
             disposePassTextures();
         }
         
-        if (mCache)
+        if (mCache != null)
             mCache.render(support, parentAlpha);
         else
             renderPasses(object, support, parentAlpha, false);
@@ -203,7 +209,7 @@ public class FragmentFilter
         var passTexture:Texture;
         var cacheTexture:Texture = null;
         var stage:Stage = object.stage;
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         var scale:Float = Starling.current.contentScaleFactor;
         
         if (stage   == null) throw new Error("Filtered object must be on the stage.");
@@ -219,7 +225,7 @@ public class FragmentFilter
         }
         
         updateBuffers(context, sBoundsPot);
-        updatePassTextures(sBoundsPot.width, sBoundsPot.height, mResolution * scale);
+        updatePassTextures(Std.int(sBoundsPot.width), Std.int(sBoundsPot.height), mResolution * scale);
         
         support.finishQuadBatch();
         support.raiseDrawCount(mNumPasses);
@@ -229,7 +235,7 @@ public class FragmentFilter
         mProjMatrix.copyFrom(support.projectionMatrix); 
         var previousRenderTarget:Texture = support.renderTarget;
         
-        if (previousRenderTarget)
+        if (previousRenderTarget != null)
             throw new IllegalOperationError(
                 "It's currently not possible to stack filters! " +
                 "This limitation will be removed in a future Stage3D version.");
@@ -257,7 +263,7 @@ public class FragmentFilter
                                   Context3DVertexBufferFormat.FLOAT_2);
         
         // draw all passes
-        for (var i:Int=0; i<mNumPasses; ++i)
+        for (i in 0 ... mNumPasses)
         {
             if (i < mNumPasses - 1) // intermediate pass  
             {
@@ -353,19 +359,21 @@ public class FragmentFilter
         
         if (needsUpdate)
         {
-            if (mPassTextures)
+            if (mPassTextures != null)
             {
-                for each (var texture:Texture in mPassTextures) 
+                for(texture in mPassTextures) 
                     texture.dispose();
                 
-                mPassTextures.length = numPassTextures;
+                var tmp:Vector<Texture> = Vector.fromData(mPassTextures.toData());
+                mPassTextures = new Vector<Texture>(numPassTextures);
+                Vector.blit(tmp, 0, mPassTextures, 0, numPassTextures);
             }
             else
             {
-                mPassTextures = new Vector.<Texture>(numPassTextures);
+                mPassTextures = new Vector<Texture>(numPassTextures);
             }
             
-            for (var i:Int=0; i<numPassTextures; ++i)
+            for (i in 0 ... numPassTextures)
                 mPassTextures[i] = Texture.empty(width, height, PMA, false, true, scale);
         }
     }
@@ -412,19 +420,19 @@ public class FragmentFilter
             resultRect.inflate(marginX, marginY);
             
             // To fit into a POT-texture, we extend it towards the right and bottom.
-            var minSize:Int = MIN_TEXTURE_SIZE / scale;
+            var minSize:Int = Std.int(MIN_TEXTURE_SIZE / scale);
             var minWidth:Float  = resultRect.width  > minSize ? resultRect.width  : minSize;
             var minHeight:Float = resultRect.height > minSize ? resultRect.height : minSize;
             resultPotRect.setTo(
                 resultRect.x, resultRect.y,
-                getNextPowerOfTwo(minWidth  * scale) / scale,
-                getNextPowerOfTwo(minHeight * scale) / scale);
+                PowerOfTwo.getNextPowerOfTwo(Std.int(minWidth  * scale)) / scale,
+                PowerOfTwo.getNextPowerOfTwo(Std.int(minHeight * scale)) / scale);
         }
     }
     
     private function disposePassTextures():Void
     {
-        for each (var texture:Texture in mPassTextures)
+        for(texture in mPassTextures)
             texture.dispose();
         
         mPassTextures = null;
@@ -432,19 +440,19 @@ public class FragmentFilter
     
     private function disposeCache():Void
     {
-        if (mCache)
+        if (mCache != null)
         {
-            if (mCache.texture) mCache.texture.dispose();
+            if (mCache.texture != null) mCache.texture.dispose();
             mCache.dispose();
             mCache = null;
         }
     }
     
-    // protected methods
+    // private methods
 
     /** Subclasses must override this method and use it to create their 
      *  fragment- and vertex-programs. */
-    protected function createPrograms():Void
+    private function createPrograms():Void
     {
         throw new Error("Method has to be implemented in subclass!");
     }
@@ -466,14 +474,14 @@ public class FragmentFilter
      *  @param context: the current context3D (the same as in Starling.context, passed
      *               just for convenience)
      *  @param texture: the input texture, which is already bound to sampler 0. */
-    protected function activate(pass:Int, context:Context3D, texture:Texture):Void
+    private function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         throw new Error("Method has to be implemented in subclass!");
     }
     
     /** This method is called directly after 'context.drawTriangles'. 
      *  If you need to clean up any resources, you can do so in this method. */
-    protected function deactivate(pass:Int, context:Context3D, texture:Texture):Void
+    private function deactivate(pass:Int, context:Context3D, texture:Texture):Void
     {
         // clean up resources
     }
@@ -481,7 +489,7 @@ public class FragmentFilter
     /** Assembles fragment- and vertex-shaders, passed as Strings, to a Program3D. 
      *  If any argument is  null, it is replaced by the class constants STD_FRAGMENT_SHADER or
      *  STD_VERTEX_SHADER, respectively. */
-    protected function assembleAgal(fragmentShader:String=null, vertexShader:String=null):Program3D
+    private function assembleAgal(fragmentShader:String=null, vertexShader:String=null):Program3D
     {
         if (fragmentShader == null) fragmentShader = STD_FRAGMENT_SHADER;
         if (vertexShader   == null) vertexShader   = STD_VERTEX_SHADER;
@@ -511,9 +519,9 @@ public class FragmentFilter
     // flattening
     
     /** @private */
-    starling_internal function compile(object:DisplayObject):QuadBatch
+    public function compile(object:DisplayObject):QuadBatch
     {
-        if (mCache) return mCache;
+        if (mCache != null) return mCache;
         else
         {
             var renderSupport:RenderSupport;
@@ -531,61 +539,73 @@ public class FragmentFilter
     // properties
     
     /** Indicates if the filter is cached (via the "cache" method). */
-    public function get isCached():Bool { return (mCache != null) || mCacheRequested; }
+    public var isCached(get, never):Bool;
+    public function get_isCached():Bool { return (mCache != null) || mCacheRequested; }
     
     /** The resolution of the filter texture. "1" means stage resolution, "0.5" half the
      *  stage resolution. A lower resolution saves memory and execution time (depending on 
      *  the GPU), but results in a lower output quality. Values greater than 1 are allowed;
      *  such values might make sense for a cached filter when it is scaled up. @default 1 */
-    public function get resolution():Float { return mResolution; }
-    public function set resolution(value:Float):Void 
+    public var resolution(get, set):Float;
+    public function get_resolution():Float { return mResolution; }
+    public function set_resolution(value:Float):Float 
     {
         if (value <= 0) throw new ArgumentError("Resolution must be > 0");
         else mResolution = value; 
+        return mResolution;
     }
     
     /** The filter mode, which is one of the constants defined in the "FragmentFilterMode" 
      *  class. @default "replace" */
-    public function get mode():String { return mMode; }
-    public function set mode(value:String):Void { mMode = value; }
+    public var mode(get, set):String;
+    public function get_mode():String { return mMode; }
+    public function set_mode(value:String):String { return mMode = value; }
     
     /** Use the x-offset to move the filter output to the right or left. */
-    public function get offsetX():Float { return mOffsetX; }
-    public function set offsetX(value:Float):Void { mOffsetX = value; }
+    public var offsetX(get, set):Float;
+    public function get_offsetX():Float { return mOffsetX; }
+    public function set_offsetX(value:Float):Float { return mOffsetX = value; }
     
     /** Use the y-offset to move the filter output to the top or bottom. */
-    public function get offsetY():Float { return mOffsetY; }
-    public function set offsetY(value:Float):Void { mOffsetY = value; }
+    public var offsetY(get, set):Float;
+    public function get_offsetY():Float { return mOffsetY; }
+    public function set_offsetY(value:Float):Float { return mOffsetY = value; }
     
     /** The x-margin will extend the size of the filter texture along the x-axis.
      *  Useful when the filter will "grow" the rendered object. */
-    protected function get marginX():Float { return mMarginX; }
-    protected function set marginX(value:Float):Void { mMarginX = value; }
+    private var marginX(get, set):Float;
+    private function get_marginX():Float { return mMarginX; }
+    private function set_marginX(value:Float):Float { return mMarginX = value; }
     
     /** The y-margin will extend the size of the filter texture along the y-axis.
      *  Useful when the filter will "grow" the rendered object. */
-    protected function get marginY():Float { return mMarginY; }
-    protected function set marginY(value:Float):Void { mMarginY = value; }
+    private var marginY(get, set):Float;
+    private function get_marginY():Float { return mMarginY; }
+    private function set_marginY(value:Float):Float { return mMarginY = value; }
     
     /** The number of passes the filter is applied. The "activate" and "deactivate" methods
      *  will be called that often. */
-    protected function set numPasses(value:Int):Void { mNumPasses = value; }
-    protected function get numPasses():Int { return mNumPasses; }
+    private var numPasses(get, set):Int;
+    private function set_numPasses(value:Int):Int { return mNumPasses = value; }
+    private function get_numPasses():Int { return mNumPasses; }
     
     /** The ID of the vertex buffer attribute that stores the vertex position. */ 
-    protected final function get vertexPosAtID():Int { return mVertexPosAtID; }
-    protected final function set vertexPosAtID(value:Int):Void { mVertexPosAtID = value; }
+    private var vertexPosAtID(get, set):Int;
+    private function get_vertexPosAtID():Int { return mVertexPosAtID; }
+    private function set_vertexPosAtID(value:Int):Int { return mVertexPosAtID = value; }
     
     /** The ID of the vertex buffer attribute that stores the texture coordinates. */
-    protected final function get texCoordsAtID():Int { return mTexCoordsAtID; }
-    protected final function set texCoordsAtID(value:Int):Void { mTexCoordsAtID = value; }
+    private var texCoordsAtID(get, set):Int;
+    private function get_texCoordsAtID():Int { return mTexCoordsAtID; }
+    private function set_texCoordsAtID(value:Int):Int { return mTexCoordsAtID = value; }
 
     /** The ID (sampler) of the input texture (containing the output of the previous pass). */
-    protected final function get baseTextureID():Int { return mBaseTextureID; }
-    protected final function set baseTextureID(value:Int):Void { mBaseTextureID = value; }
+    private var baseTextureID(get, set):Int;
+    private function get_baseTextureID():Int { return mBaseTextureID; }
+    private function set_baseTextureID(value:Int):Int { return mBaseTextureID = value; }
     
-    /** The ID of the first register of the modelview-projection constant (a 4x4 matrix). */
-    protected final function get mvpConstantID():Int { return mMvpConstantID; }
-    protected final function set mvpConstantID(value:Int):Void { mMvpConstantID = value; }
-}
+    /** The ID of the first register of the modelview-projection inline static varant (a 4x4 matrix). */
+    private var mvpConstantID(get, set):Int;
+    private function get_mvpConstantID():Int { return mMvpConstantID; }
+    private function set_mvpConstantID(value:Int):Int { return mMvpConstantID = value; }
 }

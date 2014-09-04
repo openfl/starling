@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package starling.textures
+package starling.textures;
 {
 import flash.display3D.Context3D;
 import flash.display3D.VertexBuffer3D;
@@ -56,7 +56,7 @@ import starling.utils.getNextPowerOfTwo;
  *  </p>
  *     
  */
-public class RenderTexture extends SubTexture
+class RenderTexture extends SubTexture
 {
     private const CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
     private const PMA:Bool = true;
@@ -226,7 +226,7 @@ public class RenderTexture extends SubTexture
     
     /** Clears the render texture with a certain color and alpha value. Call without any
      *  arguments to restore full transparency. */
-    public function clear(rgb:UInt=0, alpha:Float=0.0):Void
+    public function clear(rgb:uint=0, alpha:Float=0.0):Void
     {
         var context:Context3D = Starling.context;
         if (context == null) throw new MissingContextError();
@@ -241,7 +241,8 @@ public class RenderTexture extends SubTexture
     /** On the iPad 1 (and maybe other hardware?) clearing a non-POT RectangleTexture causes
      *  an error in the next "createVertexBuffer" call. Thus, we're forced to make this
      *  really ... elegant check here. */
-    private function get supportsNonPotDimensions():Bool
+    private var supportsNonPotDimensions(get, never):Bool;
+    private function get_supportsNonPotDimensions():Bool
     {
         var target:Starling = Starling.current;
         var context:Context3D = Starling.context;
@@ -287,7 +288,8 @@ public class RenderTexture extends SubTexture
     // properties
 
     /** Indicates if the texture is persistent over multiple draw calls. */
-    public function get isPersistent():Bool { return mBufferTexture != null; }
+    public var isPersistent(get, never):Bool;
+    public function get_isPersistent():Bool { return mBufferTexture != null; }
     
     /** @inheritDoc */
     public override function get base():TextureBase { return mActiveTexture.base; }

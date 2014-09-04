@@ -8,18 +8,19 @@
 //
 // =================================================================================================
 
-package starling.core
-{
-import com.adobe.utils.AGALMiniAssembler;
+package starling.core;
+import openfl.display3D.Context3DBlendFactor;
+import openfl.display3D.shaders.AGLSLShaderUtils;
+import starling.utils.TextureUtils;
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.Program3D;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.Program3D;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
@@ -38,7 +39,7 @@ import starling.utils.RectangleUtil;
  *  It allows manipulation of the current transformation matrix (similar to the matrix 
  *  manipulation methods of OpenGL 1.x) and other helper methods.
  */
-public class RenderSupport
+class RenderSupport
 {
     // members
     
@@ -46,17 +47,17 @@ public class RenderSupport
     private var mModelViewMatrix:Matrix;
     private var mMvpMatrix:Matrix;
     private var mMvpMatrix3D:Matrix3D;
-    private var mMatrixStack:Vector.<Matrix>;
+    private var mMatrixStack:Array<Matrix>;
     private var mMatrixStackSize:Int;
     
     private var mDrawCount:Int;
     private var mBlendMode:String;
     private var mRenderTarget:Texture;
     
-    private var mClipRectStack:Vector.<Rectangle>;
+    private var mClipRectStack:Array<Rectangle>;
     private var mClipRectStackSize:Int;
     
-    private var mQuadBatches:Vector.<QuadBatch>;
+    private var mQuadBatches:Array<QuadBatch>;
     private var mCurrentQuadBatchID:Int;
     
     /** helper objects */
@@ -64,26 +65,25 @@ public class RenderSupport
     private static var sClipRect:Rectangle = new Rectangle();
     private static var sBufferRect:Rectangle = new Rectangle();
     private static var sScissorRect:Rectangle = new Rectangle();
-    private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
     
     // construction
     
     /** Creates a new RenderSupport object with an empty matrix stack. */
-    public function RenderSupport()
+    public function new()
     {
         mProjectionMatrix = new Matrix();
         mModelViewMatrix = new Matrix();
         mMvpMatrix = new Matrix();
         mMvpMatrix3D = new Matrix3D();
-        mMatrixStack = new <Matrix>[];
+        mMatrixStack = new Array<Matrix>();
         mMatrixStackSize = 0;
         mDrawCount = 0;
         mRenderTarget = null;
         mBlendMode = BlendMode.NORMAL;
-        mClipRectStack = new <Rectangle>[];
+        mClipRectStack = new Array<Rectangle>();
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = new <QuadBatch>[new QuadBatch()];
+        mQuadBatches = [new QuadBatch()];
         
         loadIdentity();
         setOrthographicProjection(0, 0, 400, 300);
@@ -92,7 +92,7 @@ public class RenderSupport
     /** Disposes all quad batches. */
     public function dispose():Void
     {
-        for each (var quadBatch:QuadBatch in mQuadBatches)
+        for(quadBatch in mQuadBatches)
             quadBatch.dispose();
     }
     
@@ -149,13 +149,13 @@ public class RenderSupport
         if (mMatrixStack.length < mMatrixStackSize + 1)
             mMatrixStack.push(new Matrix());
         
-        mMatrixStack[Int(mMatrixStackSize++)].copyFrom(mModelViewMatrix);
+        mMatrixStack[Std.int(mMatrixStackSize++)].copyFrom(mModelViewMatrix);
     }
     
     /** Restores the modelview matrix that was last pushed to the stack. */
     public function popMatrix():Void
     {
-        mModelViewMatrix.copyFrom(mMatrixStack[Int(--mMatrixStackSize)]);
+        mModelViewMatrix.copyFrom(mMatrixStack[Std.int(--mMatrixStackSize)]);
     }
     
     /** Empties the matrix stack, resets the modelview matrix to the identity matrix. */
@@ -173,7 +173,8 @@ public class RenderSupport
     
     /** Calculates the product of modelview and projection matrix. 
      *  CAUTION: Use with care! Each call returns the same instance. */
-    public function get mvpMatrix():Matrix
+    public var mvpMatrix(get, never):Matrix;
+    public function get_mvpMatrix():Matrix
     {
         mMvpMatrix.copyFrom(mModelViewMatrix);
         mMvpMatrix.concat(mProjectionMatrix);
@@ -182,22 +183,26 @@ public class RenderSupport
     
     /** Calculates the product of modelview and projection matrix and saves it in a 3D matrix. 
      *  CAUTION: Use with care! Each call returns the same instance. */
-    public function get mvpMatrix3D():Matrix3D
+    public var mvpMatrix3D(get, never):Matrix3D;
+    public function get_mvpMatrix3D():Matrix3D
     {
         return MatrixUtil.convertTo3D(mvpMatrix, mMvpMatrix3D);
     }
     
     /** Returns the current modelview matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
-    public function get modelViewMatrix():Matrix { return mModelViewMatrix; }
+    public var modelViewMatrix(get, never):Matrix;
+    public function get_modelViewMatrix():Matrix { return mModelViewMatrix; }
     
     /** Returns the current projection matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
-    public function get projectionMatrix():Matrix { return mProjectionMatrix; }
-    public function set projectionMatrix(value:Matrix):Void 
+    public var projectionMatrix(get, set):Matrix;
+    public function get_projectionMatrix():Matrix { return mProjectionMatrix; }
+    public function set_projectionMatrix(value:Matrix):Matrix 
     {
         mProjectionMatrix.copyFrom(value);
         applyClipRect();
+        return mProjectionMatrix;
     }
     
     // blending
@@ -210,8 +215,9 @@ public class RenderSupport
     
     /** The blend mode to be used on rendering. To apply the factor, you have to manually call
      *  'applyBlendMode' (because the actual blend factors depend on the PMA mode). */
-    public function get blendMode():String { return mBlendMode; }
-    public function set blendMode(value:String):Void
+    public var blendMode:String;
+    public function get_blendMode():String { return mBlendMode; }
+    public function set_blendMode(value:String):Void
     {
         if (value != BlendMode.AUTO) mBlendMode = value;
     }
@@ -220,10 +226,12 @@ public class RenderSupport
     
     /** The texture that is currently being rendered into, or 'null' to render into the 
      *  back buffer. If you set a new target, it is immediately activated. */
-    public function get renderTarget():Texture { return mRenderTarget; }
-    public function set renderTarget(target:Texture):Void 
+    public var renderTarget(get, set):Texture;
+    public function get_renderTarget():Texture { return mRenderTarget; }
+    public function set_renderTarget(target:Texture):Texture 
     {
         setRenderTarget(target);
+        return mRenderTarget;
     }
 
     /** Changes the the current render target.
@@ -236,8 +244,8 @@ public class RenderSupport
         mRenderTarget = target;
         applyClipRect();
         
-        if (target) Starling.context.setRenderToTexture(target.base, false, antiAliasing);
-        else        Starling.context.setRenderToBackBuffer();
+        if (target != null) Starling.current.context.setRenderToTexture(target.base, false, antiAliasing);
+        else        Starling.current.context.setRenderToBackBuffer();
     }
     
     // clipping
@@ -284,7 +292,7 @@ public class RenderSupport
     {
         finishQuadBatch();
         
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) return;
         
         if (mClipRectStackSize > 0)
@@ -292,10 +300,10 @@ public class RenderSupport
             var width:Int, height:Int;
             var rect:Rectangle = mClipRectStack[mClipRectStackSize-1];
             
-            if (mRenderTarget)
+            if (mRenderTarget != null)
             {
-                width  = mRenderTarget.root.nativeWidth;
-                height = mRenderTarget.root.nativeHeight;
+                width  = Std.int(mRenderTarget.root.nativeWidth);
+                height = Std.int(mRenderTarget.root.nativeHeight);
             }
             else
             {
@@ -401,7 +409,7 @@ public class RenderSupport
         if (numTotalBatches >= 16 && numTotalBatches > 2*numUsedBatches)
         {
             var numToRemove:Int = numTotalBatches - numUsedBatches;
-            for (var i:Int=0; i<numToRemove; ++i)
+            for (i in 0 ... numToRemove)
                 mQuadBatches.pop().dispose();
         }
     }
@@ -417,14 +425,14 @@ public class RenderSupport
     /** Sets up the blending factors that correspond with a certain blend mode. */
     public static function setBlendFactors(premultipliedAlpha:Bool, blendMode:String="normal"):Void
     {
-        var blendFactors:Array = BlendMode.getBlendFactors(blendMode, premultipliedAlpha); 
-        Starling.context.setBlendFactors(blendFactors[0], blendFactors[1]);
+        var blendFactors:Array<Context3DBlendFactor> = BlendMode.getBlendFactors(blendMode, premultipliedAlpha); 
+        Starling.current.context.setBlendFactors(blendFactors[0], blendFactors[1]);
     }
     
     /** Clears the render context with a certain color and alpha value. */
-    public static function clear(rgb:UInt=0, alpha:Float=0.0):Void
+    public static function _clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        Starling.context.clear(
+        Starling.current.context.clear(
             Color.getRed(rgb)   / 255.0, 
             Color.getGreen(rgb) / 255.0, 
             Color.getBlue(rgb)  / 255.0,
@@ -434,10 +442,14 @@ public class RenderSupport
     /** Clears the render context with a certain color and alpha value. */
     public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        RenderSupport.clear(rgb, alpha);
+        Starling.current.context.clear(
+            Color.getRed(rgb)   / 255.0, 
+            Color.getGreen(rgb) / 255.0, 
+            Color.getBlue(rgb)  / 255.0,
+            alpha);
     }
     
-    /** Assembles fragment- and vertex-shaders, passed as Strings, to a Program3D. If you
+    /** Assembles fragment- and vertex-shaders, cast(passed, Strings), to a Program3D. If you
      *  pass a 'resultProgram', it will be uploaded to that program; otherwise, a new program
      *  will be created on the current Stage3D context. */ 
     public static function assembleAgal(vertexShader:String, fragmentShader:String,
@@ -445,14 +457,14 @@ public class RenderSupport
     {
         if (resultProgram == null) 
         {
-            var context:Context3D = Starling.context;
+            var context:Context3D = Starling.current.context;
             if (context == null) throw new MissingContextError();
             resultProgram = context.createProgram();
         }
         
         resultProgram.upload(
-            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader),
-            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader));
+            AGLSLShaderUtils.createShader(Context3DProgramType.VERTEX, vertexShader),
+            AGLSLShaderUtils.createShader(Context3DProgramType.FRAGMENT, fragmentShader));
         
         return resultProgram;
     }
@@ -463,21 +475,30 @@ public class RenderSupport
                                                  repeat:Bool=false,
                                                  smoothing:String="bilinear"):String
     {
-        var options:Array = ["2d", repeat ? "repeat" : "clamp"];
+        var options:Array<String> = ["2d", repeat ? "repeat" : "clamp"];
         
-        if (format == Context3DTextureFormat.COMPRESSED)
+        if (format == "compressed")
             options.push("dxt1");
         else if (format == "compressedAlpha")
             options.push("dxt5");
         
         if (smoothing == TextureSmoothing.NONE)
-            options.push("nearest", mipMapping ? "mipnearest" : "mipnone");
+        {
+            options.push("nearest");
+            options.push(mipMapping ? "mipnearest" : "mipnone");
+        }
         else if (smoothing == TextureSmoothing.BILINEAR)
-            options.push("linear", mipMapping ? "mipnearest" : "mipnone");
+        {
+            options.push("linear");
+            options.push(mipMapping ? "mipnearest" : "mipnone");
+        }
         else
-            options.push("linear", mipMapping ? "miplinear" : "mipnone");
+        {
+            options.push("linear");
+            options.push(mipMapping ? "miplinear" : "mipnone");
+        }
         
-        return "<" + options.join() + ">";
+        return "<" + options.join(",") + ">";
     }
     
     // statistics
@@ -487,6 +508,6 @@ public class RenderSupport
     public function raiseDrawCount(value:UInt=1):Void { mDrawCount += value; }
     
     /** Indicates the number of stage3D draw calls. */
-    public function get drawCount():Int { return mDrawCount; }
-}
+    public var drawCount(get, never):Int;
+    public function get_drawCount():Int { return mDrawCount; }
 }

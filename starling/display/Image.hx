@@ -8,12 +8,12 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.display.Bitmap;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+package starling.display;
+import openfl.display.Bitmap;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import starling.core.RenderSupport;
 import starling.textures.Texture;
@@ -36,7 +36,7 @@ import starling.utils.VertexData;
  *  @see starling.textures.Texture
  *  @see Quad
  */ 
-public class Image extends Quad
+class Image extends Quad
 {
     private var mTexture:Texture;
     private var mSmoothing:String;
@@ -45,13 +45,13 @@ public class Image extends Quad
     private var mVertexDataCacheInvalid:Bool;
     
     /** Creates a quad with a texture mapped onto it. */
-    public function Image(texture:Texture)
+    public function new(texture:Texture)
     {
-        if (texture)
+        if (texture != null)
         {
             var frame:Rectangle = texture.frame;
-            var width:Float  = frame ? frame.width  : texture.width;
-            var height:Float = frame ? frame.height : texture.height;
+            var width:Float  = frame != null ? frame.width  : texture.width;
+            var height:Float = frame != null ? frame.height : texture.height;
             var pma:Bool = texture.premultipliedAlpha;
             
             super(width, height, 0xffffff, pma);
@@ -80,7 +80,7 @@ public class Image extends Quad
     }
     
     /** @inheritDoc */
-    protected override function onVertexDataChanged():Void
+    private override function onVertexDataChanged():Void
     {
         mVertexDataCacheInvalid = true;
     }
@@ -90,8 +90,8 @@ public class Image extends Quad
     public function readjustSize():Void
     {
         var frame:Rectangle = texture.frame;
-        var width:Float  = frame ? frame.width  : texture.width;
-        var height:Float = frame ? frame.height : texture.height;
+        var width:Float  = frame != null ? frame.width  : texture.width;
+        var height:Float = frame != null ? frame.height : texture.height;
         
         mVertexData.setPosition(0, 0.0, 0.0);
         mVertexData.setPosition(1, width, 0.0);
@@ -150,8 +150,9 @@ public class Image extends Quad
     }
     
     /** The texture that is displayed on the quad. */
-    public function get texture():Texture { return mTexture; }
-    public function set texture(value:Texture):Void 
+    public var texture(get, set):Texture;
+    public function get_texture():Texture { return mTexture; }
+    public function set_texture(value:Texture):Texture 
     { 
         if (value == null)
         {
@@ -164,18 +165,21 @@ public class Image extends Quad
             mVertexDataCache.setPremultipliedAlpha(mTexture.premultipliedAlpha, false);
             onVertexDataChanged();
         }
+        return mTexture;
     }
     
     /** The smoothing filter that is used for the texture. 
     *   @default bilinear
     *   @see starling.textures.TextureSmoothing */ 
-    public function get smoothing():String { return mSmoothing; }
-    public function set smoothing(value:String):Void 
+    public var smoothing(get, set):String;
+    public function get_smoothing():String { return mSmoothing; }
+    public function set_smoothing(value:String):String 
     {
         if (TextureSmoothing.isValid(value))
             mSmoothing = value;
         else
             throw new ArgumentError("Invalid smoothing mode: " + value);
+        return mSmoothing;
     }
     
     /** @inheritDoc */
@@ -183,5 +187,4 @@ public class Image extends Quad
     {
         support.batchQuad(this, parentAlpha, mTexture, mSmoothing);
     }
-}
 }

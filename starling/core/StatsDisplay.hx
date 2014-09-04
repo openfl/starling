@@ -8,8 +8,7 @@
 //
 // =================================================================================================
 
-package starling.core
-{
+package starling.core;
 import flash.system.System;
 
 import starling.display.BlendMode;
@@ -24,9 +23,9 @@ import starling.utils.VAlign;
 
 /** A small, lightweight box that displays the current framerate, memory consumption and
  *  the number of draw calls per frame. The display is updated automatically once per frame. */
-internal class StatsDisplay extends Sprite
+class StatsDisplay extends Sprite
 {
-    private const UPDATE_INTERVAL:Float = 0.5;
+    private inline static var UPDATE_INTERVAL:Float = 0.5;
     
     private var mBackground:Quad;
     private var mTextField:TextField;
@@ -56,27 +55,28 @@ internal class StatsDisplay extends Sprite
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
     
-    private function onAddedToStage():Void
+    private function onAddedToStage(e:Event):Void
     {
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
         mTotalTime = mFrameCount = 0;
         update();
     }
     
-    private function onRemovedFromStage():Void
+    private function onRemovedFromStage(e:Event):Void
     {
         removeEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
     
-    private function onEnterFrame(event:EnterFrameEvent):Void
+    private function onEnterFrame(e:Event):Void
     {
+        var event:EnterFrameEvent = cast(e, EnterFrameEvent);
         mTotalTime += event.passedTime;
         mFrameCount++;
         
         if (mTotalTime > UPDATE_INTERVAL)
         {
             update();
-            mFrameCount = mTotalTime = 0;
+            mFrameCount = Std.int(mTotalTime = 0);
         }
     }
     
@@ -86,8 +86,8 @@ internal class StatsDisplay extends Sprite
         mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
         mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
         
-        mTextField.text = "FPS: " + mFps.toFixed(mFps < 100 ? 1 : 0) + 
-                        "\nMEM: " + mMemory.toFixed(mMemory < 100 ? 1 : 0) +
+        mTextField.text = "FPS: " + mFps + 
+                        "\nMEM: " + mMemory +
                         "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
     }
     
@@ -102,15 +102,17 @@ internal class StatsDisplay extends Sprite
     }
     
     /** The number of Stage3D draw calls per second. */
-    public function get drawCount():Int { return mDrawCount; }
-    public function set drawCount(value:Int):Void { mDrawCount = value; }
+    public var drawCount(get, set):Int;
+    public function get_drawCount():Int { return mDrawCount; }
+    public function set_drawCount(value:Int):Int { return mDrawCount = value; }
     
     /** The current frames per second (updated twice per second). */
-    public function get fps():Float { return mFps; }
-    public function set fps(value:Float):Void { mFps = value; }
+    public var fps(get, set):Float;
+    public function get_fps():Float { return mFps; }
+    public function set_fps(value:Float):Float { return mFps = value; }
     
     /** The currently required system memory in MB. */
-    public function get memory():Float { return mMemory; }
-    public function set memory(value:Float):Void { mMemory = value; }
-}
+    public var memory(get, set):Float;
+    public function get_memory():Float { return mMemory; }
+    public function set_memory(value:Float):Float { return mMemory = value; }
 }

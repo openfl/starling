@@ -8,14 +8,14 @@
 //
 // =================================================================================================
 
-package starling.events
-{
-import flash.utils.Dictionary;
+package starling.events;
+//import flash.utils.Dictionary;
 
-import starling.core.starling_internal;
+//import starling.core.starling_internal;
+import openfl.Vector;
 import starling.display.DisplayObject;
 
-use namespace starling_internal;
+//use namespace starling_internal;
 
 /** The EventDispatcher class is the base class for all classes that dispatch events. 
  *  This is the Starling version of the Flash class with the same name. 
@@ -35,37 +35,40 @@ use namespace starling_internal;
  *  @see Event
  *  @see starling.display.DisplayObject DisplayObject
  */
-public class EventDispatcher
+class EventDispatcher
 {
-    private var mEventListeners:Dictionary;
+    private var mEventListeners:Map<String, Array<Event->Void>>;
     
     /** Helper object. */
-    private static var sBubbleChains:Array = [];
+    private static var sBubbleChains:Array<Dynamic> = new Array<Array<EventDispatcher>>();
     
     /** Creates an EventDispatcher. */
-    public function EventDispatcher()
-    {  }
+    //public function EventDispatcher()
+    //{  }
     
     /** Registers an event listener at a certain object. */
-    public function addEventListener(type:String, listener:Function):Void
+    public function addEventListener(type:String, listener:Dynamic):Void
     {
         if (mEventListeners == null)
-            mEventListeners = new Dictionary();
+            mEventListeners = new Map<String, Array<Event->Void>>();
         
-        var listeners:Vector.<Function> = mEventListeners[type] as Vector.<Function>;
+        var listeners:Array<Dynamic> = mEventListeners[type];
         if (listeners == null)
-            mEventListeners[type] = new <Function>[listener];
+        {
+            mEventListeners[type] = new Array<Event->Void>();
+            mEventListeners[type].push(listener);
+        }
         else if (listeners.indexOf(listener) == -1) // check for duplicates
             listeners.push(listener);
     }
     
     /** Removes an event listener from the object. */
-    public function removeEventListener(type:String, listener:Function):Void
+    public function removeEventListener(type:String, listener:Dynamic):Void
     {
-        if (mEventListeners)
+        if (mEventListeners != null)
         {
-            var listeners:Vector.<Function> = mEventListeners[type] as Vector.<Function>;
-            var numListeners:Int = listeners ? listeners.length : 0;
+            var listeners:Array < Event->Void > = mEventListeners[type];
+            var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
             {
@@ -73,12 +76,12 @@ public class EventDispatcher
                 // (see comment in 'invokeEvent')
 
                 var index:Int = 0;
-                var restListeners:Vector.<Function> = new Vector.<Function>(numListeners-1);
+                var restListeners:Vector<Event->Void> = new Vector<Event->Void>(numListeners-1);
 
-                for (var i:Int=0; i<numListeners; ++i)
+                for (i in 0 ... numListeners)
                 {
-                    var otherListener:Function = listeners[i];
-                    if (otherListener != listener) restListeners[Int(index++)] = otherListener;
+                    var otherListener:Dynamic = listeners[i];
+                    if (otherListener != listener) restListeners[Std.int(index++)] = otherListener;
                 }
 
                 mEventListeners[type] = restListeners;
@@ -90,8 +93,8 @@ public class EventDispatcher
      *  Be careful when removing all event listeners: you never know who else was listening. */
     public function removeEventListeners(type:String=null):Void
     {
-        if (type && mEventListeners)
-            delete mEventListeners[type];
+        if (type != null && mEventListeners != null)
+            mEventListeners.remove(type);
         else
             mEventListeners = null;
     }
@@ -104,7 +107,7 @@ public class EventDispatcher
     {
         var bubbles:Bool = event.bubbles;
         
-        if (!bubbles && (mEventListeners == null || !(event.type in mEventListeners)))
+        if (!bubbles && (mEventListeners == null || !(mEventListeners.exists(event.type))))
             return; // no need to do anything
         
         // we save the current target and restore it later;
@@ -113,23 +116,22 @@ public class EventDispatcher
         var previousTarget:EventDispatcher = event.target;
         event.setTarget(this);
         
-        if (bubbles && this is DisplayObject) bubbleEvent(event);
+        if (bubbles && Std.is(this, DisplayObject)) bubbleEvent(event);
         else                                  invokeEvent(event);
         
-        if (previousTarget) event.setTarget(previousTarget);
+        if (previousTarget != null) event.setTarget(previousTarget);
     }
     
     /** @private
      *  Invokes an event on the current object. This method does not do any bubbling, nor
      *  does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      *  method uses this method internally. */
-    internal function invokeEvent(event:Event):Bool
+    public function invokeEvent(event:Event):Bool
     {
-        var listeners:Vector.<Function> = mEventListeners ?
-            mEventListeners[event.type] as Vector.<Function> : null;
+        var listeners:Array<Event->Void> = mEventListeners != null ? mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
-        if (numListeners)
+        if (numListeners != 0)
         {
             event.setCurrentTarget(this);
             
@@ -137,14 +139,15 @@ public class EventDispatcher
             // when somebody modifies the list while we're looping, "addEventListener" is not
             // problematic, and "removeEventListener" will create a new Vector, anyway.
             
-            for (var i:Int=0; i<numListeners; ++i)
+            for (i in 0 ... numListeners)
             {
-                var listener:Function = listeners[i] as Function;
-                var numArgs:Int = listener.length;
+                var listener:Event->Void = listeners[i];
+                listener(event);
+                //var numArgs:Int = listener.length;
                 
-                if (numArgs == 0) listener();
-                else if (numArgs == 1) listener(event);
-                else listener(event, event.data);
+                //if (numArgs == 0) listener();
+                //else if (numArgs == 1) listener(event);
+                //else listener(event, event.data);
                 
                 if (event.stopsImmediatePropagation)
                     return true;
@@ -159,35 +162,35 @@ public class EventDispatcher
     }
     
     /** @private */
-    internal function bubbleEvent(event:Event):Void
+    public function bubbleEvent(event:Event):Void
     {
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.
         
-        var chain:Vector.<EventDispatcher>;
-        var element:DisplayObject = this as DisplayObject;
+        var chain:Array<EventDispatcher>;
+        var element:DisplayObject = cast(this, DisplayObject);
         var length:Int = 1;
         
         if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
-        else chain = new <EventDispatcher>[element];
+        else chain = [element];
         
         while ((element = element.parent) != null)
-            chain[Int(length++)] = element;
+            chain[Std.int(length++)] = element;
 
-        for (var i:Int=0; i<length; ++i)
+        for (i in 0 ... length)
         {
             var stopPropagation:Bool = chain[i].invokeEvent(event);
             if (stopPropagation) break;
         }
         
-        chain.length = 0;
+        chain = [];
         sBubbleChains.push(chain);
     }
     
     /** Dispatches an event with the given parameters to all objects that have registered 
      *  listeners for the given type. The method uses an internal pool of event objects to 
      *  avoid allocations. */
-    public function dispatchEventWith(type:String, bubbles:Bool=false, data:Object=null):Void
+    public function dispatchEventWith(type:String, bubbles:Bool=false, data:Dynamic=null):Void
     {
         if (bubbles || hasEventListener(type)) 
         {
@@ -200,9 +203,7 @@ public class EventDispatcher
     /** Returns if there are listeners registered for a certain event type. */
     public function hasEventListener(type:String):Bool
     {
-        var listeners:Vector.<Function> = mEventListeners ?
-            mEventListeners[type] as Vector.<Function> : null;
-        return listeners ? listeners.length != 0 : false;
+        var listeners:Array<Event->Void> = mEventListeners != null ? mEventListeners[type] : null;
+        return listeners != null ? listeners.length != 0 : false;
     }
-}
 }

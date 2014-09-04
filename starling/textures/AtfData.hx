@@ -8,13 +8,14 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
+package starling.textures;
 import flash.display3D.Context3DTextureFormat;
 import flash.utils.ByteArray;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 
 /** A parser for the ATF data format. */
-public class AtfData
+class AtfData
 {
     private var mFormat:String;
     private var mWidth:Int;
@@ -23,7 +24,7 @@ public class AtfData
     private var mData:ByteArray;
     
     /** Create a new instance by parsing the given byte array. */
-    public function AtfData(data:ByteArray)
+    public function new(data:ByteArray)
     {
         if (!isAtfData(data)) throw new ArgumentError("Invalid ATF data");
         
@@ -32,18 +33,15 @@ public class AtfData
         
         switch (data.readUnsignedByte())
         {
-            case 0:
-            case 1: mFormat = Context3DTextureFormat.BGRA; break;
-            case 2:
-            case 3: mFormat = Context3DTextureFormat.COMPRESSED; break;
-            case 4:
-            case 5: mFormat = "compressedAlpha"; break; // explicit string to stay compatible 
+            case 0, 1: mFormat = "bgra";
+            case 2, 3: mFormat = "compressed";
+            case 4, 5: mFormat = "compressedAlpha"; // explicit string to stay compatible 
                                                         // with older versions
             default: throw new Error("Invalid ATF format");
         }
         
-        mWidth = Math.pow(2, data.readUnsignedByte()); 
-        mHeight = Math.pow(2, data.readUnsignedByte());
+        mWidth = Std.int(Math.pow(2, data.readUnsignedByte())); 
+        mHeight = Std.int(Math.pow(2, data.readUnsignedByte()));
         mNumTextures = data.readUnsignedByte();
         mData = data;
         
@@ -63,15 +61,21 @@ public class AtfData
         if (data.length < 3) return false;
         else
         {
-            var signature:String = String.fromCharCode(data[0], data[1], data[2]);
+            var signature:String = "";
+            for(i in 0 ... 3)
+                signature += String.fromCharCode(data[i]);
             return signature == "ATF";
         }
     }
     
-    public function get format():String { return mFormat; }
-    public function get width():Int { return mWidth; }
-    public function get height():Int { return mHeight; }
-    public function get numTextures():Int { return mNumTextures; }
-    public function get data():ByteArray { return mData; }
-}
+    public var format(get, never):String;
+    public function get_format():String { return mFormat; }
+    public var width(get, never):Int;
+    public function get_width():Int { return mWidth; }
+    public var height(get, never):Int;
+    public function get_height():Int { return mHeight; }
+    public var numTextures(get, never):Int;
+    public function get_numTextures():Int { return mNumTextures; }
+    public var data(get, never):ByteArray;
+    public function get_data():ByteArray { return mData; }
 }

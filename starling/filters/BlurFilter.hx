@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package starling.filters
+package starling.filters;
 {
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
@@ -23,25 +23,25 @@ import starling.utils.Color;
  *  A blur filter can also be set up as a drop shadow or glow filter. Use the respective
  *  static methods to create such a filter.
  */
-public class BlurFilter extends FragmentFilter
+class BlurFilter extends FragmentFilter
 {
-    private static const NORMAL_PROGRAM_NAME:String = "BF_n";
-    private static const TINTED_PROGRAM_NAME:String = "BF_t";
-    private static const MAX_SIGMA:Float = 2.0;
+    inline private static var NORMAL_PROGRAM_NAME:String = "BF_n";
+    inline private static var TINTED_PROGRAM_NAME:String = "BF_t";
+    inline private static var MAX_SIGMA:Float = 2.0;
     
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Vector.<Float> = new <Float>[0, 0, 0, 0];
-    private var mWeights:Vector.<Float> = new <Float>[0, 0, 0, 0];
-    private var mColor:Vector.<Float>   = new <Float>[1, 1, 1, 1];
+    private var mOffsets:Array<Number> = new <Number>[0, 0, 0, 0];
+    private var mWeights:Array<Number> = new <Number>[0, 0, 0, 0];
+    private var mColor:Array<Number>   = new <Number>[1, 1, 1, 1];
     
     private var mBlurX:Float;
     private var mBlurY:Float;
     private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Vector.<Float> = new Vector.<Float>(5, true);
+    private var sTmpWeights:Array<Number> = new Array<Number>(5, true);
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>. 
@@ -67,7 +67,7 @@ public class BlurFilter extends FragmentFilter
     
     /** Creates a blur filter that is set up for a drop shadow effect. */
     public static function createDropShadow(distance:Float=4.0, angle:Float=0.785, 
-                                            color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0, 
+                                            color:uint=0x0, alpha:Float=0.5, blur:Float=1.0, 
                                             resolution:Float=0.5):BlurFilter
     {
         var dropShadow:BlurFilter = new BlurFilter(blur, blur, resolution);
@@ -79,7 +79,7 @@ public class BlurFilter extends FragmentFilter
     }
     
     /** Creates a blur filter that is set up for a glow effect. */
-    public static function createGlow(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+    public static function createGlow(color:uint=0xffff00, alpha:Float=1.0, blur:Float=1.0,
                                       resolution:Float=0.5):BlurFilter
     {
         var glow:BlurFilter = new BlurFilter(blur, blur, resolution);
@@ -259,7 +259,7 @@ public class BlurFilter extends FragmentFilter
     /** A uniform color will replace the RGB values of the input color, while the alpha
      *  value will be multiplied with the given factor. Pass <code>false</code> as the
      *  first parameter to deactivate the uniform color. */
-    public function setUniformColor(enable:Bool, color:UInt=0x0, alpha:Float=1.0):Void
+    public function setUniformColor(enable:Bool, color:uint=0x0, alpha:Float=1.0):Void
     {
         mColor[0] = Color.getRed(color)   / 255.0;
         mColor[1] = Color.getGreen(color) / 255.0;
@@ -270,20 +270,24 @@ public class BlurFilter extends FragmentFilter
     
     /** The blur factor in x-direction (stage coordinates). 
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    public function get blurX():Float { return mBlurX; }
-    public function set blurX(value:Float):Void 
+    public var blurX(get, set):Float;
+    public function get_blurX():Float { return mBlurX; }
+    public function set_blurX(value:Float):Float 
     { 
         mBlurX = value; 
         updateMarginsAndPasses(); 
+        return mBlurX; 
     }
     
     /** The blur factor in y-direction (stage coordinates). 
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    public function get blurY():Float { return mBlurY; }
-    public function set blurY(value:Float):Void 
+    public var blurY(get, set):Float;
+    public function get_blurY():Float { return mBlurY; }
+    public function set_blurY(value:Float):Float 
     { 
         mBlurY = value; 
         updateMarginsAndPasses(); 
+        return mBlurY; 
     }
 }
 }

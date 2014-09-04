@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package starling.textures
+package starling.textures;
 {
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
@@ -67,13 +67,13 @@ import flash.utils.Dictionary;
  *  form), while the "frame" properties must describe the texture in its upright form.</p>
  *
  */
-public class TextureAtlas
+class TextureAtlas
 {
     private var mAtlasTexture:Texture;
     private var mTextureInfos:Dictionary;
     
     /** helper objects */
-    private static var sNames:Vector.<String> = new <String>[];
+    private static var sNames:Array<String> = new Array<String>();
     
     /** Create a texture atlas from a texture by parsing the regions from an XML file. */
     public function TextureAtlas(texture:Texture, atlasXml:XML=null)
@@ -98,7 +98,7 @@ public class TextureAtlas
     {
         var scale:Float = mAtlasTexture.scale;
         
-        for each (var subTexture:XML in atlasXml.SubTexture)
+        for(subTexture in atlasXml.SubTexture)
         {
             var name:String        = subTexture.attribute("name");
             var x:Float           = parseFloat(subTexture.attribute("x")) / scale;
@@ -130,9 +130,9 @@ public class TextureAtlas
     
     /** Returns all textures that start with a certain string, sorted alphabetically
      *  (especially useful for "MovieClip"). */
-    public function getTextures(prefix:String="", result:Vector.<Texture>=null):Vector.<Texture>
+    public function getTextures(prefix:String="", result:Array<Texture>=null):Array<Texture>
     {
-        if (result == null) result = new <Texture>[];
+        if (result == null) result = new Array<Texture>();
         
         for each (var name:String in getNames(prefix, sNames)) 
             result.push(getTexture(name)); 
@@ -142,9 +142,9 @@ public class TextureAtlas
     }
     
     /** Returns all texture names that start with a certain string, sorted alphabetically. */
-    public function getNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
+    public function getNames(prefix:String="", result:Array<String>=null):Array<String>
     {
-        if (result == null) result = new <String>[];
+        if (result == null) result = new Array<String>();
         
         for (var name:String in mTextureInfos)
             if (name.indexOf(prefix) == 0)
@@ -192,7 +192,8 @@ public class TextureAtlas
     }
     
     /** The base texture that makes up the atlas. */
-    public function get texture():Texture { return mAtlasTexture; }
+    public var texture(get, never):Texture;
+    public function get_texture():Texture { return mAtlasTexture; }
     
     // utility methods
     

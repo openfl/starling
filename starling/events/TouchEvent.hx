@@ -8,12 +8,8 @@
 //
 // =================================================================================================
 
-package starling.events
-{
-import starling.core.starling_internal;
+package starling.events;
 import starling.display.DisplayObject;
-
-use namespace starling_internal;
 
 /** A TouchEvent is triggered either by touch or mouse input.  
  *  
@@ -53,21 +49,21 @@ use namespace starling_internal;
  *  @see Touch
  *  @see TouchPhase
  */ 
-public class TouchEvent extends Event
+class TouchEvent extends Event
 {
     /** Event type for touch or mouse input. */
-    public static const TOUCH:String = "touch";
+    inline public static var TOUCH:String = "touch";
     
     private var mShiftKey:Bool;
     private var mCtrlKey:Bool;
     private var mTimestamp:Float;
-    private var mVisitedObjects:Vector.<EventDispatcher>;
+    private var mVisitedObjects:Array<EventDispatcher>;
     
     /** Helper object. */
-    private static var sTouches:Vector.<Touch> = new <Touch>[];
+    private static var sTouches:Array<Touch> = new Array<Touch>();
     
     /** Creates a new TouchEvent instance. */
-    public function TouchEvent(type:String, touches:Vector.<Touch>, shiftKey:Bool=false, 
+    public function new(type:String, touches:Array<Touch>, shiftKey:Bool=false, 
                                ctrlKey:Bool=false, bubbles:Bool=true)
     {
         super(type, bubbles, touches);
@@ -75,10 +71,10 @@ public class TouchEvent extends Event
         mShiftKey = shiftKey;
         mCtrlKey = ctrlKey;
         mTimestamp = -1.0;
-        mVisitedObjects = new <EventDispatcher>[];
+        mVisitedObjects = new Array<EventDispatcher>();
         
         var numTouches:Int=touches.length;
-        for (var i:Int=0; i<numTouches; ++i)
+        for (i in 0 ... numTouches)
             if (touches[i].timestamp > mTimestamp)
                 mTimestamp = touches[i].timestamp;
     }
@@ -87,15 +83,15 @@ public class TouchEvent extends Event
      *  'result' vector, the touches will be added to this vector instead of creating a new 
      *  object. */
     public function getTouches(target:DisplayObject, phase:String=null,
-                               result:Vector.<Touch>=null):Vector.<Touch>
+                               result:Array<Touch>=null):Array<Touch>
     {
-        if (result == null) result = new <Touch>[];
-        var allTouches:Vector.<Touch> = data as Vector.<Touch>;
+        if (result == null) result = new Array<Touch>();
+        var allTouches:Array<Dynamic> = cast(data, Array<Dynamic>);
         var numTouches:Int = allTouches.length;
         
-        for (var i:Int=0; i<numTouches; ++i)
+        for (i in 0 ... numTouches)
         {
-            var touch:Touch = allTouches[i];
+            var touch:Touch = cast(allTouches[i], Touch);
             var correctTarget:Bool = touch.isTouching(target);
             var correctPhase:Bool = (phase == null || phase == touch.phase);
                 
@@ -124,11 +120,11 @@ public class TouchEvent extends Event
             if (id < 0) touch = sTouches[0];
             else
             {
-                for (var i:Int=0; i<numTouches; ++i)
+                for (i in 0 ... numTouches)
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
-            sTouches.length = 0;
+            sTouches = [];
             return touch;
         }
         else return null;
@@ -140,16 +136,19 @@ public class TouchEvent extends Event
         var result:Bool = false;
         getTouches(target, null, sTouches);
         
-        for (var i:Int=sTouches.length-1; i>=0; --i)
+        var i:Int = sTouches.length - 1;
+        //for (var i:Int=sTouches.length-1; i>=0; --i)
+        while(i>=0)
         {
             if (sTouches[i].phase != TouchPhase.ENDED)
             {
                 result = true;
                 break;
             }
+            --i;
         }
         
-        sTouches.length = 0;
+        sTouches = [];
         return result;
     }
     
@@ -158,17 +157,17 @@ public class TouchEvent extends Event
     /** @private
      *  Dispatches the event along a custom bubble chain. During the lifetime of the event,
      *  each object is visited only once. */
-    internal function dispatch(chain:Vector.<EventDispatcher>):Void
+    public function dispatch(chain:Array<EventDispatcher>):Void
     {
-        if (chain && chain.length)
+        if (chain != null && chain.length != 0)
         {
             var chainLength:Int = bubbles ? chain.length : 1;
             var previousTarget:EventDispatcher = target;
-            setTarget(chain[0] as EventDispatcher);
+            setTarget(cast(chain[0], EventDispatcher));
             
-            for (var i:Int=0; i<chainLength; ++i)
+            for (i in 0 ... chainLength)
             {
-                var chainElement:EventDispatcher = chain[i] as EventDispatcher;
+                var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
                 if (mVisitedObjects.indexOf(chainElement) == -1)
                 {
                     var stopPropagation:Bool = chainElement.invokeEvent(this);
@@ -184,15 +183,25 @@ public class TouchEvent extends Event
     // properties
     
     /** The time the event occurred (in seconds since application launch). */
-    public function get timestamp():Float { return mTimestamp; }
+    public var timestamp(get, never):Float;
+    public function get_timestamp():Float { return mTimestamp; }
     
     /** All touches that are currently available. */
-    public function get touches():Vector.<Touch> { return (data as Vector.<Touch>).concat(); }
+    public var touches(get, never):Array<Touch>;
+    public function get_touches():Array<Touch>
+    {
+        var touches:Array<Dynamic> = cast(data, Array<Dynamic>);
+        var result:Array<Touch> = [];
+        for (i in 0 ... touches.length)
+            result.push(cast(touches[i], Touch));
+        return result;
+    }
     
     /** Indicates if the shift key was pressed when the event occurred. */
-    public function get shiftKey():Bool { return mShiftKey; }
+    public var shiftKey(get, never):Bool;
+    public function get_shiftKey():Bool { return mShiftKey; }
     
     /** Indicates if the ctrl key was pressed when the event occurred. (Mac OS: Cmd or Ctrl) */
-    public function get ctrlKey():Bool { return mCtrlKey; }
-}
+    public var ctrlKey(get, never):Bool;
+    public function get_ctrlKey():Bool { return mCtrlKey; }
 }

@@ -8,8 +8,7 @@
 //
 // =================================================================================================
 
-package starling.events
-{
+package starling.events;
 /** An EnterFrameEvent is triggered once per frame and is dispatched to all objects in the
  *  display tree.
  *
@@ -17,18 +16,18 @@ package starling.events
  *  can easily make animations that are independent of the frame rate, taking the passed time
  *  into account.
  */ 
-public class EnterFrameEvent extends Event
+class EnterFrameEvent extends Event
 {
     /** Event type for a display object that is entering a new frame. */
-    public static const ENTER_FRAME:String = "enterFrame";
+    inline public static var ENTER_FRAME:String = "enterFrame";
     
     /** Creates an enter frame event with the passed time. */
-    public function EnterFrameEvent(type:String, passedTime:Float, bubbles:Bool=false)
+    public function new(type:String, passedTime:Float, bubbles:Bool=false)
     {
         super(type, bubbles, passedTime);
     }
     
     /** The time that has passed since the last frame (in seconds). */
-    public function get passedTime():Float { return data as Float; }
-}
+    public var passedTime(get, never):Float;
+    public function get_passedTime():Float { return cast(data, Float); }
 }

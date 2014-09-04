@@ -8,25 +8,23 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
+package starling.filters;
 import starling.errors.AbstractClassError;
 
 /** A class that provides constant values for filter modes. The values are used in the
  *  FragmentFilter.mode property and define how a filter result is combined with the 
  *  original object. */
-public class FragmentFilterMode
+class FragmentFilterMode
 {
     /** @private */
     public function FragmentFilterMode() { throw new AbstractClassError(); }
     
     /** The filter is displayed below the filtered object. */
-    public static const BELOW:String = "below";
+    inline public static var BELOW:String = "below";
     
     /** The filter is replacing the filtered object. */
-    public static const REPLACE:String = "replace";
+    inline public static var REPLACE:String = "replace";
     
     /** The filter is displayed above the filtered object. */ 
-    public static const ABOVE:String = "above";
-}
+    inline public static var ABOVE:String = "above";
 }

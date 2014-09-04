@@ -8,22 +8,22 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
+package starling.textures;
+import openfl.display3D.Context3DTextureFormat;
 import starling.core.Starling;
 
 /** The TextureOptions class specifies options for loading textures with the 'Texture.fromData'
  *  method. */ 
-public class TextureOptions
+class TextureOptions
 {
     private var mScale:Float;
     private var mFormat:String;
     private var mMipMapping:Bool;
     private var mOptimizeForRenderToTexture:Bool = false;
-    private var mOnReady:Function = null;
+    private var mOnReady:ConcreteTexture->Void = null;
     private var mRepeat:Bool = false;
     
-    public function TextureOptions(scale:Float=1.0, mipMapping:Bool=false, 
+    public function new(scale:Float=1.0, mipMapping:Bool=false, 
                                    format:String="bgra", repeat:Bool=false)
     {
         mScale = scale;
@@ -43,29 +43,35 @@ public class TextureOptions
 
     /** The scale factor, which influences width and height properties. If you pass '-1',
      *  the current global content scale factor will be used. */
-    public function get scale():Float { return mScale; }
-    public function set scale(value:Float):Void
+    public var scale(get, set):Float;
+    public function get_scale():Float { return mScale; }
+    public function set_scale(value:Float):Float
     {
-        mScale = value > 0 ? value : Starling.contentScaleFactor;
+        mScale = value > 0 ? value : Starling.current.contentScaleFactor;
+        return mScale;
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
-    public function get format():String { return mFormat; }
-    public function set format(value:String):Void { mFormat = value; }
+    public var format(get, set):String;
+    public function get_format():String { return mFormat; }
+    public function set_format(value:String):String { return mFormat = value; }
     
     /** Indicates if the texture contains mip maps. */ 
-    public function get mipMapping():Bool { return mMipMapping; }
-    public function set mipMapping(value:Bool):Void { mMipMapping = value; }
+    public var mipMapping(get, set):Bool;
+    public function get_mipMapping():Bool { return mMipMapping; }
+    public function set_mipMapping(value:Bool):Bool { return mMipMapping = value; }
     
     /** Indicates if the texture will be used as render target. */
-    public function get optimizeForRenderToTexture():Bool { return mOptimizeForRenderToTexture; }
-    public function set optimizeForRenderToTexture(value:Bool):Void { mOptimizeForRenderToTexture = value; }
+    public var optimizeForRenderToTexture(get, set):Bool;
+    public function get_optimizeForRenderToTexture():Bool { return mOptimizeForRenderToTexture; }
+    public function set_optimizeForRenderToTexture(value:Bool):Bool { return mOptimizeForRenderToTexture = value; }
  
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
      *  Note: this only works in textures with sidelengths that are powers of two and 
      *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
-    public function get repeat():Bool { return mRepeat; }
-    public function set repeat(value:Bool):Void { mRepeat = value; }
+    public var repeat(get, set):Bool;
+    public function get_repeat():Bool { return mRepeat; }
+    public function set_repeat(value:Bool):Bool { return mRepeat = value; }
 
     /** A callback that is used only for ATF textures; if it is set, the ATF data will be
      *  decoded asynchronously. The texture can only be used when the callback has been
@@ -75,7 +81,7 @@ public class TextureOptions
      *  <p>This is the expected function definition: 
      *  <code>function(texture:Texture):Void;</code></p> 
      */
-    public function get onReady():Function { return mOnReady; }
-    public function set onReady(value:Function):Void { mOnReady = value; }
-}
+    public var onReady(get, never):ConcreteTexture->Void;
+    public function get_onReady():ConcreteTexture->Void { return mOnReady; }
+    public function set_onReady(value:ConcreteTexture->Void):Void { mOnReady = value; }
 }

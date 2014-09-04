@@ -8,20 +8,19 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
+package starling.utils;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
 
 import starling.errors.AbstractClassError;
 
 /** A utility class containing methods related to the Matrix class. */
-public class MatrixUtil
+class MatrixUtil
 {
     /** Helper object. */
-    private static var sRawData:Vector.<Float> = 
-        new <Float>[1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+    private static var sRawData:Array<Float> = 
+        [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
     
     /** @private */
     public function MatrixUtil() { throw new AbstractClassError(); }
@@ -137,5 +136,4 @@ public class MatrixUtil
                      matrix.d * cosX - matrix.b * sinX,
                      matrix.tx, matrix.ty);
     }
-}
 }

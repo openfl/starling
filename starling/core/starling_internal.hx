@@ -8,8 +8,7 @@
 //
 // =================================================================================================
 
-package starling.core
-{
+package starling.core;
 /**
  *  This namespace is used for undocumented APIs -- usually implementation
  *  details -- which can't be private because they need to visible
@@ -18,5 +17,4 @@ package starling.core
  *  APIs in this namespace are completely unsupported and are likely to
  *  change in future versions of Starling.
  */
-public namespace starling_internal;
-}
+//public namespace Starling_internal;

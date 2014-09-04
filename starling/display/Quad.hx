@@ -8,11 +8,11 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+package starling.display;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import starling.core.RenderSupport;
 import starling.utils.VertexData;
@@ -33,12 +33,12 @@ import starling.utils.VertexData;
  * 
  *  @see Image
  */
-public class Quad extends DisplayObject
+class Quad extends DisplayObject
 {
     private var mTinted:Bool;
     
     /** The raw vertex data of the quad. */
-    protected var mVertexData:VertexData;
+    private var mVertexData:VertexData;
     
     /** Helper objects. */
     private static var sHelperPoint:Point = new Point();
@@ -47,9 +47,10 @@ public class Quad extends DisplayObject
     /** Creates a quad with a certain size and color. The last parameter controls if the 
      *  alpha value should be premultiplied into the color values on rendering, which can
      *  influence blending output. You can use the default value in most cases.  */
-    public function Quad(width:Float, height:Float, color:UInt=0xffffff,
+    public function new(width:Float, height:Float, color:UInt=0xffffff,
                          premultipliedAlpha:Bool=true)
     {
+        super();
         if (width == 0.0 || height == 0.0)
             throw new ArgumentError("Invalid size: width and height must not be zero");
 
@@ -66,7 +67,7 @@ public class Quad extends DisplayObject
     }
     
     /** Call this method after manually changing the contents of 'mVertexData'. */
-    protected function onVertexDataChanged():Void
+    private function onVertexDataChanged():Void
     {
         // override in subclasses, if necessary
     }
@@ -133,28 +134,31 @@ public class Quad extends DisplayObject
     }
     
     /** Returns the color of the quad, or of vertex 0 if vertices have different colors. */
-    public function get color():UInt 
+    public var color(get, set):UInt;
+    public function get_color():UInt 
     { 
         return mVertexData.getColor(0); 
     }
     
     /** Sets the colors of all vertices to a certain value. */
-    public function set color(value:UInt):Void 
+    public function set_color(value:UInt):UInt 
     {
         mVertexData.setUniformColor(value);
         onVertexDataChanged();
         
         if (value != 0xffffff || alpha != 1.0) mTinted = true;
         else mTinted = mVertexData.tinted;
+        return mVertexData.getColor(0);
     }
     
     /** @inheritDoc **/
-    public override function set alpha(value:Float):Void
+    public override function set_alpha(value:Float):Float
     {
-        super.alpha = value;
+        super.set_alpha(value);
         
         if (value < 1.0) mTinted = true;
         else mTinted = mVertexData.tinted;
+        return mAlpha;
     }
     
     /** Copies the raw vertex data to a VertexData instance. */
@@ -178,10 +182,11 @@ public class Quad extends DisplayObject
     }
     
     /** Returns true if the quad (or any of its vertices) is non-white or non-opaque. */
-    public function get tinted():Bool { return mTinted; }
+    public var tinted(get, never):Bool;
+    public function get_tinted():Bool { return mTinted; }
     
     /** Indicates if the rgb values are stored premultiplied with the alpha value; this can
      *  affect the rendering. (Most developers don't have to care, though.) */
-    public function get premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
-}
+    public var premultipliedAlpha(get, never):Bool;
+    public function get_premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
 }

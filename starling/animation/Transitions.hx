@@ -12,9 +12,7 @@
 //                                    and http://www.robertpenner.com/easing
 //
 
-package starling.animation
-{
-import flash.utils.Dictionary;
+package starling.animation;
 
 import starling.errors.AbstractClassError;
 
@@ -30,40 +28,40 @@ import starling.errors.AbstractClassError;
  *  
  *  <pre>function myTransition(ratio:Float):Float</pre>
  */
-public class Transitions
+class Transitions
 {        
-    public static const LINEAR:String = "linear";
-    public static const EASE_IN:String = "easeIn";
-    public static const EASE_OUT:String = "easeOut";
-    public static const EASE_IN_OUT:String = "easeInOut";
-    public static const EASE_OUT_IN:String = "easeOutIn";        
-    public static const EASE_IN_BACK:String = "easeInBack";
-    public static const EASE_OUT_BACK:String = "easeOutBack";
-    public static const EASE_IN_OUT_BACK:String = "easeInOutBack";
-    public static const EASE_OUT_IN_BACK:String = "easeOutInBack";
-    public static const EASE_IN_ELASTIC:String = "easeInElastic";
-    public static const EASE_OUT_ELASTIC:String = "easeOutElastic";
-    public static const EASE_IN_OUT_ELASTIC:String = "easeInOutElastic";
-    public static const EASE_OUT_IN_ELASTIC:String = "easeOutInElastic";  
-    public static const EASE_IN_BOUNCE:String = "easeInBounce";
-    public static const EASE_OUT_BOUNCE:String = "easeOutBounce";
-    public static const EASE_IN_OUT_BOUNCE:String = "easeInOutBounce";
-    public static const EASE_OUT_IN_BOUNCE:String = "easeOutInBounce";
+    inline public static var LINEAR:String = "linear";
+    inline public static var EASE_IN:String = "easeIn";
+    inline public static var EASE_OUT:String = "easeOut";
+    inline public static var EASE_IN_OUT:String = "easeInOut";
+    inline public static var EASE_OUT_IN:String = "easeOutIn";        
+    inline public static var EASE_IN_BACK:String = "easeInBack";
+    inline public static var EASE_OUT_BACK:String = "easeOutBack";
+    inline public static var EASE_IN_OUT_BACK:String = "easeInOutBack";
+    inline public static var EASE_OUT_IN_BACK:String = "easeOutInBack";
+    inline public static var EASE_IN_ELASTIC:String = "easeInElastic";
+    inline public static var EASE_OUT_ELASTIC:String = "easeOutElastic";
+    inline public static var EASE_IN_OUT_ELASTIC:String = "easeInOutElastic";
+    inline public static var EASE_OUT_IN_ELASTIC:String = "easeOutInElastic";  
+    inline public static var EASE_IN_BOUNCE:String = "easeInBounce";
+    inline public static var EASE_OUT_BOUNCE:String = "easeOutBounce";
+    inline public static var EASE_IN_OUT_BOUNCE:String = "easeInOutBounce";
+    inline public static var EASE_OUT_IN_BOUNCE:String = "easeOutInBounce";
     
-    private static var sTransitions:Dictionary;
+    private static var sTransitions:Map<String, Float->Float>;
     
     /** @private */
     public function Transitions() { throw new AbstractClassError(); }
     
     /** Returns the transition function that was registered under a certain name. */ 
-    public static function getTransition(name:String):Function
+    public static function getTransition(name:String):Float->Float
     {
         if (sTransitions == null) registerDefaults();
         return sTransitions[name];
     }
     
     /** Registers a new transition function under a certain name. */
-    public static function register(name:String, func:Function):Void
+    public static function register(name:String, func:Float->Float):Void
     {
         if (sTransitions == null) registerDefaults();
         sTransitions[name] = func;
@@ -71,7 +69,7 @@ public class Transitions
     
     private static function registerDefaults():Void
     {
-        sTransitions = new Dictionary();
+        sTransitions = new Map<String, Float->Float>();
         
         register(LINEAR, linear);
         register(EASE_IN, easeIn);
@@ -94,56 +92,56 @@ public class Transitions
     
     // transition functions
     
-    protected static function linear(ratio:Float):Float
+    private static function linear(ratio:Float):Float
     {
         return ratio;
     }
     
-    protected static function easeIn(ratio:Float):Float
+    private static function easeIn(ratio:Float):Float
     {
         return ratio * ratio * ratio;
     }    
     
-    protected static function easeOut(ratio:Float):Float
+    private static function easeOut(ratio:Float):Float
     {
         var invRatio:Float = ratio - 1.0;
         return invRatio * invRatio * invRatio + 1;
     }        
     
-    protected static function easeInOut(ratio:Float):Float
+    private static function easeInOut(ratio:Float):Float
     {
         return easeCombined(easeIn, easeOut, ratio);
     }   
     
-    protected static function easeOutIn(ratio:Float):Float
+    private static function easeOutIn(ratio:Float):Float
     {
         return easeCombined(easeOut, easeIn, ratio);
     }
     
-    protected static function easeInBack(ratio:Float):Float
+    private static function easeInBack(ratio:Float):Float
     {
         var s:Float = 1.70158;
         return Math.pow(ratio, 2) * ((s + 1.0)*ratio - s);
     }
     
-    protected static function easeOutBack(ratio:Float):Float
+    private static function easeOutBack(ratio:Float):Float
     {
         var invRatio:Float = ratio - 1.0;            
         var s:Float = 1.70158;
         return Math.pow(invRatio, 2) * ((s + 1.0)*invRatio + s) + 1.0;
     }
     
-    protected static function easeInOutBack(ratio:Float):Float
+    private static function easeInOutBack(ratio:Float):Float
     {
         return easeCombined(easeInBack, easeOutBack, ratio);
     }   
     
-    protected static function easeOutInBack(ratio:Float):Float
+    private static function easeOutInBack(ratio:Float):Float
     {
         return easeCombined(easeOutBack, easeInBack, ratio);
     }        
     
-    protected static function easeInElastic(ratio:Float):Float
+    private static function easeInElastic(ratio:Float):Float
     {
         if (ratio == 0 || ratio == 1) return ratio;
         else
@@ -155,7 +153,7 @@ public class Transitions
         }            
     }
     
-    protected static function easeOutElastic(ratio:Float):Float
+    private static function easeOutElastic(ratio:Float):Float
     {
         if (ratio == 0 || ratio == 1) return ratio;
         else
@@ -166,22 +164,22 @@ public class Transitions
         }            
     }
     
-    protected static function easeInOutElastic(ratio:Float):Float
+    private static function easeInOutElastic(ratio:Float):Float
     {
         return easeCombined(easeInElastic, easeOutElastic, ratio);
     }   
     
-    protected static function easeOutInElastic(ratio:Float):Float
+    private static function easeOutInElastic(ratio:Float):Float
     {
         return easeCombined(easeOutElastic, easeInElastic, ratio);
     }
     
-    protected static function easeInBounce(ratio:Float):Float
+    private static function easeInBounce(ratio:Float):Float
     {
         return 1.0 - easeOutBounce(1.0 - ratio);
     }
     
-    protected static function easeOutBounce(ratio:Float):Float
+    private static function easeOutBounce(ratio:Float):Float
     {
         var s:Float = 7.5625;
         var p:Float = 2.75;
@@ -214,20 +212,19 @@ public class Transitions
         return l;
     }
     
-    protected static function easeInOutBounce(ratio:Float):Float
+    private static function easeInOutBounce(ratio:Float):Float
     {
         return easeCombined(easeInBounce, easeOutBounce, ratio);
     }   
     
-    protected static function easeOutInBounce(ratio:Float):Float
+    private static function easeOutInBounce(ratio:Float):Float
     {
         return easeCombined(easeOutBounce, easeInBounce, ratio);
     }
     
-    protected static function easeCombined(startFunc:Function, endFunc:Function, ratio:Float):Float
+    private static function easeCombined(startFunc:Float->Float, endFunc:Float->Float, ratio:Float):Float
     {
         if (ratio < 0.5) return 0.5 * startFunc(ratio*2.0);
         else             return 0.5 * endFunc((ratio-0.5)*2.0) + 0.5;
     }
-}
 }

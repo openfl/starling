@@ -11,7 +11,7 @@
 // Most of the color transformation math was taken from the excellent ColorMatrix class by
 // Mario Klingemann: http://www.quasimondo.com/archives/000565.php -- THANKS!!!
 
-package starling.filters
+package starling.filters;
 {
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
@@ -41,30 +41,30 @@ import starling.utils.Color;
  *  the matrix after each step, or use an identical adjustment value for each step; the 
  *  changes will add up.</p>
  */
-public class ColorMatrixFilter extends FragmentFilter
+class ColorMatrixFilter extends FragmentFilter
 {
     private var mShaderProgram:Program3D;
-    private var mUserMatrix:Vector.<Float>;   // offset in range 0-255
-    private var mShaderMatrix:Vector.<Float>; // offset in range 0-1, changed order
+    private var mUserMatrix:Array<Number>;   // offset in range 0-255
+    private var mShaderMatrix:Array<Number>; // offset in range 0-1, changed order
     
-    private static const PROGRAM_NAME:String = "CMF";
-    private static const MIN_COLOR:Vector.<Float> = new <Float>[0, 0, 0, 0.0001];
-    private static const IDENTITY:Array = [1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
-    private static const LUMA_R:Float = 0.299;
-    private static const LUMA_G:Float = 0.587;
-    private static const LUMA_B:Float = 0.114;
+    inline private static var PROGRAM_NAME:String = "CMF";
+    inline private static var MIN_COLOR:Array<Number> = new <Number>[0, 0, 0, 0.0001];
+    inline private static var IDENTITY:Array = [1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
+    inline private static var LUMA_R:Float = 0.299;
+    inline private static var LUMA_G:Float = 0.587;
+    inline private static var LUMA_B:Float = 0.114;
     
     /** helper objects */
-    private static var sTmpMatrix1:Vector.<Float> = new Vector.<Float>(20, true);
-    private static var sTmpMatrix2:Vector.<Float> = new <Float>[];
+    private static var sTmpMatrix1:Array<Number> = new Array<Number>(20, true);
+    private static var sTmpMatrix2:Array<Number> = new Array<Number>();
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
      *  @param matrix: a vector of 20 items arranged as a 4x5 matrix.   
      */
-    public function ColorMatrixFilter(matrix:Vector.<Float>=null)
+    public function ColorMatrixFilter(matrix:Array<Number>=null)
     {
-        mUserMatrix   = new <Float>[];
-        mShaderMatrix = new <Float>[];
+        mUserMatrix   = new Array<Number>();
+        mShaderMatrix = new Array<Number>();
         
         this.matrix = matrix;
     }
@@ -178,7 +178,7 @@ public class ColorMatrixFilter extends FragmentFilter
     /** Tints the image in a certain color, analog to what can be done in Flash Pro.
      *  @param color: the RGB color with which the image should be tinted.
      *  @param amount: the intensity with which tinting should be applied. Range (0, 1). */
-    public function tint(color:UInt, amount:Float=1.0):Void
+    public function tint(color:uint, amount:Float=1.0):Void
     {
         var r:Float = Color.getRed(color)   / 255.0;
         var g:Float = Color.getGreen(color) / 255.0;
@@ -205,7 +205,7 @@ public class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Concatenates the current matrix with another one. */
-    public function concat(matrix:Vector.<Float>):Void
+    public function concat(matrix:Array<Number>):Void
     {
         var i:Int = 0;
 
@@ -213,12 +213,12 @@ public class ColorMatrixFilter extends FragmentFilter
         {
             for (var x:Int=0; x<5; ++x)
             {
-                sTmpMatrix1[Int(i+x)] = 
+                sTmpMatrix1[int(i+x)] = 
                     matrix[i]        * mUserMatrix[x]           +
-                    matrix[Int(i+1)] * mUserMatrix[Int(x +  5)] +
-                    matrix[Int(i+2)] * mUserMatrix[Int(x + 10)] +
-                    matrix[Int(i+3)] * mUserMatrix[Int(x + 15)] +
-                    (x == 4 ? matrix[Int(i+4)] : 0);
+                    matrix[int(i+1)] * mUserMatrix[int(x +  5)] +
+                    matrix[int(i+2)] * mUserMatrix[int(x + 10)] +
+                    matrix[int(i+3)] * mUserMatrix[int(x + 15)] +
+                    (x == 4 ? matrix[int(i+4)] : 0);
             }
             
             i+=5;
@@ -242,7 +242,7 @@ public class ColorMatrixFilter extends FragmentFilter
         concat(sTmpMatrix2);
     }
 
-    private function copyMatrix(from:Vector.<Float>, to:Vector.<Float>):Void
+    private function copyMatrix(from:Array<Number>, to:Array<Number>):Void
     {
         for (var i:Int=0; i<20; ++i)
             to[i] = from[i];
@@ -267,8 +267,9 @@ public class ColorMatrixFilter extends FragmentFilter
     // properties
     
     /** A vector of 20 items arranged as a 4x5 matrix. */
-    public function get matrix():Vector.<Float> { return mUserMatrix; }
-    public function set matrix(value:Vector.<Float>):Void
+    public var matrix(get, set):Vector;
+    public function get_matrix():Array<Number> { return mUserMatrix; }
+    public function set_matrix(value:Array<Number>):Void
     {
         if (value && value.length != 20) 
             throw new ArgumentError("Invalid matrix length: must be 20");

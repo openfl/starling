@@ -8,12 +8,14 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
+package starling.textures;
 import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import haxe.ds.Vector;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.Error;
 
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
@@ -24,7 +26,7 @@ import starling.utils.VertexData;
  *
  *  <p><em>Note that it is OK to create subtextures of subtextures.</em></p>
  */
-public class SubTexture extends Texture
+class SubTexture extends Texture
 {
     private var mParent:Texture;
     private var mOwnsParent:Bool;
@@ -50,10 +52,11 @@ public class SubTexture extends Texture
      *  @param rotated: If true, the SubTexture will show the parent region rotated by
      *                  90 degrees (CCW).
      */
-    public function SubTexture(parentTexture:Texture, region:Rectangle,
+    public function new(parentTexture:Texture, region:Rectangle,
                                ownsParent:Bool=false, frame:Rectangle=null,
                                rotated:Bool=false)
     {
+        super();
         // TODO: in a future version, the order of arguments of this constructor should
         //       be fixed ('ownsParent' at the very end).
         
@@ -61,7 +64,7 @@ public class SubTexture extends Texture
             region = new Rectangle(0, 0, parentTexture.width, parentTexture.height);
         
         mParent = parentTexture;
-        mFrame = frame ? frame.clone() : null;
+        mFrame = frame != null ? frame.clone() : null;
         mOwnsParent = ownsParent;
         mRotated = rotated;
         mWidth  = rotated ? region.height : region.width;
@@ -95,10 +98,10 @@ public class SubTexture extends Texture
         
         adjustTexCoords(vertexData.rawData, startIndex, stride, count);
         
-        if (mFrame)
+        if (mFrame != null)
         {
             if (count != 4)
-                throw new ArgumentError("Textures with a frame can only be used on quads");
+                throw new Error("Textures with a frame can only be used on quads");
             
             var deltaRight:Float  = mFrame.width  + mFrame.x - mWidth;
             var deltaBottom:Float = mFrame.height + mFrame.y - mHeight;
@@ -111,11 +114,11 @@ public class SubTexture extends Texture
     }
 
     /** @inheritDoc */
-    public override function adjustTexCoords(texCoords:Vector.<Float>,
+    public override function adjustTexCoords(texCoords:Array<Float>,
                                              startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         if (count < 0)
-            count = (texCoords.length - startIndex - 2) / (stride + 2) + 1;
+            count = Std.int((texCoords.length - startIndex - 2) / (stride + 2) + 1);
 
         var endIndex:Int = startIndex + count * (2 + stride);
         var texture:SubTexture = this;
@@ -123,36 +126,44 @@ public class SubTexture extends Texture
         
         sMatrix.identity();
         
-        while (texture)
+        while (texture != null)
         {
             sMatrix.concat(texture.mTransformationMatrix);
-            texture = texture.parent as SubTexture;
+            texture = cast(texture.parent, SubTexture);
         }
         
-        for (var i:Int=startIndex; i<endIndex; i += 2 + stride)
+        //for (var i:Int=startIndex; i<endIndex; i += 2 + stride)
+        var i:Int = 0;
+        while(i<endIndex)
         {
             u = texCoords[    i   ];
-            v = texCoords[Int(i+1)];
+            v = texCoords[Std.int(i+1)];
             
             MatrixUtil.transformCoords(sMatrix, u, v, sTexCoords);
             
             texCoords[    i   ] = sTexCoords.x;
-            texCoords[Int(i+1)] = sTexCoords.y
+            texCoords[Std.int(i + 1)] = sTexCoords.y;
+
+            i += 2 + stride;
         }
     }
     
     /** The texture which the subtexture is based on. */ 
-    public function get parent():Texture { return mParent; }
+    public var parent(get, never):Texture;
+    public function get_parent():Texture { return mParent; }
     
     /** Indicates if the parent texture is disposed when this object is disposed. */
-    public function get ownsParent():Bool { return mOwnsParent; }
+    public var ownsParent(get, never):Bool;
+    public function get_ownsParent():Bool { return mOwnsParent; }
     
     /** If true, the SubTexture will show the parent region rotated by 90 degrees (CCW). */
-    public function get rotated():Bool { return mRotated; }
+    public var rotated(get, never):Bool;
+    public function get_rotated():Bool { return mRotated; }
 
     /** The clipping rectangle, which is the region provided on initialization 
      *  scaled into [0.0, 1.0]. */
-    public function get clipping():Rectangle
+    public var clipping(get, never):Rectangle;
+    public function get_clipping():Rectangle
     {
         var topLeft:Point = new Point();
         var bottomRight:Point = new Point();
@@ -171,42 +182,42 @@ public class SubTexture extends Texture
      *  space of the parent texture (used internally by the "adjust..."-methods).
      *
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    public function get transformationMatrix():Matrix { return mTransformationMatrix; }
+    public var transformationMatrix(get, never):Matrix;
+    public function get_transformationMatrix():Matrix { return mTransformationMatrix; }
     
     /** @inheritDoc */
-    public override function get base():TextureBase { return mParent.base; }
+    public override function get_base():TextureBase { return mParent.base; }
     
     /** @inheritDoc */
-    public override function get root():ConcreteTexture { return mParent.root; }
+    public override function get_root():ConcreteTexture { return mParent.root; }
     
     /** @inheritDoc */
-    public override function get format():String { return mParent.format; }
+    public override function get_format():String { return mParent.format; }
     
     /** @inheritDoc */
-    public override function get width():Float { return mWidth; }
+    public override function get_width():Float { return mWidth; }
     
     /** @inheritDoc */
-    public override function get height():Float { return mHeight; }
+    public override function get_height():Float { return mHeight; }
     
     /** @inheritDoc */
-    public override function get nativeWidth():Float { return mWidth * scale }
+    public override function get_nativeWidth():Float { return mWidth * scale; }
     
     /** @inheritDoc */
-    public override function get nativeHeight():Float { return mHeight * scale; }
+    public override function get_nativeHeight():Float { return mHeight * scale; }
     
     /** @inheritDoc */
-    public override function get mipMapping():Bool { return mParent.mipMapping; }
+    public override function get_mipMapping():Bool { return mParent.mipMapping; }
     
     /** @inheritDoc */
-    public override function get premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
+    public override function get_premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
     
     /** @inheritDoc */
-    public override function get scale():Float { return mParent.scale; }
+    public override function get_scale():Float { return mParent.scale; }
     
     /** @inheritDoc */
-    public override function get repeat():Bool { return mParent.repeat; }
+    public override function get_repeat():Bool { return mParent.repeat; }
     
     /** @inheritDoc */
-    public override function get frame():Rectangle { return mFrame; }
-}
+    public override function get_frame():Rectangle { return mFrame; }
 }

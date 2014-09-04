@@ -8,24 +8,30 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+package starling.utils;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import starling.errors.AbstractClassError;
 
 /** A utility class containing methods related to the Rectangle class. */
-public class RectangleUtil
+class RectangleUtil
 {
     /** Helper objects. */
-    private static const sHelperPoint:Point = new Point();
-    private static const sPositions:Vector.<Point> =
-        new <Point>[ new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1) ];
+    private static var sHelperPoint:Point = new Point();
+    private static var sPositions:Array<Point> =
+        [ new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1) ];
 
     /** @private */
-    public function RectangleUtil() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
+
+	/** The largest representable number. */
+    inline private static var MAX_VALUE:Float = 1.79e+308;
+
+    /** The largest representable number. */
+    inline private static var MIN_VALUE:Float = 5e-324;
     
     /** Calculates the intersection between two Rectangles. If the rectangles do not intersect,
      *  this method returns an empty Rectangle object with its properties set to 0. */
@@ -144,10 +150,10 @@ public class RectangleUtil
     {
         if (resultRect == null) resultRect = new Rectangle();
         
-        var minX:Float = Float.MAX_VALUE, maxX:Float = -Float.MAX_VALUE;
-        var minY:Float = Float.MAX_VALUE, maxY:Float = -Float.MAX_VALUE;
+        var minX:Float = MAX_VALUE, maxX:Float = -MAX_VALUE;
+        var minY:Float = MAX_VALUE, maxY:Float = -MAX_VALUE;
         
-        for (var i:Int=0; i<4; ++i)
+        for (i in 0 ... 4)
         {
             MatrixUtil.transformCoords(transformationMatrix,
                 sPositions[i].x * rectangle.width, sPositions[i].y * rectangle.height,
@@ -162,5 +168,4 @@ public class RectangleUtil
         resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
         return resultRect;
     }
-}
 }

@@ -8,8 +8,7 @@
 //
 // =================================================================================================
 
-package starling.events
-{
+package starling.events;
 /** A KeyboardEvent is dispatched in response to user input through a keyboard.
  * 
  *  <p>This is Starling's version of the Flash KeyboardEvent class. It contains the same 
@@ -20,13 +19,13 @@ package starling.events
  *  
  *  @see starling.display.Stage
  */
-public class KeyboardEvent extends Event
+class KeyboardEvent extends Event
 {
     /** Event type for a key that was released. */
-    public static const KEY_UP:String = "keyUp";
+    inline public static var KEY_UP:String = "keyUp";
     
     /** Event type for a key that was pressed. */
-    public static const KEY_DOWN:String = "keyDown";
+    inline public static var KEY_DOWN:String = "keyDown";
     
     private var mCharCode:UInt;
     private var mKeyCode:UInt;
@@ -37,7 +36,7 @@ public class KeyboardEvent extends Event
     private var mIsDefaultPrevented:Bool;
     
     /** Creates a new KeyboardEvent. */
-    public function KeyboardEvent(type:String, charCode:UInt=0, keyCode:UInt=0, 
+    public function new(type:String, charCode:UInt=0, keyCode:UInt=0, 
                                   keyLocation:UInt=0, ctrlKey:Bool=false, 
                                   altKey:Bool=false, shiftKey:Bool=false)
     {
@@ -65,24 +64,29 @@ public class KeyboardEvent extends Event
     // properties
     
     /** Contains the character code of the key. */
-    public function get charCode():UInt { return mCharCode; }
+    public var charCode(get, never):UInt;
+    public function get_charCode():UInt { return mCharCode; }
     
     /** The key code of the key. */
-    public function get keyCode():UInt { return mKeyCode; }
+    public var keyCode(get, never):UInt;
+    public function get_keyCode():UInt { return mKeyCode; }
     
     /** Indicates the location of the key on the keyboard. This is useful for differentiating 
      *  keys that appear more than once on a keyboard. @see Keylocation */ 
-    public function get keyLocation():UInt { return mKeyLocation; }
+    public var keyLocation(get, never):UInt;
+    public function get_keyLocation():UInt { return mKeyLocation; }
     
     /** Indicates whether the Alt key is active on Windows or Linux; 
      *  indicates whether the Option key is active on Mac OS. */
-    public function get altKey():Bool { return mAltKey; }
+    public var altKey(get, never):Bool;
+    public function get_altKey():Bool { return mAltKey; }
     
     /** Indicates whether the Ctrl key is active on Windows or Linux; 
      *  indicates whether either the Ctrl or the Command key is active on Mac OS. */
-    public function get ctrlKey():Bool { return mCtrlKey; }
+    public var ctrlKey(get, never):Bool;
+    public function get_ctrlKey():Bool { return mCtrlKey; }
     
     /** Indicates whether the Shift key modifier is active (true) or inactive (false). */
-    public function get shiftKey():Bool { return mShiftKey; }
-}
+    public var shiftKey(get, never):Bool;
+    public function get_shiftKey():Bool { return mShiftKey; }
 }
