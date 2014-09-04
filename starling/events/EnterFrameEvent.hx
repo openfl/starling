@@ -23,12 +23,12 @@ public class EnterFrameEvent extends Event
     public static const ENTER_FRAME:String = "enterFrame";
     
     /** Creates an enter frame event with the passed time. */
-    public function EnterFrameEvent(type:String, passedTime:Number, bubbles:Boolean=false)
+    public function EnterFrameEvent(type:String, passedTime:Float, bubbles:Bool=false)
     {
         super(type, bubbles, passedTime);
     }
     
     /** The time that has passed since the last frame (in seconds). */
-    public function get passedTime():Number { return data as Number; }
+    public function get passedTime():Float { return data as Float; }
 }
 }

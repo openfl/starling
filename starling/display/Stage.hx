@@ -54,14 +54,14 @@ use namespace starling_internal;
  * */
 public class Stage extends DisplayObjectContainer
 {
-    private var mWidth:int;
-    private var mHeight:int;
-    private var mColor:uint;
+    private var mWidth:Int;
+    private var mHeight:Int;
+    private var mColor:UInt;
     private var mEnterFrameEvent:EnterFrameEvent;
     private var mEnterFrameListeners:Vector.<DisplayObject>;
     
     /** @private */
-    public function Stage(width:int, height:int, color:uint=0)
+    public function Stage(width:Int, height:Int, color:UInt=0)
     {
         mWidth = width;
         mHeight = height;
@@ -71,7 +71,7 @@ public class Stage extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public function advanceTime(passedTime:Number):void
+    public function advanceTime(passedTime:Float):Void
     {
         mEnterFrameEvent.reset(Event.ENTER_FRAME, false, passedTime);
         broadcastEvent(mEnterFrameEvent);
@@ -79,7 +79,7 @@ public class Stage extends DisplayObjectContainer
 
     /** Returns the object that is found topmost beneath a point in stage coordinates, or  
      *  the stage itself if nothing else is found. */
-    public override function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
+    public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
         if (forTouch && (!visible || !touchable))
             return null;
@@ -109,7 +109,7 @@ public class Stage extends DisplayObjectContainer
      *                      will be filled with the stage color.
      */
     public function drawToBitmapData(destination:BitmapData=null,
-                                     transparent:Boolean=true):BitmapData
+                                     transparent:Bool=true):BitmapData
     {
         var support:RenderSupport = new RenderSupport();
         var star:Starling = Starling.current;
@@ -135,25 +135,25 @@ public class Stage extends DisplayObjectContainer
     // enter frame event optimization
     
     /** @private */
-    internal function addEnterFrameListener(listener:DisplayObject):void
+    internal function addEnterFrameListener(listener:DisplayObject):Void
     {
         mEnterFrameListeners.push(listener);
     }
     
     /** @private */
-    internal function removeEnterFrameListener(listener:DisplayObject):void
+    internal function removeEnterFrameListener(listener:DisplayObject):Void
     {
-        var index:int = mEnterFrameListeners.indexOf(listener);
+        var index:Int = mEnterFrameListeners.indexOf(listener);
         if (index >= 0) mEnterFrameListeners.splice(index, 1); 
     }
     
     /** @private */
     internal override function getChildEventListeners(object:DisplayObject, eventType:String, 
-                                                      listeners:Vector.<DisplayObject>):void
+                                                      listeners:Vector.<DisplayObject>):Void
     {
         if (eventType == Event.ENTER_FRAME && object == this)
         {
-            for (var i:int=0, length:int=mEnterFrameListeners.length; i<length; ++i)
+            for (var i:Int=0, length:Int=mEnterFrameListeners.length; i<length; ++i)
                 listeners[listeners.length] = mEnterFrameListeners[i]; // avoiding 'push' 
         }
         else
@@ -163,77 +163,77 @@ public class Stage extends DisplayObjectContainer
     // properties
     
     /** @private */
-    public override function set width(value:Number):void 
+    public override function set width(value:Float):Void 
     { 
         throw new IllegalOperationError("Cannot set width of stage");
     }
     
     /** @private */
-    public override function set height(value:Number):void
+    public override function set height(value:Float):Void
     {
         throw new IllegalOperationError("Cannot set height of stage");
     }
     
     /** @private */
-    public override function set x(value:Number):void
+    public override function set x(value:Float):Void
     {
         throw new IllegalOperationError("Cannot set x-coordinate of stage");
     }
     
     /** @private */
-    public override function set y(value:Number):void
+    public override function set y(value:Float):Void
     {
         throw new IllegalOperationError("Cannot set y-coordinate of stage");
     }
     
     /** @private */
-    public override function set scaleX(value:Number):void
+    public override function set scaleX(value:Float):Void
     {
         throw new IllegalOperationError("Cannot scale stage");
     }
 
     /** @private */
-    public override function set scaleY(value:Number):void
+    public override function set scaleY(value:Float):Void
     {
         throw new IllegalOperationError("Cannot scale stage");
     }
     
     /** @private */
-    public override function set rotation(value:Number):void
+    public override function set rotation(value:Float):Void
     {
         throw new IllegalOperationError("Cannot rotate stage");
     }
     
     /** @private */
-    public override function set skewX(value:Number):void
+    public override function set skewX(value:Float):Void
     {
         throw new IllegalOperationError("Cannot skew stage");
     }
     
     /** @private */
-    public override function set skewY(value:Number):void
+    public override function set skewY(value:Float):Void
     {
         throw new IllegalOperationError("Cannot skew stage");
     }
     
     /** @private */
-    public override function set filter(value:FragmentFilter):void
+    public override function set filter(value:FragmentFilter):Void
     {
         throw new IllegalOperationError("Cannot add filter to stage. Add it to 'root' instead!");
     }
     
     /** The background color of the stage. */
-    public function get color():uint { return mColor; }
-    public function set color(value:uint):void { mColor = value; }
+    public function get color():UInt { return mColor; }
+    public function set color(value:UInt):Void { mColor = value; }
     
     /** The width of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */ 
-    public function get stageWidth():int { return mWidth; }
-    public function set stageWidth(value:int):void { mWidth = value; }
+    public function get stageWidth():Int { return mWidth; }
+    public function set stageWidth(value:Int):Void { mWidth = value; }
     
     /** The height of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */
-    public function get stageHeight():int { return mHeight; }
-    public function set stageHeight(value:int):void { mHeight = value; }
+    public function get stageHeight():Int { return mHeight; }
+    public function set stageHeight(value:Int):Void { mHeight = value; }
 }
 }

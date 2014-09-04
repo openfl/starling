@@ -28,7 +28,7 @@ public class TextureSmoothing
     public static const TRILINEAR:String = "trilinear";
     
     /** Determines whether a smoothing value is valid. */
-    public static function isValid(smoothing:String):Boolean
+    public static function isValid(smoothing:String):Bool
     {
         return smoothing == NONE || smoothing == BILINEAR || smoothing == TRILINEAR;
     }

@@ -27,21 +27,21 @@ public class BlurFilter extends FragmentFilter
 {
     private static const NORMAL_PROGRAM_NAME:String = "BF_n";
     private static const TINTED_PROGRAM_NAME:String = "BF_t";
-    private static const MAX_SIGMA:Number = 2.0;
+    private static const MAX_SIGMA:Float = 2.0;
     
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Vector.<Number> = new <Number>[0, 0, 0, 0];
-    private var mWeights:Vector.<Number> = new <Number>[0, 0, 0, 0];
-    private var mColor:Vector.<Number>   = new <Number>[1, 1, 1, 1];
+    private var mOffsets:Vector.<Float> = new <Float>[0, 0, 0, 0];
+    private var mWeights:Vector.<Float> = new <Float>[0, 0, 0, 0];
+    private var mColor:Vector.<Float>   = new <Float>[1, 1, 1, 1];
     
-    private var mBlurX:Number;
-    private var mBlurY:Number;
-    private var mUniformColor:Boolean;
+    private var mBlurX:Float;
+    private var mBlurY:Float;
+    private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Vector.<Number> = new Vector.<Number>(5, true);
+    private var sTmpWeights:Vector.<Float> = new Vector.<Float>(5, true);
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>. 
@@ -57,7 +57,7 @@ public class BlurFilter extends FragmentFilter
      *  A lower resolution will result in a blurrier image, while reducing the rendering
      *  cost.</p>
      */
-    public function BlurFilter(blurX:Number=1, blurY:Number=1, resolution:Number=1)
+    public function BlurFilter(blurX:Float=1, blurY:Float=1, resolution:Float=1)
     {
         super(1, resolution);
         mBlurX = blurX;
@@ -66,9 +66,9 @@ public class BlurFilter extends FragmentFilter
     }
     
     /** Creates a blur filter that is set up for a drop shadow effect. */
-    public static function createDropShadow(distance:Number=4.0, angle:Number=0.785, 
-                                            color:uint=0x0, alpha:Number=0.5, blur:Number=1.0, 
-                                            resolution:Number=0.5):BlurFilter
+    public static function createDropShadow(distance:Float=4.0, angle:Float=0.785, 
+                                            color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0, 
+                                            resolution:Float=0.5):BlurFilter
     {
         var dropShadow:BlurFilter = new BlurFilter(blur, blur, resolution);
         dropShadow.offsetX = Math.cos(angle) * distance;
@@ -79,8 +79,8 @@ public class BlurFilter extends FragmentFilter
     }
     
     /** Creates a blur filter that is set up for a glow effect. */
-    public static function createGlow(color:uint=0xffff00, alpha:Number=1.0, blur:Number=1.0,
-                                      resolution:Number=0.5):BlurFilter
+    public static function createGlow(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+                                      resolution:Float=0.5):BlurFilter
     {
         var glow:BlurFilter = new BlurFilter(blur, blur, resolution);
         glow.mode = FragmentFilterMode.BELOW;
@@ -89,13 +89,13 @@ public class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    protected override function createPrograms():void
+    protected override function createPrograms():Void
     {
         mNormalProgram = createProgram(false);
         mTintedProgram = createProgram(true);
     }
     
-    private function createProgram(tinted:Boolean):Program3D
+    private function createProgram(tinted:Bool):Program3D
     {
         var programName:String = tinted ? TINTED_PROGRAM_NAME : NORMAL_PROGRAM_NAME;
         var target:Starling = Starling.current;
@@ -154,7 +154,7 @@ public class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    protected override function activate(pass:int, context:Context3D, texture:Texture):void
+    protected override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         // already set by super class:
         // 
@@ -179,7 +179,7 @@ public class BlurFilter extends FragmentFilter
         }
     }
     
-    private function updateParameters(pass:int, textureWidth:int, textureHeight:int):void
+    private function updateParameters(pass:Int, textureWidth:Int, textureHeight:Int):Void
     {
         // algorithm described here: 
         // http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
@@ -188,9 +188,9 @@ public class BlurFilter extends FragmentFilter
         // shader. By making use of linear texture sampling, we can produce similar output
         // to what would be 9 lookups.
         
-        var sigma:Number;
-        var horizontal:Boolean = pass < mBlurX;
-        var pixelSize:Number;
+        var sigma:Float;
+        var horizontal:Bool = pass < mBlurX;
+        var pixelSize:Float;
         
         if (horizontal)
         {
@@ -203,12 +203,12 @@ public class BlurFilter extends FragmentFilter
             pixelSize = 1.0 / textureHeight;
         }
         
-        const twoSigmaSq:Number = 2 * sigma * sigma; 
-        const multiplier:Number = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
+        const twoSigmaSq:Float = 2 * sigma * sigma; 
+        const multiplier:Float = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
         
         // get weights on the exact pixels (sTmpWeights) and calculate sums (mWeights)
         
-        for (var i:int=0; i<5; ++i)
+        for (var i:Int=0; i<5; ++i)
             sTmpWeights[i] = multiplier * Math.exp(-i*i / twoSigmaSq);
         
         mWeights[0] = sTmpWeights[0];
@@ -217,8 +217,8 @@ public class BlurFilter extends FragmentFilter
 
         // normalize weights so that sum equals "1.0"
         
-        var weightSum:Number = mWeights[0] + 2*mWeights[1] + 2*mWeights[2];
-        var invWeightSum:Number = 1.0 / weightSum;
+        var weightSum:Float = mWeights[0] + 2*mWeights[1] + 2*mWeights[2];
+        var invWeightSum:Float = 1.0 / weightSum;
         
         mWeights[0] *= invWeightSum;
         mWeights[1] *= invWeightSum;
@@ -226,8 +226,8 @@ public class BlurFilter extends FragmentFilter
         
         // calculate intermediate offsets
         
-        var offset1:Number = (  pixelSize * sTmpWeights[1] + 2*pixelSize * sTmpWeights[2]) / mWeights[1];
-        var offset2:Number = (3*pixelSize * sTmpWeights[3] + 4*pixelSize * sTmpWeights[4]) / mWeights[2];
+        var offset1:Float = (  pixelSize * sTmpWeights[1] + 2*pixelSize * sTmpWeights[2]) / mWeights[1];
+        var offset2:Float = (3*pixelSize * sTmpWeights[3] + 4*pixelSize * sTmpWeights[4]) / mWeights[2];
         
         // depending on pass, we move in x- or y-direction
         
@@ -247,7 +247,7 @@ public class BlurFilter extends FragmentFilter
         }
     }
     
-    private function updateMarginsAndPasses():void
+    private function updateMarginsAndPasses():Void
     {
         if (mBlurX == 0 && mBlurY == 0) mBlurX = 0.001;
         
@@ -259,7 +259,7 @@ public class BlurFilter extends FragmentFilter
     /** A uniform color will replace the RGB values of the input color, while the alpha
      *  value will be multiplied with the given factor. Pass <code>false</code> as the
      *  first parameter to deactivate the uniform color. */
-    public function setUniformColor(enable:Boolean, color:uint=0x0, alpha:Number=1.0):void
+    public function setUniformColor(enable:Bool, color:UInt=0x0, alpha:Float=1.0):Void
     {
         mColor[0] = Color.getRed(color)   / 255.0;
         mColor[1] = Color.getGreen(color) / 255.0;
@@ -270,8 +270,8 @@ public class BlurFilter extends FragmentFilter
     
     /** The blur factor in x-direction (stage coordinates). 
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    public function get blurX():Number { return mBlurX; }
-    public function set blurX(value:Number):void 
+    public function get blurX():Float { return mBlurX; }
+    public function set blurX(value:Float):Void 
     { 
         mBlurX = value; 
         updateMarginsAndPasses(); 
@@ -279,8 +279,8 @@ public class BlurFilter extends FragmentFilter
     
     /** The blur factor in y-direction (stage coordinates). 
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    public function get blurY():Number { return mBlurY; }
-    public function set blurY(value:Number):void 
+    public function get blurY():Float { return mBlurY; }
+    public function set blurY(value:Float):Void 
     { 
         mBlurY = value; 
         updateMarginsAndPasses(); 

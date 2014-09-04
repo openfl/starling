@@ -87,7 +87,7 @@ import starling.utils.getNextPowerOfTwo;
  *  
  *  <listing>
  *  var texture:Texture = Texture.fromBitmap(new EmbeddedBitmap());
- *  texture.root.onRestore = function():void 
+ *  texture.root.onRestore = function():Void 
  *  { 
  *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
  *  };</listing>
@@ -116,7 +116,7 @@ public class Texture
      *  SubTextures (created with 'Texture.fromTexture') just reference other textures and
      *  and do not take up resources themselves; this is also true for textures from an 
      *  atlas. */
-    public function dispose():void
+    public function dispose():Void
     { 
         // override in subclasses
     }
@@ -171,10 +171,10 @@ public class Texture
      *  @param format:  the context3D texture format to use. Ignored for ATF data.
      *  @param repeat:  the repeat value of the texture. Only useful for power-of-two textures.
      */
-    public static function fromEmbeddedAsset(assetClass:Class, mipMapping:Boolean=true,
-                                             optimizeForRenderToTexture:Boolean=false,
-                                             scale:Number=1, format:String="bgra",
-                                             repeat:Boolean=false):Texture
+    public static function fromEmbeddedAsset(assetClass:Class, mipMapping:Bool=true,
+                                             optimizeForRenderToTexture:Bool=false,
+                                             scale:Float=1, format:String="bgra",
+                                             repeat:Bool=false):Texture
     {
         var texture:Texture;
         var asset:Object = new assetClass();
@@ -182,7 +182,7 @@ public class Texture
         if (asset is Bitmap)
         {
             texture = Texture.fromBitmap(asset as Bitmap, mipMapping, false, scale, format, repeat);
-            texture.root.onRestore = function():void
+            texture.root.onRestore = function():Void
             {
                 texture.root.uploadBitmap(new assetClass());
             };
@@ -190,7 +190,7 @@ public class Texture
         else if (asset is ByteArray)
         {
             texture = Texture.fromAtfData(asset as ByteArray, scale, mipMapping, null, repeat);
-            texture.root.onRestore = function():void
+            texture.root.onRestore = function():Void
             {
                 texture.root.uploadAtfData(new assetClass()); 
             };
@@ -219,10 +219,10 @@ public class Texture
      *                  quality). 
      *  @param repeat:  the repeat value of the texture. Only useful for power-of-two textures.
      */
-    public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Boolean=true,
-                                      optimizeForRenderToTexture:Boolean=false,
-                                      scale:Number=1, format:String="bgra",
-                                      repeat:Boolean=false):Texture
+    public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=true,
+                                      optimizeForRenderToTexture:Bool=false,
+                                      scale:Float=1, format:String="bgra",
+                                      repeat:Bool=false):Texture
     {
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture, 
                               scale, format, repeat);
@@ -243,17 +243,17 @@ public class Texture
      *                  quality).
      *  @param repeat:  the repeat value of the texture. Only useful for power-of-two textures.
      */
-    public static function fromBitmapData(data:BitmapData, generateMipMaps:Boolean=true,
-                                          optimizeForRenderToTexture:Boolean=false,
-                                          scale:Number=1, format:String="bgra",
-                                          repeat:Boolean=false):Texture
+    public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
+                                          optimizeForRenderToTexture:Bool=false,
+                                          scale:Float=1, format:String="bgra",
+                                          repeat:Bool=false):Texture
     {
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true, 
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
         
         texture.root.uploadBitmapData(data);
-        texture.root.onRestore = function():void
+        texture.root.onRestore = function():Void
         {
             texture.root.uploadBitmapData(data);
         };
@@ -268,9 +268,9 @@ public class Texture
      *  
      *  <p>If the 'async' parameter contains a callback function, the texture is decoded
      *  asynchronously. It can only be used when the callback has been executed. This is the
-     *  expected function definition: <code>function(texture:Texture):void;</code></p> */
-    public static function fromAtfData(data:ByteArray, scale:Number=1, useMipMaps:Boolean=true, 
-                                       async:Function=null, repeat:Boolean=false):Texture
+     *  expected function definition: <code>function(texture:Texture):Void;</code></p> */
+    public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true, 
+                                       async:Function=null, repeat:Bool=false):Texture
     {
         var context:Context3D = Starling.context;
         if (context == null) throw new MissingContextError();
@@ -283,7 +283,7 @@ public class Texture
             false, false, scale, repeat);
         
         concreteTexture.uploadAtfData(data, 0, async);
-        concreteTexture.onRestore = function():void
+        concreteTexture.onRestore = function():Void
         {
             concreteTexture.uploadAtfData(data, 0);
         };
@@ -301,14 +301,14 @@ public class Texture
      *  @param format: the context3D texture format to use. Pass one of the packed or
      *                 compressed formats to save memory.
      */
-    public static function fromColor(width:Number, height:Number, color:uint=0xffffffff,
-                                     optimizeForRenderToTexture:Boolean=false, 
-                                     scale:Number=-1, format:String="bgra"):Texture
+    public static function fromColor(width:Float, height:Float, color:UInt=0xffffffff,
+                                     optimizeForRenderToTexture:Bool=false, 
+                                     scale:Float=-1, format:String="bgra"):Texture
     {
         var texture:Texture = Texture.empty(width, height, true, false, 
                                             optimizeForRenderToTexture, scale, format);
         texture.root.clear(color, Color.getAlpha(color) / 255.0);
-        texture.root.onRestore = function():void
+        texture.root.onRestore = function():Void
         {
             texture.root.clear(color, Color.getAlpha(color) / 255.0);
         };
@@ -333,24 +333,24 @@ public class Texture
      *                 compressed formats to save memory (at the price of reduced image quality).
      *  @param repeat: the repeat mode of the texture. Only useful for power-of-two textures.
      */
-    public static function empty(width:Number, height:Number, premultipliedAlpha:Boolean=true,
-                                 mipMapping:Boolean=true, optimizeForRenderToTexture:Boolean=false,
-                                 scale:Number=-1, format:String="bgra", repeat:Boolean=false):Texture
+    public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
+                                 mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
+                                 scale:Float=-1, format:String="bgra", repeat:Bool=false):Texture
     {
         if (scale <= 0) scale = Starling.contentScaleFactor;
         
-        var actualWidth:int, actualHeight:int;
+        var actualWidth:Int, actualHeight:Int;
         var nativeTexture:flash.display3D.textures.TextureBase;
         var context:Context3D = Starling.context;
         
         if (context == null) throw new MissingContextError();
         
-        var origWidth:int  = width  * scale;
-        var origHeight:int = height * scale;
-        var potWidth:int   = getNextPowerOfTwo(origWidth);
-        var potHeight:int  = getNextPowerOfTwo(origHeight);
-        var isPot:Boolean  = (origWidth == potWidth && origHeight == potHeight);
-        var useRectTexture:Boolean = !mipMapping && !repeat &&
+        var origWidth:Int  = width  * scale;
+        var origHeight:Int = height * scale;
+        var potWidth:Int   = getNextPowerOfTwo(origWidth);
+        var potHeight:Int  = getNextPowerOfTwo(origHeight);
+        var isPot:Bool  = (origWidth == potWidth && origHeight == potHeight);
+        var useRectTexture:Bool = !mipMapping && !repeat &&
             Starling.current.profile != "baselineConstrained" &&
             "createRectangleTexture" in context && format.indexOf("compressed") == -1;
         
@@ -388,7 +388,7 @@ public class Texture
     /** Creates a texture that contains a region (in pixels) of another texture. The new
      *  texture will reference the base texture; no data is duplicated. */
     public static function fromTexture(texture:Texture, region:Rectangle=null,
-                                       frame:Rectangle=null, rotated:Boolean=false):Texture
+                                       frame:Rectangle=null, rotated:Bool=false):Texture
     {
         return new SubTexture(texture, region, false, frame, rotated);
     }
@@ -399,7 +399,7 @@ public class Texture
      *  might be working with a SubTexture or a texture frame. This method
      *  adjusts the texture and vertex coordinates accordingly.
      */
-    public function adjustVertexData(vertexData:VertexData, vertexID:int, count:int):void
+    public function adjustVertexData(vertexData:VertexData, vertexID:Int, count:Int):Void
     {
         // override in subclass
     }
@@ -416,8 +416,8 @@ public class Texture
      *  @param stride: the distance (in vector elements) of consecutive UV pairs.
      *  @param count: the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
-    public function adjustTexCoords(texCoords:Vector.<Number>,
-                                    startIndex:int=0, stride:int=0, count:int=-1):void
+    public function adjustTexCoords(texCoords:Vector.<Float>,
+                                    startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         // override in subclasses
     }
@@ -433,22 +433,22 @@ public class Texture
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
      *  Note: this only works in textures with sidelengths that are powers of two and 
      *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
-    public function get repeat():Boolean { return false; }
+    public function get repeat():Bool { return false; }
     
     /** The width of the texture in points. */
-    public function get width():Number { return 0; }
+    public function get width():Float { return 0; }
     
     /** The height of the texture in points. */
-    public function get height():Number { return 0; }
+    public function get height():Float { return 0; }
 
     /** The width of the texture in pixels (without scale adjustment). */
-    public function get nativeWidth():Number { return 0; }
+    public function get nativeWidth():Float { return 0; }
     
     /** The height of the texture in pixels (without scale adjustment). */
-    public function get nativeHeight():Number { return 0; }
+    public function get nativeHeight():Float { return 0; }
     
     /** The scale factor, which influences width and height properties. */
-    public function get scale():Number { return 1.0; }
+    public function get scale():Float { return 1.0; }
     
     /** The Stage3D texture object the texture is based on. */
     public function get base():TextureBase { return null; }
@@ -460,9 +460,9 @@ public class Texture
     public function get format():String { return Context3DTextureFormat.BGRA; }
     
     /** Indicates if the texture contains mip maps. */ 
-    public function get mipMapping():Boolean { return false; }
+    public function get mipMapping():Bool { return false; }
     
     /** Indicates if the alpha values are premultiplied into the RGB values. */
-    public function get premultipliedAlpha():Boolean { return false; }
+    public function get premultipliedAlpha():Bool { return false; }
 }
 }

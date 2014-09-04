@@ -43,35 +43,35 @@ import flash.geom.Rectangle;
 public class VertexData 
 {
     /** The total number of elements (Numbers) stored per vertex. */
-    public static const ELEMENTS_PER_VERTEX:int = 8;
+    public static const ELEMENTS_PER_VERTEX:Int = 8;
     
     /** The offset of position data (x, y) within a vertex. */
-    public static const POSITION_OFFSET:int = 0;
+    public static const POSITION_OFFSET:Int = 0;
     
     /** The offset of color data (r, g, b, a) within a vertex. */
-    public static const COLOR_OFFSET:int = 2;
+    public static const COLOR_OFFSET:Int = 2;
     
     /** The offset of texture coordinates (u, v) within a vertex. */
-    public static const TEXCOORD_OFFSET:int = 6;
+    public static const TEXCOORD_OFFSET:Int = 6;
     
-    private var mRawData:Vector.<Number>;
-    private var mPremultipliedAlpha:Boolean;
-    private var mNumVertices:int;
+    private var mRawData:Vector.<Float>;
+    private var mPremultipliedAlpha:Bool;
+    private var mNumVertices:Int;
 
     /** Helper object. */
     private static var sHelperPoint:Point = new Point();
     
     /** Create a new VertexData object with a specified number of vertices. */
-    public function VertexData(numVertices:int, premultipliedAlpha:Boolean=false)
+    public function VertexData(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = new <Number>[];
+        mRawData = new <Float>[];
         mPremultipliedAlpha = premultipliedAlpha;
         this.numVertices = numVertices;
     }
 
     /** Creates a duplicate of either the complete vertex data object, or of a subset. 
      *  To clone all vertices, set 'numVertices' to '-1'. */
-    public function clone(vertexID:int=0, numVertices:int=-1):VertexData
+    public function clone(vertexID:Int=0, numVertices:Int=-1):VertexData
     {
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
             numVertices = mNumVertices - vertexID;
@@ -86,8 +86,8 @@ public class VertexData
     
     /** Copies the vertex data (or a range of it, defined by 'vertexID' and 'numVertices') 
      *  of this instance to another vertex data object, starting at a certain index. */
-    public function copyTo(targetData:VertexData, targetVertexID:int=0,
-                           vertexID:int=0, numVertices:int=-1):void
+    public function copyTo(targetData:VertexData, targetVertexID:Int=0,
+                           vertexID:Int=0, numVertices:Int=-1):Void
     {
         copyTransformedTo(targetData, targetVertexID, null, vertexID, numVertices);
     }
@@ -95,54 +95,54 @@ public class VertexData
     /** Transforms the vertex position of this instance by a certain matrix and copies the
      *  result to another VertexData instance. Limit the operation to a range of vertices
      *  via the 'vertexID' and 'numVertices' parameters. */
-    public function copyTransformedTo(targetData:VertexData, targetVertexID:int=0,
+    public function copyTransformedTo(targetData:VertexData, targetVertexID:Int=0,
                                       matrix:Matrix=null,
-                                      vertexID:int=0, numVertices:int=-1):void
+                                      vertexID:Int=0, numVertices:Int=-1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
             numVertices = mNumVertices - vertexID;
         
-        var x:Number, y:Number;
-        var targetRawData:Vector.<Number> = targetData.mRawData;
-        var targetIndex:int = targetVertexID * ELEMENTS_PER_VERTEX;
-        var sourceIndex:int = vertexID * ELEMENTS_PER_VERTEX;
-        var sourceEnd:int = (vertexID + numVertices) * ELEMENTS_PER_VERTEX;
+        var x:Float, y:Float;
+        var targetRawData:Vector.<Float> = targetData.mRawData;
+        var targetIndex:Int = targetVertexID * ELEMENTS_PER_VERTEX;
+        var sourceIndex:Int = vertexID * ELEMENTS_PER_VERTEX;
+        var sourceEnd:Int = (vertexID + numVertices) * ELEMENTS_PER_VERTEX;
         
         if (matrix)
         {
             while (sourceIndex < sourceEnd)
             {
-                x = mRawData[int(sourceIndex++)];
-                y = mRawData[int(sourceIndex++)];
+                x = mRawData[Int(sourceIndex++)];
+                y = mRawData[Int(sourceIndex++)];
                 
-                targetRawData[int(targetIndex++)] = matrix.a * x + matrix.c * y + matrix.tx;
-                targetRawData[int(targetIndex++)] = matrix.d * y + matrix.b * x + matrix.ty;
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = matrix.a * x + matrix.c * y + matrix.tx;
+                targetRawData[Int(targetIndex++)] = matrix.d * y + matrix.b * x + matrix.ty;
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
             }
         }
         else
         {
             while (sourceIndex < sourceEnd)
-                targetRawData[int(targetIndex++)] = mRawData[int(sourceIndex++)];
+                targetRawData[Int(targetIndex++)] = mRawData[Int(sourceIndex++)];
         }
     }
     
     /** Appends the vertices from another VertexData object. */
-    public function append(data:VertexData):void
+    public function append(data:VertexData):Void
     {
         mRawData.fixed = false;
         
-        var targetIndex:int = mRawData.length;
-        var rawData:Vector.<Number> = data.mRawData;
-        var rawDataLength:int = rawData.length;
+        var targetIndex:Int = mRawData.length;
+        var rawData:Vector.<Float> = data.mRawData;
+        var rawDataLength:Int = rawData.length;
         
-        for (var i:int=0; i<rawDataLength; ++i)
-            mRawData[int(targetIndex++)] = rawData[i];
+        for (var i:Int=0; i<rawDataLength; ++i)
+            mRawData[Int(targetIndex++)] = rawData[i];
         
         mNumVertices += data.numVertices;
         mRawData.fixed = true;
@@ -151,146 +151,146 @@ public class VertexData
     // functions
     
     /** Updates the position values of a vertex. */
-    public function setPosition(vertexID:int, x:Number, y:Number):void
+    public function setPosition(vertexID:Int, x:Float, y:Float):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         mRawData[offset] = x;
-        mRawData[int(offset+1)] = y;
+        mRawData[Int(offset+1)] = y;
     }
     
     /** Returns the position of a vertex. */
-    public function getPosition(vertexID:int, position:Point):void
+    public function getPosition(vertexID:Int, position:Point):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         position.x = mRawData[offset];
-        position.y = mRawData[int(offset+1)];
+        position.y = mRawData[Int(offset+1)];
     }
     
     /** Updates the RGB color and alpha value of a vertex in one step. */
-    public function setColorAndAlpha(vertexID:int, color:uint, alpha:Number):void
+    public function setColorAndAlpha(vertexID:Int, color:UInt, alpha:Float):Void
     {
         if (alpha < 0.001)    alpha = 0.001; // zero alpha would wipe out all color data
         else if (alpha > 1.0) alpha = 1.0;
         
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
-        var multiplier:Number = mPremultipliedAlpha ? alpha : 1.0;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
+        var multiplier:Float = mPremultipliedAlpha ? alpha : 1.0;
         
         mRawData[offset]        = ((color >> 16) & 0xff) / 255.0 * multiplier;
-        mRawData[int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
-        mRawData[int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
-        mRawData[int(offset+3)] = alpha;
+        mRawData[Int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
+        mRawData[Int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
+        mRawData[Int(offset+3)] = alpha;
     }
     
     /** Updates the RGB color values of a vertex (alpha is not changed). */
-    public function setColor(vertexID:int, color:uint):void
+    public function setColor(vertexID:Int, color:UInt):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
-        var multiplier:Number = mPremultipliedAlpha ? mRawData[int(offset+3)] : 1.0;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
+        var multiplier:Float = mPremultipliedAlpha ? mRawData[Int(offset+3)] : 1.0;
         mRawData[offset]        = ((color >> 16) & 0xff) / 255.0 * multiplier;
-        mRawData[int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
-        mRawData[int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
+        mRawData[Int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
+        mRawData[Int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
     }
     
     /** Returns the RGB color of a vertex (no alpha). */
-    public function getColor(vertexID:int):uint
+    public function getColor(vertexID:Int):UInt
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
-        var divisor:Number = mPremultipliedAlpha ? mRawData[int(offset+3)] : 1.0;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
+        var divisor:Float = mPremultipliedAlpha ? mRawData[Int(offset+3)] : 1.0;
         
         if (divisor == 0) return 0;
         else
         {
-            var red:Number   = mRawData[offset]        / divisor;
-            var green:Number = mRawData[int(offset+1)] / divisor;
-            var blue:Number  = mRawData[int(offset+2)] / divisor;
+            var red:Float   = mRawData[offset]        / divisor;
+            var green:Float = mRawData[Int(offset+1)] / divisor;
+            var blue:Float  = mRawData[Int(offset+2)] / divisor;
             
-            return (int(red*255) << 16) | (int(green*255) << 8) | int(blue*255);
+            return (Int(red*255) << 16) | (Int(green*255) << 8) | Int(blue*255);
         }
     }
     
     /** Updates the alpha value of a vertex (range 0-1). */
-    public function setAlpha(vertexID:int, alpha:Number):void
+    public function setAlpha(vertexID:Int, alpha:Float):Void
     {
         if (mPremultipliedAlpha)
             setColorAndAlpha(vertexID, getColor(vertexID), alpha);
         else
-            mRawData[int(vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3)] = alpha;
+            mRawData[Int(vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3)] = alpha;
     }
     
     /** Returns the alpha value of a vertex in the range 0-1. */
-    public function getAlpha(vertexID:int):Number
+    public function getAlpha(vertexID:Int):Float
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         return mRawData[offset];
     }
     
     /** Updates the texture coordinates of a vertex (range 0-1). */
-    public function setTexCoords(vertexID:int, u:Number, v:Number):void
+    public function setTexCoords(vertexID:Int, u:Float, v:Float):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
         mRawData[offset]        = u;
-        mRawData[int(offset+1)] = v;
+        mRawData[Int(offset+1)] = v;
     }
     
     /** Returns the texture coordinates of a vertex in the range 0-1. */
-    public function getTexCoords(vertexID:int, texCoords:Point):void
+    public function getTexCoords(vertexID:Int, texCoords:Point):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
         texCoords.x = mRawData[offset];
-        texCoords.y = mRawData[int(offset+1)];
+        texCoords.y = mRawData[Int(offset+1)];
     }
     
     // utility functions
     
     /** Translate the position of a vertex by a certain offset. */
-    public function translateVertex(vertexID:int, deltaX:Number, deltaY:Number):void
+    public function translateVertex(vertexID:Int, deltaX:Float, deltaY:Float):Void
     {
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         mRawData[offset]        += deltaX;
-        mRawData[int(offset+1)] += deltaY;
+        mRawData[Int(offset+1)] += deltaY;
     }
 
     /** Transforms the position of subsequent vertices by multiplication with a 
      *  transformation matrix. */
-    public function transformVertex(vertexID:int, matrix:Matrix, numVertices:int=1):void
+    public function transformVertex(vertexID:Int, matrix:Matrix, numVertices:Int=1):Void
     {
-        var x:Number, y:Number;
-        var offset:int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+        var x:Float, y:Float;
+        var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         
-        for (var i:int=0; i<numVertices; ++i)
+        for (var i:Int=0; i<numVertices; ++i)
         {
             x = mRawData[offset];
-            y = mRawData[int(offset+1)];
+            y = mRawData[Int(offset+1)];
             
             mRawData[offset]        = matrix.a * x + matrix.c * y + matrix.tx;
-            mRawData[int(offset+1)] = matrix.d * y + matrix.b * x + matrix.ty;
+            mRawData[Int(offset+1)] = matrix.d * y + matrix.b * x + matrix.ty;
             
             offset += ELEMENTS_PER_VERTEX;
         }
     }
     
     /** Sets all vertices of the object to the same color values. */
-    public function setUniformColor(color:uint):void
+    public function setUniformColor(color:UInt):Void
     {
-        for (var i:int=0; i<mNumVertices; ++i)
+        for (var i:Int=0; i<mNumVertices; ++i)
             setColor(i, color);
     }
     
     /** Sets all vertices of the object to the same alpha values. */
-    public function setUniformAlpha(alpha:Number):void
+    public function setUniformAlpha(alpha:Float):Void
     {
-        for (var i:int=0; i<mNumVertices; ++i)
+        for (var i:Int=0; i<mNumVertices; ++i)
             setAlpha(i, alpha);
     }
     
     /** Multiplies the alpha value of subsequent vertices with a certain factor. */
-    public function scaleAlpha(vertexID:int, factor:Number, numVertices:int=1):void
+    public function scaleAlpha(vertexID:Int, factor:Float, numVertices:Int=1):Void
     {
         if (factor == 1.0) return;
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
             numVertices = mNumVertices - vertexID;
          
-        var i:int;
+        var i:Int;
         
         if (mPremultipliedAlpha)
         {
@@ -299,9 +299,9 @@ public class VertexData
         }
         else
         {
-            var offset:int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
+            var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
             for (i=0; i<numVertices; ++i)
-                mRawData[int(offset + i*ELEMENTS_PER_VERTEX)] *= factor;
+                mRawData[Int(offset + i*ELEMENTS_PER_VERTEX)] *= factor;
         }
     }
     
@@ -310,7 +310,7 @@ public class VertexData
      *  instead of creating a new object. To use all vertices for the calculation, set
      *  'numVertices' to '-1'. */
     public function getBounds(transformationMatrix:Matrix=null, 
-                              vertexID:int=0, numVertices:int=-1,
+                              vertexID:Int=0, numVertices:Int=-1,
                               resultRect:Rectangle=null):Rectangle
     {
         if (resultRect == null) resultRect = new Rectangle();
@@ -329,17 +329,17 @@ public class VertexData
         }
         else
         {
-            var minX:Number = Number.MAX_VALUE, maxX:Number = -Number.MAX_VALUE;
-            var minY:Number = Number.MAX_VALUE, maxY:Number = -Number.MAX_VALUE;
-            var offset:int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
-            var x:Number, y:Number, i:int;
+            var minX:Float = Float.MAX_VALUE, maxX:Float = -Float.MAX_VALUE;
+            var minY:Float = Float.MAX_VALUE, maxY:Float = -Float.MAX_VALUE;
+            var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+            var x:Float, y:Float, i:Int;
             
             if (transformationMatrix == null)
             {
                 for (i=0; i<numVertices; ++i)
                 {
                     x = mRawData[offset];
-                    y = mRawData[int(offset+1)];
+                    y = mRawData[Int(offset+1)];
                     offset += ELEMENTS_PER_VERTEX;
                     
                     if (minX > x) minX = x;
@@ -353,7 +353,7 @@ public class VertexData
                 for (i=0; i<numVertices; ++i)
                 {
                     x = mRawData[offset];
-                    y = mRawData[int(offset+1)];
+                    y = mRawData[Int(offset+1)];
                     offset += ELEMENTS_PER_VERTEX;
                     
                     MatrixUtil.transformCoords(transformationMatrix, x, y, sHelperPoint);
@@ -377,9 +377,9 @@ public class VertexData
         var result:String = "[VertexData \n";
         var position:Point = new Point();
         var texCoords:Point = new Point();
-        var color:uint;
+        var color:UInt;
         
-        for (var i:int=0; i<numVertices; ++i)
+        for (var i:Int=0; i<numVertices; ++i)
         {
             getPosition(i, position);
             getTexCoords(i, texCoords);
@@ -400,14 +400,14 @@ public class VertexData
     // properties
     
     /** Indicates if any vertices have a non-white color or are not fully opaque. */
-    public function get tinted():Boolean
+    public function get tinted():Bool
     {
-        var offset:int = COLOR_OFFSET;
+        var offset:Int = COLOR_OFFSET;
         
-        for (var i:int=0; i<mNumVertices; ++i)
+        for (var i:Int=0; i<mNumVertices; ++i)
         {
-            for (var j:int=0; j<4; ++j)
-                if (mRawData[int(offset+j)] != 1.0) return true;
+            for (var j:Int=0; j<4; ++j)
+                if (mRawData[Int(offset+j)] != 1.0) return true;
 
             offset += ELEMENTS_PER_VERTEX;
         }
@@ -417,25 +417,25 @@ public class VertexData
     
     /** Changes the way alpha and color values are stored. Optionally updates all exisiting 
      *  vertices. */
-    public function setPremultipliedAlpha(value:Boolean, updateData:Boolean=true):void
+    public function setPremultipliedAlpha(value:Bool, updateData:Bool=true):Void
     {
         if (value == mPremultipliedAlpha) return;
         
         if (updateData)
         {
-            var dataLength:int = mNumVertices * ELEMENTS_PER_VERTEX;
+            var dataLength:Int = mNumVertices * ELEMENTS_PER_VERTEX;
             
-            for (var i:int=COLOR_OFFSET; i<dataLength; i += ELEMENTS_PER_VERTEX)
+            for (var i:Int=COLOR_OFFSET; i<dataLength; i += ELEMENTS_PER_VERTEX)
             {
-                var alpha:Number = mRawData[int(i+3)];
-                var divisor:Number = mPremultipliedAlpha ? alpha : 1.0;
-                var multiplier:Number = value ? alpha : 1.0;
+                var alpha:Float = mRawData[Int(i+3)];
+                var divisor:Float = mPremultipliedAlpha ? alpha : 1.0;
+                var multiplier:Float = value ? alpha : 1.0;
                 
                 if (divisor != 0)
                 {
                     mRawData[i]        = mRawData[i]        / divisor * multiplier;
-                    mRawData[int(i+1)] = mRawData[int(i+1)] / divisor * multiplier;
-                    mRawData[int(i+2)] = mRawData[int(i+2)] / divisor * multiplier;
+                    mRawData[Int(i+1)] = mRawData[Int(i+1)] / divisor * multiplier;
+                    mRawData[Int(i+2)] = mRawData[Int(i+2)] / divisor * multiplier;
                 }
             }
         }
@@ -446,23 +446,23 @@ public class VertexData
    /** Indicates if the rgb values are stored premultiplied with the alpha value.
     *  If you change this value, the color data is updated accordingly. If you don't want
     *  that, use the 'setPremultipliedAlpha' method instead. */
-    public function get premultipliedAlpha():Boolean { return mPremultipliedAlpha; }
-    public function set premultipliedAlpha(value:Boolean):void
+    public function get premultipliedAlpha():Bool { return mPremultipliedAlpha; }
+    public function set premultipliedAlpha(value:Bool):Void
     {
         setPremultipliedAlpha(value);
     }
     
     /** The total number of vertices. */
-    public function get numVertices():int { return mNumVertices; }
-    public function set numVertices(value:int):void
+    public function get numVertices():Int { return mNumVertices; }
+    public function set numVertices(value:Int):Void
     {
         mRawData.fixed = false;
         mRawData.length = value * ELEMENTS_PER_VERTEX;
         
-        var startIndex:int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
-        var endIndex:int = mRawData.length;
+        var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
+        var endIndex:Int = mRawData.length;
         
-        for (var i:int=startIndex; i<endIndex; i += ELEMENTS_PER_VERTEX)
+        for (var i:Int=startIndex; i<endIndex; i += ELEMENTS_PER_VERTEX)
             mRawData[i] = 1.0; // alpha should be '1' per default
         
         mNumVertices = value;
@@ -470,6 +470,6 @@ public class VertexData
     }
     
     /** The raw vertex data; not a copy! */
-    public function get rawData():Vector.<Number> { return mRawData; }
+    public function get rawData():Vector.<Float> { return mRawData; }
 }
 }

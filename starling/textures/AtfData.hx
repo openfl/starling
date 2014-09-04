@@ -17,9 +17,9 @@ import flash.utils.ByteArray;
 public class AtfData
 {
     private var mFormat:String;
-    private var mWidth:int;
-    private var mHeight:int;
-    private var mNumTextures:int;
+    private var mWidth:Int;
+    private var mHeight:Int;
+    private var mNumTextures:Int;
     private var mData:ByteArray;
     
     /** Create a new instance by parsing the given byte array. */
@@ -52,13 +52,13 @@ public class AtfData
         
         if (data[5] != 0 && data[6] == 255)
         {
-            var emptyMipmaps:Boolean = (data[5] & 0x01) == 1;
-            var numTextures:int  = data[5] >> 1 & 0x7f;
+            var emptyMipmaps:Bool = (data[5] & 0x01) == 1;
+            var numTextures:Int  = data[5] >> 1 & 0x7f;
             mNumTextures = emptyMipmaps ? 1 : numTextures;
         }
     }
     
-    public static function isAtfData(data:ByteArray):Boolean
+    public static function isAtfData(data:ByteArray):Bool
     {
         if (data.length < 3) return false;
         else
@@ -69,9 +69,9 @@ public class AtfData
     }
     
     public function get format():String { return mFormat; }
-    public function get width():int { return mWidth; }
-    public function get height():int { return mHeight; }
-    public function get numTextures():int { return mNumTextures; }
+    public function get width():Int { return mWidth; }
+    public function get height():Int { return mHeight; }
+    public function get numTextures():Int { return mNumTextures; }
     public function get data():ByteArray { return mData; }
 }
 }

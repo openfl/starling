@@ -82,13 +82,13 @@ public class Event
     private var mTarget:EventDispatcher;
     private var mCurrentTarget:EventDispatcher;
     private var mType:String;
-    private var mBubbles:Boolean;
-    private var mStopsPropagation:Boolean;
-    private var mStopsImmediatePropagation:Boolean;
+    private var mBubbles:Bool;
+    private var mStopsPropagation:Bool;
+    private var mStopsImmediatePropagation:Bool;
     private var mData:Object;
     
     /** Creates an event object that can be passed to listeners. */
-    public function Event(type:String, bubbles:Boolean=false, data:Object=null)
+    public function Event(type:String, bubbles:Bool=false, data:Object=null)
     {
         mType = type;
         mBubbles = bubbles;
@@ -96,13 +96,13 @@ public class Event
     }
     
     /** Prevents listeners at the next bubble stage from receiving the event. */
-    public function stopPropagation():void
+    public function stopPropagation():Void
     {
         mStopsPropagation = true;            
     }
     
     /** Prevents any other listeners from receiving the event. */
-    public function stopImmediatePropagation():void
+    public function stopImmediatePropagation():Void
     {
         mStopsPropagation = mStopsImmediatePropagation = true;
     }
@@ -115,7 +115,7 @@ public class Event
     }
     
     /** Indicates if event will bubble. */
-    public function get bubbles():Boolean { return mBubbles; }
+    public function get bubbles():Bool { return mBubbles; }
     
     /** The object that dispatched the event. */
     public function get target():EventDispatcher { return mTarget; }
@@ -132,38 +132,38 @@ public class Event
     // properties for internal use
     
     /** @private */
-    internal function setTarget(value:EventDispatcher):void { mTarget = value; }
+    internal function setTarget(value:EventDispatcher):Void { mTarget = value; }
     
     /** @private */
-    internal function setCurrentTarget(value:EventDispatcher):void { mCurrentTarget = value; } 
+    internal function setCurrentTarget(value:EventDispatcher):Void { mCurrentTarget = value; } 
     
     /** @private */
-    internal function setData(value:Object):void { mData = value; }
+    internal function setData(value:Object):Void { mData = value; }
     
     /** @private */
-    internal function get stopsPropagation():Boolean { return mStopsPropagation; }
+    internal function get stopsPropagation():Bool { return mStopsPropagation; }
     
     /** @private */
-    internal function get stopsImmediatePropagation():Boolean { return mStopsImmediatePropagation; }
+    internal function get stopsImmediatePropagation():Bool { return mStopsImmediatePropagation; }
     
     // event pooling
     
     /** @private */
-    starling_internal static function fromPool(type:String, bubbles:Boolean=false, data:Object=null):Event
+    starling_internal static function fromPool(type:String, bubbles:Bool=false, data:Object=null):Event
     {
         if (sEventPool.length) return sEventPool.pop().reset(type, bubbles, data);
         else return new Event(type, bubbles, data);
     }
     
     /** @private */
-    starling_internal static function toPool(event:Event):void
+    starling_internal static function toPool(event:Event):Void
     {
         event.mData = event.mTarget = event.mCurrentTarget = null;
         sEventPool[sEventPool.length] = event; // avoiding 'push'
     }
     
     /** @private */
-    starling_internal function reset(type:String, bubbles:Boolean=false, data:Object=null):Event
+    starling_internal function reset(type:String, bubbles:Bool=false, data:Object=null):Event
     {
         mType = type;
         mBubbles = bubbles;

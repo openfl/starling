@@ -26,17 +26,17 @@ import starling.utils.VAlign;
  *  the number of draw calls per frame. The display is updated automatically once per frame. */
 internal class StatsDisplay extends Sprite
 {
-    private const UPDATE_INTERVAL:Number = 0.5;
+    private const UPDATE_INTERVAL:Float = 0.5;
     
     private var mBackground:Quad;
     private var mTextField:TextField;
     
-    private var mFrameCount:int = 0;
-    private var mTotalTime:Number = 0;
+    private var mFrameCount:Int = 0;
+    private var mTotalTime:Float = 0;
     
-    private var mFps:Number = 0;
-    private var mMemory:Number = 0;
-    private var mDrawCount:int = 0;
+    private var mFps:Float = 0;
+    private var mMemory:Float = 0;
+    private var mDrawCount:Int = 0;
     
     /** Creates a new Statistics Box. */
     public function StatsDisplay()
@@ -56,19 +56,19 @@ internal class StatsDisplay extends Sprite
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
     
-    private function onAddedToStage():void
+    private function onAddedToStage():Void
     {
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
         mTotalTime = mFrameCount = 0;
         update();
     }
     
-    private function onRemovedFromStage():void
+    private function onRemovedFromStage():Void
     {
         removeEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
     
-    private function onEnterFrame(event:EnterFrameEvent):void
+    private function onEnterFrame(event:EnterFrameEvent):Void
     {
         mTotalTime += event.passedTime;
         mFrameCount++;
@@ -81,7 +81,7 @@ internal class StatsDisplay extends Sprite
     }
     
     /** Updates the displayed values. */
-    public function update():void
+    public function update():Void
     {
         mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
         mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
@@ -91,7 +91,7 @@ internal class StatsDisplay extends Sprite
                         "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
     }
     
-    public override function render(support:RenderSupport, parentAlpha:Number):void
+    public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
         // The display should always be rendered with two draw calls, so that we can
         // always reduce the draw count by that number to get the number produced by the 
@@ -102,15 +102,15 @@ internal class StatsDisplay extends Sprite
     }
     
     /** The number of Stage3D draw calls per second. */
-    public function get drawCount():int { return mDrawCount; }
-    public function set drawCount(value:int):void { mDrawCount = value; }
+    public function get drawCount():Int { return mDrawCount; }
+    public function set drawCount(value:Int):Void { mDrawCount = value; }
     
     /** The current frames per second (updated twice per second). */
-    public function get fps():Number { return mFps; }
-    public function set fps(value:Number):void { mFps = value; }
+    public function get fps():Float { return mFps; }
+    public function set fps(value:Float):Void { mFps = value; }
     
     /** The currently required system memory in MB. */
-    public function get memory():Number { return mMemory; }
-    public function set memory(value:Number):void { mMemory = value; }
+    public function get memory():Float { return mMemory; }
+    public function set memory(value:Float):Void { mMemory = value; }
 }
 }

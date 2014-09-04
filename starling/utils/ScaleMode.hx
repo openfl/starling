@@ -22,7 +22,7 @@ public class ScaleMode
     public static const SHOW_ALL:String = "showAll";
     
     /** Indicates whether the given scale mode string is valid. */
-    public static function isValid(scaleMode:String):Boolean
+    public static function isValid(scaleMode:String):Bool
     {
         return scaleMode == NONE || scaleMode == NO_BORDER || scaleMode == SHOW_ALL;
     }

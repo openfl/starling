@@ -22,15 +22,15 @@ import starling.textures.Texture;
 public class BitmapChar
 {
     private var mTexture:Texture;
-    private var mCharID:int;
-    private var mXOffset:Number;
-    private var mYOffset:Number;
-    private var mXAdvance:Number;
+    private var mCharID:Int;
+    private var mXOffset:Float;
+    private var mYOffset:Float;
+    private var mXAdvance:Float;
     private var mKernings:Dictionary;
     
     /** Creates a char with a texture and its properties. */
-    public function BitmapChar(id:int, texture:Texture, 
-                               xOffset:Number, yOffset:Number, xAdvance:Number)
+    public function BitmapChar(id:Int, texture:Texture, 
+                               xOffset:Float, yOffset:Float, xAdvance:Float)
     {
         mCharID = id;
         mTexture = texture;
@@ -41,7 +41,7 @@ public class BitmapChar
     }
     
     /** Adds kerning information relative to a specific other character ID. */
-    public function addKerning(charID:int, amount:Number):void
+    public function addKerning(charID:Int, amount:Float):Void
     {
         if (mKernings == null)
             mKernings = new Dictionary();
@@ -50,7 +50,7 @@ public class BitmapChar
     }
     
     /** Retrieve kerning information relative to the given character ID. */
-    public function getKerning(charID:int):Number
+    public function getKerning(charID:Int):Float
     {
         if (mKernings == null || mKernings[charID] == undefined) return 0.0;
         else return mKernings[charID];
@@ -63,24 +63,24 @@ public class BitmapChar
     }
     
     /** The unicode ID of the char. */
-    public function get charID():int { return mCharID; }
+    public function get charID():Int { return mCharID; }
     
     /** The number of points to move the char in x direction on character arrangement. */
-    public function get xOffset():Number { return mXOffset; }
+    public function get xOffset():Float { return mXOffset; }
     
     /** The number of points to move the char in y direction on character arrangement. */
-    public function get yOffset():Number { return mYOffset; }
+    public function get yOffset():Float { return mYOffset; }
     
     /** The number of points the cursor has to be moved to the right for the next char. */
-    public function get xAdvance():Number { return mXAdvance; }
+    public function get xAdvance():Float { return mXAdvance; }
     
     /** The texture of the character. */
     public function get texture():Texture { return mTexture; }
     
     /** The width of the character in points. */
-    public function get width():Number { return mTexture.width; }
+    public function get width():Float { return mTexture.width; }
     
     /** The height of the character in points. */
-    public function get height():Number { return mTexture.height; }
+    public function get height():Float { return mTexture.height; }
 }
 }

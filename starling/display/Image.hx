@@ -42,7 +42,7 @@ public class Image extends Quad
     private var mSmoothing:String;
     
     private var mVertexDataCache:VertexData;
-    private var mVertexDataCacheInvalid:Boolean;
+    private var mVertexDataCacheInvalid:Bool;
     
     /** Creates a quad with a texture mapped onto it. */
     public function Image(texture:Texture)
@@ -50,9 +50,9 @@ public class Image extends Quad
         if (texture)
         {
             var frame:Rectangle = texture.frame;
-            var width:Number  = frame ? frame.width  : texture.width;
-            var height:Number = frame ? frame.height : texture.height;
-            var pma:Boolean = texture.premultipliedAlpha;
+            var width:Float  = frame ? frame.width  : texture.width;
+            var height:Float = frame ? frame.height : texture.height;
+            var pma:Bool = texture.premultipliedAlpha;
             
             super(width, height, 0xffffff, pma);
             
@@ -73,25 +73,25 @@ public class Image extends Quad
     }
     
     /** Creates an Image with a texture that is created from a bitmap object. */
-    public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Boolean=true, 
-                                      scale:Number=1):Image
+    public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=true, 
+                                      scale:Float=1):Image
     {
         return new Image(Texture.fromBitmap(bitmap, generateMipMaps, false, scale));
     }
     
     /** @inheritDoc */
-    protected override function onVertexDataChanged():void
+    protected override function onVertexDataChanged():Void
     {
         mVertexDataCacheInvalid = true;
     }
     
     /** Readjusts the dimensions of the image according to its current texture. Call this method 
      *  to synchronize image and texture size after assigning a texture with a different size.*/
-    public function readjustSize():void
+    public function readjustSize():Void
     {
         var frame:Rectangle = texture.frame;
-        var width:Number  = frame ? frame.width  : texture.width;
-        var height:Number = frame ? frame.height : texture.height;
+        var width:Float  = frame ? frame.width  : texture.width;
+        var height:Float = frame ? frame.height : texture.height;
         
         mVertexData.setPosition(0, 0.0, 0.0);
         mVertexData.setPosition(1, width, 0.0);
@@ -102,14 +102,14 @@ public class Image extends Quad
     }
     
     /** Sets the texture coordinates of a vertex. Coordinates are in the range [0, 1]. */
-    public function setTexCoords(vertexID:int, coords:Point):void
+    public function setTexCoords(vertexID:Int, coords:Point):Void
     {
         mVertexData.setTexCoords(vertexID, coords.x, coords.y);
         onVertexDataChanged();
     }
     
     /** Sets the texture coordinates of a vertex. Coordinates are in the range [0, 1]. */
-    public function setTexCoordsTo(vertexID:int, u:Number, v:Number):void
+    public function setTexCoordsTo(vertexID:Int, u:Float, v:Float):Void
     {
         mVertexData.setTexCoords(vertexID, u, v);
         onVertexDataChanged();
@@ -118,7 +118,7 @@ public class Image extends Quad
     /** Gets the texture coordinates of a vertex. Coordinates are in the range [0, 1]. 
      *  If you pass a 'resultPoint', the result will be stored in this point instead of 
      *  creating a new object.*/
-    public function getTexCoords(vertexID:int, resultPoint:Point=null):Point
+    public function getTexCoords(vertexID:Int, resultPoint:Point=null):Point
     {
         if (resultPoint == null) resultPoint = new Point();
         mVertexData.getTexCoords(vertexID, resultPoint);
@@ -127,7 +127,7 @@ public class Image extends Quad
     
     /** Copies the raw vertex data to a VertexData instance.
      *  The texture coordinates are already in the format required for rendering. */ 
-    public override function copyVertexDataTo(targetData:VertexData, targetVertexID:int=0):void
+    public override function copyVertexDataTo(targetData:VertexData, targetVertexID:Int=0):Void
     {
         copyVertexDataTransformedTo(targetData, targetVertexID, null);
     }
@@ -136,8 +136,8 @@ public class Image extends Quad
      *  and copies the result to another VertexData instance.
      *  The texture coordinates are already in the format required for rendering. */
     public override function copyVertexDataTransformedTo(targetData:VertexData,
-                                                         targetVertexID:int=0,
-                                                         matrix:Matrix=null):void
+                                                         targetVertexID:Int=0,
+                                                         matrix:Matrix=null):Void
     {
         if (mVertexDataCacheInvalid)
         {
@@ -151,7 +151,7 @@ public class Image extends Quad
     
     /** The texture that is displayed on the quad. */
     public function get texture():Texture { return mTexture; }
-    public function set texture(value:Texture):void 
+    public function set texture(value:Texture):Void 
     { 
         if (value == null)
         {
@@ -170,7 +170,7 @@ public class Image extends Quad
     *   @default bilinear
     *   @see starling.textures.TextureSmoothing */ 
     public function get smoothing():String { return mSmoothing; }
-    public function set smoothing(value:String):void 
+    public function set smoothing(value:String):Void 
     {
         if (TextureSmoothing.isValid(value))
             mSmoothing = value;
@@ -179,7 +179,7 @@ public class Image extends Quad
     }
     
     /** @inheritDoc */
-    public override function render(support:RenderSupport, parentAlpha:Number):void
+    public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
         support.batchQuad(this, parentAlpha, mTexture, mSmoothing);
     }

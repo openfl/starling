@@ -58,17 +58,17 @@ public class TouchEvent extends Event
     /** Event type for touch or mouse input. */
     public static const TOUCH:String = "touch";
     
-    private var mShiftKey:Boolean;
-    private var mCtrlKey:Boolean;
-    private var mTimestamp:Number;
+    private var mShiftKey:Bool;
+    private var mCtrlKey:Bool;
+    private var mTimestamp:Float;
     private var mVisitedObjects:Vector.<EventDispatcher>;
     
     /** Helper object. */
     private static var sTouches:Vector.<Touch> = new <Touch>[];
     
     /** Creates a new TouchEvent instance. */
-    public function TouchEvent(type:String, touches:Vector.<Touch>, shiftKey:Boolean=false, 
-                               ctrlKey:Boolean=false, bubbles:Boolean=true)
+    public function TouchEvent(type:String, touches:Vector.<Touch>, shiftKey:Bool=false, 
+                               ctrlKey:Bool=false, bubbles:Bool=true)
     {
         super(type, bubbles, touches);
         
@@ -77,8 +77,8 @@ public class TouchEvent extends Event
         mTimestamp = -1.0;
         mVisitedObjects = new <EventDispatcher>[];
         
-        var numTouches:int=touches.length;
-        for (var i:int=0; i<numTouches; ++i)
+        var numTouches:Int=touches.length;
+        for (var i:Int=0; i<numTouches; ++i)
             if (touches[i].timestamp > mTimestamp)
                 mTimestamp = touches[i].timestamp;
     }
@@ -91,13 +91,13 @@ public class TouchEvent extends Event
     {
         if (result == null) result = new <Touch>[];
         var allTouches:Vector.<Touch> = data as Vector.<Touch>;
-        var numTouches:int = allTouches.length;
+        var numTouches:Int = allTouches.length;
         
-        for (var i:int=0; i<numTouches; ++i)
+        for (var i:Int=0; i<numTouches; ++i)
         {
             var touch:Touch = allTouches[i];
-            var correctTarget:Boolean = touch.isTouching(target);
-            var correctPhase:Boolean = (phase == null || phase == touch.phase);
+            var correctTarget:Bool = touch.isTouching(target);
+            var correctPhase:Bool = (phase == null || phase == touch.phase);
                 
             if (correctTarget && correctPhase)
                 result[result.length] = touch; // avoiding 'push'
@@ -112,10 +112,10 @@ public class TouchEvent extends Event
      *  @param phase    The phase the touch must be in, or null if you don't care.
      *  @param id       The ID of the requested touch, or -1 if you don't care.
      */
-    public function getTouch(target:DisplayObject, phase:String=null, id:int=-1):Touch
+    public function getTouch(target:DisplayObject, phase:String=null, id:Int=-1):Touch
     {
         getTouches(target, phase, sTouches);
-        var numTouches:int = sTouches.length;
+        var numTouches:Int = sTouches.length;
         
         if (numTouches > 0) 
         {
@@ -124,7 +124,7 @@ public class TouchEvent extends Event
             if (id < 0) touch = sTouches[0];
             else
             {
-                for (var i:int=0; i<numTouches; ++i)
+                for (var i:Int=0; i<numTouches; ++i)
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
@@ -135,12 +135,12 @@ public class TouchEvent extends Event
     }
     
     /** Indicates if a target is currently being touched or hovered over. */
-    public function interactsWith(target:DisplayObject):Boolean
+    public function interactsWith(target:DisplayObject):Bool
     {
-        var result:Boolean = false;
+        var result:Bool = false;
         getTouches(target, null, sTouches);
         
-        for (var i:int=sTouches.length-1; i>=0; --i)
+        for (var i:Int=sTouches.length-1; i>=0; --i)
         {
             if (sTouches[i].phase != TouchPhase.ENDED)
             {
@@ -158,20 +158,20 @@ public class TouchEvent extends Event
     /** @private
      *  Dispatches the event along a custom bubble chain. During the lifetime of the event,
      *  each object is visited only once. */
-    internal function dispatch(chain:Vector.<EventDispatcher>):void
+    internal function dispatch(chain:Vector.<EventDispatcher>):Void
     {
         if (chain && chain.length)
         {
-            var chainLength:int = bubbles ? chain.length : 1;
+            var chainLength:Int = bubbles ? chain.length : 1;
             var previousTarget:EventDispatcher = target;
             setTarget(chain[0] as EventDispatcher);
             
-            for (var i:int=0; i<chainLength; ++i)
+            for (var i:Int=0; i<chainLength; ++i)
             {
                 var chainElement:EventDispatcher = chain[i] as EventDispatcher;
                 if (mVisitedObjects.indexOf(chainElement) == -1)
                 {
-                    var stopPropagation:Boolean = chainElement.invokeEvent(this);
+                    var stopPropagation:Bool = chainElement.invokeEvent(this);
                     mVisitedObjects[mVisitedObjects.length] = chainElement;
                     if (stopPropagation) break;
                 }
@@ -184,15 +184,15 @@ public class TouchEvent extends Event
     // properties
     
     /** The time the event occurred (in seconds since application launch). */
-    public function get timestamp():Number { return mTimestamp; }
+    public function get timestamp():Float { return mTimestamp; }
     
     /** All touches that are currently available. */
     public function get touches():Vector.<Touch> { return (data as Vector.<Touch>).concat(); }
     
     /** Indicates if the shift key was pressed when the event occurred. */
-    public function get shiftKey():Boolean { return mShiftKey; }
+    public function get shiftKey():Bool { return mShiftKey; }
     
     /** Indicates if the ctrl key was pressed when the event occurred. (Mac OS: Cmd or Ctrl) */
-    public function get ctrlKey():Boolean { return mCtrlKey; }
+    public function get ctrlKey():Bool { return mCtrlKey; }
 }
 }

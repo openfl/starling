@@ -27,11 +27,11 @@ import starling.utils.VertexData;
 public class SubTexture extends Texture
 {
     private var mParent:Texture;
-    private var mOwnsParent:Boolean;
+    private var mOwnsParent:Bool;
     private var mFrame:Rectangle;
-    private var mRotated:Boolean;
-    private var mWidth:Number;
-    private var mHeight:Number;
+    private var mRotated:Bool;
+    private var mWidth:Float;
+    private var mHeight:Float;
     private var mTransformationMatrix:Matrix;
     
     /** Helper object. */
@@ -51,8 +51,8 @@ public class SubTexture extends Texture
      *                  90 degrees (CCW).
      */
     public function SubTexture(parentTexture:Texture, region:Rectangle,
-                               ownsParent:Boolean=false, frame:Rectangle=null,
-                               rotated:Boolean=false)
+                               ownsParent:Bool=false, frame:Rectangle=null,
+                               rotated:Bool=false)
     {
         // TODO: in a future version, the order of arguments of this constructor should
         //       be fixed ('ownsParent' at the very end).
@@ -81,17 +81,17 @@ public class SubTexture extends Texture
     }
     
     /** Disposes the parent texture if this texture owns it. */
-    public override function dispose():void
+    public override function dispose():Void
     {
         if (mOwnsParent) mParent.dispose();
         super.dispose();
     }
     
     /** @inheritDoc */
-    public override function adjustVertexData(vertexData:VertexData, vertexID:int, count:int):void
+    public override function adjustVertexData(vertexData:VertexData, vertexID:Int, count:Int):Void
     {
-        var startIndex:int = vertexID * VertexData.ELEMENTS_PER_VERTEX + VertexData.TEXCOORD_OFFSET;
-        var stride:int = VertexData.ELEMENTS_PER_VERTEX - 2;
+        var startIndex:Int = vertexID * VertexData.ELEMENTS_PER_VERTEX + VertexData.TEXCOORD_OFFSET;
+        var stride:Int = VertexData.ELEMENTS_PER_VERTEX - 2;
         
         adjustTexCoords(vertexData.rawData, startIndex, stride, count);
         
@@ -100,8 +100,8 @@ public class SubTexture extends Texture
             if (count != 4)
                 throw new ArgumentError("Textures with a frame can only be used on quads");
             
-            var deltaRight:Number  = mFrame.width  + mFrame.x - mWidth;
-            var deltaBottom:Number = mFrame.height + mFrame.y - mHeight;
+            var deltaRight:Float  = mFrame.width  + mFrame.x - mWidth;
+            var deltaBottom:Float = mFrame.height + mFrame.y - mHeight;
             
             vertexData.translateVertex(vertexID,     -mFrame.x, -mFrame.y);
             vertexData.translateVertex(vertexID + 1, -deltaRight, -mFrame.y);
@@ -111,15 +111,15 @@ public class SubTexture extends Texture
     }
 
     /** @inheritDoc */
-    public override function adjustTexCoords(texCoords:Vector.<Number>,
-                                             startIndex:int=0, stride:int=0, count:int=-1):void
+    public override function adjustTexCoords(texCoords:Vector.<Float>,
+                                             startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         if (count < 0)
             count = (texCoords.length - startIndex - 2) / (stride + 2) + 1;
 
-        var endIndex:int = startIndex + count * (2 + stride);
+        var endIndex:Int = startIndex + count * (2 + stride);
         var texture:SubTexture = this;
-        var u:Number, v:Number;
+        var u:Float, v:Float;
         
         sMatrix.identity();
         
@@ -129,15 +129,15 @@ public class SubTexture extends Texture
             texture = texture.parent as SubTexture;
         }
         
-        for (var i:int=startIndex; i<endIndex; i += 2 + stride)
+        for (var i:Int=startIndex; i<endIndex; i += 2 + stride)
         {
             u = texCoords[    i   ];
-            v = texCoords[int(i+1)];
+            v = texCoords[Int(i+1)];
             
             MatrixUtil.transformCoords(sMatrix, u, v, sTexCoords);
             
             texCoords[    i   ] = sTexCoords.x;
-            texCoords[int(i+1)] = sTexCoords.y
+            texCoords[Int(i+1)] = sTexCoords.y
         }
     }
     
@@ -145,10 +145,10 @@ public class SubTexture extends Texture
     public function get parent():Texture { return mParent; }
     
     /** Indicates if the parent texture is disposed when this object is disposed. */
-    public function get ownsParent():Boolean { return mOwnsParent; }
+    public function get ownsParent():Bool { return mOwnsParent; }
     
     /** If true, the SubTexture will show the parent region rotated by 90 degrees (CCW). */
-    public function get rotated():Boolean { return mRotated; }
+    public function get rotated():Bool { return mRotated; }
 
     /** The clipping rectangle, which is the region provided on initialization 
      *  scaled into [0.0, 1.0]. */
@@ -183,28 +183,28 @@ public class SubTexture extends Texture
     public override function get format():String { return mParent.format; }
     
     /** @inheritDoc */
-    public override function get width():Number { return mWidth; }
+    public override function get width():Float { return mWidth; }
     
     /** @inheritDoc */
-    public override function get height():Number { return mHeight; }
+    public override function get height():Float { return mHeight; }
     
     /** @inheritDoc */
-    public override function get nativeWidth():Number { return mWidth * scale }
+    public override function get nativeWidth():Float { return mWidth * scale }
     
     /** @inheritDoc */
-    public override function get nativeHeight():Number { return mHeight * scale; }
+    public override function get nativeHeight():Float { return mHeight * scale; }
     
     /** @inheritDoc */
-    public override function get mipMapping():Boolean { return mParent.mipMapping; }
+    public override function get mipMapping():Bool { return mParent.mipMapping; }
     
     /** @inheritDoc */
-    public override function get premultipliedAlpha():Boolean { return mParent.premultipliedAlpha; }
+    public override function get premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
     
     /** @inheritDoc */
-    public override function get scale():Number { return mParent.scale; }
+    public override function get scale():Float { return mParent.scale; }
     
     /** @inheritDoc */
-    public override function get repeat():Boolean { return mParent.repeat; }
+    public override function get repeat():Bool { return mParent.repeat; }
     
     /** @inheritDoc */
     public override function get frame():Rectangle { return mFrame; }

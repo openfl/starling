@@ -33,25 +33,25 @@ public class ConcreteTexture extends Texture
 {
     private var mBase:TextureBase;
     private var mFormat:String;
-    private var mWidth:int;
-    private var mHeight:int;
-    private var mMipMapping:Boolean;
-    private var mPremultipliedAlpha:Boolean;
-    private var mOptimizedForRenderTexture:Boolean;
-    private var mScale:Number;
-    private var mRepeat:Boolean;
+    private var mWidth:Int;
+    private var mHeight:Int;
+    private var mMipMapping:Bool;
+    private var mPremultipliedAlpha:Bool;
+    private var mOptimizedForRenderTexture:Bool;
+    private var mScale:Float;
+    private var mRepeat:Bool;
     private var mOnRestore:Function;
-    private var mDataUploaded:Boolean;
+    private var mDataUploaded:Bool;
     
     /** helper object */
     private static var sOrigin:Point = new Point();
     
     /** Creates a ConcreteTexture object from a TextureBase, storing information about size,
      *  mip-mapping, and if the channels contain premultiplied alpha values. */
-    public function ConcreteTexture(base:TextureBase, format:String, width:int, height:int, 
-                                    mipMapping:Boolean, premultipliedAlpha:Boolean,
-                                    optimizedForRenderTexture:Boolean=false,
-                                    scale:Number=1, repeat:Boolean=false)
+    public function ConcreteTexture(base:TextureBase, format:String, width:Int, height:Int, 
+                                    mipMapping:Bool, premultipliedAlpha:Bool,
+                                    optimizedForRenderTexture:Bool=false,
+                                    scale:Float=1, repeat:Bool=false)
     {
         mScale = scale <= 0 ? 1.0 : scale;
         mBase = base;
@@ -67,7 +67,7 @@ public class ConcreteTexture extends Texture
     }
     
     /** Disposes the TextureBase object. */
-    public override function dispose():void
+    public override function dispose():Void
     {
         if (mBase) mBase.dispose();
         this.onRestore = null; // removes event listener 
@@ -79,7 +79,7 @@ public class ConcreteTexture extends Texture
     /** Uploads a bitmap to the texture. The existing contents will be replaced.
      *  If the size of the bitmap does not match the size of the texture, the bitmap will be
      *  cropped or filled up with transparent pixels */
-    public function uploadBitmap(bitmap:Bitmap):void
+    public function uploadBitmap(bitmap:Bitmap):Void
     {
         uploadBitmapData(bitmap.bitmapData);
     }
@@ -87,7 +87,7 @@ public class ConcreteTexture extends Texture
     /** Uploads bitmap data to the texture. The existing contents will be replaced.
      *  If the size of the bitmap does not match the size of the texture, the bitmap will be
      *  cropped or filled up with transparent pixels */
-    public function uploadBitmapData(data:BitmapData):void
+    public function uploadBitmapData(data:BitmapData):Void
     {
         var potData:BitmapData;
         
@@ -107,9 +107,9 @@ public class ConcreteTexture extends Texture
             
             if (mMipMapping && data.width > 1 && data.height > 1)
             {
-                var currentWidth:int  = data.width  >> 1;
-                var currentHeight:int = data.height >> 1;
-                var level:int = 1;
+                var currentWidth:Int  = data.width  >> 1;
+                var currentHeight:Int = data.height >> 1;
+                var level:Int = 1;
                 var canvas:BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
                 var transform:Matrix = new Matrix(.5, 0, 0, .5);
                 var bounds:Rectangle = new Rectangle();
@@ -145,14 +145,14 @@ public class ConcreteTexture extends Texture
      *  synchronously and will be visible right away. If it's <code>true</code> or a function,
      *  the data will be decoded asynchronously. The texture will remain unchanged until the
      *  upload is complete, at which time the callback function will be executed. This is the
-     *  expected function definition: <code>function(texture:Texture):void;</code></p>
+     *  expected function definition: <code>function(texture:Texture):Void;</code></p>
      */
-    public function uploadAtfData(data:ByteArray, offset:int=0, async:*=null):void
+    public function uploadAtfData(data:ByteArray, offset:Int=0, async:*=null):Void
     {
         const eventType:String = "textureReady"; // defined here for backwards compatibility
         
         var self:ConcreteTexture = this;
-        var isAsync:Boolean = async is Function || async === true;
+        var isAsync:Bool = async is Function || async === true;
         var potTexture:flash.display3D.textures.Texture = 
               mBase as flash.display3D.textures.Texture;
         
@@ -165,7 +165,7 @@ public class ConcreteTexture extends Texture
         potTexture.uploadCompressedTextureFromByteArray(data, offset, isAsync);
         mDataUploaded = true;
         
-        function onTextureReady(event:Object):void
+        function onTextureReady(event:Object):Void
         {
             potTexture.removeEventListener(eventType, onTextureReady);
             
@@ -180,7 +180,7 @@ public class ConcreteTexture extends Texture
     
     // texture backup (context loss)
     
-    private function onContextCreated():void
+    private function onContextCreated():Void
     {
         // recreate the underlying texture & restore contents
         createBase();
@@ -194,7 +194,7 @@ public class ConcreteTexture extends Texture
      *  as the one that was passed to the constructor. You have to upload new data before the
      *  texture becomes usable again. Beware: this method does <strong>not</strong> dispose
      *  the current base. */
-    starling_internal function createBase():void
+    starling_internal function createBase():Void
     {
         var context:Context3D = Starling.context;
         
@@ -211,7 +211,7 @@ public class ConcreteTexture extends Texture
     /** Clears the texture with a certain color and alpha value. The previous contents of the
      *  texture is wiped out. Beware: this method resets the render target to the back buffer; 
      *  don't call it from within a render method. */ 
-    public function clear(color:uint=0x0, alpha:Number=0.0):void
+    public function clear(color:UInt=0x0, alpha:Float=0.0):Void
     {
         var context:Context3D = Starling.context;
         if (context == null) throw new MissingContextError();
@@ -237,14 +237,14 @@ public class ConcreteTexture extends Texture
     // properties
     
     /** Indicates if the base texture was optimized for being used in a render texture. */
-    public function get optimizedForRenderTexture():Boolean { return mOptimizedForRenderTexture; }
+    public function get optimizedForRenderTexture():Bool { return mOptimizedForRenderTexture; }
     
     /** If Starling's "handleLostContext" setting is enabled, the function that you provide
      *  here will be called after a context loss. On execution, a new base texture will
      *  already have been created; however, it will be empty. Call one of the "upload..."
      *  methods from within the callbacks to restore the actual texture data. */
     public function get onRestore():Function { return mOnRestore; }
-    public function set onRestore(value:Function):void
+    public function set onRestore(value:Function):Void
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
@@ -266,27 +266,27 @@ public class ConcreteTexture extends Texture
     public override function get format():String { return mFormat; }
     
     /** @inheritDoc */
-    public override function get width():Number  { return mWidth / mScale;  }
+    public override function get width():Float  { return mWidth / mScale;  }
     
     /** @inheritDoc */
-    public override function get height():Number { return mHeight / mScale; }
+    public override function get height():Float { return mHeight / mScale; }
     
     /** @inheritDoc */
-    public override function get nativeWidth():Number { return mWidth; }
+    public override function get nativeWidth():Float { return mWidth; }
     
     /** @inheritDoc */
-    public override function get nativeHeight():Number { return mHeight; }
+    public override function get nativeHeight():Float { return mHeight; }
     
     /** The scale factor, which influences width and height properties. */
-    public override function get scale():Number { return mScale; }
+    public override function get scale():Float { return mScale; }
     
     /** @inheritDoc */
-    public override function get mipMapping():Boolean { return mMipMapping; }
+    public override function get mipMapping():Bool { return mMipMapping; }
     
     /** @inheritDoc */
-    public override function get premultipliedAlpha():Boolean { return mPremultipliedAlpha; }
+    public override function get premultipliedAlpha():Bool { return mPremultipliedAlpha; }
     
     /** @inheritDoc */
-    public override function get repeat():Boolean { return mRepeat; }
+    public override function get repeat():Bool { return mRepeat; }
 }
 }

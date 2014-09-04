@@ -25,8 +25,8 @@ import starling.textures.Texture;
  *  </p> */
 internal class MiniBitmapFont
 {
-    private static const BITMAP_WIDTH:int = 128;
-    private static const BITMAP_HEIGHT:int = 64;
+    private static const BITMAP_WIDTH:Int = 128;
+    private static const BITMAP_HEIGHT:Int = 64;
     private static const BITMAP_DATA:Array = [ 
         2027613533, 3413039936,  202148514, 2266925598, 4206886452, 4286853117,    2034947, 
         3202703399,  352977282, 2957757964, 3113652880, 2158068882, 1468709156, 2268063717, 
@@ -277,9 +277,9 @@ internal class MiniBitmapFont
     {
         var bmpData:BitmapData = new BitmapData(BITMAP_WIDTH, BITMAP_HEIGHT);
         var bmpBytes:ByteArray = new ByteArray();
-        var numBytes:int = BITMAP_DATA.length;
+        var numBytes:Int = BITMAP_DATA.length;
         
-        for (var i:int=0; i<numBytes; ++i)
+        for (var i:Int=0; i<numBytes; ++i)
             bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
         
         bmpBytes.uncompress();

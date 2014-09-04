@@ -15,7 +15,7 @@ import flash.geom.Point;
 
 /** Uses a matrix to transform 2D coordinates into a different space. If you pass a 
  *  'resultPoint', the result will be stored in this point instead of creating a new object.*/
-public function transformCoords(matrix:Matrix, x:Number, y:Number,
+public function transformCoords(matrix:Matrix, x:Float, y:Float,
                                 resultPoint:Point=null):Point
 {
     if (!deprecationNotified)
@@ -34,4 +34,4 @@ public function transformCoords(matrix:Matrix, x:Number, y:Number,
 }
 }
 
-var deprecationNotified:Boolean = false;
+var deprecationNotified:Bool = false;

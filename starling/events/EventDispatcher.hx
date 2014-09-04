@@ -47,7 +47,7 @@ public class EventDispatcher
     {  }
     
     /** Registers an event listener at a certain object. */
-    public function addEventListener(type:String, listener:Function):void
+    public function addEventListener(type:String, listener:Function):Void
     {
         if (mEventListeners == null)
             mEventListeners = new Dictionary();
@@ -60,25 +60,25 @@ public class EventDispatcher
     }
     
     /** Removes an event listener from the object. */
-    public function removeEventListener(type:String, listener:Function):void
+    public function removeEventListener(type:String, listener:Function):Void
     {
         if (mEventListeners)
         {
             var listeners:Vector.<Function> = mEventListeners[type] as Vector.<Function>;
-            var numListeners:int = listeners ? listeners.length : 0;
+            var numListeners:Int = listeners ? listeners.length : 0;
 
             if (numListeners > 0)
             {
                 // we must not modify the original vector, but work on a copy.
                 // (see comment in 'invokeEvent')
 
-                var index:int = 0;
+                var index:Int = 0;
                 var restListeners:Vector.<Function> = new Vector.<Function>(numListeners-1);
 
-                for (var i:int=0; i<numListeners; ++i)
+                for (var i:Int=0; i<numListeners; ++i)
                 {
                     var otherListener:Function = listeners[i];
-                    if (otherListener != listener) restListeners[int(index++)] = otherListener;
+                    if (otherListener != listener) restListeners[Int(index++)] = otherListener;
                 }
 
                 mEventListeners[type] = restListeners;
@@ -88,7 +88,7 @@ public class EventDispatcher
     
     /** Removes all event listeners with a certain type, or all of them if type is null. 
      *  Be careful when removing all event listeners: you never know who else was listening. */
-    public function removeEventListeners(type:String=null):void
+    public function removeEventListeners(type:String=null):Void
     {
         if (type && mEventListeners)
             delete mEventListeners[type];
@@ -100,9 +100,9 @@ public class EventDispatcher
      *  If an event with enabled 'bubble' property is dispatched to a display object, it will 
      *  travel up along the line of parents, until it either hits the root object or someone
      *  stops its propagation manually. */
-    public function dispatchEvent(event:Event):void
+    public function dispatchEvent(event:Event):Void
     {
-        var bubbles:Boolean = event.bubbles;
+        var bubbles:Bool = event.bubbles;
         
         if (!bubbles && (mEventListeners == null || !(event.type in mEventListeners)))
             return; // no need to do anything
@@ -123,11 +123,11 @@ public class EventDispatcher
      *  Invokes an event on the current object. This method does not do any bubbling, nor
      *  does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      *  method uses this method internally. */
-    internal function invokeEvent(event:Event):Boolean
+    internal function invokeEvent(event:Event):Bool
     {
         var listeners:Vector.<Function> = mEventListeners ?
             mEventListeners[event.type] as Vector.<Function> : null;
-        var numListeners:int = listeners == null ? 0 : listeners.length;
+        var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners)
         {
@@ -137,10 +137,10 @@ public class EventDispatcher
             // when somebody modifies the list while we're looping, "addEventListener" is not
             // problematic, and "removeEventListener" will create a new Vector, anyway.
             
-            for (var i:int=0; i<numListeners; ++i)
+            for (var i:Int=0; i<numListeners; ++i)
             {
                 var listener:Function = listeners[i] as Function;
-                var numArgs:int = listener.length;
+                var numArgs:Int = listener.length;
                 
                 if (numArgs == 0) listener();
                 else if (numArgs == 1) listener(event);
@@ -159,24 +159,24 @@ public class EventDispatcher
     }
     
     /** @private */
-    internal function bubbleEvent(event:Event):void
+    internal function bubbleEvent(event:Event):Void
     {
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.
         
         var chain:Vector.<EventDispatcher>;
         var element:DisplayObject = this as DisplayObject;
-        var length:int = 1;
+        var length:Int = 1;
         
         if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
         else chain = new <EventDispatcher>[element];
         
         while ((element = element.parent) != null)
-            chain[int(length++)] = element;
+            chain[Int(length++)] = element;
 
-        for (var i:int=0; i<length; ++i)
+        for (var i:Int=0; i<length; ++i)
         {
-            var stopPropagation:Boolean = chain[i].invokeEvent(event);
+            var stopPropagation:Bool = chain[i].invokeEvent(event);
             if (stopPropagation) break;
         }
         
@@ -187,7 +187,7 @@ public class EventDispatcher
     /** Dispatches an event with the given parameters to all objects that have registered 
      *  listeners for the given type. The method uses an internal pool of event objects to 
      *  avoid allocations. */
-    public function dispatchEventWith(type:String, bubbles:Boolean=false, data:Object=null):void
+    public function dispatchEventWith(type:String, bubbles:Bool=false, data:Object=null):Void
     {
         if (bubbles || hasEventListener(type)) 
         {
@@ -198,7 +198,7 @@ public class EventDispatcher
     }
     
     /** Returns if there are listeners registered for a certain event type. */
-    public function hasEventListener(type:String):Boolean
+    public function hasEventListener(type:String):Bool
     {
         var listeners:Vector.<Function> = mEventListeners ?
             mEventListeners[type] as Vector.<Function> : null;

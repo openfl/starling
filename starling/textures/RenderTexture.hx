@@ -39,9 +39,9 @@ import starling.utils.getNextPowerOfTwo;
  *  immensely, allowing you to draw hundreds of objects very quickly.</p>
  *  
  * 	<pre>
- *  renderTexture.drawBundled(function():void
+ *  renderTexture.drawBundled(function():Void
  *  {
- *     for (var i:int=0; i&lt;numDrawings; ++i)
+ *     for (var i:Int=0; i&lt;numDrawings; ++i)
  *     {
  *         image.rotation = (2 &#42; Math.PI / numDrawings) &#42; i;
  *         renderTexture.draw(image);
@@ -59,13 +59,13 @@ import starling.utils.getNextPowerOfTwo;
 public class RenderTexture extends SubTexture
 {
     private const CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
-    private const PMA:Boolean = true;
+    private const PMA:Bool = true;
     
     private var mActiveTexture:Texture;
     private var mBufferTexture:Texture;
     private var mHelperImage:Image;
-    private var mDrawing:Boolean;
-    private var mBufferReady:Boolean;
+    private var mDrawing:Bool;
+    private var mBufferReady:Bool;
     private var mSupport:RenderSupport;
     
     /** helper object */
@@ -76,7 +76,7 @@ public class RenderTexture extends SubTexture
      *  you to use the texture just like a canvas. If it is not, it will be cleared before each
      *  draw call. Persistancy doubles the required graphics memory! Thus, if you need the
      *  texture only for one draw (or drawBundled) call, you should deactivate it. */
-    public function RenderTexture(width:int, height:int, persistent:Boolean=true, scale:Number=-1)
+    public function RenderTexture(width:Int, height:Int, persistent:Bool=true, scale:Float=-1)
     {
         // TODO: when Adobe has fixed this bug on the iPad 1 (see 'supportsNonPotDimensions'),
         //       we can remove 'legalWidth/Height' and just pass on the original values.
@@ -85,8 +85,8 @@ public class RenderTexture extends SubTexture
 
         if (scale <= 0) scale = Starling.contentScaleFactor;
 
-        var legalWidth:Number  = width;
-        var legalHeight:Number = height;
+        var legalWidth:Float  = width;
+        var legalHeight:Float = height;
 
         if (!supportsNonPotDimensions)
         {
@@ -101,8 +101,8 @@ public class RenderTexture extends SubTexture
         
         super(mActiveTexture, new Rectangle(0, 0, width, height), true, null, false);
         
-        var rootWidth:Number  = mActiveTexture.root.width;
-        var rootHeight:Number = mActiveTexture.root.height;
+        var rootWidth:Float  = mActiveTexture.root.width;
+        var rootHeight:Float = mActiveTexture.root.height;
         
         mSupport = new RenderSupport();
         mSupport.setOrthographicProjection(0, 0, rootWidth, rootHeight);
@@ -117,7 +117,7 @@ public class RenderTexture extends SubTexture
     }
     
     /** @inheritDoc */
-    public override function dispose():void
+    public override function dispose():Void
     {
         mSupport.dispose();
         mActiveTexture.dispose();
@@ -142,8 +142,8 @@ public class RenderTexture extends SubTexture
      *  @param antiAliasing Only supported beginning with AIR 13, and only on Desktop.
      *                      Values range from 0 (no antialiasing) to 4 (best quality).
      */
-    public function draw(object:DisplayObject, matrix:Matrix=null, alpha:Number=1.0,
-                         antiAliasing:int=0):void
+    public function draw(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0,
+                         antiAliasing:Int=0):Void
     {
         if (object == null) return;
         
@@ -158,15 +158,15 @@ public class RenderTexture extends SubTexture
      *  Note that the 'antiAliasing' setting provided here overrides those provided in
      *  individual 'draw' calls.
      *  
-     *  @param drawingBlock: a callback with the form: <pre>function():void;</pre>
+     *  @param drawingBlock: a callback with the form: <pre>function():Void;</pre>
      *  @param antiAliasing: Only supported beginning with AIR 13, and only on Desktop.
      *                       Values range from 0 (no antialiasing) to 4 (best quality). */
-    public function drawBundled(drawingBlock:Function, antiAliasing:int=0):void
+    public function drawBundled(drawingBlock:Function, antiAliasing:Int=0):Void
     {
         renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
     }
     
-    private function render(object:DisplayObject, matrix:Matrix=null, alpha:Number=1.0):void
+    private function render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
     {
         mSupport.loadIdentity();
         mSupport.blendMode = object.blendMode;
@@ -178,8 +178,8 @@ public class RenderTexture extends SubTexture
     }
     
     private function renderBundled(renderBlock:Function, object:DisplayObject=null,
-                                   matrix:Matrix=null, alpha:Number=1.0,
-                                   antiAliasing:int=0):void
+                                   matrix:Matrix=null, alpha:Float=1.0,
+                                   antiAliasing:Int=0):Void
     {
         var context:Context3D = Starling.context;
         if (context == null) throw new MissingContextError();
@@ -226,7 +226,7 @@ public class RenderTexture extends SubTexture
     
     /** Clears the render texture with a certain color and alpha value. Call without any
      *  arguments to restore full transparency. */
-    public function clear(rgb:uint=0, alpha:Number=0.0):void
+    public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
         var context:Context3D = Starling.context;
         if (context == null) throw new MissingContextError();
@@ -241,7 +241,7 @@ public class RenderTexture extends SubTexture
     /** On the iPad 1 (and maybe other hardware?) clearing a non-POT RectangleTexture causes
      *  an error in the next "createVertexBuffer" call. Thus, we're forced to make this
      *  really ... elegant check here. */
-    private function get supportsNonPotDimensions():Boolean
+    private function get supportsNonPotDimensions():Bool
     {
         var target:Starling = Starling.current;
         var context:Context3D = Starling.context;
@@ -287,7 +287,7 @@ public class RenderTexture extends SubTexture
     // properties
 
     /** Indicates if the texture is persistent over multiple draw calls. */
-    public function get isPersistent():Boolean { return mBufferTexture != null; }
+    public function get isPersistent():Bool { return mBufferTexture != null; }
     
     /** @inheritDoc */
     public override function get base():TextureBase { return mActiveTexture.base; }

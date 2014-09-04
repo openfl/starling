@@ -40,25 +40,25 @@ use namespace starling_internal;
  */  
 public class Touch
 {
-    private var mID:int;
-    private var mGlobalX:Number;
-    private var mGlobalY:Number;
-    private var mPreviousGlobalX:Number;
-    private var mPreviousGlobalY:Number;
-    private var mTapCount:int;
+    private var mID:Int;
+    private var mGlobalX:Float;
+    private var mGlobalY:Float;
+    private var mPreviousGlobalX:Float;
+    private var mPreviousGlobalY:Float;
+    private var mTapCount:Int;
     private var mPhase:String;
     private var mTarget:DisplayObject;
-    private var mTimestamp:Number;
-    private var mPressure:Number;
-    private var mWidth:Number;
-    private var mHeight:Number;
+    private var mTimestamp:Float;
+    private var mPressure:Float;
+    private var mWidth:Float;
+    private var mHeight:Float;
     private var mBubbleChain:Vector.<EventDispatcher>;
     
     /** Helper object. */
     private static var sHelperMatrix:Matrix = new Matrix();
     
     /** Creates a new Touch object. */
-    public function Touch(id:int)
+    public function Touch(id:Int)
     {
         mID = id;
         mTapCount = 0;
@@ -94,15 +94,15 @@ public class Touch
     {
         if (resultPoint == null) resultPoint = new Point();
         getLocation(space, resultPoint);
-        var x:Number = resultPoint.x;
-        var y:Number = resultPoint.y;
+        var x:Float = resultPoint.x;
+        var y:Float = resultPoint.y;
         getPreviousLocation(space, resultPoint);
         resultPoint.setTo(x - resultPoint.x, y - resultPoint.y);
         return resultPoint;
     }
     
     /** Indicates if the target or one of its children is touched. */ 
-    public function isTouching(target:DisplayObject):Boolean
+    public function isTouching(target:DisplayObject):Bool
     {
         return mBubbleChain.indexOf(target) != -1;
     }
@@ -134,18 +134,18 @@ public class Touch
     
     // helper methods
     
-    private function updateBubbleChain():void
+    private function updateBubbleChain():Void
     {
         if (mTarget)
         {
-            var length:int = 1;
+            var length:Int = 1;
             var element:DisplayObject = mTarget;
             
             mBubbleChain.length = 1;
             mBubbleChain[0] = element;
             
             while ((element = element.parent) != null)
-                mBubbleChain[int(length++)] = element;
+                mBubbleChain[Int(length++)] = element;
         }
         else
         {
@@ -156,18 +156,18 @@ public class Touch
     // properties
     
     /** The identifier of a touch. '0' for mouse events, an increasing number for touches. */
-    public function get id():int { return mID; }
+    public function get id():Int { return mID; }
     
     /** The previous x-position of the touch in stage coordinates. */
-    public function get previousGlobalX():Number { return mPreviousGlobalX; }
+    public function get previousGlobalX():Float { return mPreviousGlobalX; }
     
     /** The previous y-position of the touch in stage coordinates. */
-    public function get previousGlobalY():Number { return mPreviousGlobalY; }
+    public function get previousGlobalY():Float { return mPreviousGlobalY; }
 
     /** The x-position of the touch in stage coordinates. If you change this value,
      *  the previous one will be moved to "previousGlobalX". */
-    public function get globalX():Number { return mGlobalX; }
-    public function set globalX(value:Number):void
+    public function get globalX():Float { return mGlobalX; }
+    public function set globalX(value:Float):Void
     {
         mPreviousGlobalX = mGlobalX != mGlobalX ? value : mGlobalX; // isNaN check
         mGlobalX = value;
@@ -175,8 +175,8 @@ public class Touch
 
     /** The y-position of the touch in stage coordinates. If you change this value,
      *  the previous one will be moved to "previousGlobalY". */
-    public function get globalY():Number { return mGlobalY; }
-    public function set globalY(value:Number):void
+    public function get globalY():Float { return mGlobalY; }
+    public function set globalY(value:Float):Void
     {
         mPreviousGlobalY = mGlobalY != mGlobalY ? value : mGlobalY; // isNaN check
         mGlobalY = value;
@@ -184,16 +184,16 @@ public class Touch
     
     /** The number of taps the finger made in a short amount of time. Use this to detect 
      *  double-taps / double-clicks, etc. */ 
-    public function get tapCount():int { return mTapCount; }
-    public function set tapCount(value:int):void { mTapCount = value; }
+    public function get tapCount():Int { return mTapCount; }
+    public function set tapCount(value:Int):Void { mTapCount = value; }
     
     /** The current phase the touch is in. @see TouchPhase */
     public function get phase():String { return mPhase; }
-    public function set phase(value:String):void { mPhase = value; }
+    public function set phase(value:String):Void { mPhase = value; }
     
     /** The display object at which the touch occurred. */
     public function get target():DisplayObject { return mTarget; }
-    public function set target(value:DisplayObject):void
+    public function set target(value:DisplayObject):Void
     {
         if (mTarget != value)
         {
@@ -203,30 +203,30 @@ public class Touch
     }
     
     /** The moment the touch occurred (in seconds since application start). */
-    public function get timestamp():Number { return mTimestamp; }
-    public function set timestamp(value:Number):void { mTimestamp = value; }
+    public function get timestamp():Float { return mTimestamp; }
+    public function set timestamp(value:Float):Void { mTimestamp = value; }
     
     /** A value between 0.0 and 1.0 indicating force of the contact with the device. 
      *  If the device does not support detecting the pressure, the value is 1.0. */ 
-    public function get pressure():Number { return mPressure; }
-    public function set pressure(value:Number):void { mPressure = value; }
+    public function get pressure():Float { return mPressure; }
+    public function set pressure(value:Float):Void { mPressure = value; }
     
     /** Width of the contact area. 
      *  If the device does not support detecting the pressure, the value is 1.0. */
-    public function get width():Number { return mWidth; }
-    public function set width(value:Number):void { mWidth = value; }
+    public function get width():Float { return mWidth; }
+    public function set width(value:Float):Void { mWidth = value; }
     
     /** Height of the contact area. 
      *  If the device does not support detecting the pressure, the value is 1.0. */
-    public function get height():Number { return mHeight; }
-    public function set height(value:Number):void { mHeight = value; }
+    public function get height():Float { return mHeight; }
+    public function set height(value:Float):Void { mHeight = value; }
 
     // internal methods
     
     /** @private 
      *  Dispatches a touch event along the current bubble chain (which is updated each time
      *  a target is set). */
-    internal function dispatchEvent(event:TouchEvent):void
+    internal function dispatchEvent(event:TouchEvent):Void
     {
         if (mTarget) event.dispatch(mBubbleChain);
     }

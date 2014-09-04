@@ -20,8 +20,8 @@ import starling.errors.AbstractClassError;
 public class MatrixUtil
 {
     /** Helper object. */
-    private static var sRawData:Vector.<Number> = 
-        new <Number>[1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
+    private static var sRawData:Vector.<Float> = 
+        new <Float>[1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
     
     /** @private */
     public function MatrixUtil() { throw new AbstractClassError(); }
@@ -45,7 +45,7 @@ public class MatrixUtil
     
     /** Uses a matrix to transform 2D coordinates into a different space. If you pass a 
      *  'resultPoint', the result will be stored in this point instead of creating a new object.*/
-    public static function transformCoords(matrix:Matrix, x:Number, y:Number,
+    public static function transformCoords(matrix:Matrix, x:Float, y:Float,
                                            resultPoint:Point=null):Point
     {
         if (resultPoint == null) resultPoint = new Point();   
@@ -64,12 +64,12 @@ public class MatrixUtil
      *  |     0            0       1 |
      *  </pre> 
      */
-    public static function skew(matrix:Matrix, skewX:Number, skewY:Number):void
+    public static function skew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {
-        var sinX:Number = Math.sin(skewX);
-        var cosX:Number = Math.cos(skewX);
-        var sinY:Number = Math.sin(skewY);
-        var cosY:Number = Math.cos(skewY);
+        var sinX:Float = Math.sin(skewX);
+        var cosX:Float = Math.cos(skewX);
+        var sinY:Float = Math.sin(skewY);
+        var cosY:Float = Math.cos(skewY);
         
         matrix.setTo(matrix.a  * cosY - matrix.b  * sinX,
                      matrix.a  * sinY + matrix.b  * cosX,
@@ -80,7 +80,7 @@ public class MatrixUtil
     }
     
     /** Prepends a matrix to 'base' by multiplying it with another matrix. */
-    public static function prependMatrix(base:Matrix, prep:Matrix):void
+    public static function prependMatrix(base:Matrix, prep:Matrix):Void
     {
         base.setTo(base.a * prep.a + base.c * prep.b,
                    base.b * prep.a + base.d * prep.b,
@@ -91,14 +91,14 @@ public class MatrixUtil
     }
     
     /** Prepends an incremental translation to a Matrix object. */
-    public static function prependTranslation(matrix:Matrix, tx:Number, ty:Number):void
+    public static function prependTranslation(matrix:Matrix, tx:Float, ty:Float):Void
     {
         matrix.tx += matrix.a * tx + matrix.c * ty;
         matrix.ty += matrix.b * tx + matrix.d * ty;
     }
     
     /** Prepends an incremental scale change to a Matrix object. */
-    public static function prependScale(matrix:Matrix, sx:Number, sy:Number):void
+    public static function prependScale(matrix:Matrix, sx:Float, sy:Float):Void
     {
         matrix.setTo(matrix.a * sx, matrix.b * sx, 
                      matrix.c * sy, matrix.d * sy,
@@ -106,10 +106,10 @@ public class MatrixUtil
     }
     
     /** Prepends an incremental rotation to a Matrix object (angle in radians). */
-    public static function prependRotation(matrix:Matrix, angle:Number):void
+    public static function prependRotation(matrix:Matrix, angle:Float):Void
     {
-        var sin:Number = Math.sin(angle);
-        var cos:Number = Math.cos(angle);
+        var sin:Float = Math.sin(angle);
+        var cos:Float = Math.cos(angle);
         
         matrix.setTo(matrix.a * cos + matrix.c * sin,  matrix.b * cos + matrix.d * sin,
                      matrix.c * cos - matrix.a * sin,  matrix.d * cos - matrix.b * sin,
@@ -124,12 +124,12 @@ public class MatrixUtil
      *  |     0            0       1 |
      *  </pre> 
      */
-    public static function prependSkew(matrix:Matrix, skewX:Number, skewY:Number):void
+    public static function prependSkew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {
-        var sinX:Number = Math.sin(skewX);
-        var cosX:Number = Math.cos(skewX);
-        var sinY:Number = Math.sin(skewY);
-        var cosY:Number = Math.cos(skewY);
+        var sinX:Float = Math.sin(skewX);
+        var cosX:Float = Math.cos(skewX);
+        var sinY:Float = Math.sin(skewY);
+        var cosY:Float = Math.cos(skewY);
         
         matrix.setTo(matrix.a * cosY + matrix.c * sinY,
                      matrix.b * cosY + matrix.d * sinY,

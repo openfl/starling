@@ -20,18 +20,18 @@ import starling.errors.AbstractClassError;
 /** A utility class with methods related to the current platform and runtime. */
 public class SystemUtil
 {
-    private static var sInitialized:Boolean = false;
-    private static var sApplicationActive:Boolean = true;
+    private static var sInitialized:Bool = false;
+    private static var sApplicationActive:Bool = true;
     private static var sWaitingCalls:Array = [];
     private static var sPlatform:String;
-    private static var sAIR:Boolean;
+    private static var sAIR:Bool;
     
     /** @private */
     public function SystemUtil() { throw new AbstractClassError(); }
     
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
      *  application. This method is automatically called by the Starling constructor. */
-    public static function initialize():void
+    public static function initialize():Void
     {
         if (sInitialized) return;
         
@@ -54,7 +54,7 @@ public class SystemUtil
         }
     }
     
-    private static function onActivate(event:Object):void
+    private static function onActivate(event:Object):Void
     {
         sApplicationActive = true;
         
@@ -64,14 +64,14 @@ public class SystemUtil
         sWaitingCalls = [];
     }
     
-    private static function onDeactivate(event:Object):void
+    private static function onDeactivate(event:Object):Void
     {
         sApplicationActive = false;
     }
     
     /** Executes the given function with its arguments the next time the application is active.
      *  (If it <em>is</em> active already, the call will be executed right away.) */
-    public static function executeWhenApplicationIsActive(call:Function, ...args):void
+    public static function executeWhenApplicationIsActive(call:Function, ...args):Void
     {
         initialize();
         
@@ -82,7 +82,7 @@ public class SystemUtil
     /** Indicates if the application is currently active. On Desktop, this means that it has
      *  the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
      *  returns true. */
-    public static function get isApplicationActive():Boolean
+    public static function get isApplicationActive():Bool
     {
         initialize();
         return sApplicationActive;
@@ -90,7 +90,7 @@ public class SystemUtil
 
     /** Indicates if the code is executed in an Adobe AIR runtime (true)
      *  or Flash plugin/projector (false). */
-    public static function get isAIR():Boolean
+    public static function get isAIR():Bool
     {
         initialize();
         return sAIR;
@@ -99,7 +99,7 @@ public class SystemUtil
     /** Indicates if the code is executed on a Desktop computer with Windows, OS X or Linux
      *  operating system. If the method returns 'false', it's probably a mobile device
      *  or a Smart TV. */
-    public static function get isDesktop():Boolean
+    public static function get isDesktop():Bool
     {
         initialize();
         return /(WIN|MAC|LNX)/.exec(sPlatform) != null;

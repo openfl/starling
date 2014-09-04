@@ -35,7 +35,7 @@ import starling.utils.VertexData;
  */
 public class Quad extends DisplayObject
 {
-    private var mTinted:Boolean;
+    private var mTinted:Bool;
     
     /** The raw vertex data of the quad. */
     protected var mVertexData:VertexData;
@@ -47,8 +47,8 @@ public class Quad extends DisplayObject
     /** Creates a quad with a certain size and color. The last parameter controls if the 
      *  alpha value should be premultiplied into the color values on rendering, which can
      *  influence blending output. You can use the default value in most cases.  */
-    public function Quad(width:Number, height:Number, color:uint=0xffffff,
-                         premultipliedAlpha:Boolean=true)
+    public function Quad(width:Float, height:Float, color:UInt=0xffffff,
+                         premultipliedAlpha:Bool=true)
     {
         if (width == 0.0 || height == 0.0)
             throw new ArgumentError("Invalid size: width and height must not be zero");
@@ -66,7 +66,7 @@ public class Quad extends DisplayObject
     }
     
     /** Call this method after manually changing the contents of 'mVertexData'. */
-    protected function onVertexDataChanged():void
+    protected function onVertexDataChanged():Void
     {
         // override in subclasses, if necessary
     }
@@ -83,8 +83,8 @@ public class Quad extends DisplayObject
         }
         else if (targetSpace == parent && rotation == 0.0) // optimization
         {
-            var scaleX:Number = this.scaleX;
-            var scaleY:Number = this.scaleY;
+            var scaleX:Float = this.scaleX;
+            var scaleY:Float = this.scaleY;
             mVertexData.getPosition(3, sHelperPoint);
             resultRect.setTo(x - pivotX * scaleX,      y - pivotY * scaleY,
                              sHelperPoint.x * scaleX, sHelperPoint.y * scaleY);
@@ -101,13 +101,13 @@ public class Quad extends DisplayObject
     }
     
     /** Returns the color of a vertex at a certain index. */
-    public function getVertexColor(vertexID:int):uint
+    public function getVertexColor(vertexID:Int):UInt
     {
         return mVertexData.getColor(vertexID);
     }
     
     /** Sets the color of a vertex at a certain index. */
-    public function setVertexColor(vertexID:int, color:uint):void
+    public function setVertexColor(vertexID:Int, color:UInt):Void
     {
         mVertexData.setColor(vertexID, color);
         onVertexDataChanged();
@@ -117,13 +117,13 @@ public class Quad extends DisplayObject
     }
     
     /** Returns the alpha value of a vertex at a certain index. */
-    public function getVertexAlpha(vertexID:int):Number
+    public function getVertexAlpha(vertexID:Int):Float
     {
         return mVertexData.getAlpha(vertexID);
     }
     
     /** Sets the alpha value of a vertex at a certain index. */
-    public function setVertexAlpha(vertexID:int, alpha:Number):void
+    public function setVertexAlpha(vertexID:Int, alpha:Float):Void
     {
         mVertexData.setAlpha(vertexID, alpha);
         onVertexDataChanged();
@@ -133,13 +133,13 @@ public class Quad extends DisplayObject
     }
     
     /** Returns the color of the quad, or of vertex 0 if vertices have different colors. */
-    public function get color():uint 
+    public function get color():UInt 
     { 
         return mVertexData.getColor(0); 
     }
     
     /** Sets the colors of all vertices to a certain value. */
-    public function set color(value:uint):void 
+    public function set color(value:UInt):Void 
     {
         mVertexData.setUniformColor(value);
         onVertexDataChanged();
@@ -149,7 +149,7 @@ public class Quad extends DisplayObject
     }
     
     /** @inheritDoc **/
-    public override function set alpha(value:Number):void
+    public override function set alpha(value:Float):Void
     {
         super.alpha = value;
         
@@ -158,30 +158,30 @@ public class Quad extends DisplayObject
     }
     
     /** Copies the raw vertex data to a VertexData instance. */
-    public function copyVertexDataTo(targetData:VertexData, targetVertexID:int=0):void
+    public function copyVertexDataTo(targetData:VertexData, targetVertexID:Int=0):Void
     {
         mVertexData.copyTo(targetData, targetVertexID);
     }
     
     /** Transforms the vertex positions of the raw vertex data by a certain matrix and
      *  copies the result to another VertexData instance. */
-    public function copyVertexDataTransformedTo(targetData:VertexData, targetVertexID:int=0,
-                                                matrix:Matrix=null):void
+    public function copyVertexDataTransformedTo(targetData:VertexData, targetVertexID:Int=0,
+                                                matrix:Matrix=null):Void
     {
         mVertexData.copyTransformedTo(targetData, targetVertexID, matrix, 0, 4);
     }
     
     /** @inheritDoc */
-    public override function render(support:RenderSupport, parentAlpha:Number):void
+    public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
         support.batchQuad(this, parentAlpha);
     }
     
     /** Returns true if the quad (or any of its vertices) is non-white or non-opaque. */
-    public function get tinted():Boolean { return mTinted; }
+    public function get tinted():Bool { return mTinted; }
     
     /** Indicates if the rgb values are stored premultiplied with the alpha value; this can
      *  affect the rendering. (Most developers don't have to care, though.) */
-    public function get premultipliedAlpha():Boolean { return mVertexData.premultipliedAlpha; }
+    public function get premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
 }
 }

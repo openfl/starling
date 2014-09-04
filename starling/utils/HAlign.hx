@@ -28,7 +28,7 @@ public final class HAlign
     public static const RIGHT:String  = "right";
     
     /** Indicates whether the given alignment string is valid. */
-    public static function isValid(hAlign:String):Boolean
+    public static function isValid(hAlign:String):Bool
     {
         return hAlign == LEFT || hAlign == CENTER || hAlign == RIGHT;
     }

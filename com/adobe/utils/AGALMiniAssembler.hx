@@ -53,10 +53,10 @@ public class AGALMiniAssembler
 	private var _agalcode:ByteArray							= null;
 	private var _error:String								= "";
 	
-	private var debugEnabled:Boolean						= false;
+	private var debugEnabled:Bool						= false;
 	
-	private static var initialized:Boolean					= false;
-	public var verbose:Boolean								= false;
+	private static var initialized:Bool					= false;
+	public var verbose:Bool								= false;
 	
 	// ======================================================================
 	//	Getters
@@ -67,7 +67,7 @@ public class AGALMiniAssembler
 	// ======================================================================
 	//	Constructor
 	// ----------------------------------------------------------------------
-	public function AGALMiniAssembler( debugging:Boolean = false ):void
+	public function AGALMiniAssembler( debugging:Bool = false ):Void
 	{
 		debugEnabled = debugging;
 		if ( !initialized )
@@ -77,7 +77,7 @@ public class AGALMiniAssembler
 	//	Methods
 	// ----------------------------------------------------------------------
 	
-	public function assemble2( ctx3d : Context3D, version:uint, vertexsrc:String, fragmentsrc:String ) : Program3D 
+	public function assemble2( ctx3d : Context3D, version:UInt, vertexsrc:String, fragmentsrc:String ) : Program3D 
 	{
 		var agalvertex : ByteArray = assemble ( VERTEX, vertexsrc, version );
 		var agalfragment : ByteArray = assemble ( FRAGMENT, fragmentsrc, version );
@@ -86,14 +86,14 @@ public class AGALMiniAssembler
 		return prog; 
 	}
 	
-	public function assemble( mode:String, source:String, version:uint=1, ignorelimits:Boolean=false ):ByteArray
+	public function assemble( mode:String, source:String, version:UInt=1, ignorelimits:Bool=false ):ByteArray
 	{
-		var start:uint = getTimer();
+		var start:UInt = getTimer();
 		
 		_agalcode							= new ByteArray();
 		_error = "";
 		
-		var isFrag:Boolean = false;
+		var isFrag:Bool = false;
 		
 		if ( mode == FRAGMENT )
 			isFrag = true;
@@ -109,9 +109,9 @@ public class AGALMiniAssembler
 		initregmap(version, ignorelimits); 
 		
 		var lines:Array = source.replace( /[\f\n\r\v]+/g, "\n" ).split( "\n" );
-		var nops:int = 0;
-		var i:int;
-		var lng:int = lines.length;
+		var nops:Int = 0;
+		var i:Int;
+		var lng:Int = lines.length;
 		
 		for ( i = 0; i < lng && _error == ""; i++ )
 		{
@@ -119,12 +119,12 @@ public class AGALMiniAssembler
 			line = line.replace( REGEXP_OUTER_SPACES, "" );
 			
 			// remove comments
-			var startcomment:int = line.search( "//" );
+			var startcomment:Int = line.search( "//" );
 			if ( startcomment != -1 )
 				line = line.slice( 0, startcomment );
 			
 			// grab options
-			var optsi:int = line.search( /<.*>/g );
+			var optsi:Int = line.search( /<.*>/g );
 			var opts:Array;
 			if ( optsi != -1 )
 			{
@@ -196,13 +196,13 @@ public class AGALMiniAssembler
 				break;					
 			}
 			
-			var badreg:Boolean	= false;
-			var pad:uint		= 64 + 64 + 32;
-			var regLength:uint	= regs.length;
+			var badreg:Bool	= false;
+			var pad:UInt		= 64 + 64 + 32;
+			var regLength:UInt	= regs.length;
 			
-			for ( var j:int = 0; j < regLength; j++ )
+			for ( var j:Int = 0; j < regLength; j++ )
 			{
-				var isRelative:Boolean = false;
+				var isRelative:Bool = false;
 				var relreg:Array = regs[ j ].match( /\[.*\]/ig );
 				if ( relreg && relreg.length > 0 )
 				{
@@ -261,10 +261,10 @@ public class AGALMiniAssembler
 				regs[j] = regs[j].slice( regs[j].search( regFound.name ) + regFound.name.length );
 				//trace( "REGNUM: " +regs[j] );
 				var idxmatch:Array = isRelative ? relreg[0].match( /\d+/ ) : regs[j].match( /\d+/ );
-				var regidx:uint = 0;
+				var regidx:UInt = 0;
 				
 				if ( idxmatch )
-					regidx = uint( idxmatch[0] );
+					regidx = UInt( idxmatch[0] );
 				
 				if ( regFound.range < regidx )
 				{
@@ -273,13 +273,13 @@ public class AGALMiniAssembler
 					break;
 				}
 				
-				var regmask:uint		= 0;
+				var regmask:UInt		= 0;
 				var maskmatch:Array		= regs[j].match( /(\.[xyzw]{1,4})/ );
-				var isDest:Boolean		= ( j == 0 && !( opFound.flags & OP_NO_DEST ) );
-				var isSampler:Boolean	= ( j == 2 && ( opFound.flags & OP_SPECIAL_TEX ) );
-				var reltype:uint		= 0;
-				var relsel:uint			= 0;
-				var reloffset:int		= 0;
+				var isDest:Bool		= ( j == 0 && !( opFound.flags & OP_NO_DEST ) );
+				var isSampler:Bool	= ( j == 2 && ( opFound.flags & OP_SPECIAL_TEX ) );
+				var reltype:UInt		= 0;
+				var relsel:UInt			= 0;
+				var reloffset:Int		= 0;
 				
 				if ( isDest && isRelative )
 				{
@@ -291,9 +291,9 @@ public class AGALMiniAssembler
 				if ( maskmatch )
 				{
 					regmask = 0;
-					var cv:uint; 
-					var maskLength:uint = maskmatch[0].length;
-					for ( var k:int = 1; k < maskLength; k++ )
+					var cv:UInt; 
+					var maskLength:UInt = maskmatch[0].length;
+					for ( var k:Int = 1; k < maskLength; k++ )
 					{
 						cv = maskmatch[0].charCodeAt(k) - "x".charCodeAt(0);
 						if ( cv > 2 )
@@ -360,9 +360,9 @@ public class AGALMiniAssembler
 					{
 						if ( verbose )
 							trace( "  emit sampler" );
-						var samplerbits:uint = 5; // type 5 
-						var optsLength:uint = opts == null ? 0 : opts.length;
-						var bias:Number = 0; 
+						var samplerbits:UInt = 5; // type 5 
+						var optsLength:UInt = opts == null ? 0 : opts.length;
+						var bias:Float = 0; 
 						for ( k = 0; k<optsLength; k++ )
 						{
 							if ( verbose )
@@ -372,7 +372,7 @@ public class AGALMiniAssembler
 							{
 								// todo check that it's a number...
 								//trace( "Warning, unknown sampler option: "+opts[k] );
-								bias = Number(opts[k]); 
+								bias = Float(opts[k]); 
 								if ( verbose )
 									trace( "    bias: " + bias );																	
 							}
@@ -380,11 +380,11 @@ public class AGALMiniAssembler
 							{
 								if ( optfound.flag != SAMPLER_SPECIAL_SHIFT )
 									samplerbits &= ~( 0xf << optfound.flag );										
-								samplerbits |= uint( optfound.mask ) << uint( optfound.flag );
+								samplerbits |= UInt( optfound.mask ) << UInt( optfound.flag );
 							}
 						}
 						agalcode.writeShort( regidx );
-						agalcode.writeByte(int(bias*8.0));
+						agalcode.writeByte(Int(bias*8.0));
 						agalcode.writeByte(0);							
 						agalcode.writeUnsignedInt( samplerbits );
 						
@@ -430,8 +430,8 @@ public class AGALMiniAssembler
 		if ( debugEnabled )
 		{
 			var dbgLine:String = "generated bytecode:";
-			var agalLength:uint = agalcode.length;
-			for ( var index:uint = 0; index < agalLength; index++ )
+			var agalLength:UInt = agalcode.length;
+			for ( var index:UInt = 0; index < agalLength; index++ )
 			{
 				if ( !( index % 16 ) )
 					dbgLine += "\n";
@@ -453,7 +453,7 @@ public class AGALMiniAssembler
 		return agalcode;
 	}
 	
-	private function initregmap ( version:uint, ignorelimits:Boolean ) : void {
+	private function initregmap ( version:UInt, ignorelimits:Bool ) : Void {
 		// version changes limits				
 		REGMAP[ VA ]	= new Register( VA,	"vertex attribute",		0x0,	ignorelimits?1024:7,						REG_VERT | REG_READ );
 		REGMAP[ VC ]	= new Register( VC,	"vertex constant",		0x1,	ignorelimits?1024:(version==1?127:250),		REG_VERT | REG_READ );
@@ -475,7 +475,7 @@ public class AGALMiniAssembler
 		REGMAP[ "fi" ]	= REGMAP[ VI ]; 
 	}
 	
-	static private function init():void
+	static private function init():Void
 	{
 		initialized = true;
 		
@@ -553,35 +553,35 @@ public class AGALMiniAssembler
 	private static const REGMAP:Dictionary					= new Dictionary();
 	private static const SAMPLEMAP:Dictionary				= new Dictionary();
 	
-	private static const MAX_OPCODES:int					= 2048;
+	private static const MAX_OPCODES:Int					= 2048;
 	
 	private static const FRAGMENT:String					= "fragment";
 	private static const VERTEX:String						= "vertex";
 	
 	// masks and shifts
-	private static const SAMPLER_TYPE_SHIFT:uint			= 8;
-	private static const SAMPLER_DIM_SHIFT:uint				= 12;
-	private static const SAMPLER_SPECIAL_SHIFT:uint			= 16;
-	private static const SAMPLER_REPEAT_SHIFT:uint			= 20;
-	private static const SAMPLER_MIPMAP_SHIFT:uint			= 24;
-	private static const SAMPLER_FILTER_SHIFT:uint			= 28;
+	private static const SAMPLER_TYPE_SHIFT:UInt			= 8;
+	private static const SAMPLER_DIM_SHIFT:UInt				= 12;
+	private static const SAMPLER_SPECIAL_SHIFT:UInt			= 16;
+	private static const SAMPLER_REPEAT_SHIFT:UInt			= 20;
+	private static const SAMPLER_MIPMAP_SHIFT:UInt			= 24;
+	private static const SAMPLER_FILTER_SHIFT:UInt			= 28;
 	
 	// regmap flags
-	private static const REG_WRITE:uint						= 0x1;
-	private static const REG_READ:uint						= 0x2;
-	private static const REG_FRAG:uint						= 0x20;
-	private static const REG_VERT:uint						= 0x40;
+	private static const REG_WRITE:UInt						= 0x1;
+	private static const REG_READ:UInt						= 0x2;
+	private static const REG_FRAG:UInt						= 0x20;
+	private static const REG_VERT:UInt						= 0x40;
 	
 	// opmap flags
-	private static const OP_SCALAR:uint						= 0x1;
-	private static const OP_SPECIAL_TEX:uint				= 0x8;
-	private static const OP_SPECIAL_MATRIX:uint				= 0x10;
-	private static const OP_FRAG_ONLY:uint					= 0x20;
-	private static const OP_VERT_ONLY:uint					= 0x40;
-	private static const OP_NO_DEST:uint					= 0x80;
-	private static const OP_VERSION2:uint 					= 0x100;		
-	private static const OP_INCNEST:uint 					= 0x200;
-	private static const OP_DECNEST:uint					= 0x400;
+	private static const OP_SCALAR:UInt						= 0x1;
+	private static const OP_SPECIAL_TEX:UInt				= 0x8;
+	private static const OP_SPECIAL_MATRIX:UInt				= 0x10;
+	private static const OP_FRAG_ONLY:UInt					= 0x20;
+	private static const OP_VERT_ONLY:UInt					= 0x40;
+	private static const OP_NO_DEST:UInt					= 0x80;
+	private static const OP_VERSION2:UInt 					= 0x100;		
+	private static const OP_INCNEST:UInt 					= 0x200;
+	private static const OP_DECNEST:UInt					= 0x400;
 	
 	// opcodes
 	private static const MOV:String							= "mov";
@@ -674,23 +674,23 @@ class OpCode
 	// ======================================================================
 	//	Properties
 	// ----------------------------------------------------------------------
-	private var _emitCode:uint;
-	private var _flags:uint;
+	private var _emitCode:UInt;
+	private var _flags:UInt;
 	private var _name:String;
-	private var _numRegister:uint;
+	private var _numRegister:UInt;
 	
 	// ======================================================================
 	//	Getters
 	// ----------------------------------------------------------------------
-	public function get emitCode():uint		{ return _emitCode; }
-	public function get flags():uint		{ return _flags; }
+	public function get emitCode():UInt		{ return _emitCode; }
+	public function get flags():UInt		{ return _flags; }
 	public function get name():String		{ return _name; }
-	public function get numRegister():uint	{ return _numRegister; }
+	public function get numRegister():UInt	{ return _numRegister; }
 	
 	// ======================================================================
 	//	Constructor
 	// ----------------------------------------------------------------------
-	public function OpCode( name:String, numRegister:uint, emitCode:uint, flags:uint)
+	public function OpCode( name:String, numRegister:UInt, emitCode:UInt, flags:UInt)
 	{
 		_name = name;
 		_numRegister = numRegister;
@@ -715,25 +715,25 @@ class Register
 	// ======================================================================
 	//	Properties
 	// ----------------------------------------------------------------------
-	private var _emitCode:uint;
+	private var _emitCode:UInt;
 	private var _name:String;
 	private var _longName:String;
-	private var _flags:uint;
-	private var _range:uint;
+	private var _flags:UInt;
+	private var _range:UInt;
 	
 	// ======================================================================
 	//	Getters
 	// ----------------------------------------------------------------------
-	public function get emitCode():uint		{ return _emitCode; }
+	public function get emitCode():UInt		{ return _emitCode; }
 	public function get longName():String	{ return _longName; }
 	public function get name():String		{ return _name; }
-	public function get flags():uint		{ return _flags; }
-	public function get range():uint		{ return _range; }
+	public function get flags():UInt		{ return _flags; }
+	public function get range():UInt		{ return _range; }
 	
 	// ======================================================================
 	//	Constructor
 	// ----------------------------------------------------------------------
-	public function Register( name:String, longName:String, emitCode:uint, range:uint, flags:uint)
+	public function Register( name:String, longName:String, emitCode:UInt, range:UInt, flags:UInt)
 	{
 		_name = name;
 		_longName = longName;
@@ -759,21 +759,21 @@ class Sampler
 	// ======================================================================
 	//	Properties
 	// ----------------------------------------------------------------------
-	private var _flag:uint;
-	private var _mask:uint;
+	private var _flag:UInt;
+	private var _mask:UInt;
 	private var _name:String;
 	
 	// ======================================================================
 	//	Getters
 	// ----------------------------------------------------------------------
-	public function get flag():uint		{ return _flag; }
-	public function get mask():uint		{ return _mask; }
+	public function get flag():UInt		{ return _flag; }
+	public function get mask():UInt		{ return _mask; }
 	public function get name():String	{ return _name; }
 	
 	// ======================================================================
 	//	Constructor
 	// ----------------------------------------------------------------------
-	public function Sampler( name:String, flag:uint, mask:uint )
+	public function Sampler( name:String, flag:UInt, mask:UInt )
 	{
 		_name = name;
 		_flag = flag;

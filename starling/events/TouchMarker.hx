@@ -30,7 +30,7 @@ internal class TouchMarker extends Sprite
         mCenter = new Point();
         mTexture = createTexture();
         
-        for (var i:int=0; i<2; ++i)
+        for (var i:Int=0; i<2; ++i)
         {
             var marker:Image = new Image(mTexture);
             marker.pivotX = mTexture.width / 2;
@@ -40,13 +40,13 @@ internal class TouchMarker extends Sprite
         }
     }
     
-    public override function dispose():void
+    public override function dispose():Void
     {
         mTexture.dispose();
         super.dispose();
     }
     
-    public function moveMarker(x:Number, y:Number, withCenter:Boolean=false):void
+    public function moveMarker(x:Float, y:Float, withCenter:Bool=false):Void
     {
         if (withCenter)
         {
@@ -60,7 +60,7 @@ internal class TouchMarker extends Sprite
         mockMarker.y = 2*mCenter.y - y;
     }
     
-    public function moveCenter(x:Number, y:Number):void
+    public function moveCenter(x:Float, y:Float):Void
     {
         mCenter.x = x;
         mCenter.y = y;
@@ -69,11 +69,11 @@ internal class TouchMarker extends Sprite
     
     private function createTexture():Texture
     {
-        var scale:Number = Starling.contentScaleFactor;
-        var radius:Number = 12 * scale;
-        var width:int = 32 * scale;
-        var height:int = 32 * scale;
-        var thickness:Number = 1.5 * scale;
+        var scale:Float = Starling.contentScaleFactor;
+        var radius:Float = 12 * scale;
+        var width:Int = 32 * scale;
+        var height:Int = 32 * scale;
+        var thickness:Float = 1.5 * scale;
         var shape:Shape = new Shape();
         
         // draw dark outline
@@ -95,10 +95,10 @@ internal class TouchMarker extends Sprite
     private function get realMarker():Image { return getChildAt(0) as Image; }
     private function get mockMarker():Image { return getChildAt(1) as Image; }
     
-    public function get realX():Number { return realMarker.x; }
-    public function get realY():Number { return realMarker.y; }
+    public function get realX():Float { return realMarker.x; }
+    public function get realY():Float { return realMarker.y; }
     
-    public function get mockX():Number { return mockMarker.x; }
-    public function get mockY():Number { return mockMarker.y; }
+    public function get mockX():Float { return mockMarker.x; }
+    public function get mockY():Float { return mockMarker.y; }
 }        
 }

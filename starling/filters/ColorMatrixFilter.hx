@@ -44,33 +44,33 @@ import starling.utils.Color;
 public class ColorMatrixFilter extends FragmentFilter
 {
     private var mShaderProgram:Program3D;
-    private var mUserMatrix:Vector.<Number>;   // offset in range 0-255
-    private var mShaderMatrix:Vector.<Number>; // offset in range 0-1, changed order
+    private var mUserMatrix:Vector.<Float>;   // offset in range 0-255
+    private var mShaderMatrix:Vector.<Float>; // offset in range 0-1, changed order
     
     private static const PROGRAM_NAME:String = "CMF";
-    private static const MIN_COLOR:Vector.<Number> = new <Number>[0, 0, 0, 0.0001];
+    private static const MIN_COLOR:Vector.<Float> = new <Float>[0, 0, 0, 0.0001];
     private static const IDENTITY:Array = [1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
-    private static const LUMA_R:Number = 0.299;
-    private static const LUMA_G:Number = 0.587;
-    private static const LUMA_B:Number = 0.114;
+    private static const LUMA_R:Float = 0.299;
+    private static const LUMA_G:Float = 0.587;
+    private static const LUMA_B:Float = 0.114;
     
     /** helper objects */
-    private static var sTmpMatrix1:Vector.<Number> = new Vector.<Number>(20, true);
-    private static var sTmpMatrix2:Vector.<Number> = new <Number>[];
+    private static var sTmpMatrix1:Vector.<Float> = new Vector.<Float>(20, true);
+    private static var sTmpMatrix2:Vector.<Float> = new <Float>[];
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
      *  @param matrix: a vector of 20 items arranged as a 4x5 matrix.   
      */
-    public function ColorMatrixFilter(matrix:Vector.<Number>=null)
+    public function ColorMatrixFilter(matrix:Vector.<Float>=null)
     {
-        mUserMatrix   = new <Number>[];
-        mShaderMatrix = new <Number>[];
+        mUserMatrix   = new <Float>[];
+        mShaderMatrix = new <Float>[];
         
         this.matrix = matrix;
     }
     
     /** @private */
-    protected override function createPrograms():void
+    protected override function createPrograms():Void
     {
         var target:Starling = Starling.current;
         
@@ -99,7 +99,7 @@ public class ColorMatrixFilter extends FragmentFilter
     }
     
     /** @private */
-    protected override function activate(pass:int, context:Context3D, texture:Texture):void
+    protected override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
@@ -109,7 +109,7 @@ public class ColorMatrixFilter extends FragmentFilter
     // color manipulation
     
     /** Inverts the colors of the filtered objects. */
-    public function invert():void
+    public function invert():Void
     {
         concatValues(-1,  0,  0,  0, 255,
                       0, -1,  0,  0, 255,
@@ -120,14 +120,14 @@ public class ColorMatrixFilter extends FragmentFilter
     /** Changes the saturation. Typical values are in the range (-1, 1).
      *  Values above zero will raise, values below zero will reduce the saturation.
      *  '-1' will produce a grayscale image. */ 
-    public function adjustSaturation(sat:Number):void
+    public function adjustSaturation(sat:Float):Void
     {
         sat += 1;
         
-        var invSat:Number  = 1 - sat;
-        var invLumR:Number = invSat * LUMA_R;
-        var invLumG:Number = invSat * LUMA_G;
-        var invLumB:Number = invSat * LUMA_B;
+        var invSat:Float  = 1 - sat;
+        var invLumR:Float = invSat * LUMA_R;
+        var invLumG:Float = invSat * LUMA_G;
+        var invLumB:Float = invSat * LUMA_B;
         
         concatValues((invLumR + sat), invLumG, invLumB, 0, 0,
                      invLumR, (invLumG + sat), invLumB, 0, 0,
@@ -137,10 +137,10 @@ public class ColorMatrixFilter extends FragmentFilter
     
     /** Changes the contrast. Typical values are in the range (-1, 1).
      *  Values above zero will raise, values below zero will reduce the contrast. */
-    public function adjustContrast(value:Number):void
+    public function adjustContrast(value:Float):Void
     {
-        var s:Number = value + 1;
-        var o:Number = 128 * (1 - s);
+        var s:Float = value + 1;
+        var o:Float = 128 * (1 - s);
         
         concatValues(s, 0, 0, 0, o,
                      0, s, 0, 0, o,
@@ -150,7 +150,7 @@ public class ColorMatrixFilter extends FragmentFilter
     
     /** Changes the brightness. Typical values are in the range (-1, 1).
      *  Values above zero will make the image brighter, values below zero will make it darker.*/ 
-    public function adjustBrightness(value:Number):void
+    public function adjustBrightness(value:Float):Void
     {
         value *= 255;
         
@@ -161,12 +161,12 @@ public class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Changes the hue of the image. Typical values are in the range (-1, 1). */
-    public function adjustHue(value:Number):void
+    public function adjustHue(value:Float):Void
     {
         value *= Math.PI;
         
-        var cos:Number = Math.cos(value);
-        var sin:Number = Math.sin(value);
+        var cos:Float = Math.cos(value);
+        var sin:Float = Math.sin(value);
         
         concatValues(
             ((LUMA_R + (cos * (1 - LUMA_R))) + (sin * -(LUMA_R))), ((LUMA_G + (cos * -(LUMA_G))) + (sin * -(LUMA_G))), ((LUMA_B + (cos * -(LUMA_B))) + (sin * (1 - LUMA_B))), 0, 0,
@@ -178,16 +178,16 @@ public class ColorMatrixFilter extends FragmentFilter
     /** Tints the image in a certain color, analog to what can be done in Flash Pro.
      *  @param color: the RGB color with which the image should be tinted.
      *  @param amount: the intensity with which tinting should be applied. Range (0, 1). */
-    public function tint(color:uint, amount:Number=1.0):void
+    public function tint(color:UInt, amount:Float=1.0):Void
     {
-        var r:Number = Color.getRed(color)   / 255.0;
-        var g:Number = Color.getGreen(color) / 255.0;
-        var b:Number = Color.getBlue(color)  / 255.0;
-        var q:Number = 1 - amount;
+        var r:Float = Color.getRed(color)   / 255.0;
+        var g:Float = Color.getGreen(color) / 255.0;
+        var b:Float = Color.getBlue(color)  / 255.0;
+        var q:Float = 1 - amount;
 
-        var rA:Number = amount * r;
-        var gA:Number = amount * g;
-        var bA:Number = amount * b;
+        var rA:Float = amount * r;
+        var gA:Float = amount * g;
+        var bA:Float = amount * b;
 
         concatValues(
             q + rA * LUMA_R, rA * LUMA_G, rA * LUMA_B, 0, 0,
@@ -199,26 +199,26 @@ public class ColorMatrixFilter extends FragmentFilter
     // matrix manipulation
     
     /** Changes the filter matrix back to the identity matrix. */
-    public function reset():void
+    public function reset():Void
     {
         matrix = null;
     }
     
     /** Concatenates the current matrix with another one. */
-    public function concat(matrix:Vector.<Number>):void
+    public function concat(matrix:Vector.<Float>):Void
     {
-        var i:int = 0;
+        var i:Int = 0;
 
-        for (var y:int=0; y<4; ++y)
+        for (var y:Int=0; y<4; ++y)
         {
-            for (var x:int=0; x<5; ++x)
+            for (var x:Int=0; x<5; ++x)
             {
-                sTmpMatrix1[int(i+x)] = 
+                sTmpMatrix1[Int(i+x)] = 
                     matrix[i]        * mUserMatrix[x]           +
-                    matrix[int(i+1)] * mUserMatrix[int(x +  5)] +
-                    matrix[int(i+2)] * mUserMatrix[int(x + 10)] +
-                    matrix[int(i+3)] * mUserMatrix[int(x + 15)] +
-                    (x == 4 ? matrix[int(i+4)] : 0);
+                    matrix[Int(i+1)] * mUserMatrix[Int(x +  5)] +
+                    matrix[Int(i+2)] * mUserMatrix[Int(x + 10)] +
+                    matrix[Int(i+3)] * mUserMatrix[Int(x + 15)] +
+                    (x == 4 ? matrix[Int(i+4)] : 0);
             }
             
             i+=5;
@@ -229,11 +229,11 @@ public class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Concatenates the current matrix with another one, passing its contents directly. */
-    private function concatValues(m0:Number, m1:Number, m2:Number, m3:Number, m4:Number, 
-                                  m5:Number, m6:Number, m7:Number, m8:Number, m9:Number, 
-                                  m10:Number, m11:Number, m12:Number, m13:Number, m14:Number, 
-                                  m15:Number, m16:Number, m17:Number, m18:Number, m19:Number
-                                  ):void
+    private function concatValues(m0:Float, m1:Float, m2:Float, m3:Float, m4:Float, 
+                                  m5:Float, m6:Float, m7:Float, m8:Float, m9:Float, 
+                                  m10:Float, m11:Float, m12:Float, m13:Float, m14:Float, 
+                                  m15:Float, m16:Float, m17:Float, m18:Float, m19:Float
+                                  ):Void
     {
         sTmpMatrix2.length = 0;
         sTmpMatrix2.push(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
@@ -242,13 +242,13 @@ public class ColorMatrixFilter extends FragmentFilter
         concat(sTmpMatrix2);
     }
 
-    private function copyMatrix(from:Vector.<Number>, to:Vector.<Number>):void
+    private function copyMatrix(from:Vector.<Float>, to:Vector.<Float>):Void
     {
-        for (var i:int=0; i<20; ++i)
+        for (var i:Int=0; i<20; ++i)
             to[i] = from[i];
     }
     
-    private function updateShaderMatrix():void
+    private function updateShaderMatrix():Void
     {
         // the shader needs the matrix components in a different order, 
         // and it needs the offsets in the range 0-1.
@@ -267,8 +267,8 @@ public class ColorMatrixFilter extends FragmentFilter
     // properties
     
     /** A vector of 20 items arranged as a 4x5 matrix. */
-    public function get matrix():Vector.<Number> { return mUserMatrix; }
-    public function set matrix(value:Vector.<Number>):void
+    public function get matrix():Vector.<Float> { return mUserMatrix; }
+    public function set matrix(value:Vector.<Float>):Void
     {
         if (value && value.length != 20) 
             throw new ArgumentError("Invalid matrix length: must be 20");

@@ -93,9 +93,9 @@ public class BlendMode
     
     /** Returns the blend factors that correspond with a certain mode and premultiplied alpha
      *  value. Throws an ArgumentError if the mode does not exist. */
-    public static function getBlendFactors(mode:String, premultipliedAlpha:Boolean=true):Array
+    public static function getBlendFactors(mode:String, premultipliedAlpha:Bool=true):Array
     {
-        var modes:Object = sBlendFactors[int(premultipliedAlpha)];
+        var modes:Object = sBlendFactors[Int(premultipliedAlpha)];
         if (mode in modes) return modes[mode];
         else throw new ArgumentError("Invalid blend mode");
     }
@@ -104,12 +104,12 @@ public class BlendMode
      *  (pma) value. If the mode for the other pma value was not yet registered, the factors are
      *  used for both pma settings. */
     public static function register(name:String, sourceFactor:String, destFactor:String,
-                                    premultipliedAlpha:Boolean=true):void
+                                    premultipliedAlpha:Bool=true):Void
     {
-        var modes:Object = sBlendFactors[int(premultipliedAlpha)];
+        var modes:Object = sBlendFactors[Int(premultipliedAlpha)];
         modes[name] = [sourceFactor, destFactor];
         
-        var otherModes:Object = sBlendFactors[int(!premultipliedAlpha)];
+        var otherModes:Object = sBlendFactors[Int(!premultipliedAlpha)];
         if (!(name in otherModes)) otherModes[name] = [sourceFactor, destFactor];
     }
 }

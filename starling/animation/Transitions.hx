@@ -28,7 +28,7 @@ import starling.errors.AbstractClassError;
  *  transition function must have the following signature, where <code>ratio</code> is 
  *  in the range 0-1:</p>
  *  
- *  <pre>function myTransition(ratio:Number):Number</pre>
+ *  <pre>function myTransition(ratio:Float):Float</pre>
  */
 public class Transitions
 {        
@@ -63,13 +63,13 @@ public class Transitions
     }
     
     /** Registers a new transition function under a certain name. */
-    public static function register(name:String, func:Function):void
+    public static function register(name:String, func:Function):Void
     {
         if (sTransitions == null) registerDefaults();
         sTransitions[name] = func;
     }
     
-    private static function registerDefaults():void
+    private static function registerDefaults():Void
     {
         sTransitions = new Dictionary();
         
@@ -94,98 +94,98 @@ public class Transitions
     
     // transition functions
     
-    protected static function linear(ratio:Number):Number
+    protected static function linear(ratio:Float):Float
     {
         return ratio;
     }
     
-    protected static function easeIn(ratio:Number):Number
+    protected static function easeIn(ratio:Float):Float
     {
         return ratio * ratio * ratio;
     }    
     
-    protected static function easeOut(ratio:Number):Number
+    protected static function easeOut(ratio:Float):Float
     {
-        var invRatio:Number = ratio - 1.0;
+        var invRatio:Float = ratio - 1.0;
         return invRatio * invRatio * invRatio + 1;
     }        
     
-    protected static function easeInOut(ratio:Number):Number
+    protected static function easeInOut(ratio:Float):Float
     {
         return easeCombined(easeIn, easeOut, ratio);
     }   
     
-    protected static function easeOutIn(ratio:Number):Number
+    protected static function easeOutIn(ratio:Float):Float
     {
         return easeCombined(easeOut, easeIn, ratio);
     }
     
-    protected static function easeInBack(ratio:Number):Number
+    protected static function easeInBack(ratio:Float):Float
     {
-        var s:Number = 1.70158;
+        var s:Float = 1.70158;
         return Math.pow(ratio, 2) * ((s + 1.0)*ratio - s);
     }
     
-    protected static function easeOutBack(ratio:Number):Number
+    protected static function easeOutBack(ratio:Float):Float
     {
-        var invRatio:Number = ratio - 1.0;            
-        var s:Number = 1.70158;
+        var invRatio:Float = ratio - 1.0;            
+        var s:Float = 1.70158;
         return Math.pow(invRatio, 2) * ((s + 1.0)*invRatio + s) + 1.0;
     }
     
-    protected static function easeInOutBack(ratio:Number):Number
+    protected static function easeInOutBack(ratio:Float):Float
     {
         return easeCombined(easeInBack, easeOutBack, ratio);
     }   
     
-    protected static function easeOutInBack(ratio:Number):Number
+    protected static function easeOutInBack(ratio:Float):Float
     {
         return easeCombined(easeOutBack, easeInBack, ratio);
     }        
     
-    protected static function easeInElastic(ratio:Number):Number
+    protected static function easeInElastic(ratio:Float):Float
     {
         if (ratio == 0 || ratio == 1) return ratio;
         else
         {
-            var p:Number = 0.3;
-            var s:Number = p/4.0;
-            var invRatio:Number = ratio - 1;
+            var p:Float = 0.3;
+            var s:Float = p/4.0;
+            var invRatio:Float = ratio - 1;
             return -1.0 * Math.pow(2.0, 10.0*invRatio) * Math.sin((invRatio-s)*(2.0*Math.PI)/p);                
         }            
     }
     
-    protected static function easeOutElastic(ratio:Number):Number
+    protected static function easeOutElastic(ratio:Float):Float
     {
         if (ratio == 0 || ratio == 1) return ratio;
         else
         {
-            var p:Number = 0.3;
-            var s:Number = p/4.0;                
+            var p:Float = 0.3;
+            var s:Float = p/4.0;                
             return Math.pow(2.0, -10.0*ratio) * Math.sin((ratio-s)*(2.0*Math.PI)/p) + 1;                
         }            
     }
     
-    protected static function easeInOutElastic(ratio:Number):Number
+    protected static function easeInOutElastic(ratio:Float):Float
     {
         return easeCombined(easeInElastic, easeOutElastic, ratio);
     }   
     
-    protected static function easeOutInElastic(ratio:Number):Number
+    protected static function easeOutInElastic(ratio:Float):Float
     {
         return easeCombined(easeOutElastic, easeInElastic, ratio);
     }
     
-    protected static function easeInBounce(ratio:Number):Number
+    protected static function easeInBounce(ratio:Float):Float
     {
         return 1.0 - easeOutBounce(1.0 - ratio);
     }
     
-    protected static function easeOutBounce(ratio:Number):Number
+    protected static function easeOutBounce(ratio:Float):Float
     {
-        var s:Number = 7.5625;
-        var p:Number = 2.75;
-        var l:Number;
+        var s:Float = 7.5625;
+        var p:Float = 2.75;
+        var l:Float;
         if (ratio < (1.0/p))
         {
             l = s * Math.pow(ratio, 2);
@@ -214,17 +214,17 @@ public class Transitions
         return l;
     }
     
-    protected static function easeInOutBounce(ratio:Number):Number
+    protected static function easeInOutBounce(ratio:Float):Float
     {
         return easeCombined(easeInBounce, easeOutBounce, ratio);
     }   
     
-    protected static function easeOutInBounce(ratio:Number):Number
+    protected static function easeOutInBounce(ratio:Float):Float
     {
         return easeCombined(easeOutBounce, easeInBounce, ratio);
     }
     
-    protected static function easeCombined(startFunc:Function, endFunc:Function, ratio:Number):Number
+    protected static function easeCombined(startFunc:Function, endFunc:Function, ratio:Float):Float
     {
         if (ratio < 0.5) return 0.5 * startFunc(ratio*2.0);
         else             return 0.5 * endFunc((ratio-0.5)*2.0) + 0.5;

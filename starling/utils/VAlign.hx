@@ -28,7 +28,7 @@ public final class VAlign
     public static const BOTTOM:String = "bottom";
     
     /** Indicates whether the given alignment string is valid. */
-    public static function isValid(vAlign:String):Boolean
+    public static function isValid(vAlign:String):Bool
     {
         return vAlign == TOP || vAlign == CENTER || vAlign == BOTTOM;
     }

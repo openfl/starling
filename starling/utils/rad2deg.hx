@@ -11,7 +11,7 @@
 package starling.utils
 {
 /** Converts an angle from radions into degrees. */
-public function rad2deg(rad:Number):Number
+public function rad2deg(rad:Float):Float
 {
     return rad / Math.PI * 180.0;            
 }

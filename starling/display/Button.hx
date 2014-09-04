@@ -40,7 +40,7 @@ import starling.utils.VAlign;
  */ 
 public class Button extends DisplayObjectContainer
 {
-    private static const MAX_DRAG_DIST:Number = 50;
+    private static const MAX_DRAG_DIST:Float = 50;
     
     private var mUpState:Texture;
     private var mDownState:Texture;
@@ -50,11 +50,11 @@ public class Button extends DisplayObjectContainer
     private var mTextField:TextField;
     private var mTextBounds:Rectangle;
     
-    private var mScaleWhenDown:Number;
-    private var mAlphaWhenDisabled:Number;
-    private var mEnabled:Boolean;
-    private var mIsDown:Boolean;
-    private var mUseHandCursor:Boolean;
+    private var mScaleWhenDown:Float;
+    private var mAlphaWhenDisabled:Float;
+    private var mEnabled:Bool;
+    private var mIsDown:Bool;
+    private var mUseHandCursor:Bool;
     
     /** Creates a button with textures for up- and down-state or text. */
     public function Button(upState:Texture, text:String="", downState:Texture=null)
@@ -81,7 +81,7 @@ public class Button extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public override function dispose():void
+    public override function dispose():Void
     {
         // text field might be disconnected from parent, so we have to dispose it manually
         if (mTextField)
@@ -90,7 +90,7 @@ public class Button extends DisplayObjectContainer
         super.dispose();
     }
     
-    private function resetContents():void
+    private function resetContents():Void
     {
         mIsDown = false;
         mBackground.texture = mUpState;
@@ -98,7 +98,7 @@ public class Button extends DisplayObjectContainer
         mContents.scaleX = mContents.scaleY = 1.0;
     }
     
-    private function createTextField():void
+    private function createTextField():Void
     {
         if (mTextField == null)
         {
@@ -116,7 +116,7 @@ public class Button extends DisplayObjectContainer
         mTextField.y = mTextBounds.y;
     }
     
-    private function onTouch(event:TouchEvent):void
+    private function onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = (mUseHandCursor && mEnabled && event.interactsWith(this)) ? 
             MouseCursor.BUTTON : MouseCursor.AUTO;
@@ -153,16 +153,16 @@ public class Button extends DisplayObjectContainer
     
     /** The scale factor of the button on touch. Per default, a button with a down state 
       * texture won't scale. */
-    public function get scaleWhenDown():Number { return mScaleWhenDown; }
-    public function set scaleWhenDown(value:Number):void { mScaleWhenDown = value; }
+    public function get scaleWhenDown():Float { return mScaleWhenDown; }
+    public function set scaleWhenDown(value:Float):Void { mScaleWhenDown = value; }
     
     /** The alpha value of the button when it is disabled. @default 0.5 */
-    public function get alphaWhenDisabled():Number { return mAlphaWhenDisabled; }
-    public function set alphaWhenDisabled(value:Number):void { mAlphaWhenDisabled = value; }
+    public function get alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
+    public function set alphaWhenDisabled(value:Float):Void { mAlphaWhenDisabled = value; }
     
     /** Indicates if the button can be triggered. */
-    public function get enabled():Boolean { return mEnabled; }
-    public function set enabled(value:Boolean):void
+    public function get enabled():Bool { return mEnabled; }
+    public function set enabled(value:Bool):Void
     {
         if (mEnabled != value)
         {
@@ -174,7 +174,7 @@ public class Button extends DisplayObjectContainer
     
     /** The text that is displayed on the button. */
     public function get text():String { return mTextField ? mTextField.text : ""; }
-    public function set text(value:String):void
+    public function set text(value:String):Void
     {
         if (value.length == 0)
         {
@@ -197,31 +197,31 @@ public class Button extends DisplayObjectContainer
     /** The name of the font displayed on the button. May be a system font or a registered 
       * bitmap font. */
     public function get fontName():String { return mTextField ? mTextField.fontName : "Verdana"; }
-    public function set fontName(value:String):void
+    public function set fontName(value:String):Void
     {
         createTextField();
         mTextField.fontName = value;
     }
     
     /** The size of the font. */
-    public function get fontSize():Number { return mTextField ? mTextField.fontSize : 12; }
-    public function set fontSize(value:Number):void
+    public function get fontSize():Float { return mTextField ? mTextField.fontSize : 12; }
+    public function set fontSize(value:Float):Void
     {
         createTextField();
         mTextField.fontSize = value;
     }
     
     /** The color of the font. */
-    public function get fontColor():uint { return mTextField ? mTextField.color : 0x0; }
-    public function set fontColor(value:uint):void
+    public function get fontColor():UInt { return mTextField ? mTextField.color : 0x0; }
+    public function set fontColor(value:UInt):Void
     {
         createTextField();
         mTextField.color = value;
     }
     
     /** Indicates if the font should be bold. */
-    public function get fontBold():Boolean { return mTextField ? mTextField.bold : false; }
-    public function set fontBold(value:Boolean):void
+    public function get fontBold():Bool { return mTextField ? mTextField.bold : false; }
+    public function set fontBold(value:Bool):Void
     {
         createTextField();
         mTextField.bold = value;
@@ -229,7 +229,7 @@ public class Button extends DisplayObjectContainer
     
     /** The texture that is displayed when the button is not being touched. */
     public function get upState():Texture { return mUpState; }
-    public function set upState(value:Texture):void
+    public function set upState(value:Texture):Void
     {
         if (mUpState != value)
         {
@@ -240,7 +240,7 @@ public class Button extends DisplayObjectContainer
     
     /** The texture that is displayed while the button is touched. */
     public function get downState():Texture { return mDownState; }
-    public function set downState(value:Texture):void
+    public function set downState(value:Texture):Void
     {
         if (mDownState != value)
         {
@@ -255,7 +255,7 @@ public class Button extends DisplayObjectContainer
         return mTextField ? mTextField.vAlign : VAlign.CENTER;
     }
     
-    public function set textVAlign(value:String):void
+    public function set textVAlign(value:String):Void
     {
         createTextField();
         mTextField.vAlign = value;
@@ -267,7 +267,7 @@ public class Button extends DisplayObjectContainer
         return mTextField ? mTextField.hAlign : HAlign.CENTER;
     }
     
-    public function set textHAlign(value:String):void
+    public function set textHAlign(value:String):Void
     {
         createTextField();
         mTextField.hAlign = value;
@@ -275,7 +275,7 @@ public class Button extends DisplayObjectContainer
     
     /** The bounds of the textfield on the button. Allows moving the text to a custom position. */
     public function get textBounds():Rectangle { return mTextBounds.clone(); }
-    public function set textBounds(value:Rectangle):void
+    public function set textBounds(value:Rectangle):Void
     {
         mTextBounds = value.clone();
         createTextField();
@@ -283,7 +283,7 @@ public class Button extends DisplayObjectContainer
     
     /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
      *  @default true */
-    public override function get useHandCursor():Boolean { return mUseHandCursor; }
-    public override function set useHandCursor(value:Boolean):void { mUseHandCursor = value; }
+    public override function get useHandCursor():Bool { return mUseHandCursor; }
+    public override function set useHandCursor(value:Bool):Void { mUseHandCursor = value; }
 }
 }

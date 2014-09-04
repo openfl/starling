@@ -20,7 +20,7 @@ import starling.events.EventDispatcher;
  *  
  *  <p>The primary use of this class is to do standard animations like movement, fading, 
  *  rotation, etc. But there are no limits on what to animate; as long as the property you want
- *  to animate is numeric (<code>int, uint, Number</code>), the tween can handle it. For a list 
+ *  to animate is numeric (<code>Int, UInt, Float</code>), the tween can handle it. For a list 
  *  of available Transition types, look at the "Transitions" class.</p> 
  *  
  *  <p>Here is an example of a tween that moves an object to the right, rotates it, and 
@@ -47,8 +47,8 @@ public class Tween extends EventDispatcher implements IAnimatable
     private var mTransitionName:String;
     
     private var mProperties:Vector.<String>;
-    private var mStartValues:Vector.<Number>;
-    private var mEndValues:Vector.<Number>;
+    private var mStartValues:Vector.<Float>;
+    private var mEndValues:Vector.<Float>;
 
     private var mOnStart:Function;
     private var mOnUpdate:Function;
@@ -60,16 +60,16 @@ public class Tween extends EventDispatcher implements IAnimatable
     private var mOnRepeatArgs:Array;
     private var mOnCompleteArgs:Array;
     
-    private var mTotalTime:Number;
-    private var mCurrentTime:Number;
-    private var mProgress:Number;
-    private var mDelay:Number;
-    private var mRoundToInt:Boolean;
+    private var mTotalTime:Float;
+    private var mCurrentTime:Float;
+    private var mProgress:Float;
+    private var mDelay:Float;
+    private var mRoundToInt:Bool;
     private var mNextTween:Tween;
-    private var mRepeatCount:int;
-    private var mRepeatDelay:Number;
-    private var mReverse:Boolean;
-    private var mCurrentCycle:int;
+    private var mRepeatCount:Int;
+    private var mRepeatDelay:Float;
+    private var mReverse:Bool;
+    private var mCurrentCycle:Int;
     
     /** Creates a tween with a target, duration (in seconds) and a transition function.
      *  @param target the object that you want to animate
@@ -77,13 +77,13 @@ public class Tween extends EventDispatcher implements IAnimatable
      *  @param transition can be either a String (e.g. one of the constants defined in the
      *         Transitions class) or a function. Look up the 'Transitions' class for a   
      *         documentation about the required function signature. */ 
-    public function Tween(target:Object, time:Number, transition:Object="linear")        
+    public function Tween(target:Object, time:Float, transition:Object="linear")        
     {
          reset(target, time, transition);
     }
 
     /** Resets the tween to its default values. Useful for pooling tweens. */
-    public function reset(target:Object, time:Number, transition:Object="linear"):Tween
+    public function reset(target:Object, time:Float, transition:Object="linear"):Tween
     {
         mTarget = target;
         mCurrentTime = 0.0;
@@ -104,52 +104,52 @@ public class Tween extends EventDispatcher implements IAnimatable
             throw new ArgumentError("Transition must be either a string or a function");
         
         if (mProperties)  mProperties.length  = 0; else mProperties  = new <String>[];
-        if (mStartValues) mStartValues.length = 0; else mStartValues = new <Number>[];
-        if (mEndValues)   mEndValues.length   = 0; else mEndValues   = new <Number>[];
+        if (mStartValues) mStartValues.length = 0; else mStartValues = new <Float>[];
+        if (mEndValues)   mEndValues.length   = 0; else mEndValues   = new <Float>[];
         
         return this;
     }
     
     /** Animates the property of the target to a certain value. You can call this method multiple
      *  times on one tween. */
-    public function animate(property:String, endValue:Number):void
+    public function animate(property:String, endValue:Float):Void
     {
         if (mTarget == null) return; // tweening null just does nothing.
                
         mProperties.push(property);
-        mStartValues.push(Number.NaN);
+        mStartValues.push(Float.NaN);
         mEndValues.push(endValue);
     }
     
     /** Animates the 'scaleX' and 'scaleY' properties of an object simultaneously. */
-    public function scaleTo(factor:Number):void
+    public function scaleTo(factor:Float):Void
     {
         animate("scaleX", factor);
         animate("scaleY", factor);
     }
     
     /** Animates the 'x' and 'y' properties of an object simultaneously. */
-    public function moveTo(x:Number, y:Number):void
+    public function moveTo(x:Float, y:Float):Void
     {
         animate("x", x);
         animate("y", y);
     }
     
     /** Animates the 'alpha' property of an object to a certain target value. */ 
-    public function fadeTo(alpha:Number):void
+    public function fadeTo(alpha:Float):Void
     {
         animate("alpha", alpha);
     }
     
     /** @inheritDoc */
-    public function advanceTime(time:Number):void
+    public function advanceTime(time:Float):Void
     {
         if (time == 0 || (mRepeatCount == 1 && mCurrentTime == mTotalTime)) return;
         
-        var i:int;
-        var previousTime:Number = mCurrentTime;
-        var restTime:Number = mTotalTime - mCurrentTime;
-        var carryOverTime:Number = time > restTime ? time - restTime : 0.0;
+        var i:Int;
+        var previousTime:Float = mCurrentTime;
+        var restTime:Float = mTotalTime - mCurrentTime;
+        var carryOverTime:Float = time > restTime ? time - restTime : 0.0;
         
         mCurrentTime += time;
         
@@ -164,20 +164,20 @@ public class Tween extends EventDispatcher implements IAnimatable
             if (mOnStart != null) mOnStart.apply(null, mOnStartArgs);
         }
 
-        var ratio:Number = mCurrentTime / mTotalTime;
-        var reversed:Boolean = mReverse && (mCurrentCycle % 2 == 1);
-        var numProperties:int = mStartValues.length;
+        var ratio:Float = mCurrentTime / mTotalTime;
+        var reversed:Bool = mReverse && (mCurrentCycle % 2 == 1);
+        var numProperties:Int = mStartValues.length;
         mProgress = reversed ? mTransitionFunc(1.0 - ratio) : mTransitionFunc(ratio);
 
         for (i=0; i<numProperties; ++i)
         {                
             if (mStartValues[i] != mStartValues[i]) // isNaN check - "isNaN" causes allocation! 
-                mStartValues[i] = mTarget[mProperties[i]] as Number;
+                mStartValues[i] = mTarget[mProperties[i]] as Float;
             
-            var startValue:Number = mStartValues[i];
-            var endValue:Number = mEndValues[i];
-            var delta:Number = endValue - startValue;
-            var currentValue:Number = startValue + mProgress * delta;
+            var startValue:Float = mStartValues[i];
+            var endValue:Float = mEndValues[i];
+            var delta:Float = endValue - startValue;
+            var currentValue:Float = startValue + mProgress * delta;
             
             if (mRoundToInt) currentValue = Math.round(currentValue);
             mTarget[mProperties[i]] = currentValue;
@@ -215,15 +215,15 @@ public class Tween extends EventDispatcher implements IAnimatable
     
     /** The end value a certain property is animated to. Throws an ArgumentError if the 
      *  property is not being animated. */
-    public function getEndValue(property:String):Number
+    public function getEndValue(property:String):Float
     {
-        var index:int = mProperties.indexOf(property);
+        var index:Int = mProperties.indexOf(property);
         if (index == -1) throw new ArgumentError("The property '" + property + "' is not animated");
-        else return mEndValues[index] as Number;
+        else return mEndValues[index] as Float;
     }
     
     /** Indicates if the tween is finished. */
-    public function get isComplete():Boolean 
+    public function get isComplete():Bool 
     { 
         return mCurrentTime >= mTotalTime && mRepeatCount == 1; 
     }        
@@ -233,7 +233,7 @@ public class Tween extends EventDispatcher implements IAnimatable
     
     /** The transition method used for the animation. @see Transitions */
     public function get transition():String { return mTransitionName; }
-    public function set transition(value:String):void 
+    public function set transition(value:String):Void 
     { 
         mTransitionName = value;
         mTransitionFunc = Transitions.getTransition(value);
@@ -244,24 +244,24 @@ public class Tween extends EventDispatcher implements IAnimatable
     
     /** The actual transition function used for the animation. */
     public function get transitionFunc():Function { return mTransitionFunc; }
-    public function set transitionFunc(value:Function):void
+    public function set transitionFunc(value:Function):Void
     {
         mTransitionName = "custom";
         mTransitionFunc = value;
     }
     
     /** The total time the tween will take per repetition (in seconds). */
-    public function get totalTime():Number { return mTotalTime; }
+    public function get totalTime():Float { return mTotalTime; }
     
     /** The time that has passed since the tween was created (in seconds). */
-    public function get currentTime():Number { return mCurrentTime; }
+    public function get currentTime():Float { return mCurrentTime; }
     
     /** The current progress between 0 and 1, as calculated by the transition function. */
-    public function get progress():Number { return mProgress; } 
+    public function get progress():Float { return mProgress; } 
     
     /** The delay before the tween is started (in seconds). @default 0 */
-    public function get delay():Number { return mDelay; }
-    public function set delay(value:Number):void 
+    public function get delay():Float { return mDelay; }
+    public function set delay(value:Float):Void 
     { 
         mCurrentTime = mCurrentTime + mDelay - value;
         mDelay = value;
@@ -269,66 +269,66 @@ public class Tween extends EventDispatcher implements IAnimatable
     
     /** The number of times the tween will be executed. 
      *  Set to '0' to tween indefinitely. @default 1 */
-    public function get repeatCount():int { return mRepeatCount; }
-    public function set repeatCount(value:int):void { mRepeatCount = value; }
+    public function get repeatCount():Int { return mRepeatCount; }
+    public function set repeatCount(value:Int):Void { mRepeatCount = value; }
     
     /** The amount of time to wait between repeat cycles (in seconds). @default 0 */
-    public function get repeatDelay():Number { return mRepeatDelay; }
-    public function set repeatDelay(value:Number):void { mRepeatDelay = value; }
+    public function get repeatDelay():Float { return mRepeatDelay; }
+    public function set repeatDelay(value:Float):Void { mRepeatDelay = value; }
     
     /** Indicates if the tween should be reversed when it is repeating. If enabled, 
      *  every second repetition will be reversed. @default false */
-    public function get reverse():Boolean { return mReverse; }
-    public function set reverse(value:Boolean):void { mReverse = value; }
+    public function get reverse():Bool { return mReverse; }
+    public function set reverse(value:Bool):Void { mReverse = value; }
     
     /** Indicates if the numeric values should be cast to Integers. @default false */
-    public function get roundToInt():Boolean { return mRoundToInt; }
-    public function set roundToInt(value:Boolean):void { mRoundToInt = value; }        
+    public function get roundToInt():Bool { return mRoundToInt; }
+    public function set roundToInt(value:Bool):Void { mRoundToInt = value; }        
     
     /** A function that will be called when the tween starts (after a possible delay). */
     public function get onStart():Function { return mOnStart; }
-    public function set onStart(value:Function):void { mOnStart = value; }
+    public function set onStart(value:Function):Void { mOnStart = value; }
     
     /** A function that will be called each time the tween is advanced. */
     public function get onUpdate():Function { return mOnUpdate; }
-    public function set onUpdate(value:Function):void { mOnUpdate = value; }
+    public function set onUpdate(value:Function):Void { mOnUpdate = value; }
     
     /** A function that will be called each time the tween finishes one repetition
      *  (except the last, which will trigger 'onComplete'). */
     public function get onRepeat():Function { return mOnRepeat; }
-    public function set onRepeat(value:Function):void { mOnRepeat = value; }
+    public function set onRepeat(value:Function):Void { mOnRepeat = value; }
     
     /** A function that will be called when the tween is complete. */
     public function get onComplete():Function { return mOnComplete; }
-    public function set onComplete(value:Function):void { mOnComplete = value; }
+    public function set onComplete(value:Function):Void { mOnComplete = value; }
     
     /** The arguments that will be passed to the 'onStart' function. */
     public function get onStartArgs():Array { return mOnStartArgs; }
-    public function set onStartArgs(value:Array):void { mOnStartArgs = value; }
+    public function set onStartArgs(value:Array):Void { mOnStartArgs = value; }
     
     /** The arguments that will be passed to the 'onUpdate' function. */
     public function get onUpdateArgs():Array { return mOnUpdateArgs; }
-    public function set onUpdateArgs(value:Array):void { mOnUpdateArgs = value; }
+    public function set onUpdateArgs(value:Array):Void { mOnUpdateArgs = value; }
     
     /** The arguments that will be passed to the 'onRepeat' function. */
     public function get onRepeatArgs():Array { return mOnRepeatArgs; }
-    public function set onRepeatArgs(value:Array):void { mOnRepeatArgs = value; }
+    public function set onRepeatArgs(value:Array):Void { mOnRepeatArgs = value; }
     
     /** The arguments that will be passed to the 'onComplete' function. */
     public function get onCompleteArgs():Array { return mOnCompleteArgs; }
-    public function set onCompleteArgs(value:Array):void { mOnCompleteArgs = value; }
+    public function set onCompleteArgs(value:Array):Void { mOnCompleteArgs = value; }
     
     /** Another tween that will be started (i.e. added to the same juggler) as soon as 
      *  this tween is completed. */
     public function get nextTween():Tween { return mNextTween; }
-    public function set nextTween(value:Tween):void { mNextTween = value; }
+    public function set nextTween(value:Tween):Void { mNextTween = value; }
     
     // tween pooling
     
     private static var sTweenPool:Vector.<Tween> = new <Tween>[];
     
     /** @private */
-    starling_internal static function fromPool(target:Object, time:Number, 
+    starling_internal static function fromPool(target:Object, time:Float, 
                                                transition:Object="linear"):Tween
     {
         if (sTweenPool.length) return sTweenPool.pop().reset(target, time, transition);
@@ -336,7 +336,7 @@ public class Tween extends EventDispatcher implements IAnimatable
     }
     
     /** @private */
-    starling_internal static function toPool(tween:Tween):void
+    starling_internal static function toPool(tween:Tween):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
         tween.mOnStart = tween.mOnUpdate = tween.mOnRepeat = tween.mOnComplete = null;

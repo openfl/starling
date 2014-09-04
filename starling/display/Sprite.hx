@@ -52,7 +52,7 @@ import starling.utils.RectangleUtil;
 public class Sprite extends DisplayObjectContainer
 {
     private var mFlattenedContents:Vector.<QuadBatch>;
-    private var mFlattenRequested:Boolean;
+    private var mFlattenRequested:Bool;
     private var mClipRect:Rectangle;
     
     /** Helper objects. */
@@ -67,17 +67,17 @@ public class Sprite extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public override function dispose():void
+    public override function dispose():Void
     {
         disposeFlattenedContents();
         super.dispose();
     }
     
-    private function disposeFlattenedContents():void
+    private function disposeFlattenedContents():Void
     {
         if (mFlattenedContents)
         {
-            for (var i:int=0, max:int=mFlattenedContents.length; i<max; ++i)
+            for (var i:Int=0, max:Int=mFlattenedContents.length; i<max; ++i)
                 mFlattenedContents[i].dispose();
             
             mFlattenedContents = null;
@@ -98,7 +98,7 @@ public class Sprite extends DisplayObjectContainer
      *  Thus, don't just blindly flatten all your sprites, but reserve flattening for sprites
      *  with a big number of children.</p> 
      */
-    public function flatten():void
+    public function flatten():Void
     {
         mFlattenRequested = true;
         broadcastEventWith(Event.FLATTEN);
@@ -106,14 +106,14 @@ public class Sprite extends DisplayObjectContainer
     
     /** Removes the rendering optimizations that were created when flattening the sprite.
      *  Changes to the sprite's children will immediately become visible again. */ 
-    public function unflatten():void
+    public function unflatten():Void
     {
         mFlattenRequested = false;
         disposeFlattenedContents();
     }
     
     /** Indicates if the sprite was flattened. */
-    public function get isFlattened():Boolean 
+    public function get isFlattened():Bool 
     { 
         return (mFlattenedContents != null) || mFlattenRequested; 
     }
@@ -123,7 +123,7 @@ public class Sprite extends DisplayObjectContainer
      *  <strong>Note:</strong> clip rects are axis aligned with the screen, so they
      *  will not be rotated or skewed if the Sprite is. */
     public function get clipRect():Rectangle { return mClipRect; }
-    public function set clipRect(value:Rectangle):void 
+    public function set clipRect(value:Rectangle):Void 
     {
         if (mClipRect && value) mClipRect.copyFrom(value);
         else mClipRect = (value ? value.clone() : null);
@@ -136,14 +136,14 @@ public class Sprite extends DisplayObjectContainer
         if (mClipRect == null) return null;
         if (resultRect == null) resultRect = new Rectangle();
         
-        var x:Number, y:Number;
-        var minX:Number =  Number.MAX_VALUE;
-        var maxX:Number = -Number.MAX_VALUE;
-        var minY:Number =  Number.MAX_VALUE;
-        var maxY:Number = -Number.MAX_VALUE;
+        var x:Float, y:Float;
+        var minX:Float =  Float.MAX_VALUE;
+        var maxX:Float = -Float.MAX_VALUE;
+        var minY:Float =  Float.MAX_VALUE;
+        var maxY:Float = -Float.MAX_VALUE;
         var transMatrix:Matrix = getTransformationMatrix(targetSpace, sHelperMatrix);
         
-        for (var i:int=0; i<4; ++i)
+        for (var i:Int=0; i<4; ++i)
         {
             switch(i)
             {
@@ -178,7 +178,7 @@ public class Sprite extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public override function hitTest(localPoint:Point, forTouch:Boolean=false):DisplayObject
+    public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
         if (mClipRect != null && !mClipRect.containsPoint(localPoint))
             return null;
@@ -187,7 +187,7 @@ public class Sprite extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public override function render(support:RenderSupport, parentAlpha:Number):void
+    public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
         if (mClipRect)
         {
@@ -212,14 +212,14 @@ public class Sprite extends DisplayObjectContainer
                 mFlattenRequested = false;
             }
             
-            var alpha:Number = parentAlpha * this.alpha;
-            var numBatches:int = mFlattenedContents.length;
+            var alpha:Float = parentAlpha * this.alpha;
+            var numBatches:Int = mFlattenedContents.length;
             var mvpMatrix:Matrix = support.mvpMatrix;
             
             support.finishQuadBatch();
             support.raiseDrawCount(numBatches);
             
-            for (var i:int=0; i<numBatches; ++i)
+            for (var i:Int=0; i<numBatches; ++i)
             {
                 var quadBatch:QuadBatch = mFlattenedContents[i];
                 var blendMode:String = quadBatch.blendMode == BlendMode.AUTO ?

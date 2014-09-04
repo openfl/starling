@@ -34,10 +34,10 @@ public class RectangleUtil
     {
         if (resultRect == null) resultRect = new Rectangle();
         
-        var left:Number   = rect1.x      > rect2.x      ? rect1.x      : rect2.x;
-        var right:Number  = rect1.right  < rect2.right  ? rect1.right  : rect2.right;
-        var top:Number    = rect1.y      > rect2.y      ? rect1.y      : rect2.y;
-        var bottom:Number = rect1.bottom < rect2.bottom ? rect1.bottom : rect2.bottom;
+        var left:Float   = rect1.x      > rect2.x      ? rect1.x      : rect2.x;
+        var right:Float  = rect1.right  < rect2.right  ? rect1.right  : rect2.right;
+        var top:Float    = rect1.y      > rect2.y      ? rect1.y      : rect2.y;
+        var bottom:Float = rect1.bottom < rect2.bottom ? rect1.bottom : rect2.bottom;
         
         if (left > right || top > bottom)
             resultRect.setEmpty();
@@ -58,17 +58,17 @@ public class RectangleUtil
      *  @see starling.utils.ScaleMode
      */
     public static function fit(rectangle:Rectangle, into:Rectangle, 
-                               scaleMode:String="showAll", pixelPerfect:Boolean=false,
+                               scaleMode:String="showAll", pixelPerfect:Bool=false,
                                resultRect:Rectangle=null):Rectangle
     {
         if (!ScaleMode.isValid(scaleMode)) throw new ArgumentError("Invalid scaleMode: " + scaleMode);
         if (resultRect == null) resultRect = new Rectangle();
         
-        var width:Number   = rectangle.width;
-        var height:Number  = rectangle.height;
-        var factorX:Number = into.width  / width;
-        var factorY:Number = into.height / height;
-        var factor:Number  = 1.0;
+        var width:Float   = rectangle.width;
+        var height:Float  = rectangle.height;
+        var factorX:Float = into.width  / width;
+        var factorY:Float = into.height / height;
+        var factor:Float  = 1.0;
         
         if (scaleMode == ScaleMode.SHOW_ALL)
         {
@@ -93,9 +93,9 @@ public class RectangleUtil
     }
     
     /** Calculates the next whole-number multiplier or divisor, moving either up or down. */
-    private static function nextSuitableScaleFactor(factor:Number, up:Boolean):Number
+    private static function nextSuitableScaleFactor(factor:Float, up:Bool):Float
     {
-        var divisor:Number = 1.0;
+        var divisor:Float = 1.0;
         
         if (up)
         {
@@ -121,7 +121,7 @@ public class RectangleUtil
     
     /** If the rectangle contains negative values for width or height, all coordinates
      *  are adjusted so that the rectangle describes the same region with positive values. */
-    public static function normalize(rect:Rectangle):void
+    public static function normalize(rect:Rectangle):Void
     {
         if (rect.width < 0)
         {
@@ -144,10 +144,10 @@ public class RectangleUtil
     {
         if (resultRect == null) resultRect = new Rectangle();
         
-        var minX:Number = Number.MAX_VALUE, maxX:Number = -Number.MAX_VALUE;
-        var minY:Number = Number.MAX_VALUE, maxY:Number = -Number.MAX_VALUE;
+        var minX:Float = Float.MAX_VALUE, maxX:Float = -Float.MAX_VALUE;
+        var minY:Float = Float.MAX_VALUE, maxY:Float = -Float.MAX_VALUE;
         
-        for (var i:int=0; i<4; ++i)
+        for (var i:Int=0; i<4; ++i)
         {
             MatrixUtil.transformCoords(transformationMatrix,
                 sPositions[i].x * rectangle.width, sPositions[i].y * rectangle.height,
