@@ -250,7 +250,7 @@ class Texture
                                           scale:Float=1, format:String="bgra",
                                           repeat:Bool=false):Texture
     {
-        var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true, 
+        var texture:Texture = Texture.empty(data.width / scale, data.height / scale, false, 
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
         
