@@ -15,7 +15,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import haxe.ds.Vector;
 import openfl.display3D.Context3DTextureFormat;
-import openfl.errors.Error;
+import openfl.errors.ArgumentError;
 
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
@@ -101,7 +101,7 @@ class SubTexture extends Texture
         if (mFrame != null)
         {
             if (count != 4)
-                throw new Error("Textures with a frame can only be used on quads");
+                throw new ArgumentError("Textures with a frame can only be used on quads");
             
             var deltaRight:Float  = mFrame.width  + mFrame.x - mWidth;
             var deltaBottom:Float = mFrame.height + mFrame.y - mHeight;
@@ -133,7 +133,7 @@ class SubTexture extends Texture
         }
         
         //for (var i:Int=startIndex; i<endIndex; i += 2 + stride)
-        var i:Int = 0;
+        var i:Int = startIndex;
         while(i<endIndex)
         {
             u = texCoords[    i   ];
