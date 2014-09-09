@@ -354,7 +354,7 @@ class Texture
         var isPot:Bool  = (origWidth == potWidth && origHeight == potHeight);
         var useRectTexture:Bool = !mipMapping && !repeat &&
             Starling.current.profile != "baselineConstrained" &&
-            Reflect.hasField(context, "createRectangleTexture") && format != "compressed";
+            format != "compressed";
         
         if (useRectTexture)
         {
@@ -363,8 +363,7 @@ class Texture
             
             // Rectangle Textures are supported beginning with AIR 3.8. By calling the new
             // methods only through those lookups, we stay compatible with older SDKs.
-            nativeTexture = Reflect.callMethod(context, Reflect.getProperty(context, "createRectangleTexture"), [
-                actualWidth, actualHeight, format, optimizeForRenderToTexture]); // TODO:
+            nativeTexture = context.createRectangleTexture(actualWidth, actualHeight, TextureUtils.ToContext3DTextureFormat(format), optimizeForRenderToTexture);
         }
         else
         {

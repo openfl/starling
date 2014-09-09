@@ -14,6 +14,7 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.Error;
 import openfl.geom.Matrix;
@@ -129,9 +130,10 @@ class ConcreteTexture extends Texture
                 canvas.dispose();
             }
         }
-        else // if (Std.is(mBase, RectangleTexture))
+        else if (Std.is(mBase, RectangleTexture))
         {
-            Reflect.callMethod(mBase, Reflect.getProperty(mBase, "uploadFromBitmapData"), [data]);
+            var baseTexrue = cast(mBase, RectangleTexture);
+            baseTexrue.uploadFromBitmapData(data);
         }
         
         if (potData != null) potData.dispose();
@@ -199,13 +201,12 @@ class ConcreteTexture extends Texture
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
-        // TODO:
-        //if (Std.is(mBase, openfl.display3D.textures.Texture))
+        if (Std.is(mBase, openfl.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, TextureUtils.ToContext3DTextureFormat(mFormat), 
                                           mOptimizedForRenderTexture);
-        //else // if (Std.is(mBase, RectangleTexture))
-        //    mBase = context["createRectangleTexture"](mWidth, mHeight, mFormat,
-        //                                              mOptimizedForRenderTexture);
+        else  if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
+            mBase = context.createRectangleTexture(mWidth, mHeight, TextureUtils.ToContext3DTextureFormat(mFormat),
+                                                      mOptimizedForRenderTexture);
         
         mDataUploaded = false;
     }
