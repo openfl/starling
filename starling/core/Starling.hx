@@ -767,7 +767,7 @@ class Starling extends EventDispatcher
 #if flash
             var supportsCursor:Bool = Mouse.supportsCursor;
 #else
-            var supportsCursor:Bool = true;
+            var supportsCursor:Bool = false;
 #end
             
             if (supportsCursor && touchEvent.isPrimaryTouchPoint) return;
@@ -818,7 +818,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        if (!multitouchEnabled/* || Mouse.supportsCursor*/)
+        //if (!multitouchEnabled/* || Mouse.supportsCursor*/)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
