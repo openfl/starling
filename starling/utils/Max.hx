@@ -16,4 +16,7 @@ class Max
 
 	/** The smallest representable 32-bit signed integer. */
 	inline public static var INT_MIN_VALUE:Int = -2147483647;
+
+    /** he largest representable 32-bit unsigned integer. */
+    inline public static var UINT_MAX_VALUE:UInt = 0xffffffff;
 }
