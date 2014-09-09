@@ -13,6 +13,10 @@ import flash.display.BitmapData;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 import haxe.Int64;
+import haxe.io.Bytes;
+import haxe.io.BytesData;
+import haxe.io.BytesInput;
+import haxe.zip.InflateImpl;
 
 import starling.textures.Texture;
 
@@ -278,17 +282,16 @@ class MiniBitmapFont
     public static var texture(get, never):Texture;
     public static function get_texture():Texture
     {
-        var bmpData:BitmapData = new BitmapData(BITMAP_WIDTH, BITMAP_HEIGHT);
-        var bmpBytes:ByteArray = new ByteArray();
-        var numBytes:Int = BITMAP_DATA.length;
-        
-        for (i in 0 ... numBytes)
-            bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
-        
-        bmpBytes.uncompress();
-        bmpData.setPixels(new Rectangle(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT), bmpBytes);
-        
-        return Texture.fromBitmapData(bmpData, false);
+        // TODO: Implement MiniBitmapFont.get_texture()
+        return null;
+
+        //var bmpData:BitmapData = new BitmapData(BITMAP_WIDTH, BITMAP_HEIGHT);
+        //var bmpBytes:Bytes = Bytes.ofData(BITMAP_DATA);
+        //
+        //var uncompressed:Bytes = InflateImpl.run(new BytesInput(bmpBytes));
+        //bmpData.setPixels(new Rectangle(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT), ByteArray.fromBytes(uncompressed));
+        //
+        //return Texture.fromBitmapData(bmpData, false);
     }
 
     public static var xml(get, never):Xml;
