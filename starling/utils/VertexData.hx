@@ -9,7 +9,11 @@
 // =================================================================================================
 
 package starling.utils;
+import away3d.utils.ArrayUtils;
 import haxe.ds.Vector;
+#if js
+import js.html.Float32Array;
+#end
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -53,8 +57,11 @@ class VertexData
     
     /** The offset of texture coordinates (u, v) within a vertex. */
     inline public static var TEXCOORD_OFFSET:Int = 6;
-    
+#if js    
+    private var mRawData:Float32Array;
+#else
     private var mRawData:Array<Float>;
+#end
     private var mPremultipliedAlpha:Bool;
     private var mNumVertices:Int;
 
@@ -64,7 +71,11 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
+#if js
+        mRawData = new Float32Array(0);
+#else
         mRawData = new Array<Float>();
+#end
         mPremultipliedAlpha = premultipliedAlpha;
         this.numVertices = numVertices;
     }
@@ -78,7 +89,11 @@ class VertexData
         
         var clone:VertexData = new VertexData(0, mPremultipliedAlpha);
         clone.mNumVertices = numVertices;
+#if js
+        clone.mRawData = new Float32Array(mRawData);
+#else
         clone.mRawData = mRawData.copy();
+#end
 
         //clone.mRawData.fixed = true;
         return clone;
@@ -103,7 +118,11 @@ class VertexData
             numVertices = mNumVertices - vertexID;
         
         var x:Float, y:Float;
+#if js
+        var targetRawData:Float32Array = targetData.mRawData;
+#else
         var targetRawData:Array<Float> = targetData.mRawData;
+#end
         var targetIndex:Int = targetVertexID * ELEMENTS_PER_VERTEX;
         var sourceIndex:Int = vertexID * ELEMENTS_PER_VERTEX;
         var sourceEnd:Int = (vertexID + numVertices) * ELEMENTS_PER_VERTEX;
@@ -138,7 +157,11 @@ class VertexData
         //mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
+#if js
+        var rawData:Float32Array = data.mRawData;
+#else
         var rawData:Array<Float> = data.mRawData;
+#end
         var rawDataLength:Int = rawData.length;
         
         for (i in 0 ... rawDataLength)
@@ -463,8 +486,21 @@ class VertexData
     public function set_numVertices(value:Int):Int
     {
         //mRawData.fixed = false;
-        //mRawData.length = value * ELEMENTS_PER_VERTEX;
-        
+#if js
+        var newArray:Float32Array = null;
+        if (value * ELEMENTS_PER_VERTEX > mRawData.length)
+        {
+            newArray = new Float32Array(value * ELEMENTS_PER_VERTEX);
+            newArray.set(mRawData);
+        }
+        else
+        {
+            newArray = new Float32Array(mRawData.buffer, 0, value * ELEMENTS_PER_VERTEX);
+        }
+        mRawData = newArray;
+#else
+        //ArrayUtils.reSize(mRawData, value * ELEMENTS_PER_VERTEX);
+#end
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = mRawData.length;
@@ -483,6 +519,11 @@ class VertexData
     }
     
     /** The raw vertex data; not a copy! */
+#if js
+    public var rawData(get, never):Float32Array;
+    public function get_rawData():Float32Array { return mRawData; }
+#else
     public var rawData(get, never):Array<Float>;
     public function get_rawData():Array<Float> { return mRawData; }
+#end
 }

@@ -14,6 +14,9 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import haxe.ds.Vector;
+#if js
+import js.html.Float32Array;
+#end
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.ArgumentError;
 
@@ -114,8 +117,13 @@ class SubTexture extends Texture
     }
 
     /** @inheritDoc */
+#if js
+    public override function adjustTexCoords(texCoords:Float32Array,
+                                             startIndex:Int=0, stride:Int=0, count:Int=-1):Void
+#else
     public override function adjustTexCoords(texCoords:Array<Float>,
                                              startIndex:Int=0, stride:Int=0, count:Int=-1):Void
+#end
     {
         if (count < 0)
             count = Std.int((texCoords.length - startIndex - 2) / (stride + 2) + 1);

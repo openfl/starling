@@ -18,6 +18,9 @@ import flash.display3D.Program3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
+#if js
+import js.html.Float32Array;
+#end
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -52,7 +55,11 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** Helper objects */
     private static var sOneHalf:Array<Float> = [0.5, 0.5, 0.5, 0.5];
+#if js
+    private static var sMapTexCoords:Float32Array = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
+#else
     private static var sMapTexCoords:Array<Float> = [0, 0, 1, 0, 0, 1, 1, 1];
+#end
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Array<Float> = 
         [0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0];
@@ -197,7 +204,11 @@ class DisplacementMapFilter extends FragmentFilter
         sMapTexCoords[6] = -mapX + maxU; sMapTexCoords[7] = -mapY + maxV;
         
         mMapTexture.adjustTexCoords(sMapTexCoords);
+#if js
+        mMapTexCoordBuffer.uploadFromFloat32Array(sMapTexCoords, 0, 4);
+#else
         mMapTexCoordBuffer.uploadFromVector(sMapTexCoords, 0, 4);
+#end
     }
     
     // properties
