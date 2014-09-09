@@ -49,10 +49,10 @@ class Tween extends EventDispatcher implements IAnimatable
     private var mStartValues:Array<Float>;
     private var mEndValues:Array<Float>;
 
-    private var mOnStart:Array<Dynamic>->Void;
-    private var mOnUpdate:Array<Dynamic>->Void;
-    private var mOnRepeat:Array<Dynamic>->Void;
-    private var mOnComplete:Array<Dynamic>->Void;  
+    private var mOnStart:Dynamic;
+    private var mOnUpdate:Dynamic;
+    private var mOnRepeat:Dynamic;
+    private var mOnComplete:Dynamic;  
     
     private var mOnStartArgs:Array<Dynamic>;
     private var mOnUpdateArgs:Array<Dynamic>;
@@ -198,7 +198,7 @@ class Tween extends EventDispatcher implements IAnimatable
             else
             {
                 // save callback & args: they might be changed through an event listener
-                var onComplete:Array<Dynamic>->Void = mOnComplete;
+                var onComplete:Dynamic = mOnComplete;
                 var onCompleteArgs:Array<Dynamic> = mOnCompleteArgs;
                 
                 // in the 'onComplete' callback, people might want to call "tween.reset" and
@@ -301,25 +301,25 @@ class Tween extends EventDispatcher implements IAnimatable
     public function set_roundToInt(value:Bool):Bool { return mRoundToInt = value; }        
     
     /** A function that will be called when the tween starts (after a possible delay). */
-    public var onStart(get, set):Array<Dynamic>->Void;
-    public function get_onStart():Array<Dynamic>->Void { return mOnStart; }
-    public function set_onStart(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return mOnStart = value; }
+    public var onStart(get, set):Dynamic;
+    public function get_onStart():Dynamic { return mOnStart; }
+    public function set_onStart(value:Dynamic):Dynamic { return mOnStart = value; }
     
     /** A function that will be called each time the tween is advanced. */
-    public var onUpdate(get, set):Array<Dynamic>->Void;
-    public function get_onUpdate():Array<Dynamic>->Void { return mOnUpdate; }
-    public function set_onUpdate(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return mOnUpdate = value; }
+    public var onUpdate(get, set):Dynamic;
+    public function get_onUpdate():Dynamic { return mOnUpdate; }
+    public function set_onUpdate(value:Dynamic):Dynamic { return mOnUpdate = value; }
     
     /** A function that will be called each time the tween finishes one repetition
      *  (except the last, which will trigger 'onComplete'). */
-    public var onRepeat(get, set):Array<Dynamic>->Void;
-    public function get_onRepeat():Array<Dynamic>->Void { return mOnRepeat; }
-    public function set_onRepeat(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return mOnRepeat = value; }
+    public var onRepeat(get, set):Dynamic;
+    public function get_onRepeat():Dynamic { return mOnRepeat; }
+    public function set_onRepeat(value:Dynamic):Dynamic { return mOnRepeat = value; }
     
     /** A function that will be called when the tween is complete. */
-    public var onComplete(get, set):Array<Dynamic>->Void;
-    public function get_onComplete():Array<Dynamic>->Void { return mOnComplete; }
-    public function set_onComplete(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return mOnComplete = value; }
+    public var onComplete(get, set):Dynamic;
+    public function get_onComplete():Dynamic { return mOnComplete; }
+    public function set_onComplete(value:Dynamic):Dynamic { return mOnComplete = value; }
     
     /** The arguments that will be passed to the 'onStart' function. */
     public var onStartArgs(get, set):Array<Dynamic>;
