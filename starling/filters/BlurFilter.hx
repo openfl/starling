@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.filters;
-{
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
@@ -32,18 +31,18 @@ class BlurFilter extends FragmentFilter
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Array<Number> = new <Number>[0, 0, 0, 0];
-    private var mWeights:Array<Number> = new <Number>[0, 0, 0, 0];
-    private var mColor:Array<Number>   = new <Number>[1, 1, 1, 1];
+    private var mOffsets:Array<Float> = [0, 0, 0, 0];
+    private var mWeights:Array<Float> = [0, 0, 0, 0];
+    private var mColor:Array<Float>   = [1, 1, 1, 1];
     
     private var mBlurX:Float;
     private var mBlurY:Float;
     private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Array<Number> = new Array<Number>(5, true);
+    private var sTmpWeights:Array<Float> = new Array<Float>();
     
-    /** Create a new BlurFilter. For each blur direction, the number of required passes is
+    /** Create a new BlurFilter. For each blur direction, the Float of required passes is
      *  <code>Math.ceil(blur)</code>. 
      *  
      *  <ul><li>blur = 0.5: 1 pass</li>  
@@ -53,21 +52,22 @@ class BlurFilter extends FragmentFilter
      *      <li>etc.</li>
      *  </ul>
      *  
-     *  <p>Instead of raising the number of passes, you should consider lowering the resolution.
+     *  <p>Instead of raising the Float of passes, you should consider lowering the resolution.
      *  A lower resolution will result in a blurrier image, while reducing the rendering
      *  cost.</p>
      */
-    public function BlurFilter(blurX:Float=1, blurY:Float=1, resolution:Float=1)
+    public function new(blurX:Float=1, blurY:Float=1, resolution:Float=1)
     {
         super(1, resolution);
         mBlurX = blurX;
         mBlurY = blurY;
         updateMarginsAndPasses();
+        //sTmpWeights.length = 5;
     }
     
     /** Creates a blur filter that is set up for a drop shadow effect. */
     public static function createDropShadow(distance:Float=4.0, angle:Float=0.785, 
-                                            color:uint=0x0, alpha:Float=0.5, blur:Float=1.0, 
+                                            color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0, 
                                             resolution:Float=0.5):BlurFilter
     {
         var dropShadow:BlurFilter = new BlurFilter(blur, blur, resolution);
@@ -79,7 +79,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** Creates a blur filter that is set up for a glow effect. */
-    public static function createGlow(color:uint=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+    public static function createGlow(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
                                       resolution:Float=0.5):BlurFilter
     {
         var glow:BlurFilter = new BlurFilter(blur, blur, resolution);
@@ -89,7 +89,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    protected override function createPrograms():Void
+    private override function createPrograms():Void
     {
         mNormalProgram = createProgram(false);
         mTintedProgram = createProgram(true);
@@ -154,7 +154,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    protected override function activate(pass:Int, context:Context3D, texture:Texture):Void
+    private override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         // already set by super class:
         // 
@@ -163,7 +163,7 @@ class BlurFilter extends FragmentFilter
         // vertex attribute 1:   texture coordinates (FLOAT_2)
         // texture 0:            input texture
         
-        updateParameters(pass, texture.nativeWidth, texture.nativeHeight);
+        updateParameters(pass, Std.int(texture.nativeWidth), Std.int(texture.nativeHeight));
         
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,   4, mOffsets);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mWeights);
@@ -203,12 +203,12 @@ class BlurFilter extends FragmentFilter
             pixelSize = 1.0 / textureHeight;
         }
         
-        const twoSigmaSq:Float = 2 * sigma * sigma; 
-        const multiplier:Float = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
+        var twoSigmaSq:Float = 2 * sigma * sigma; 
+        var multiplier:Float = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
         
         // get weights on the exact pixels (sTmpWeights) and calculate sums (mWeights)
         
-        for (var i:Int=0; i<5; ++i)
+        for (i in 0 ... 5)
             sTmpWeights[i] = multiplier * Math.exp(-i*i / twoSigmaSq);
         
         mWeights[0] = sTmpWeights[0];
@@ -259,7 +259,7 @@ class BlurFilter extends FragmentFilter
     /** A uniform color will replace the RGB values of the input color, while the alpha
      *  value will be multiplied with the given factor. Pass <code>false</code> as the
      *  first parameter to deactivate the uniform color. */
-    public function setUniformColor(enable:Bool, color:uint=0x0, alpha:Float=1.0):Void
+    public function setUniformColor(enable:Bool, color:UInt=0x0, alpha:Float=1.0):Void
     {
         mColor[0] = Color.getRed(color)   / 255.0;
         mColor[1] = Color.getGreen(color) / 255.0;
@@ -269,7 +269,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in x-direction (stage coordinates). 
-     *  The number of required passes will be <code>Math.ceil(value)</code>. */
+     *  The Float of required passes will be <code>Math.ceil(value)</code>. */
     public var blurX(get, set):Float;
     public function get_blurX():Float { return mBlurX; }
     public function set_blurX(value:Float):Float 
@@ -280,7 +280,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in y-direction (stage coordinates). 
-     *  The number of required passes will be <code>Math.ceil(value)</code>. */
+     *  The Float of required passes will be <code>Math.ceil(value)</code>. */
     public var blurY(get, set):Float;
     public function get_blurY():Float { return mBlurY; }
     public function set_blurY(value:Float):Float 
@@ -289,5 +289,4 @@ class BlurFilter extends FragmentFilter
         updateMarginsAndPasses(); 
         return mBlurY; 
     }
-}
 }
