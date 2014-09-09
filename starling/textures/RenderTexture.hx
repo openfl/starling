@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.textures;
-{
 import flash.display3D.Context3D;
 import flash.display3D.VertexBuffer3D;
 import flash.display3D.textures.TextureBase;
@@ -21,8 +20,7 @@ import starling.core.Starling;
 import starling.display.DisplayObject;
 import starling.display.Image;
 import starling.errors.MissingContextError;
-import starling.utils.execute;
-import starling.utils.getNextPowerOfTwo;
+import starling.utils.PowerOfTwo.getNextPowerOfTwo;
 
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
  * 
@@ -58,8 +56,8 @@ import starling.utils.getNextPowerOfTwo;
  */
 class RenderTexture extends SubTexture
 {
-    private const CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
-    private const PMA:Bool = true;
+    inline private static var CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
+    inline private static var PMA:Bool = true;
     
     private var mActiveTexture:Texture;
     private var mBufferTexture:Texture;
@@ -76,22 +74,22 @@ class RenderTexture extends SubTexture
      *  you to use the texture just like a canvas. If it is not, it will be cleared before each
      *  draw call. Persistancy doubles the required graphics memory! Thus, if you need the
      *  texture only for one draw (or drawBundled) call, you should deactivate it. */
-    public function RenderTexture(width:Int, height:Int, persistent:Bool=true, scale:Float=-1)
+    public function new(width:Int, height:Int, persistent:Bool=true, scale:Float=-1)
     {
         // TODO: when Adobe has fixed this bug on the iPad 1 (see 'supportsNonPotDimensions'),
         //       we can remove 'legalWidth/Height' and just pass on the original values.
         //
         // [Workaround]
 
-        if (scale <= 0) scale = Starling.contentScaleFactor;
+        if (scale <= 0) scale = Starling.current.contentScaleFactor;
 
         var legalWidth:Float  = width;
         var legalHeight:Float = height;
 
         if (!supportsNonPotDimensions)
         {
-            legalWidth  = getNextPowerOfTwo(width  * scale) / scale;
-            legalHeight = getNextPowerOfTwo(height * scale) / scale;
+            legalWidth  = getNextPowerOfTwo(Std.int(width  * scale)) / scale;
+            legalHeight = getNextPowerOfTwo(Std.int(height * scale)) / scale;
         }
 
         // [/Workaround]
@@ -161,7 +159,7 @@ class RenderTexture extends SubTexture
      *  @param drawingBlock: a callback with the form: <pre>function():Void;</pre>
      *  @param antiAliasing: Only supported beginning with AIR 13, and only on Desktop.
      *                       Values range from 0 (no antialiasing) to 4 (best quality). */
-    public function drawBundled(drawingBlock:Function, antiAliasing:Int=0):Void
+    public function drawBundled(drawingBlock:DisplayObject->Matrix->Float->Void, antiAliasing:Int=0):Void
     {
         renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
     }
@@ -171,17 +169,17 @@ class RenderTexture extends SubTexture
         mSupport.loadIdentity();
         mSupport.blendMode = object.blendMode;
         
-        if (matrix) mSupport.prependMatrix(matrix);
+        if (matrix != null) mSupport.prependMatrix(matrix);
         else        mSupport.transformMatrix(object);
         
         object.render(mSupport, alpha);
     }
     
-    private function renderBundled(renderBlock:Function, object:DisplayObject=null,
+    private function renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
                                    matrix:Matrix=null, alpha:Float=1.0,
                                    antiAliasing:Int=0):Void
     {
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
         
         // persistent drawing uses double buffering, as Molehill forces us to call 'clear'
@@ -212,9 +210,9 @@ class RenderTexture extends SubTexture
         try
         {
             mDrawing = true;
-            execute(renderBlock, object, matrix, alpha);
+            renderBlock(object, matrix, alpha);
         }
-        finally
+        //finally
         {
             mDrawing = false;
             mSupport.finishQuadBatch();
@@ -226,9 +224,9 @@ class RenderTexture extends SubTexture
     
     /** Clears the render texture with a certain color and alpha value. Call without any
      *  arguments to restore full transparency. */
-    public function clear(rgb:uint=0, alpha:Float=0.0):Void
+    public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
         
         mSupport.renderTarget = mActiveTexture;
@@ -244,45 +242,47 @@ class RenderTexture extends SubTexture
     private var supportsNonPotDimensions(get, never):Bool;
     private function get_supportsNonPotDimensions():Bool
     {
-        var target:Starling = Starling.current;
-        var context:Context3D = Starling.context;
-        var support:Object = target.contextData[CONTEXT_POT_SUPPORT_KEY];
+        // TODO: Check if the device supports npot texture
+        return true;
+        //var target:Starling = Starling.current;
+        //var context:Context3D = Starling.current.context;
+        //var support:Dynamic = target.contextData[CONTEXT_POT_SUPPORT_KEY];
+//
+        //if (support == null)
+        //{
+            //if (target.profile != "baselineConstrained" && "createRectangleTexture" in context)
+            //{
+                //var texture:TextureBase;
+                //var buffer:VertexBuffer3D;
+//
+                //try
+                //{
+                    //texture = context["createRectangleTexture"](2, 3, "bgra", true);
+                    //context.setRenderToTexture(texture);
+                    //context.clear();
+                    //context.setRenderToBackBuffer();
+                    //context.createVertexBuffer(1, 1);
+                    //support = true;
+                //}
+                //catch (e:Error)
+                //{
+                    //support = false;
+                //}
+                ////finally
+                //{
+                    //if (texture) texture.dispose();
+                    //if (buffer) buffer.dispose();
+                //}
+            //}
+            //else
+            //{
+                //support = false;
+            //}
+//
+            //target.contextData[CONTEXT_POT_SUPPORT_KEY] = support;
+        //}
 
-        if (support == null)
-        {
-            if (target.profile != "baselineConstrained" && "createRectangleTexture" in context)
-            {
-                var texture:TextureBase;
-                var buffer:VertexBuffer3D;
-
-                try
-                {
-                    texture = context["createRectangleTexture"](2, 3, "bgra", true);
-                    context.setRenderToTexture(texture);
-                    context.clear();
-                    context.setRenderToBackBuffer();
-                    context.createVertexBuffer(1, 1);
-                    support = true;
-                }
-                catch (e:Error)
-                {
-                    support = false;
-                }
-                finally
-                {
-                    if (texture) texture.dispose();
-                    if (buffer) buffer.dispose();
-                }
-            }
-            else
-            {
-                support = false;
-            }
-
-            target.contextData[CONTEXT_POT_SUPPORT_KEY] = support;
-        }
-
-        return support;
+        //return support;
     }
 
     // properties
@@ -292,9 +292,8 @@ class RenderTexture extends SubTexture
     public function get_isPersistent():Bool { return mBufferTexture != null; }
     
     /** @inheritDoc */
-    public override function get base():TextureBase { return mActiveTexture.base; }
+    public override function get_base():TextureBase { return mActiveTexture.base; }
     
     /** @inheritDoc */
-    public override function get root():ConcreteTexture { return mActiveTexture.root; }
-}
+    public override function get_root():ConcreteTexture { return mActiveTexture.root; }
 }
