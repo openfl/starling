@@ -20,7 +20,7 @@ class TextureOptions
     private var mFormat:String;
     private var mMipMapping:Bool;
     private var mOptimizeForRenderToTexture:Bool = false;
-    private var mOnReady:ConcreteTexture->Void = null;
+    private var mOnReady:Void->Void = null;
     private var mRepeat:Bool = false;
     
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
@@ -81,7 +81,7 @@ class TextureOptions
      *  <p>This is the expected function definition: 
      *  <code>function(texture:Texture):Void;</code></p> 
      */
-    public var onReady(get, never):ConcreteTexture->Void;
-    public function get_onReady():ConcreteTexture->Void { return mOnReady; }
-    public function set_onReady(value:ConcreteTexture->Void):Void { mOnReady = value; }
+    public var onReady(get, set):Void->Void;
+    public function get_onReady():Void->Void { return mOnReady; }
+    public function set_onReady(value:Void->Void):Void->Void { return mOnReady = value; }
 }
