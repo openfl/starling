@@ -272,7 +272,7 @@ class Texture
      *  asynchronously. It can only be used when the callback has been executed. This is the
      *  expected function definition: <code>function(texture:Texture):Void;</code></p> */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true, 
-                                       async:Dynamic->Void=null, repeat:Bool=false):Texture
+                                       async:Void->Void=null, repeat:Bool=false):Texture
     {
         var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();

@@ -150,7 +150,7 @@ class ConcreteTexture extends Texture
      *  upload is complete, at which time the callback function will be executed. This is the
      *  expected function definition: <code>function(texture:Texture):Void;</code></p>
      */
-    public function uploadAtfData(data:ByteArray, offset:Int=0, async:ConcreteTexture->Void=null):Void
+    public function uploadAtfData(data:ByteArray, offset:Int=0, async:Void->Void=null):Void
     {
         var eventType:String = "textureReady"; // defined here for backwards compatibility
         
