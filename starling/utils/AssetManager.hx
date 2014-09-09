@@ -1,5 +1,4 @@
 package starling.utils;
-{
 import flash.display.Bitmap;
 import flash.display.Loader;
 import flash.events.HTTPStatusEvent;
@@ -8,19 +7,22 @@ import flash.events.ProgressEvent;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundTransform;
-import flash.net.FileReference;
+import haxe.Json;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+//import flash.net.FileReference;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
-import flash.system.ImageDecodingPolicy;
+//import flash.system.ImageDecodingPolicy;
 import flash.system.LoaderContext;
 import flash.system.System;
 import flash.utils.ByteArray;
-import flash.utils.Dictionary;
-import flash.utils.clearTimeout;
-import flash.utils.describeType;
-import flash.utils.getQualifiedClassName;
-import flash.utils.setTimeout;
+//import flash.utils.Dictionary;
+//import flash.utils.clearTimeout;
+//import flash.utils.describeType;
+//import flash.utils.Type.getClassName;
+//import flash.utils.setTimeout;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -33,7 +35,7 @@ import starling.textures.TextureAtlas;
 import starling.textures.TextureOptions;
 
 /** Dispatched when all textures have been restored after a context loss. */
-[Event(name="texturesRestored", type="starling.events.Event")]
+//[Event(name="texturesRestored", type="starling.events.Event")]
 
 /** The AssetManager handles loading and accessing a variety of asset types. You can 
  *  add assets directly (via the 'add...' methods) or asynchronously via a queue. This allows
@@ -79,34 +81,34 @@ class AssetManager extends EventDispatcher
     private var mKeepFontXmls:Bool;
     private var mVerbose:Bool;
     
-    private var mQueue:Array;
+    private var mQueue:Array<Dynamic>;
     private var mIsLoading:Bool;
-    private var mTimeoutID:uint;
+    private var mTimeoutID:UInt;
     
-    private var mTextures:Dictionary;
-    private var mAtlases:Dictionary;
-    private var mSounds:Dictionary;
-    private var mXmls:Dictionary;
-    private var mObjects:Dictionary;
-    private var mByteArrays:Dictionary;
+    private var mTextures:Map<String, Texture>;
+    private var mAtlases:Map<String, TextureAtlas>;
+    private var mSounds:Map<String, Sound>;
+    private var mXmls:Map<String, Xml>;
+    private var mObjects:Map<String, Dynamic>;
+    private var mByteArrays:Map<String, ByteArray>;
     
     /** helper objects */
     private static var sNames:Array<String> = new Array<String>();
     
     /** Regex for name / extension extraction from URL. */
-    inline private static var NAME_REGEX:RegExp = /([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
+    private static var NAME_REGEX:EReg = ~/([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 
     /** Create a new AssetManager. The 'scaleFactor' and 'useMipmaps' parameters define
      *  how enqueued bitmaps will be converted to textures. */
-    public function AssetManager(scaleFactor:Float=1, useMipmaps:Bool=false)
+    public function new(scaleFactor:Float=1, useMipmaps:Bool=false)
     {
         mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
-        mTextures = new Dictionary();
-        mAtlases = new Dictionary();
-        mSounds = new Dictionary();
-        mXmls = new Dictionary();
-        mObjects = new Dictionary();
-        mByteArrays = new Dictionary();
+        mTextures = new Map<String, Texture>();
+        mAtlases = new Map<String, TextureAtlas>();
+        mSounds = new Map<String, Sound>();
+        mXmls = new Map<String, Xml>();
+        mObjects = new Map<String, Dynamic>();
+        mByteArrays = new Map<String, ByteArray>();
         mQueue = [];
     }
     
@@ -119,8 +121,8 @@ class AssetManager extends EventDispatcher
         for(atlas in mAtlases)
             atlas.dispose();
         
-        for(xml in mXmls)
-            System.disposeXML(xml);
+        //for(xml in mXmls)
+        //    System.disposeXML(xml);
         
         for(byteArray in mByteArrays)
             byteArray.clear();
@@ -133,13 +135,13 @@ class AssetManager extends EventDispatcher
      *  texture atlases. */
     public function getTexture(name:String):Texture
     {
-        if (name in mTextures) return mTextures[name];
+        if (mTextures.exists(name)) return mTextures[name];
         else
         {
             for(atlas in mAtlases)
             {
                 var texture:Texture = atlas.getTexture(name);
-                if (texture) return texture;
+                if (texture != null) return texture;
             }
             return null;
         }
@@ -151,10 +153,10 @@ class AssetManager extends EventDispatcher
     {
         if (result == null) result = new Array<Texture>();
         
-        for each (var name:String in getTextureNames(prefix, sNames))
+        for (name in getTextureNames(prefix, sNames))
             result.push(getTexture(name));
         
-        sNames.length = 0;
+        sNames = [];
         return result;
     }
     
@@ -166,7 +168,7 @@ class AssetManager extends EventDispatcher
         for(atlas in mAtlases)
             atlas.getNames(prefix, result);
         
-        result.sort(Array.CASEINSENSITIVE);
+        result.sort(compare);
         return result;
     }
     
@@ -194,14 +196,14 @@ class AssetManager extends EventDispatcher
     public function playSound(name:String, startTime:Float=0, loops:Int=0, 
                               transform:SoundTransform=null):SoundChannel
     {
-        if (name in mSounds)
+        if (mSounds.exists(name))
             return getSound(name).play(startTime, loops, transform);
         else 
             return null;
     }
     
     /** Returns an XML with a certain name, or null if it's not found. */
-    public function getXml(name:String):XML
+    public function getXml(name:String):Xml
     {
         return mXmls[name];
     }
@@ -215,7 +217,7 @@ class AssetManager extends EventDispatcher
 
     /** Returns an object with a certain name, or null if it's not found. Enqueued JSON
      *  data is parsed and can be accessed with this method. */
-    public function getObject(name:String):Object
+    public function getObject(name:String):Dynamic
     {
         return mObjects[name];
     }
@@ -249,7 +251,7 @@ class AssetManager extends EventDispatcher
     {
         log("Adding texture '" + name + "'");
         
-        if (name in mTextures)
+        if (mTextures.exists(name))
         {
             log("Warning: name was already in use; the previous texture will be replaced.");
             mTextures[name].dispose();
@@ -265,7 +267,7 @@ class AssetManager extends EventDispatcher
     {
         log("Adding texture atlas '" + name + "'");
         
-        if (name in mAtlases)
+        if (mAtlases.exists(name))
         {
             log("Warning: name was already in use; the previous atlas will be replaced.");
             mAtlases[name].dispose();
@@ -280,7 +282,7 @@ class AssetManager extends EventDispatcher
     {
         log("Adding sound '" + name + "'");
         
-        if (name in mSounds)
+        if (mSounds.exists(name))
             log("Warning: name was already in use; the previous sound will be replaced.");
 
         mSounds[name] = sound;
@@ -289,14 +291,14 @@ class AssetManager extends EventDispatcher
     /** Register an XML object under a certain name. It will be available right away.
      *  If the name was already taken, the existing XML will be disposed and replaced
      *  by the new one. */
-    public function addXml(name:String, xml:XML):Void
+    public function addXml(name:String, xml:Xml):Void
     {
         log("Adding XML '" + name + "'");
         
-        if (name in mXmls)
+        if (mXmls.exists(name))
         {
             log("Warning: name was already in use; the previous XML will be replaced.");
-            System.disposeXML(mXmls[name]);
+            //System.disposeXML(mXmls[name]);
         }
 
         mXmls[name] = xml;
@@ -304,11 +306,11 @@ class AssetManager extends EventDispatcher
     
     /** Register an arbitrary object under a certain name. It will be available right away. 
      *  If the name was already taken, the existing object will be replaced by the new one. */
-    public function addObject(name:String, object:Object):Void
+    public function addObject(name:String, object:Dynamic):Void
     {
         log("Adding object '" + name + "'");
         
-        if (name in mObjects)
+        if (mObjects.exists(name))
             log("Warning: name was already in use; the previous object will be replaced.");
         
         mObjects[name] = object;
@@ -321,7 +323,7 @@ class AssetManager extends EventDispatcher
     {
         log("Adding byte array '" + name + "'");
         
-        if (name in mByteArrays)
+        if (mByteArrays.exists(name))
         {
             log("Warning: name was already in use; the previous byte array will be replaced.");
             mByteArrays[name].clear();
@@ -337,10 +339,10 @@ class AssetManager extends EventDispatcher
     {
         log("Removing texture '" + name + "'");
         
-        if (dispose && name in mTextures)
+        if (dispose && mTextures.exists(name))
             mTextures[name].dispose();
         
-        delete mTextures[name];
+        mTextures.remove(name);
     }
     
     /** Removes a certain texture atlas, optionally disposing it. */
@@ -348,17 +350,17 @@ class AssetManager extends EventDispatcher
     {
         log("Removing texture atlas '" + name + "'");
         
-        if (dispose && name in mAtlases)
+        if (dispose && mAtlases.exists(name))
             mAtlases[name].dispose();
         
-        delete mAtlases[name];
+        mAtlases.remove(name);
     }
     
     /** Removes a certain sound. */
     public function removeSound(name:String):Void
     {
         log("Removing sound '"+ name + "'");
-        delete mSounds[name];
+        mSounds.remove(name);
     }
     
     /** Removes a certain Xml object, optionally disposing it. */
@@ -366,17 +368,17 @@ class AssetManager extends EventDispatcher
     {
         log("Removing xml '"+ name + "'");
         
-        if (dispose && name in mXmls)
-            System.disposeXML(mXmls[name]);
+        //if (dispose && mXmls.exists(name))
+        //    System.disposeXML(mXmls[name]);
         
-        delete mXmls[name];
+        mXmls.remove(name);
     }
     
     /** Removes a certain object. */
     public function removeObject(name:String):Void
     {
         log("Removing object '"+ name + "'");
-        delete mObjects[name];
+        mObjects.remove(name);
     }
     
     /** Removes a certain byte array, optionally disposing its memory right away. */
@@ -384,18 +386,18 @@ class AssetManager extends EventDispatcher
     {
         log("Removing byte array '"+ name + "'");
         
-        if (dispose && name in mByteArrays)
+        if (dispose && mByteArrays.exists(name))
             mByteArrays[name].clear();
         
-        delete mByteArrays[name];
+        mByteArrays.remove(name);
     }
     
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
         mIsLoading = false;
-        mQueue.length = 0;
-        clearTimeout(mTimeoutID);
+        mQueue = [];
+        //clearTimeout(mTimeoutID);
         dispatchEventWith(Event.CANCEL);
     }
     
@@ -407,12 +409,12 @@ class AssetManager extends EventDispatcher
         purgeQueue();
         dispose();
 
-        mTextures = new Dictionary();
-        mAtlases = new Dictionary();
-        mSounds = new Dictionary();
-        mXmls = new Dictionary();
-        mObjects = new Dictionary();
-        mByteArrays = new Dictionary();
+        mTextures = new Map<String, Texture>();
+        mAtlases = new Map<String, TextureAtlas>();
+        mSounds = new Map<String, Sound>();
+        mXmls = new Map<String, Xml>();
+        mObjects = new Map<String, Dynamic>();
+        mByteArrays = new Map<String, ByteArray>();
     }
     
     // queued adding
@@ -443,30 +445,28 @@ class AssetManager extends EventDispatcher
      *  <p>If you pass in JSON data, it will be parsed into an object and will be available via
      *  "getObject()".</p>
      */
-    public function enqueue(...rawAssets):Void
+    public function enqueue(rawAssets:Array<Dynamic>):Void
     {
         for(rawAsset in rawAssets)
         {
             if (Std.is(rawAsset, Array))
             {
-                enqueue.apply(this, rawAsset);
+                enqueue(rawAsset);
             }
-            else if (Std.is(rawAsset, Class))
+/*            else if (Std.is(rawAsset, Class))
             {
-                var typeXml:XML = describeType(rawAsset);
-                var childNode:XML;
-                
+                var cls:Class<Dynamic> = cast(rawAsset, Class<Dynamic>);
                 if (mVerbose)
                     log("Looking for static embedded assets in '" + 
-                        (typeXml.@name).split("::").pop() + "'"); 
+                        cls + "'"); 
                 
-                for each (childNode in typeXml.constant.(@type == "Class"))
-                    enqueueWithName(rawAsset[childNode.@name], childNode.@name);
+                for (childNode in typeXml.constant.att.type == "Class")
+                    enqueueWithName(rawAsset[childNode.att.name], childNode.att.name);
                 
-                for each (childNode in typeXml.variable.(@type == "Class"))
-                    enqueueWithName(rawAsset[childNode.@name], childNode.@name);
+                for (childNode in typeXml.variable.att.type == "Class")
+                    enqueueWithName(rawAsset[childNode.att.name], childNode.att.name);
             }
-            else if (getQualifiedClassName(rawAsset) == "flash.filesystem::File")
+            else if (Type.getClassName(rawAsset) == "flash.filesystem::File")
             {
                 if (!rawAsset["exists"])
                 {
@@ -475,18 +475,18 @@ class AssetManager extends EventDispatcher
                 else if (!rawAsset["isHidden"])
                 {
                     if (rawAsset["isDirectory"])
-                        enqueue.apply(this, rawAsset["getDirectoryListing"]());
+                        enqueue(rawAsset["getDirectoryListing"]());
                     else
                         enqueueWithName(rawAsset);
                 }
-            }
+            }*/
             else if (Std.is(rawAsset, String))
             {
                 enqueueWithName(rawAsset);
             }
             else
             {
-                log("Ignoring unsupported asset type: " + getQualifiedClassName(rawAsset));
+                log("Ignoring unsupported asset type: " + Type.getClassName(rawAsset));
             }
         }
     }
@@ -500,11 +500,11 @@ class AssetManager extends EventDispatcher
      *                  omit the parameter, it's attempted to generate a name automatically.
      *  @param options: Custom options that will be used if 'asset' points to texture data.
      *  @return         the name under which the asset was registered. */
-    public function enqueueWithName(asset:Object, name:String=null,
+    public function enqueueWithName(asset:Dynamic, name:String=null,
                                     options:TextureOptions=null):String
     {
-        if (getQualifiedClassName(asset) == "flash.filesystem::File")
-            asset = unescape(asset["url"]);
+        //if (Type.getClassName(asset) == "flash.filesystem::File")
+        //    asset = unescape(asset["url"]);
         
         if (name == null)    name = getName(asset);
         if (options == null) options = mDefaultTextureOptions;
@@ -531,7 +531,7 @@ class AssetManager extends EventDispatcher
      *
      *  @param onProgress: <code>function(ratio:Float):Void;</code> 
      */
-    public function loadQueue(onProgress:Function):Void
+    public function loadQueue(onProgress:Float->Void):Void
     {
         mStarling = Starling.current;
         
@@ -541,19 +541,21 @@ class AssetManager extends EventDispatcher
         if (mIsLoading)
             throw new Error("The queue is already being processed");
         
-        var xmls:Array<XML> = new Array<XML>();
+        var xmls:Array<Xml> = new Array<Xml>();
         var numElements:Int = mQueue.length;
         var currentRatio:Float = 0.0;
         
         mIsLoading = true;
-        resume();
-        
+
+        var processNext:Void->Void = null;
+        var processXmls:Void->Void = null;
+        var progress:Float->Void = null;
         function resume():Void
         {
-            currentRatio = mQueue.length ? 1.0 - (mQueue.length / numElements) : 1.0;
+            currentRatio = mQueue.length != 0 ? 1.0 - (mQueue.length / numElements) : 1.0;
             
-            if (mQueue.length)
-                mTimeoutID = setTimeout(processNext, 1);
+            if (mQueue.length != 0)
+                processNext();//mTimeoutID = setTimeout(processNext, 1);
             else
             {
                 processXmls();
@@ -564,56 +566,56 @@ class AssetManager extends EventDispatcher
                 onProgress(currentRatio);
         }
         
-        function processNext():Void
+        processNext = function():Void
         {
-            var assetInfo:Object = mQueue.shift();
-            clearTimeout(mTimeoutID);
+            var assetInfo:Dynamic = mQueue.shift();
+            //clearTimeout(mTimeoutID);
             processRawAsset(assetInfo.name, assetInfo.asset, assetInfo.options,
                             xmls, progress, resume);
         }
         
-        function processXmls():Void
+        processXmls = function():Void
         {
             // xmls are processed seperately at the end, because the textures they reference
             // have to be available for other XMLs. Texture atlases are processed first:
             // that way, their textures can be referenced, too.
             
-            xmls.sort(function(a:XML, b:XML):Int { 
-                return a.localName() == "TextureAtlas" ? -1 : 1; 
+            xmls.sort(function(a:Xml, b:Xml):Int { 
+                return a.nodeName.split(":").pop() == "TextureAtlas" ? -1 : 1; 
             });
             
             for(xml in xmls)
             {
                 var name:String;
                 var texture:Texture;
-                var rootNode:String = xml.localName();
+                var rootNode:String = xml.nodeName.split(":").pop();
                 
                 if (rootNode == "TextureAtlas")
                 {
-                    name = getName(xml.@imagePath.toString());
+                    name = getName(xml.get("imagePath").toString());
                     texture = getTexture(name);
                     
-                    if (texture)
+                    if (texture != null)
                     {
                         addTextureAtlas(name, new TextureAtlas(texture, xml));
 
                         if (mKeepAtlasXmls) addXml(name, xml);
-                        else System.disposeXML(xml);
+                        //else System.disposeXML(xml);
                     }
                     else log("Cannot create atlas: texture '" + name + "' is missing.");
                 }
                 else if (rootNode == "font")
                 {
-                    name = getName(xml.pages.page.@file.toString());
+                    name = getName(xml.elementsNamed("pages").next().elementsNamed("page").next().get("file"));
                     texture = getTexture(name);
                     
-                    if (texture)
+                    if (texture != null)
                     {
                         log("Adding bitmap font '" + name + "'");
                         TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
 
                         if (mKeepFontXmls) addXml(name, xml);
-                        else System.disposeXML(xml);
+                        //else System.disposeXML(xml);
                     }
                     else log("Cannot create bitmap font: texture '" + name + "' is missing.");
                 }
@@ -622,22 +624,21 @@ class AssetManager extends EventDispatcher
             }
         }
         
-        function progress(ratio:Float):Void
+        progress = function(ratio:Float):Void
         {
             onProgress(currentRatio + (1.0 / numElements) * Math.min(1.0, ratio) * 0.99);
         }
+        resume();
     }
     
-    private function processRawAsset(name:String, rawAsset:Object, options:TextureOptions,
-                                     xmls:Array<XML>,
-                                     onProgress:Function, onComplete:Function):Void
+    private function processRawAsset(name:String, rawAsset:Dynamic, options:TextureOptions,
+                                     xmls:Array<Xml>,
+                                     onProgress:Float->Void, onComplete:Void->Void):Void
     {
         var canceled:Bool = false;
-        
-        addEventListener(Event.CANCEL, cancel);
-        loadRawAsset(rawAsset, progress, process);
-        
-        function process(asset:Object):Void
+
+        var cancel:Void->Void = null;
+        function process(asset:Dynamic):Void
         {
             var texture:Texture;
             var bytes:ByteArray;
@@ -659,10 +660,10 @@ class AssetManager extends EventDispatcher
                 addSound(name, cast(asset, Sound));
                 onComplete();
             }
-            else if (Std.is(asset, XML))
+            else if (Std.is(asset, Xml))
             {
-                var xml:XML = cast(asset, XML);
-                var rootNode:String = xml.localName();
+                var xml:Xml = cast(asset, Xml);
+                var rootNode:String = xml.nodeName.split(":").pop();
                 
                 if (rootNode == "TextureAtlas" || rootNode == "font")
                     xmls.push(xml);
@@ -674,7 +675,8 @@ class AssetManager extends EventDispatcher
             else if (Starling.handleLostContext && mStarling.context.driverInfo == "Disposed")
             {
                 log("Context lost while processing assets, retrying ...");
-                setTimeout(process, 1, asset);
+                //setTimeout(process, 1, asset);
+                process(asset);
                 return; // to keep CANCEL event listener intact
             }
             else if (Std.is(asset, Bitmap))
@@ -683,9 +685,9 @@ class AssetManager extends EventDispatcher
                 texture.root.onRestore = function():Void
                 {
                     mNumLostTextures++;
-                    loadRawAsset(rawAsset, null, function(asset:Object):Void
+                    loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                     {
-                        try { cast(texture.root.uploadBitmap(asset, Bitmap)); }
+                        try { texture.root.uploadBitmap(cast(asset, Bitmap)); }
                         catch (e:Error) { log("Texture restoration failed: " + e.message); }
                         
                         asset.bitmapData.dispose();
@@ -711,9 +713,9 @@ class AssetManager extends EventDispatcher
                     texture.root.onRestore = function():Void
                     {
                         mNumLostTextures++;
-                        loadRawAsset(rawAsset, null, function(asset:Object):Void
+                        loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                         {
-                            try { cast(texture.root.uploadAtfData(asset, ByteArray), 0, true); }
+                            try { texture.root.uploadAtfData(cast(asset, ByteArray), 0); }
                             catch (e:Error) { log("Texture restoration failed: " + e.message); }
                             
                             asset.clear();
@@ -729,13 +731,13 @@ class AssetManager extends EventDispatcher
                 }
                 else if (byteArrayStartsWith(bytes, "{") || byteArrayStartsWith(bytes, "["))
                 {
-                    addObject(name, JSON.parse(bytes.readUTFBytes(bytes.length)));
+                    addObject(name, Json.parse(bytes.readUTFBytes(bytes.length)));
                     bytes.clear();
                     onComplete();
                 }
                 else if (byteArrayStartsWith(bytes, "<"))
                 {
-                    process(new XML(bytes));
+                    process(Xml.parse(bytes.toString()));
                     bytes.clear();
                 }
                 else
@@ -746,7 +748,7 @@ class AssetManager extends EventDispatcher
             }
             else
             {
-                log("Ignoring unsupported asset type: " + getQualifiedClassName(asset));
+                log("Ignoring unsupported asset type: " + Type.getClassName(asset));
                 onComplete();
             }
             
@@ -762,21 +764,104 @@ class AssetManager extends EventDispatcher
             if (!canceled) onProgress(ratio);
         }
         
-        function cancel():Void
+        cancel = function():Void
         {
             canceled = true;
         }
+        addEventListener(Event.CANCEL, cancel);
+        loadRawAsset(rawAsset, progress, process);
     }
     
-    private function loadRawAsset(rawAsset:Object, onProgress:Function, onComplete:Function):Void
+    private function loadRawAsset(rawAsset:Dynamic, onProgress:Float->Void, onComplete:Dynamic->Void):Void
     {
         var extension:String = null;
         var urlLoader:URLLoader = null;
         var url:String = null;
+
+        var complete:Dynamic->Void = null;
+        var onLoaderComplete:Dynamic->Void = null;
+        function onIoError(event:IOErrorEvent):Void
+        {
+            log("IO error: " + event.text);
+            complete(null);
+        }
+        
+        function onHttpResponseStatus(event:HTTPStatusEvent):Void
+        {
+            if (extension == null)
+            {
+                var headers:Array<Dynamic> = event.responseHeaders;
+                var contentType:String = getHttpHeader(headers, "Content-Type");
+
+                if (contentType != null && ~/(audio|image)\//.split(contentType) != null)
+                    extension = contentType.split("/").pop();
+            }
+        }
+
+        function onLoadProgress(event:ProgressEvent):Void
+        {
+            if (onProgress != null)
+                onProgress(event.bytesLoaded / event.bytesTotal);
+        }
+        
+        function onUrlLoaderComplete(event:Dynamic):Void
+        {
+            var bytes:ByteArray = transformData(cast(urlLoader.data, ByteArray), url);
+            var sound:Sound;
+            
+            urlLoader.removeEventListener(IOErrorEvent.IO_ERROR, onIoError);
+            urlLoader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+            urlLoader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+            urlLoader.removeEventListener(Event.COMPLETE, onUrlLoaderComplete);
+            
+            if (extension != null)
+                extension = extension.toLowerCase();
+
+            switch (extension)
+            {
+                case "mpeg":
+                case "mp3":
+                    sound = new Sound();
+                    sound.loadCompressedDataFromByteArray(bytes, bytes.length);
+                    bytes.clear();
+                    complete(sound);
+                case "jpg":
+                case "jpeg":
+                case "png":
+                case "gif":
+                    //var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
+                    var loader:Loader = new Loader();
+                    //loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+                    loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
+                    //loader.loadBytes(bytes, loaderContext);
+                    loader.loadBytes(bytes);
+                default: // any XML / JSON / binary data 
+                    complete(bytes);
+            }
+        }
+        
+        onLoaderComplete = function(event:Dynamic):Void
+        {
+            urlLoader.data.clear();
+            event.target.removeEventListener(Event.COMPLETE, onLoaderComplete);
+            complete(event.target.content);
+        }
+        
+        complete = function(asset:Dynamic):Void
+        {
+            // On mobile, it is not allowed / endorsed to make stage3D calls while the app
+            // is in the background. Thus, we pause queue processing if that's the case.
+            
+            if (SystemUtil.isDesktop)
+                onComplete(asset);
+            else
+                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+        }
         
         if (Std.is(rawAsset, Class))
         {
-            setTimeout(complete, 1, new rawAsset());
+            //setTimeout(complete, 1, new rawAsset());
+            Type.createInstance(rawAsset, []);
         }
         else if (Std.is(rawAsset, String))
         {
@@ -791,86 +876,6 @@ class AssetManager extends EventDispatcher
             urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
             urlLoader.load(new URLRequest(url));
         }
-        
-        function onIoError(event:IOErrorEvent):Void
-        {
-            log("IO error: " + event.text);
-            complete(null);
-        }
-        
-        function onHttpResponseStatus(event:HTTPStatusEvent):Void
-        {
-            if (extension == null)
-            {
-                var headers:Array = event["responseHeaders"];
-                var contentType:String = getHttpHeader(headers, "Content-Type");
-
-                if (contentType && /(audio|image)\//.exec(contentType))
-                    extension = contentType.split("/").pop();
-            }
-        }
-
-        function onLoadProgress(event:ProgressEvent):Void
-        {
-            if (onProgress != null)
-                onProgress(event.bytesLoaded / event.bytesTotal);
-        }
-        
-        function onUrlLoaderComplete(event:Object):Void
-        {
-            var bytes:ByteArray = cast(transformData(urlLoader.data, ByteArray), url);
-            var sound:Sound;
-            
-            urlLoader.removeEventListener(IOErrorEvent.IO_ERROR, onIoError);
-            urlLoader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-            urlLoader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-            urlLoader.removeEventListener(Event.COMPLETE, onUrlLoaderComplete);
-            
-            if (extension)
-                extension = extension.toLowerCase();
-
-            switch (extension)
-            {
-                case "mpeg":
-                case "mp3":
-                    sound = new Sound();
-                    sound.loadCompressedDataFromByteArray(bytes, bytes.length);
-                    bytes.clear();
-                    complete(sound);
-                    break;
-                case "jpg":
-                case "jpeg":
-                case "png":
-                case "gif":
-                    var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
-                    var loader:Loader = new Loader();
-                    loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
-                    loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-                    loader.loadBytes(bytes, loaderContext);
-                    break;
-                default: // any XML / JSON / binary data 
-                    complete(bytes);
-                    break;
-            }
-        }
-        
-        function onLoaderComplete(event:Object):Void
-        {
-            urlLoader.data.clear();
-            event.target.removeEventListener(Event.COMPLETE, onLoaderComplete);
-            complete(event.target.content);
-        }
-        
-        function complete(asset:Object):Void
-        {
-            // On mobile, it is not allowed / endorsed to make stage3D calls while the app
-            // is in the background. Thus, we pause queue processing if that's the case.
-            
-            if (SystemUtil.isDesktop)
-                onComplete(asset);
-            else
-                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
-        }
     }
     
     // helpers
@@ -879,23 +884,24 @@ class AssetManager extends EventDispatcher
      *  accessible; override it if you need a custom naming scheme. Typically, 'rawAsset' is 
      *  either a String or a FileReference. Note that this method won't be called for embedded
      *  assets. */
-    protected function getName(rawAsset:Object):String
+    private function getName(rawAsset:Dynamic):String
     {
-        var matches:Array;
+        //var matches:Array;
         var name:String;
         
-        if (Std.is(rawAsset, String) || Std.is(rawAsset, FileReference))
+        if (Std.is(rawAsset, String)/* || Std.is(rawAsset, FileReference)*/)
         {
-            name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast((rawAsset, FileReference)).name;
-            name = name.replace(/%20/g, " "); // URLs use '%20' for spaces
+            //name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast(rawAsset, FileReference).name;
+            name = cast(rawAsset, String);
+            name = (~/%20/g).replace(name, " "); // URLs use '%20' for spaces
             name = getBasenameFromUrl(name);
             
-            if (name) return name;
+            if (name != null) return name;
             else throw new ArgumentError("Could not extract name from String '" + rawAsset + "'");
         }
         else
         {
-            name = getQualifiedClassName(rawAsset);
+            name = Type.getClassName(rawAsset);
             throw new ArgumentError("Cannot extract names for objects of type '" + name + "'");
         }
     }
@@ -903,14 +909,14 @@ class AssetManager extends EventDispatcher
     /** This method is called when raw byte data has been loaded from an URL or a file.
      *  Override it to process the downloaded data in some way (e.g. decompression) or
      *  to cache it on disk. */
-    protected function transformData(data:ByteArray, url:String):ByteArray
+    private function transformData(data:ByteArray, url:String):ByteArray
     {
         return data;
     }
 
     /** This method is called during loading of assets when 'verbose' is activated. Per
      *  default, it traces 'message' to the console. */
-    protected function log(message:String):Void
+    private function log(message:String):Void
     {
         if (mVerbose) trace("[AssetManager]", message);
     }
@@ -941,7 +947,7 @@ class AssetManager extends EventDispatcher
         
         // find first meaningful letter
         
-        for (var i:Int=start; i<length; ++i)
+        for (i in start ... length)
         {
             var byte:Int = bytes[i];
             if (byte == 0 || byte == 10 || byte == 13 || byte == 32) continue; // null, \n, \r, space
@@ -951,22 +957,23 @@ class AssetManager extends EventDispatcher
         return false;
     }
     
-    private function getDictionaryKeys(dictionary:Dictionary, prefix:String="",
+    private function getDictionaryKeys(dictionary:Map<String, Dynamic>, prefix:String="",
                                        result:Array<String>=null):Array<String>
     {
         if (result == null) result = new Array<String>();
         
-        for (var name:String in dictionary)
+        for (name in dictionary.keys())
             if (name.indexOf(prefix) == 0)
                 result.push(name);
         
-        result.sort(Array.CASEINSENSITIVE);
+        //result.sort(Array.CASEINSENSITIVE);
+        result.sort(compare);
         return result;
     }
     
-    private function getHttpHeader(headers:Array, headerName:String):String
+    private function getHttpHeader(headers:Array<Dynamic>, headerName:String):String
     {
-        if (headers)
+        if (headers != null)
         {
             for(header in headers)
                 if (header.name == headerName) return header.value;
@@ -976,23 +983,26 @@ class AssetManager extends EventDispatcher
 
     private function getBasenameFromUrl(url:String):String
     {
-        var matches:Array = NAME_REGEX.exec(url);
-        if (matches && matches.length > 0) return matches[1];
+        var matches:Array<String> = NAME_REGEX.split(url);
+        if (matches != null && matches.length > 0) return matches[1];
         else return null;
     }
 
     private function getExtensionFromUrl(url:String):String
     {
-        var matches:Array = NAME_REGEX.exec(url);
-        if (matches && matches.length > 1) return matches[2];
+        var matches:Array<String> = NAME_REGEX.split(url);
+        if (matches != null && matches.length > 1) return matches[2];
         else return null;
     }
+
+    private function compare(a:String, b:String) {return (a < b) ? -1 : (a > b) ? 1 : 0;}
 
     // properties
     
     /** The queue contains one 'Object' for each enqueued asset. Each object has 'asset'
      *  and 'name' properties, pointing to the raw asset and its name, respectively. */
-    protected function get queue():Array { return mQueue; }
+    private var queue(get, never):Array<Dynamic>;
+    private function get_queue():Array<Dynamic> { return mQueue; }
     
     /** Returns the number of raw assets that have been enqueued, but not yet loaded. */
     public var numQueuedAssets(get, never):Int;
@@ -1001,40 +1011,39 @@ class AssetManager extends EventDispatcher
     /** When activated, the class will trace information about added/enqueued assets. */
     public var verbose(get, set):Bool;
     public function get_verbose():Bool { return mVerbose; }
-    public function set_verbose(value:Bool):Void { mVerbose = value; }
+    public function set_verbose(value:Bool):Bool { return mVerbose = value; }
     
     /** For bitmap textures, this flag indicates if mip maps should be generated when they 
      *  are loaded; for ATF textures, it indicates if mip maps are valid and should be
      *  used. */
     public var useMipMaps(get, set):Bool;
     public function get_useMipMaps():Bool { return mDefaultTextureOptions.mipMapping; }
-    public function set_useMipMaps(value:Bool):Void { mDefaultTextureOptions.mipMapping = value; }
+    public function set_useMipMaps(value:Bool):Bool { return mDefaultTextureOptions.mipMapping = value; }
     
     /** Textures that are created from Bitmaps or ATF files will have the scale factor 
      *  assigned here. */
     public var scaleFactor(get, set):Float;
     public function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
-    public function set_scaleFactor(value:Float):Void { mDefaultTextureOptions.scale = value; }
+    public function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      *  loading an object from a remote server. More information about this topic can be found 
      *  in the 'flash.system.LoaderContext' documentation. */
     public var checkPolicyFile(get, set):Bool;
     public function get_checkPolicyFile():Bool { return mCheckPolicyFile; }
-    public function set_checkPolicyFile(value:Bool):Void { mCheckPolicyFile = value; }
+    public function set_checkPolicyFile(value:Bool):Bool { return mCheckPolicyFile = value; }
 
     /** Indicates if atlas XML data should be stored for access via the 'getXml' method.
      *  If true, you can access an XML under the same name as the atlas.
      *  If false, XMLs will be disposed when the atlas was created. @default false. */
     public var keepAtlasXmls(get, set):Bool;
     public function get_keepAtlasXmls():Bool { return mKeepAtlasXmls; }
-    public function set_keepAtlasXmls(value:Bool):Void { mKeepAtlasXmls = value; }
+    public function set_keepAtlasXmls(value:Bool):Bool { return mKeepAtlasXmls = value; }
 
     /** Indicates if bitmap font XML data should be stored for access via the 'getXml' method.
      *  If true, you can access an XML under the same name as the bitmap font.
      *  If false, XMLs will be disposed when the font was created. @default false. */
     public var keepFontXmls(get, set):Bool;
     public function get_keepFontXmls():Bool { return mKeepFontXmls; }
-    public function set_keepFontXmls(value:Bool):Void { mKeepFontXmls = value; }
-}
+    public function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
 }
