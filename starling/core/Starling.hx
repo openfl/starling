@@ -309,7 +309,7 @@ class Starling extends EventDispatcher
                 throw new ArgumentError("When sharing the context3D, " +
                     "the actual profile has to be supplied");
             else
-                mProfile = cast(profile, String);
+                mProfile = profile;
             
             mShareContext = true;
             initialize();
