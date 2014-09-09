@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="demo_web" package="demoweb" version="1.0.0" company="vroad" />
+	<app main="Demo_Web" file="Demo_Web" path="bin" />
+
+    <window width="320" height="480" if="desktop" />
+    <window width="320" height="480" if="html5" />
+    <window orientation="landscape" vsync="true" if="cpp" />
+	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" />
+	
+	<source path="src" />
+    <source path="../demo/src" />
+
+    <haxelib name="format" if="html5" />
+	<haxelib name="starling" />
+    <haxelib name="openfl" />
+    <haxelib name="away3d" />
+
+    <assets path="../demo/assets" rename="assets" />
+    <assets path="../demo/system" rename="" />
+
+	<haxedef name="source-map-content" if="html5" />
+	<haxedef name="dom" if="html5" />
+
+	<android minimum-sdk-version="10" />
+	
+</project>

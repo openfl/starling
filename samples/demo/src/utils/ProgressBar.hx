@@ -1,59 +1,59 @@
-package utils
-{
-    import flash.display.BitmapData;
-    import flash.display.Shape;
-    
-    import starling.core.Starling;
-    import starling.display.Image;
-    import starling.display.Quad;
-    import starling.display.Sprite;
-    import starling.textures.Texture;
+package utils;
+import flash.display.BitmapData;
+import flash.display.Shape;
 
-    public class ProgressBar extends Sprite
+import starling.core.Starling;
+import starling.display.Image;
+import starling.display.Quad;
+import starling.display.Sprite;
+import starling.textures.Texture;
+
+class ProgressBar extends Sprite
+{
+    private var mBar:Quad;
+    private var mBackground:Image;
+    
+    public function new(width:Int, height:Int)
     {
-        private var mBar:Quad;
-        private var mBackground:Image;
+        super();
+        init(width, height);
+    }
+    
+    private function init(width:Int, height:Int):Void
+    {
+        var scale:Float = Starling.current.contentScaleFactor;
+        var padding:Float = height * 0.2;
+        var cornerRadius:Float = padding * scale * 2;
         
-        public function ProgressBar(width:int, height:int)
-        {
-            init(width, height);
-        }
+        // create black rounded box for background
         
-        private function init(width:int, height:int):void
-        {
-            var scale:Number = Starling.contentScaleFactor;
-            var padding:Number = height * 0.2;
-            var cornerRadius:Number = padding * scale * 2;
-            
-            // create black rounded box for background
-            
-            var bgShape:Shape = new Shape();
-            bgShape.graphics.beginFill(0x0, 0.5);
-            bgShape.graphics.drawRoundRect(0, 0, width*scale, height*scale, cornerRadius, cornerRadius);
-            bgShape.graphics.endFill();
-            
-            var bgBitmapData:BitmapData = new BitmapData(width*scale, height*scale, true, 0x0);
-            bgBitmapData.draw(bgShape);
-            var bgTexture:Texture = Texture.fromBitmapData(bgBitmapData, false, false, scale);
-            
-            mBackground = new Image(bgTexture);
-            addChild(mBackground);
-            
-            // create progress bar quad
-            
-            mBar = new Quad(width - 2*padding, height - 2*padding, 0xeeeeee);
-            mBar.setVertexColor(2, 0xaaaaaa);
-            mBar.setVertexColor(3, 0xaaaaaa);
-            mBar.x = padding;
-            mBar.y = padding;
-            mBar.scaleX = 0;
-            addChild(mBar);
-        }
+        var bgShape:Shape = new Shape();
+        bgShape.graphics.beginFill(0x0, 0.5);
+        bgShape.graphics.drawRoundRect(0, 0, width*scale, height*scale, cornerRadius, cornerRadius);
+        bgShape.graphics.endFill();
         
-        public function get ratio():Number { return mBar.scaleX; }
-        public function set ratio(value:Number):void 
-        { 
-            mBar.scaleX = Math.max(0.0, Math.min(1.0, value)); 
-        }
+        var bgBitmapData:BitmapData = new BitmapData(Std.int(width*scale), Std.int(height*scale), true, 0x0);
+        bgBitmapData.draw(bgShape);
+        var bgTexture:Texture = Texture.fromBitmapData(bgBitmapData, false, false, scale);
+        
+        mBackground = new Image(bgTexture);
+        addChild(mBackground);
+        
+        // create progress bar quad
+        
+        mBar = new Quad(width - 2*padding, height - 2*padding, 0xeeeeee);
+        mBar.setVertexColor(2, 0xaaaaaa);
+        mBar.setVertexColor(3, 0xaaaaaa);
+        mBar.x = padding;
+        mBar.y = padding;
+        mBar.scaleX = 0;
+        addChild(mBar);
+    }
+
+    public var ratio(get, set):Float;
+    public function get_ratio():Float { return mBar.scaleX; }
+    public function set_ratio(value:Float):Float 
+    { 
+        return mBar.scaleX = Math.max(0.0, Math.min(1.0, value)); 
     }
 }

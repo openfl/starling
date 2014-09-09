@@ -70,7 +70,7 @@ package
             var angleDelta:Number = Math.PI * 2 / elements;
             var x:Number, y:Number;
             var innerRadius:Number = radius / 4;
-            var color:uint;
+            var color:UInt;
             
             for (var i:int=0; i<elements; ++i)
             {

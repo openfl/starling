@@ -39,7 +39,7 @@ package
             
             var stageWidth:int   = Constants.STAGE_WIDTH;
             var stageHeight:int  = Constants.STAGE_HEIGHT;
-            var iOS:Boolean = Capabilities.manufacturer.indexOf("iOS") != -1;
+            var iOS:Bool = Capabilities.manufacturer.indexOf("iOS") != -1;
             
             Starling.multitouchEnabled = true;  // useful on mobile devices
             Starling.handleLostContext = !iOS;  // not necessary on iOS. Saves a lot of memory!
