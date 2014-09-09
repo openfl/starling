@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.animation;
+import away3d.utils.ArrayUtils;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -229,7 +230,6 @@ class Juggler implements IAnimatable
     {   
         var numObjects:Int = mObjects.length;
         var currentIndex:Int = 0;
-        var i:Int;
         
         mElapsedTime += time;
         if (numObjects == 0) return;
@@ -238,7 +238,6 @@ class Juggler implements IAnimatable
         // of animatables. we must not process new objects right now (they will be processed
         // in the next frame), and we need to clean up any empty slots in the list.
 
-        var i:Int = 0;
         for (i in 0 ... numObjects)
         {
             var object:IAnimatable = mObjects[i];
@@ -256,14 +255,22 @@ class Juggler implements IAnimatable
             }
         }
         
-        if (currentIndex != i)
+        if (currentIndex != mObjects.length)
         {
             numObjects = mObjects.length; // count might have changed!
-            
+
+            var i:Int = mObjects.length;
             while (i < numObjects)
                 mObjects[Std.int(currentIndex++)] = mObjects[Std.int(i++)];
-            
-            mObjects = mObjects.slice(0, currentIndex);
+
+            // TODO: Implement resize
+            if (mObjects.length != currentIndex)
+            {
+                var tmpObjects:Array<IAnimatable> = new Array<IAnimatable>();
+                for(j in 0 ... currentIndex)
+                    tmpObjects[j] = mObjects[j];
+                mObjects = tmpObjects;
+            }
         }
     }
     
@@ -271,7 +278,7 @@ class Juggler implements IAnimatable
     {
         remove(cast(event.target, IAnimatable));
         
-        var tween:Tween = cast(event.target, Tween);
+        var tween:Tween = Std.is(event.target, Tween) ? cast(event.target, Tween) : null;
         if (tween != null && tween.isComplete)
             add(tween.nextTween);
     }
@@ -281,6 +288,6 @@ class Juggler implements IAnimatable
     public function get_elapsedTime():Float { return mElapsedTime; }
  
     /** The actual vector that contains all objects that are currently being animated. */
-    private var objects:Array<IAnimatable>;
+    private var objects(get, never):Array<IAnimatable>;
     private function get_objects():Array<IAnimatable> { return mObjects; }
 }
