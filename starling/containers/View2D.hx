@@ -448,6 +448,7 @@ package starling.containers;
             
         //  updateRightClickMenu();
         // }
+
         
         /**
          * Renders the view.
@@ -466,11 +467,13 @@ package starling.containers;
                 updateBackBuffer();
             
             updateTime();
+            
 
             //_touch3DManager.updateCollider();
 
             RenderSupport._clear();
-            _starling.render();
+            if (_starling.isStarted)
+                _starling.nextFrame();
             
             if (!_shareContext) {
                 stage3DProxy.present();
