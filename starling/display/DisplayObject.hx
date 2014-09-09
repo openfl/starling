@@ -407,7 +407,7 @@ class DisplayObject extends EventDispatcher
     // part of the stage, (b) it must not cause memory leaks when the user forgets to call
     // dispose and (c) there might be multiple listeners for this event.
     
-    public override function addEventListener(type:String, listener:Event -> Void):Void
+    public override function addEventListener(type:String, listener:Dynamic):Void
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
@@ -419,7 +419,7 @@ class DisplayObject extends EventDispatcher
         super.addEventListener(type, listener);
     }
     
-    public override function removeEventListener(type:String, listener:Event->Void):Void
+    public override function removeEventListener(type:String, listener:Dynamic):Void
     {
         super.removeEventListener(type, listener);
         
@@ -567,8 +567,9 @@ class DisplayObject extends EventDispatcher
         return mUseHandCursor;
     }
     
-    private function onTouch(event:Event):Void
+    private function onTouch(event:TouchEvent):Void
     {
+        event.interactsWith(this);
         //Mouse.cursor = event.interactsWith(this) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }
     
@@ -657,7 +658,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The horizontal scale factor. '1' means no scale, negative values flip the object. */
-    public var scaleX:Float;
+    public var scaleX(get, set):Float;
     public function get_scaleX():Float { return mScaleX; }
     public function set_scaleX(value:Float):Float 
     { 
