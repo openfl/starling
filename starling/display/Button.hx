@@ -116,7 +116,7 @@ class Button extends DisplayObjectContainer
         mTextField.y = mTextBounds.y;
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private override function onTouch(event:TouchEvent):Void
     {
         event.interactsWith(this);
         //Mouse.cursor = (mUseHandCursor && mEnabled && event.interactsWith(this)) ? 
