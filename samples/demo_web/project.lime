@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="demo_web" package="demoweb" version="1.0.0" company="vroad" />
+	<meta title="demo_web" package="com.demoweb" version="1.0.0" company="vroad" />
 	<app main="Demo_Web" file="Demo_Web" path="bin" />
 
     <window width="320" height="480" if="desktop" />
