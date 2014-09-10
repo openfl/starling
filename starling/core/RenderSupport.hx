@@ -215,11 +215,12 @@ class RenderSupport
     
     /** The blend mode to be used on rendering. To apply the factor, you have to manually call
      *  'applyBlendMode' (because the actual blend factors depend on the PMA mode). */
-    public var blendMode:String;
+    public var blendMode(get, set):String;
     public function get_blendMode():String { return mBlendMode; }
-    public function set_blendMode(value:String):Void
+    public function set_blendMode(value:String):String
     {
         if (value != BlendMode.AUTO) mBlendMode = value;
+        return mBlendMode;
     }
     
     // render targets
