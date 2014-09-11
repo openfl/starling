@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.utils;
-import away3d.utils.ArrayUtils;
 import haxe.ds.Vector;
 #if js
 import js.html.Float32Array;
