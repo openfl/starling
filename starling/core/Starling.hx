@@ -871,7 +871,7 @@ class Starling extends EventDispatcher
     /** Returns the vertex- and fragment-programs registered under a certain name. */
     public function getProgram(name:String):Program3D
     {
-        return Std.is(programs[name], Program3D) ? cast(programs[name], Program3D) : null;
+        return programs[name];
     }
     
     /** Indicates if a set of vertex- and fragment-programs is registered under a certain name. */
