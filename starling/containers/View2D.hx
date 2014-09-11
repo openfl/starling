@@ -414,7 +414,7 @@ package starling.containers;
                             _height = 2048;
                     }
                     
-                    _stage3DProxy.configureBackBuffer(Std.int(_width), Std.int(_height), _antiAlias, true);
+                    _stage3DProxy.configureBackBuffer(Std.int(_width), Std.int(_height), _antiAlias, false);
                     _backBufferInvalid = false;
                 } else {
                     width = stage.stageWidth;
