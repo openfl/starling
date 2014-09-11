@@ -77,6 +77,7 @@ class VertexData
         mRawData = new Array<Float>();
 #end
         mPremultipliedAlpha = premultipliedAlpha;
+        mNumVertices = 0;
         this.numVertices = numVertices;
     }
 
