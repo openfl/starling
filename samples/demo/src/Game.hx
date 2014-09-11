@@ -2,6 +2,8 @@ package;
 import flash.system.System;
 import flash.ui.Keyboard;
 import openfl.Assets;
+import starling.text.BitmapFont;
+import starling.text.TextField;
 import starling.textures.TextureAtlas;
 
 import scenes.Scene;
@@ -82,6 +84,10 @@ class Game extends Sprite
             }
         assets.addTexture("atlas", atlasTexture);
         assets.addTextureAtlas("atlas_xml", new TextureAtlas(atlasTexture, atlas));
+
+        var fontTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
+        var fontXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
+        TextField.registerBitmapFont(new BitmapFont(fontTexture, fontXml), "Desyrel");
         
         addEventListener(Event.TRIGGERED, onButtonTriggered);
         stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);

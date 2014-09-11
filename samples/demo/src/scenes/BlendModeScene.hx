@@ -24,6 +24,7 @@ class BlendModeScene extends Scene
     {
         super();
         mButton = new Button(Game.assets.getTexture("button_normal"), "Switch Mode");
+        mButton.fontName = Constants.DefaultFont;
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);

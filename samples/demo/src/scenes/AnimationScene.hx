@@ -29,6 +29,7 @@ class AnimationScene extends Scene
         
         // create a button that starts the tween
         mStartButton = new Button(buttonTexture, "Start animation");
+        mStartButton.fontName = Constants.DefaultFont;
         mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
         mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
         mStartButton.y = 20;
@@ -36,6 +37,7 @@ class AnimationScene extends Scene
         
         // this button will show you how to call a method with a delay
         mDelayButton = new Button(buttonTexture, "Delayed call");
+        mDelayButton.fontName = Constants.DefaultFont;
         mDelayButton.addEventListener(Event.TRIGGERED, onDelayButtonTriggered);
         mDelayButton.x = mStartButton.x;
         mDelayButton.y = mStartButton.y + 40;

@@ -33,6 +33,7 @@ class BenchmarkScene extends Scene
         addChildAt(mContainer, 0);
         
         mStartButton = new Button(Game.assets.getTexture("button_normal"), "Start benchmark");
+        mStartButton.fontName = Constants.DefaultFont;
         mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
         mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
         mStartButton.y = 20;
@@ -137,6 +138,7 @@ class BenchmarkScene extends Scene
         var resultString:String = formatString("Result:\n{0} objects\nwith {1} fps",
                                                [mContainer.numChildren, fps]);
         mResultText = new TextField(240, 200, resultString);
+        mResultText.fontName = Constants.DefaultFont;
         mResultText.fontSize = 30;
         mResultText.x = Constants.CenterX - mResultText.width / 2;
         mResultText.y = Constants.CenterY - mResultText.height / 2;

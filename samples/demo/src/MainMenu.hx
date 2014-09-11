@@ -58,6 +58,7 @@ class MainMenu extends Sprite
             var sceneClass:Class<Dynamic>  = sceneToCreate[1];
             
             var button:Button = new Button(buttonTexture, sceneTitle);
+            button.fontName = Constants.DefaultFont;
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = 155 + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);

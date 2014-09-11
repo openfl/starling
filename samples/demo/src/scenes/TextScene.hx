@@ -18,7 +18,7 @@ class TextScene extends Scene
         // TrueType fonts
         
         var offset:Int = 10;
-        var ttFont:String = "Ubuntu";
+        var ttFont:String = Constants.DefaultFont;
         var ttFontSize:Int = 19; 
         
         var colorTF:TextField = new TextField(300, 80, 

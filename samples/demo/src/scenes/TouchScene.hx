@@ -12,7 +12,7 @@ class TouchScene extends Scene
         super();
         var description:String = "[use Ctrl/Cmd & Shift to simulate multi-touch]";
         
-        var infoText:TextField = new TextField(300, 25, description);
+        var infoText:TextField = new TextField(300, 25, description, Constants.DefaultFont);
         infoText.x = infoText.y = 10;
         addChild(infoText);
         
