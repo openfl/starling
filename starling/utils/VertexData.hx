@@ -504,7 +504,7 @@ class VertexData
 #end
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
-        var endIndex:Int = mRawData.length;
+        var endIndex:Int = value * ELEMENTS_PER_VERTEX;
         
         //for (var i:Int=startIndex; i<endIndex; i += ELEMENTS_PER_VERTEX)
         var i:Int = startIndex;
