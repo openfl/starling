@@ -1,5 +1,6 @@
 package scenes;
 import flash.media.Sound;
+import openfl.Assets;
 
 import starling.core.Starling;
 import starling.display.MovieClip;
@@ -17,7 +18,7 @@ class MovieScene extends Scene
         mMovie = new MovieClip(frames, 15);
         
         // add sounds
-        var stepSound:Sound = Game.assets.getSound("wing_flap");
+        var stepSound:Sound = Assets.getSound("assets/audio/wing_flap.ogg");
         mMovie.setFrameSound(2, stepSound);
         
         // move the clip to the center and add it to the stage
