@@ -263,14 +263,7 @@ class Juggler implements IAnimatable
             while (i < numObjects)
                 mObjects[Std.int(currentIndex++)] = mObjects[Std.int(i++)];
 
-            // TODO: Implement resize
-            if (mObjects.length != currentIndex)
-            {
-                var tmpObjects:Array<IAnimatable> = new Array<IAnimatable>();
-                for(j in 0 ... currentIndex)
-                    tmpObjects[j] = mObjects[j];
-                mObjects = tmpObjects;
-            }
+            mObjects = mObjects.slice(0, currentIndex);
         }
     }
     
