@@ -492,9 +492,9 @@ class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
-        var quad:Quad = cast(object, Quad);
-        var batch:QuadBatch = cast(object, QuadBatch);
+        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast(object, DisplayObjectContainer) : null;
+        var quad:Quad = Std.is(object, Quad) ? cast(object, Quad) : null;
+        var batch:QuadBatch = Std.is(object, QuadBatch) ? cast(object, QuadBatch) : null;
         var filter:FragmentFilter = object.filter;
         
         if (quadBatchID == -1)
