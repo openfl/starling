@@ -247,7 +247,7 @@ class TextField extends DisplayObjectContainer
         }
         if (isVerticalAutoSize)
         {
-            height = Max.INT_MIN_VALUE;
+            height = Max.INT_MAX_VALUE;
             vAlign = VAlign.TOP;
         }
 #if (html5 || flash)
