@@ -663,12 +663,13 @@ class AssetManager extends EventDispatcher
             else if (Std.is(asset, Xml))
             {
                 var xml:Xml = cast(asset, Xml);
-                var rootNode:String = xml.nodeName.split(":").pop();
+                var firstElement:Xml = xml.firstElement();
+                var rootNode:String = firstElement.nodeName.split(":").pop();
                 
                 if (rootNode == "TextureAtlas" || rootNode == "font")
-                    xmls.push(xml);
+                    xmls.push(firstElement);
                 else
-                    addXml(name, xml);
+                    addXml(name, firstElement);
                 
                 onComplete();
             }
@@ -819,16 +820,12 @@ class AssetManager extends EventDispatcher
 
             switch (extension)
             {
-                case "mpeg":
-                case "mp3":
+                case "mpeg", "mp3":
                     sound = new Sound();
                     sound.loadCompressedDataFromByteArray(bytes, bytes.length);
                     bytes.clear();
                     complete(sound);
-                case "jpg":
-                case "jpeg":
-                case "png":
-                case "gif":
+                case "jpg", "jpeg", "png", "gif":
                     //var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
                     var loader:Loader = new Loader();
                     //loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
@@ -852,10 +849,10 @@ class AssetManager extends EventDispatcher
             // On mobile, it is not allowed / endorsed to make stage3D calls while the app
             // is in the background. Thus, we pause queue processing if that's the case.
             
-            if (SystemUtil.isDesktop)
+            //if (SystemUtil.isDesktop)
                 onComplete(asset);
-            else
-                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+            //else
+            //    SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
         }
         
         if (Std.is(rawAsset, Class))
@@ -930,17 +927,17 @@ class AssetManager extends EventDispatcher
         // recognize BOMs
         
         if (length >= 4 &&
-            (bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xfe && bytes[3] == 0xff) ||
-            (bytes[0] == 0xff && bytes[1] == 0xfe && bytes[2] == 0x00 && bytes[3] == 0x00))
+            (bytes.__get(0) == 0x00 && bytes.__get(1) == 0x00 && bytes.__get(2) == 0xfe && bytes.__get(3) == 0xff) ||
+            (bytes.__get(0) == 0xff && bytes.__get(1) == 0xfe && bytes.__get(2) == 0x00 && bytes.__get(3) == 0x00))
         {
             start = 4; // UTF-32
         }
-        else if (length >= 3 && bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf)
+        else if (length >= 3 && bytes.__get(0) == 0xef && bytes.__get(1) == 0xbb && bytes.__get(2) == 0xbf)
         {
             start = 3; // UTF-8
         }
         else if (length >= 2 &&
-            (bytes[0] == 0xfe && bytes[1] == 0xff) || (bytes[0] == 0xff && bytes[1] == 0xfe))
+            (bytes.__get(0) == 0xfe && bytes.__get(1) == 0xff) || (bytes.__get(0) == 0xff && bytes.__get(1) == 0xfe))
         {
             start = 2; // UTF-16
         }
@@ -949,7 +946,7 @@ class AssetManager extends EventDispatcher
         
         for (i in start ... length)
         {
-            var byte:Int = bytes[i];
+            var byte:Int = bytes.__get(i);
             if (byte == 0 || byte == 10 || byte == 13 || byte == 32) continue; // null, \n, \r, space
             else return byte == wanted;
         }
@@ -983,15 +980,15 @@ class AssetManager extends EventDispatcher
 
     private function getBasenameFromUrl(url:String):String
     {
-        var matches:Array<String> = NAME_REGEX.split(url);
-        if (matches != null && matches.length > 0) return matches[1];
+        var isMatched:Bool = NAME_REGEX.match(url);
+        if (isMatched) return NAME_REGEX.matched(1);
         else return null;
     }
 
     private function getExtensionFromUrl(url:String):String
     {
-        var matches:Array<String> = NAME_REGEX.split(url);
-        if (matches != null && matches.length > 1) return matches[2];
+        var isMatched:Bool = NAME_REGEX.match(url);
+        if (isMatched) return NAME_REGEX.matched(2);
         else return null;
     }
 
