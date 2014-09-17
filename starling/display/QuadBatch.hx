@@ -553,7 +553,7 @@ class QuadBatch extends DisplayObject
             
             if (quad != null)
             {
-                var image:Image = cast(quad, Image);
+                var image:Image = Std.is(quad,Image) ? cast(quad, Image) : null;
                 texture = image != null ? image.texture : null;
                 smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;
