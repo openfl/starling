@@ -57,6 +57,8 @@ package starling.containers;
 
         var _profile:String;
         var _callbackMethod:Event -> Void;
+
+        var _aspectRatio:Float;
         
         // private function viewSource(e:ContextMenuEvent):Void
         // {
@@ -101,10 +103,11 @@ package starling.containers;
         //  //contextMenu = _ViewContextMenu;
         // }
         
-        public function new(starling:Starling = null, forceSoftware:Bool = false, profile:String = "baseline")
+        public function new(forceSoftware:Bool = false, profile:String = "baseline", aspectRatio:Float = 1.0)
         {
             _width = 0;
             _height = 0;
+            _aspectRatio = aspectRatio;
 
             super();
 
@@ -116,7 +119,6 @@ package starling.containers;
             _shareContext = false;
 
             _profile = profile;
-            _starling = starling;
             _forceSoftware = forceSoftware;
 
             //_touch3DManager.view = this;
@@ -185,6 +187,17 @@ package starling.containers;
         public function get_deltaTime() : UInt
         {
             return _deltaTime;
+        }
+        
+        public var aspectRatio(get, set) : Float;
+        public function get_aspectRatio() : Float
+        {
+            return _aspectRatio;
+        }
+        public function set_aspectRatio(aspectRatio:Float) : Float
+        {
+            _aspectRatio = aspectRatio;
+            return _aspectRatio;
         }
         
         #if flash
@@ -295,14 +308,6 @@ package starling.containers;
                 return value;
 
             _width = value;
-            // TODO:
-            if (_starling != null)
-            {
-                var viewPort:Rectangle = _starling.viewPort;
-                viewPort.width = _width;
-                _starling.viewPort = viewPort;
-            }
-            
             
             _backBufferInvalid = true;
             return value;
@@ -327,13 +332,6 @@ package starling.containers;
                 return value;
 
             _height = value;
-            if (_starling != null)
-            {
-                var viewPort:Rectangle = _starling.viewPort;
-                viewPort.height = _height;
-                _starling.viewPort = viewPort;
-            }
-            
             
             _backBufferInvalid = true;
             return value;
@@ -414,7 +412,25 @@ package starling.containers;
                             _height = 2048;
                     }
                     
-                    _stage3DProxy.configureBackBuffer(Std.int(_width), Std.int(_height), _antiAlias, false);
+                    var viewPort:Rectangle = new Rectangle();
+                    if (_width / aspectRatio >= _height)
+                    {
+                        viewPort.width = _height * aspectRatio;
+                        viewPort.height = _height;
+                    }
+                    else
+                    {
+                        viewPort.width = _width;
+                        viewPort.height = _width / aspectRatio;
+                    }
+                    viewPort.x = (_width - viewPort.width) / 2;
+                    viewPort.y = (_height - viewPort.height) / 2;
+                    
+                    _starling.viewPort = viewPort;
+                    _stage3DProxy.x = viewPort.x;
+                    _stage3DProxy.y = viewPort.y;
+                    
+                    _stage3DProxy.configureBackBuffer(Std.int(viewPort.width), Std.int(viewPort.height), _antiAlias, false);
                     _backBufferInvalid = false;
                 } else {
                     width = stage.stageWidth;

@@ -4,6 +4,7 @@ import flash.system.Capabilities;
 import openfl.Assets;
 import flash.events.Event;
 import openfl.events.TouchEvent;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.textures.Texture;
@@ -43,13 +44,14 @@ class Demo_Web extends Sprite
     {
         //setup the view
         var profile:String = "baseline";
-        _view = new View2D(null, false, profile);
+        var rect:Rectangle = new Rectangle(0, 0, 320, 480);
+        _view = new View2D(false, profile, rect.width / rect.height);
         this.addChild(_view);
         
         Starling.multitouchEnabled = true; // for Multitouch Scene
         Starling.handleLostContext = true; // required on Windows, needs more memory
         
-        mStarling = new Starling(Game, stage, null, _view.stage3DProxy.stage3D, "auto", profile);
+        mStarling = new Starling(Game, stage, rect, _view.stage3DProxy.stage3D, "auto", profile);
         mStarling.simulateMultitouch = true;
         //mStarling.enableErrorChecking = Capabilities.isDebugger;
         mStarling.enableErrorChecking = false;
