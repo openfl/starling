@@ -151,10 +151,10 @@ class Sprite extends DisplayObjectContainer
         {
             switch(i)
             {
-                case 0: x = mClipRect.left;  y = mClipRect.top;    break;
-                case 1: x = mClipRect.left;  y = mClipRect.bottom; break;
-                case 2: x = mClipRect.right; y = mClipRect.top;    break;
-                case 3: x = mClipRect.right; y = mClipRect.bottom; break;
+                case 0: x = mClipRect.left;  y = mClipRect.top;
+                case 1: x = mClipRect.left;  y = mClipRect.bottom;
+                case 2: x = mClipRect.right; y = mClipRect.top;
+                case 3: x = mClipRect.right; y = mClipRect.bottom;
             }
             var transformedPoint:Point = MatrixUtil.transformCoords(transMatrix, x, y, sHelperPoint);
             
