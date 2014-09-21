@@ -81,6 +81,7 @@ class RenderSupport
         mRenderTarget = null;
         mBlendMode = BlendMode.NORMAL;
         mClipRectStack = new Array<Rectangle>();
+        mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
         mQuadBatches = [new QuadBatch()];
