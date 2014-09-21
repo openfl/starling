@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.core;
+import haxe.Timer;
 import openfl.display3D.shaders.Shader;
 import openfl.display.Sprite;
 import openfl.display.Stage3D;
@@ -312,9 +313,8 @@ class Starling extends EventDispatcher
                 mProfile = profile;
             
             mShareContext = true;
-            initialize();
-            //setTimeout(initialize, 1); // we don't call it right away, because Starling should
-            //                           // behave the same way with or without a shared context
+            Timer.delay(initialize, 1); // we don't call it right away, because Starling should
+                                       // behave the same way with or without a shared context
         }
         else
         {
