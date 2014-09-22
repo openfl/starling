@@ -2,13 +2,13 @@ package;
 import flash.display.Sprite;
 import flash.system.Capabilities;
 import openfl.Assets;
-import flash.events.Event;
 import openfl.events.TouchEvent;
 import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.textures.Texture;
 import starling.utils.AssetManager;
+import starling.events.Event;
 
 import starling.containers.View2D;
 
@@ -59,12 +59,7 @@ class Demo_Web extends Sprite
         _view.starlingPtr = mStarling;
         
         // this event is dispatched when stage3D is set up
-        //mStarling.addEventListener(Event.ROOT_CREATED, onRootCreated);
-
-        // add listeners
-		_view.setRenderCallback(_onEnterFrame);
-
-        onRootCreated(null, cast(mStarling.root, Game));
+        mStarling.addEventListener(Event.ROOT_CREATED, onRootCreated);
     }
     
     private function onAddedToStage(event:Event):Void
@@ -73,11 +68,14 @@ class Demo_Web extends Sprite
         start();
     }
     
-    private function onRootCreated(event:Event, game:Game):Void
+    private function onRootCreated(event:Event):Void
     {
         // set framerate to 30 in software mode
         //if (mStarling.context.driverInfo.toLowerCase().indexOf("software") != -1)
         //    mStarling.nativeStage.frameRate = 30;
+        
+        // add listeners
+		_view.setRenderCallback(_onEnterFrame);
         
         // define which resources to load
         var assets:AssetManager = new AssetManager();
@@ -89,6 +87,7 @@ class Demo_Web extends Sprite
         var bgTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("startup.jpg"), false);
         
         // game will first load resources, then start menu
+        var game = cast(event.data, Game);
         game.start(bgTexture, assets);
     }
 
