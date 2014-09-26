@@ -64,7 +64,7 @@ class RenderTextureScene extends Scene
             for (touch in touches)
             {
                 if (touch.phase == TouchPhase.BEGAN)
-                    mColors[touch.id] = cast(Math.random() * Max.UINT_MAX_VALUE, UInt);
+                    mColors[touch.id] = Std.int(Math.random() * Max.INT_MAX_VALUE);
                 
                 if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                     continue;
