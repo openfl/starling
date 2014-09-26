@@ -44,6 +44,7 @@ class RenderTextureScene extends Scene
         mRenderTexture.draw(infoText);
         
         mButton = new Button(Game.assets.getTexture("button_normal"), "Mode: Draw");
+        mButton.fontName = Constants.DefaultFont;
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
