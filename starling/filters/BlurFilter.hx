@@ -145,8 +145,11 @@ class BlurFilter extends FragmentFilter
 
         if (tinted) fragmentShader +=
             "add ft5, ft5, ft4                              \n" + // add to output color
-            "mul ft5.xyz, fc1.xyz, ft5.www                  \n" + // set rgb with correct alpha
-            "mul oc, ft5, fc1.wwww                          \n";  // multiply alpha
+            //"mul ft5.xyz, fc1.xyz, ft5.www                  \n" + // set rgb with correct alpha
+            //"mul oc, ft5, fc1.wwww                          \n";  // multiply alpha
+            "mov ft5.xyz, fc1.xyzx\n" +
+            "mul ft5.w, ft5.w, fc1.w\n" +
+            "mov oc, ft5\n";
         
         else fragmentShader +=
             "add  oc, ft5, ft4                              \n";   // add to output color
