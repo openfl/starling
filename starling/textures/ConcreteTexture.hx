@@ -100,7 +100,7 @@ class ConcreteTexture extends Texture
             data = potData;
         }
         
-        if (Std.is(mBase, Texture))
+        if (Std.is(mBase, openfl.display3D.textures.Texture))
         {
             var potTexture:openfl.display3D.textures.Texture = 
                 cast(mBase, openfl.display3D.textures.Texture);
@@ -130,9 +130,9 @@ class ConcreteTexture extends Texture
                 canvas.dispose();
             }
         }
-        else if (Std.is(mBase, RectangleTexture))
+        else if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
         {
-            var baseTexrue = cast(mBase, RectangleTexture);
+            var baseTexrue = cast(mBase, openfl.display3D.textures.RectangleTexture);
             baseTexrue.uploadFromBitmapData(data);
         }
         
