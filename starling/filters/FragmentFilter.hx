@@ -40,7 +40,7 @@ import starling.utils.VertexData;
 import starling.utils.PowerOfTwo;
 
 /** The FragmentFilter class is the base class for all filter effects in Starling.
- *  All other filters of this package extend; this class. You can attach them to any display
+ *  All other filters of this package extend this class. You can attach them to any display
  *  object through the 'filter' property.
  * 
  *  <p>A fragment filter works in the following way:</p>
@@ -70,7 +70,7 @@ class FragmentFilter
     private inline static var MIN_TEXTURE_SIZE:Int = 64;
     
     /** All filter processing is expected to be done with premultiplied alpha. */
-    private inline static var PMA:Bool = true;
+    private inline static var PMA:Bool = false;
     
     /** The standard vertex shader code. It will be used automatically if you don't create
      *  a custom vertex shader yourself. */
@@ -88,7 +88,7 @@ class FragmentFilter
     private var mMvpConstantID:Int = 0;
     
     private var mNumPasses:Int;
-    private var mPassTextures:Vector<Texture>;
+    private var mPassTextures:Array<Texture>;
 
     private var mMode:String;
     private var mResolution:Float;
@@ -99,7 +99,7 @@ class FragmentFilter
     
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Vector<UInt>;
+    private var mIndexData:Array<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
     private var mCacheRequested:Bool;
@@ -136,13 +136,7 @@ class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        mIndexData = new Vector(6);
-        mIndexData[0] = 0;
-        mIndexData[1] = 1;
-        mIndexData[2] = 2;
-        mIndexData[3] = 1;
-        mIndexData[4] = 3;
-        mIndexData[5] = 2;
+        mIndexData = [0, 1, 2, 1, 3, 2];
         //mIndexData.fixed = true;
         
         createPrograms();
@@ -257,11 +251,6 @@ class FragmentFilter
         support.loadIdentity();  // now we'll draw in stage coordinates!
         support.pushClipRect(sBounds);
         
-        context.setVertexBufferAt(mVertexPosAtID, mVertexBuffer, VertexData.POSITION_OFFSET, 
-                                  Context3DVertexBufferFormat.FLOAT_2);
-        context.setVertexBufferAt(mTexCoordsAtID, mVertexBuffer, VertexData.TEXCOORD_OFFSET,
-                                  Context3DVertexBufferFormat.FLOAT_2);
-        
         // draw all passes
         for (i in 0 ... mNumPasses)
         {
@@ -291,11 +280,15 @@ class FragmentFilter
             }
             
             passTexture = getPassTexture(i);
+            activate(i, context, passTexture);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, mMvpConstantID, 
                                                   support.mvpMatrix3D, true);
             context.setTextureAt(mBaseTextureID, passTexture.base);
+            context.setVertexBufferAt(mVertexPosAtID, mVertexBuffer, VertexData.POSITION_OFFSET, 
+                                  Context3DVertexBufferFormat.FLOAT_2);
+            context.setVertexBufferAt(mTexCoordsAtID, mVertexBuffer, VertexData.TEXCOORD_OFFSET,
+                                  Context3DVertexBufferFormat.FLOAT_2);
             
-            activate(i, context, passTexture);
             context.drawTriangles(mIndexBuffer, 0, 2);
             deactivate(i, context, passTexture);
         }
@@ -368,13 +361,11 @@ class FragmentFilter
                 for(texture in mPassTextures) 
                     texture.dispose();
                 
-                var tmp:Vector<Texture> = Vector.fromData(mPassTextures.toData());
-                mPassTextures = new Vector<Texture>(numPassTextures);
-                Vector.blit(tmp, 0, mPassTextures, 0, numPassTextures);
+                mPassTextures = mPassTextures.slice(0, numPassTextures);
             }
             else
             {
-                mPassTextures = new Vector<Texture>(numPassTextures);
+                mPassTextures = new Array<Texture>();
             }
             
             for (i in 0 ... numPassTextures)
@@ -608,7 +599,7 @@ class FragmentFilter
     private function get_baseTextureID():Int { return mBaseTextureID; }
     private function set_baseTextureID(value:Int):Int { return mBaseTextureID = value; }
     
-    /** The ID of the first register of the modelview-projection inline static varant (a 4x4 matrix). */
+    /** The ID of the first register of the modelview-projection inline static constant (a 4x4 matrix). */
     private var mvpConstantID(get, set):Int;
     private function get_mvpConstantID():Int { return mMvpConstantID; }
     private function set_mvpConstantID(value:Int):Int { return mMvpConstantID = value; }

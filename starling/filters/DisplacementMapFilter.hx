@@ -147,13 +147,13 @@ class DisplacementMapFilter extends FragmentFilter
         // vertex attribute 1:   texture coordinates (FLOAT_2)
         // texture 0:            input texture
 
+        context.setProgram(mShaderProgram);
         updateParameters(Std.int(texture.nativeWidth), Std.int(texture.nativeHeight));
         
         context.setVertexBufferAt(2, mMapTexCoordBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, sOneHalf);
         context.setProgramConstantsFromMatrix(Context3DProgramType.FRAGMENT, 1, sMatrix, true);
         context.setTextureAt(1, mMapTexture.base);
-        context.setProgram(mShaderProgram);
     }
     
     /** @private */

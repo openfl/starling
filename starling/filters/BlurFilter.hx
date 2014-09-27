@@ -42,7 +42,7 @@ class BlurFilter extends FragmentFilter
     /** helper object */
     private var sTmpWeights:Array<Float> = new Array<Float>();
     
-    /** Create a new BlurFilter. For each blur direction, the Float of required passes is
+    /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>. 
      *  
      *  <ul><li>blur = 0.5: 1 pass</li>  
@@ -52,7 +52,7 @@ class BlurFilter extends FragmentFilter
      *      <li>etc.</li>
      *  </ul>
      *  
-     *  <p>Instead of raising the Float of passes, you should consider lowering the resolution.
+     *  <p>Instead of raising the number of passes, you should consider lowering the resolution.
      *  A lower resolution will result in a blurrier image, while reducing the rendering
      *  cost.</p>
      */
@@ -62,7 +62,8 @@ class BlurFilter extends FragmentFilter
         mBlurX = blurX;
         mBlurY = blurY;
         updateMarginsAndPasses();
-        //sTmpWeights.length = 5;
+        for(i in 0 ... 5)
+            sTmpWeights[i] = 0;
     }
     
     /** Creates a blur filter that is set up for a drop shadow effect. */
@@ -163,6 +164,15 @@ class BlurFilter extends FragmentFilter
         // vertex attribute 1:   texture coordinates (FLOAT_2)
         // texture 0:            input texture
         
+        if (mUniformColor && pass == numPasses - 1)
+        {
+            context.setProgram(mTintedProgram);
+        }
+        else
+        {
+            context.setProgram(mNormalProgram);
+        }
+        
         updateParameters(pass, Std.int(texture.nativeWidth), Std.int(texture.nativeHeight));
         
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,   4, mOffsets);
@@ -171,11 +181,6 @@ class BlurFilter extends FragmentFilter
         if (mUniformColor && pass == numPasses - 1)
         {
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, mColor);
-            context.setProgram(mTintedProgram);
-        }
-        else
-        {
-            context.setProgram(mNormalProgram);
         }
     }
     
@@ -269,7 +274,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in x-direction (stage coordinates). 
-     *  The Float of required passes will be <code>Math.ceil(value)</code>. */
+     *  The number of required passes will be <code>Math.ceil(value)</code>. */
     public var blurX(get, set):Float;
     public function get_blurX():Float { return mBlurX; }
     public function set_blurX(value:Float):Float 

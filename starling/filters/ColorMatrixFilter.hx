@@ -61,8 +61,9 @@ class ColorMatrixFilter extends FragmentFilter
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
      *  @param matrix: a vector of 20 items arranged as a 4x5 matrix.   
      */
-    public function ColorMatrixFilter(matrix:Array<Float>=null)
+    public function new(matrix:Array<Float>=null)
     {
+        super();
         mUserMatrix   = new Array<Float>();
         mShaderMatrix = new Array<Float>();
         
@@ -88,24 +89,23 @@ class ColorMatrixFilter extends FragmentFilter
             var fragmentShader:String =
                 "tex ft0, v0,  fs0 <2d, clamp, linear, mipnone>  \n" + // read texture color
                 "max ft0, ft0, fc5              \n" + // avoid division through zero in next step
-                "div ft0.xyz, ft0.xyz, ft0.www  \n" + // restore original (non-PMA) RGB values
+                //"div ft0.xyz, ft0.xyz, ft0.www  \n" + // restore original (non-PMA) RGB values
                 "m44 ft0, ft0, fc0              \n" + // multiply color with 4x4 matrix
                 "add ft0, ft0, fc4              \n" + // add offset
-                "mul ft0.xyz, ft0.xyz, ft0.www  \n" + // multiply with alpha again (PMA)
+                //"mul ft0.xyz, ft0.xyz, ft0.www  \n" + // multiply with alpha again (PMA)
                 "mov oc, ft0                    \n";  // copy to output
 
-            // TODO: implement STD_VERTEX_SHADER
             mShaderProgram = target.registerProgramFromSource(PROGRAM_NAME,
-                null, fragmentShader);
+                FragmentFilter.STD_VERTEX_SHADER, fragmentShader);
         }
     }
     
     /** @private */
     private override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
-        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix);
-        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
         context.setProgram(mShaderProgram);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix, 5);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
     }
     
     // color manipulation
@@ -237,27 +237,8 @@ class ColorMatrixFilter extends FragmentFilter
                                   m15:Float, m16:Float, m17:Float, m18:Float, m19:Float
                                   ):Void
     {
-        sTmpMatrix2 = [];
-        sTmpMatrix2.push(m0);
-        sTmpMatrix2.push(m1);
-        sTmpMatrix2.push(m2);
-        sTmpMatrix2.push(m3);
-        sTmpMatrix2.push(m4);
-        sTmpMatrix2.push(m5);
-        sTmpMatrix2.push(m6);
-        sTmpMatrix2.push(m7);
-        sTmpMatrix2.push(m8);
-        sTmpMatrix2.push(m9);
-        sTmpMatrix2.push(m10);
-        sTmpMatrix2.push(m11);
-        sTmpMatrix2.push(m12);
-        sTmpMatrix2.push(m13);
-        sTmpMatrix2.push(m14);
-        sTmpMatrix2.push(m15);
-        sTmpMatrix2.push(m16);
-        sTmpMatrix2.push(m17);
-        sTmpMatrix2.push(m18);
-        sTmpMatrix2.push(m19);
+        sTmpMatrix2 = [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
+            m10, m11, m12, m13, m14, m15, m16, m17, m18, m19];
         
         concat(sTmpMatrix2);
     }
@@ -273,30 +254,14 @@ class ColorMatrixFilter extends FragmentFilter
         // the shader needs the matrix components in a different order, 
         // and it needs the offsets in the range 0-1.
         
-        mShaderMatrix = [];
-        mShaderMatrix.push(mUserMatrix[0]);
-        mShaderMatrix.push(mUserMatrix[1]);
-        mShaderMatrix.push(mUserMatrix[2]);
-        mShaderMatrix.push(mUserMatrix[3]);
-        mShaderMatrix.push(mUserMatrix[4]);
-        mShaderMatrix.push(mUserMatrix[5]);
-        mShaderMatrix.push(mUserMatrix[6]);
-        mShaderMatrix.push(mUserMatrix[7]);
-        mShaderMatrix.push(mUserMatrix[8]);
-        mShaderMatrix.push(mUserMatrix[9]);
-        mShaderMatrix.push(mUserMatrix[10]);
-        mShaderMatrix.push(mUserMatrix[11]);
-        mShaderMatrix.push(mUserMatrix[12]);
-        mShaderMatrix.push(mUserMatrix[13]);
-        mShaderMatrix.push(mUserMatrix[14]);
-        mShaderMatrix.push(mUserMatrix[15]);
-        mShaderMatrix.push(mUserMatrix[16]);
-        mShaderMatrix.push(mUserMatrix[17]);
-        mShaderMatrix.push(mUserMatrix[18]);
-        mShaderMatrix.push(mUserMatrix[4] / 255.0);
-        mShaderMatrix.push(mUserMatrix[9] / 255.0);
-        mShaderMatrix.push(mUserMatrix[14] / 255.0);
-        mShaderMatrix.push(mUserMatrix[19] / 255.0);
+        mShaderMatrix = [
+            mUserMatrix[0],  mUserMatrix[1],  mUserMatrix[2],  mUserMatrix[3],
+            mUserMatrix[5],  mUserMatrix[6],  mUserMatrix[7],  mUserMatrix[8],
+            mUserMatrix[10], mUserMatrix[11], mUserMatrix[12], mUserMatrix[13], 
+            mUserMatrix[15], mUserMatrix[16], mUserMatrix[17], mUserMatrix[18],
+            mUserMatrix[4] / 255.0,  mUserMatrix[9] / 255.0,  mUserMatrix[14] / 255.0,  
+            mUserMatrix[19] / 255.0
+        ];
     }
     
     // properties
