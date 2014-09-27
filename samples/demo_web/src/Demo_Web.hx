@@ -43,7 +43,7 @@ class Demo_Web extends Sprite
     private function start():Void
     {
         //setup the view
-        var profile:String = "baseline";
+        var profile:String = "baselineConstrained";
         var rect:Rectangle = new Rectangle(0, 0, 320, 480);
         _view = new View2D(false, profile, rect.width / rect.height);
         this.addChild(_view);
