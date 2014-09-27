@@ -21,7 +21,6 @@ To use original version of away3d and openfl again, type these commands(If you a
 Current Limitations
 -------------------
 * Only works on html5 and cpp.
-* BlurFilter don't work correctly. The amount of the effect looks too small.
 * DisplacementMapFilter don't work correctly. The filter moves a object a little bit.
   * Noises that are used in DisplacementMapFilter example cannot be generated on html5, because html5 target doesn't support them.
 * You need to set vertices and shader variables after setting a shader program.
