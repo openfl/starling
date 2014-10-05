@@ -115,23 +115,23 @@ class Event
     
     /** Indicates if event will bubble. */
     public var bubbles(get, never):Bool;
-    public function get_bubbles():Bool { return mBubbles; }
+    private function get_bubbles():Bool { return mBubbles; }
     
     /** The object that dispatched the event. */
     public var target(get, never):EventDispatcher;
-    public function get_target():EventDispatcher { return mTarget; }
+    private function get_target():EventDispatcher { return mTarget; }
     
     /** The object the event is currently bubbling at. */
     public var currentTarget(get, never):EventDispatcher;
-    public function get_currentTarget():EventDispatcher { return mCurrentTarget; }
+    private function get_currentTarget():EventDispatcher { return mCurrentTarget; }
     
     /** A string that identifies the event. */
     public var type(get, never):String;
-    public function get_type():String { return mType; }
+    private function get_type():String { return mType; }
     
     /** Arbitrary data that is attached to the event. */
     public var data(get, never):Dynamic;
-    public function get_data():Dynamic { return mData; }
+    private function get_data():Dynamic { return mData; }
     
     // properties for public use
     
@@ -146,11 +146,11 @@ class Event
     
     /** @private */
     public var stopsPropagation(get, never):Bool;
-    public function get_stopsPropagation():Bool { return mStopsPropagation; }
+    private function get_stopsPropagation():Bool { return mStopsPropagation; }
     
     /** @private */
     public var stopsImmediatePropagation(get, never):Bool;
-    public function get_stopsImmediatePropagation():Bool { return mStopsImmediatePropagation; }
+    private function get_stopsImmediatePropagation():Bool { return mStopsImmediatePropagation; }
     
     // event pooling
     

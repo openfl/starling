@@ -438,51 +438,51 @@ class Texture
      *
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var frame(get, never):Rectangle;
-    public function get_frame():Rectangle { return null; }
+    private function get_frame():Rectangle { return null; }
     
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
      *  Note: this only works in textures with sidelengths that are powers of two and 
      *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
     public var repeat(get, never):Bool;
-    public function get_repeat():Bool { return false; }
+    private function get_repeat():Bool { return false; }
     
     /** The width of the texture in points. */
     public var width(get, never):Float;
-    public function get_width():Float { return 0; }
+    private function get_width():Float { return 0; }
     
     /** The height of the texture in points. */
     public var height(get, never):Float;
-    public function get_height():Float { return 0; }
+    private function get_height():Float { return 0; }
 
     /** The width of the texture in pixels (without scale adjustment). */
     public var nativeWidth(get, never):Float;
-    public function get_nativeWidth():Float { return 0; }
+    private function get_nativeWidth():Float { return 0; }
     
     /** The height of the texture in pixels (without scale adjustment). */
     public var nativeHeight(get, never):Float;
-    public function get_nativeHeight():Float { return 0; }
+    private function get_nativeHeight():Float { return 0; }
     
     /** The scale factor, which influences width and height properties. */
     public var scale(get, never):Float;
-    public function get_scale():Float { return 1.0; }
+    private function get_scale():Float { return 1.0; }
     
     /** The Stage3D texture object the texture is based on. */
     public var base(get, never):TextureBase;
-    public function get_base():TextureBase { return null; }
+    private function get_base():TextureBase { return null; }
     
     /** The concrete texture the texture is based on. */
     public var root(get, never):ConcreteTexture;
-    public function get_root():ConcreteTexture { return null; }
+    private function get_root():ConcreteTexture { return null; }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
     public var format(get, never):String;
-    public function get_format():String { return "bgra"; }
+    private function get_format():String { return "bgra"; }
     
     /** Indicates if the texture contains mip maps. */ 
     public var mipMapping(get, never):Bool;
-    public function get_mipMapping():Bool { return false; }
+    private function get_mipMapping():Bool { return false; }
     
     /** Indicates if the alpha values are premultiplied into the RGB values. */
     public var premultipliedAlpha(get, never):Bool;
-    public function get_premultipliedAlpha():Bool { return false; }
+    private function get_premultipliedAlpha():Bool { return false; }
 }

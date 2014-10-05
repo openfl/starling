@@ -241,15 +241,15 @@ class ConcreteTexture extends Texture
     
     /** Indicates if the base texture was optimized for being used in a render texture. */
     public var optimizedForRenderTexture(get, never):Bool;
-    public function get_optimizedForRenderTexture():Bool { return mOptimizedForRenderTexture; }
+    private function get_optimizedForRenderTexture():Bool { return mOptimizedForRenderTexture; }
     
     /** If Starling's "handleLostContext" setting is enabled, the function that you provide
      *  here will be called after a context loss. On execution, a new base texture will
      *  already have been created; however, it will be empty. Call one of the "upload..."
      *  methods from within the callbacks to restore the actual texture data. */
     public var onRestore(get, set):Dynamic;
-    public function get_onRestore():Dynamic { return mOnRestore; }
-    public function set_onRestore(value:Dynamic):Dynamic
+    private function get_onRestore():Dynamic { return mOnRestore; }
+    private function set_onRestore(value:Dynamic):Dynamic
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         

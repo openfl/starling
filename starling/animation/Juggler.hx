@@ -278,7 +278,7 @@ class Juggler implements IAnimatable
     
     /** The total life time of the juggler (in seconds). */
     public var elapsedTime(get, never):Float;
-    public function get_elapsedTime():Float { return mElapsedTime; }
+    private function get_elapsedTime():Float { return mElapsedTime; }
  
     /** The actual vector that contains all objects that are currently being animated. */
     private var objects(get, never):Array<IAnimatable>;

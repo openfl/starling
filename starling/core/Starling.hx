@@ -887,15 +887,15 @@ class Starling extends EventDispatcher
     
     /** Indicates if this Starling instance is started. */
     public var isStarted(get, never):Bool;
-    public function get_isStarted():Bool { return mStarted; }
+    private function get_isStarted():Bool { return mStarted; }
     
     /** The default juggler of this instance. Will be advanced once per frame. */
     public var juggler(get, never):Juggler;
-    public function get_juggler():Juggler { return mJuggler; }
+    private function get_juggler():Juggler { return mJuggler; }
     
     /** The render context of this instance. */
     public var context(get, never):Context3D;
-    public function get_context():Context3D { return mContext; }
+    private function get_context():Context3D { return mContext; }
     
     /** A dictionary that can be used to save custom data related to the current context. 
      *  If you need to share data that is bound to a specific stage3D instance
@@ -903,18 +903,18 @@ class Starling extends EventDispatcher
      *  The Dictionary is actually bound to the stage3D instance, thus it survives a 
      *  context loss. */
     public var contextData(get, never):Dynamic;
-    public function get_contextData():Dynamic
+    private function get_contextData():Dynamic
     {
         return sContextData.get(mStage3D);
     }
 
     /** Returns the bitmap fonts associated with the context. */
     public var bitmapFonts(get, set):Map<String, BitmapFont>;
-    public function get_bitmapFonts():Map<String, BitmapFont>
+    private function get_bitmapFonts():Map<String, BitmapFont>
     {
         return sBitmapFonts.get(mStage3D);
     }
-    public function set_bitmapFonts(fonts:Map<String, BitmapFont>):Map<String, BitmapFont>
+    private function set_bitmapFonts(fonts:Map<String, BitmapFont>):Map<String, BitmapFont>
     {
         sBitmapFonts.set(mStage3D, fonts);
         return fonts;
@@ -923,18 +923,18 @@ class Starling extends EventDispatcher
     /** Returns the actual width (in pixels) of the back buffer. This can differ from the
      *  width of the viewPort rectangle if it is partly outside the native stage. */
     public var backBufferWidth(get, never):Int;
-    public function get_backBufferWidth():Int { return Std.int(mClippedViewPort.width); }
+    private function get_backBufferWidth():Int { return Std.int(mClippedViewPort.width); }
     
     /** Returns the actual height (in pixels) of the back buffer. This can differ from the
      *  height of the viewPort rectangle if it is partly outside the native stage. */
     public var backBufferHeight(get, never):Int;
-    public function get_backBufferHeight():Int { return Std.int(mClippedViewPort.height); }
+    private function get_backBufferHeight():Int { return Std.int(mClippedViewPort.height); }
     
     /** Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd"-keys is enabled. 
      *  @default false */
     public var simulateMultitouch(get, set):Bool;
-    public function get_simulateMultitouch():Bool { return mSimulateMultitouch; }
-    public function set_simulateMultitouch(value:Bool):Bool
+    private function get_simulateMultitouch():Bool { return mSimulateMultitouch; }
+    private function set_simulateMultitouch(value:Bool):Bool
     {
         mSimulateMultitouch = value;
         if (mContext != null) mTouchProcessor.simulateMultitouch = value;
@@ -944,8 +944,8 @@ class Starling extends EventDispatcher
     /** Indicates if Stage3D render methods will report errors. Activate only when needed,
      *  as this has a negative impact on performance. @default false */
     public var enableErrorChecking(get, set):Bool;
-    public function get_enableErrorChecking():Bool { return mEnableErrorChecking; }
-    public function set_enableErrorChecking(value:Bool):Bool 
+    private function get_enableErrorChecking():Bool { return mEnableErrorChecking; }
+    private function set_enableErrorChecking(value:Bool):Bool 
     { 
         mEnableErrorChecking = value;
         if (mContext != null) mContext.enableErrorChecking = value;
@@ -954,8 +954,8 @@ class Starling extends EventDispatcher
     
     /** The antialiasing level. 0 - no antialasing, 16 - maximum antialiasing. @default 0 */
     public var antiAliasing(get, set):Int;
-    public function get_antiAliasing():Int { return mAntiAliasing; }
-    public function set_antiAliasing(value:Int):Int
+    private function get_antiAliasing():Int { return mAntiAliasing; }
+    private function set_antiAliasing(value:Int):Int
     {
         if (mAntiAliasing != value)
         {
@@ -967,13 +967,13 @@ class Starling extends EventDispatcher
     
     /** The viewport into which Starling contents will be rendered. */
     public var viewPort(get, set):Rectangle;
-    public function get_viewPort():Rectangle { return mViewPort; }
-    public function set_viewPort(value:Rectangle):Rectangle { return mViewPort = value.clone(); }
+    private function get_viewPort():Rectangle { return mViewPort; }
+    private function set_viewPort(value:Rectangle):Rectangle { return mViewPort = value.clone(); }
     
     /** The ratio between viewPort width and stage width. Useful for choosing a different
      *  set of textures depending on the display resolution. */
     public var contentScaleFactor(get, never):Float;
-    public function get_contentScaleFactor():Float
+    private function get_contentScaleFactor():Float
     {
         return (mViewPort.width * mNativeStageContentScaleFactor) / mStage.stageWidth;
     }
@@ -981,12 +981,12 @@ class Starling extends EventDispatcher
     /** A Flash Sprite placed directly on top of the Starling content. Use it to display native
      *  Flash components. */ 
     public var nativeOverlay(get, never):Sprite;
-    public function get_nativeOverlay():Sprite { return mNativeOverlay; }
+    private function get_nativeOverlay():Sprite { return mNativeOverlay; }
     
     /** Indicates if a small statistics box (with FPS, memory usage and draw count) is displayed. */
     public var showStats(get, set):Bool;
-    public function get_showStats():Bool { return mStatsDisplay != null && mStatsDisplay.parent != null; }
-    public function set_showStats(value:Bool):Bool
+    private function get_showStats():Bool { return mStatsDisplay != null && mStatsDisplay.parent != null; }
+    private function set_showStats(value:Bool):Bool
     {
         if (value == showStats) return mStatsDisplay != null && mStatsDisplay.parent != null;
         
@@ -1038,39 +1038,39 @@ class Starling extends EventDispatcher
     
     /** The Starling stage object, which is the root of the display tree that is rendered. */
     public var stage(get, never):Stage;
-    public function get_stage():Stage { return mStage; }
+    private function get_stage():Stage { return mStage; }
 
     /** The Flash Stage3D object Starling renders into. */
     public var stage3D(get, never):Stage3D;
-    public function get_stage3D():Stage3D { return mStage3D; }
+    private function get_stage3D():Stage3D { return mStage3D; }
     
     /** The Flash (2D) stage object Starling renders beneath. */
     public var nativeStage(get, never):openfl.display.Stage;
-    public function get_nativeStage():openfl.display.Stage { return mNativeStage; }
+    private function get_nativeStage():openfl.display.Stage { return mNativeStage; }
     
     /** The instance of the root class provided in the constructor. Available as soon as 
      *  the event 'ROOT_CREATED' has been dispatched. */
     public var root(get, never):DisplayObject;
-    public function get_root():DisplayObject { return mRoot; }
+    private function get_root():DisplayObject { return mRoot; }
     
     /** Indicates if the Context3D render calls are managed externally to Starling, 
      *  to allow other frameworks to share the Stage3D instance. @default false */
     public var shareContext(get, set):Bool;
-    public function get_shareContext() : Bool { return mShareContext; }
-    public function set_shareContext(value : Bool) : Bool { return mShareContext = value; }
+    private function get_shareContext() : Bool { return mShareContext; }
+    private function set_shareContext(value : Bool) : Bool { return mShareContext = value; }
     
     /** The Context3D profile as requested in the constructor. Beware that if you are 
      *  using a shared context, this is simply what you passed to the Starling constructor. */
     public var profile(get, never):String;
-    public function get_profile():String { return mProfile; }
+    private function get_profile():String { return mProfile; }
     
     /** Indicates that if the device supports HiDPI screens Starling will attempt to allocate
      *  a larger back buffer than indicated via the viewPort size. Note that this is used
      *  on Desktop only; mobile AIR apps still use the "requestedDisplayResolution" parameter
      *  the application descriptor XML. */
     public var supportHighResolutions(get, set):Bool;
-    public function get_supportHighResolutions():Bool { return mSupportHighResolutions; }
-    public function set_supportHighResolutions(value:Bool):Bool 
+    private function get_supportHighResolutions():Bool { return mSupportHighResolutions; }
+    private function set_supportHighResolutions(value:Bool):Bool 
     {
         if (mSupportHighResolutions != value)
         {
@@ -1084,8 +1084,8 @@ class Starling extends EventDispatcher
      *  dispatching TouchEvents to the Starling display tree. If you want to handle these
      *  types of input manually, pass your own custom subclass to this property. */
     public var touchProcessor(get, set):TouchProcessor;
-    public function get_touchProcessor():TouchProcessor { return mTouchProcessor; }
-    public function set_touchProcessor(value:TouchProcessor):TouchProcessor
+    private function get_touchProcessor():TouchProcessor { return mTouchProcessor; }
+    private function set_touchProcessor(value:TouchProcessor):TouchProcessor
     {
         if (value != mTouchProcessor)
         {
@@ -1099,7 +1099,7 @@ class Starling extends EventDispatcher
      *  disposed). Beware that each call to this method causes a String allocation (due to
      *  internal code Starling can't avoid), so do not call this method too often. */
     public var contextValid(get, never):Bool;
-    public function get_contextValid():Bool
+    private function get_contextValid():Bool
     {
         return mContext != null && mContext.driverInfo != "Disposed";
     }

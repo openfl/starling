@@ -222,18 +222,18 @@ class Stage extends DisplayObjectContainer
     
     /** The background color of the stage. */
     public var color(get, set):UInt;
-    public function get_color():UInt { return mColor; }
-    public function set_color(value:UInt):UInt { return mColor = value; }
+    private function get_color():UInt { return mColor; }
+    private function set_color(value:UInt):UInt { return mColor = value; }
     
     /** The width of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */ 
     public var stageWidth(get, set):Int;
-    public function get_stageWidth():Int { return mWidth; }
-    public function set_stageWidth(value:Int):Int { return mWidth = value; }
+    private function get_stageWidth():Int { return mWidth; }
+    private function set_stageWidth(value:Int):Int { return mWidth = value; }
     
     /** The height of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */
     public var stageHeight(get, set):Int;
-    public function get_stageHeight():Int { return mHeight; }
-    public function set_stageHeight(value:Int):Int { return mHeight = value; }
+    private function get_stageHeight():Int { return mHeight; }
+    private function set_stageHeight(value:Int):Int { return mHeight = value; }
 }

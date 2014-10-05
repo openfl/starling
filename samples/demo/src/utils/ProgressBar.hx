@@ -51,8 +51,8 @@ class ProgressBar extends Sprite
     }
 
     public var ratio(get, set):Float;
-    public function get_ratio():Float { return mBar.scaleX; }
-    public function set_ratio(value:Float):Float 
+    private function get_ratio():Float { return mBar.scaleX; }
+    private function set_ratio(value:Float):Float 
     { 
         return mBar.scaleX = Math.max(0.0, Math.min(1.0, value)); 
     }

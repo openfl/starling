@@ -184,11 +184,11 @@ class TouchEvent extends Event
     
     /** The time the event occurred (in seconds since application launch). */
     public var timestamp(get, never):Float;
-    public function get_timestamp():Float { return mTimestamp; }
+    private function get_timestamp():Float { return mTimestamp; }
     
     /** All touches that are currently available. */
     public var touches(get, never):Array<Touch>;
-    public function get_touches():Array<Touch>
+    private function get_touches():Array<Touch>
     {
         var touches:Array<Dynamic> = cast(data, Array<Dynamic>);
         var result:Array<Touch> = [];
@@ -199,9 +199,9 @@ class TouchEvent extends Event
     
     /** Indicates if the shift key was pressed when the event occurred. */
     public var shiftKey(get, never):Bool;
-    public function get_shiftKey():Bool { return mShiftKey; }
+    private function get_shiftKey():Bool { return mShiftKey; }
     
     /** Indicates if the ctrl key was pressed when the event occurred. (Mac OS: Cmd or Ctrl) */
     public var ctrlKey(get, never):Bool;
-    public function get_ctrlKey():Bool { return mCtrlKey; }
+    private function get_ctrlKey():Bool { return mCtrlKey; }
 }

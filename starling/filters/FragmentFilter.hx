@@ -535,15 +535,15 @@ class FragmentFilter
     
     /** Indicates if the filter is cached (via the "cache" method). */
     public var isCached(get, never):Bool;
-    public function get_isCached():Bool { return (mCache != null) || mCacheRequested; }
+    private function get_isCached():Bool { return (mCache != null) || mCacheRequested; }
     
     /** The resolution of the filter texture. "1" means stage resolution, "0.5" half the
      *  stage resolution. A lower resolution saves memory and execution time (depending on 
      *  the GPU), but results in a lower output quality. Values greater than 1 are allowed;
      *  such values might make sense for a cached filter when it is scaled up. @default 1 */
     public var resolution(get, set):Float;
-    public function get_resolution():Float { return mResolution; }
-    public function set_resolution(value:Float):Float 
+    private function get_resolution():Float { return mResolution; }
+    private function set_resolution(value:Float):Float 
     {
         if (value <= 0) throw new ArgumentError("Resolution must be > 0");
         else mResolution = value; 
@@ -553,18 +553,18 @@ class FragmentFilter
     /** The filter mode, which is one of the constants defined in the "FragmentFilterMode" 
      *  class. @default "replace" */
     public var mode(get, set):String;
-    public function get_mode():String { return mMode; }
-    public function set_mode(value:String):String { return mMode = value; }
+    private function get_mode():String { return mMode; }
+    private function set_mode(value:String):String { return mMode = value; }
     
     /** Use the x-offset to move the filter output to the right or left. */
     public var offsetX(get, set):Float;
-    public function get_offsetX():Float { return mOffsetX; }
-    public function set_offsetX(value:Float):Float { return mOffsetX = value; }
+    private function get_offsetX():Float { return mOffsetX; }
+    private function set_offsetX(value:Float):Float { return mOffsetX = value; }
     
     /** Use the y-offset to move the filter output to the top or bottom. */
     public var offsetY(get, set):Float;
-    public function get_offsetY():Float { return mOffsetY; }
-    public function set_offsetY(value:Float):Float { return mOffsetY = value; }
+    private function get_offsetY():Float { return mOffsetY; }
+    private function set_offsetY(value:Float):Float { return mOffsetY = value; }
     
     /** The x-margin will extend the size of the filter texture along the x-axis.
      *  Useful when the filter will "grow" the rendered object. */

@@ -1003,44 +1003,44 @@ class AssetManager extends EventDispatcher
     
     /** Returns the number of raw assets that have been enqueued, but not yet loaded. */
     public var numQueuedAssets(get, never):Int;
-    public function get_numQueuedAssets():Int { return mQueue.length; }
+    private function get_numQueuedAssets():Int { return mQueue.length; }
     
     /** When activated, the class will trace information about added/enqueued assets. */
     public var verbose(get, set):Bool;
-    public function get_verbose():Bool { return mVerbose; }
-    public function set_verbose(value:Bool):Bool { return mVerbose = value; }
+    private function get_verbose():Bool { return mVerbose; }
+    private function set_verbose(value:Bool):Bool { return mVerbose = value; }
     
     /** For bitmap textures, this flag indicates if mip maps should be generated when they 
      *  are loaded; for ATF textures, it indicates if mip maps are valid and should be
      *  used. */
     public var useMipMaps(get, set):Bool;
-    public function get_useMipMaps():Bool { return mDefaultTextureOptions.mipMapping; }
-    public function set_useMipMaps(value:Bool):Bool { return mDefaultTextureOptions.mipMapping = value; }
+    private function get_useMipMaps():Bool { return mDefaultTextureOptions.mipMapping; }
+    private function set_useMipMaps(value:Bool):Bool { return mDefaultTextureOptions.mipMapping = value; }
     
     /** Textures that are created from Bitmaps or ATF files will have the scale factor 
      *  assigned here. */
     public var scaleFactor(get, set):Float;
-    public function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
-    public function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
+    private function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
+    private function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      *  loading an object from a remote server. More information about this topic can be found 
      *  in the 'flash.system.LoaderContext' documentation. */
     public var checkPolicyFile(get, set):Bool;
-    public function get_checkPolicyFile():Bool { return mCheckPolicyFile; }
-    public function set_checkPolicyFile(value:Bool):Bool { return mCheckPolicyFile = value; }
+    private function get_checkPolicyFile():Bool { return mCheckPolicyFile; }
+    private function set_checkPolicyFile(value:Bool):Bool { return mCheckPolicyFile = value; }
 
     /** Indicates if atlas XML data should be stored for access via the 'getXml' method.
      *  If true, you can access an XML under the same name as the atlas.
      *  If false, XMLs will be disposed when the atlas was created. @default false. */
     public var keepAtlasXmls(get, set):Bool;
-    public function get_keepAtlasXmls():Bool { return mKeepAtlasXmls; }
-    public function set_keepAtlasXmls(value:Bool):Bool { return mKeepAtlasXmls = value; }
+    private function get_keepAtlasXmls():Bool { return mKeepAtlasXmls; }
+    private function set_keepAtlasXmls(value:Bool):Bool { return mKeepAtlasXmls = value; }
 
     /** Indicates if bitmap font XML data should be stored for access via the 'getXml' method.
      *  If true, you can access an XML under the same name as the bitmap font.
      *  If false, XMLs will be disposed when the font was created. @default false. */
     public var keepFontXmls(get, set):Bool;
-    public function get_keepFontXmls():Bool { return mKeepFontXmls; }
-    public function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
+    private function get_keepFontXmls():Bool { return mKeepFontXmls; }
+    private function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
 }

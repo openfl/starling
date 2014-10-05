@@ -155,18 +155,18 @@ class Button extends DisplayObjectContainer
     /** The scale factor of the button on touch. Per default, a button with a down state 
       * texture won't scale. */
     public var scaleWhenDown(get, set):Float;
-    public function get_scaleWhenDown():Float { return mScaleWhenDown; }
-    public function set_scaleWhenDown(value:Float):Float { return mScaleWhenDown = value; }
+    private function get_scaleWhenDown():Float { return mScaleWhenDown; }
+    private function set_scaleWhenDown(value:Float):Float { return mScaleWhenDown = value; }
     
     /** The alpha value of the button when it is disabled. @default 0.5 */
     public var alphaWhenDisabled(get, set):Float;
-    public function get_alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
-    public function set_alphaWhenDisabled(value:Float):Float { return mAlphaWhenDisabled = value; }
+    private function get_alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
+    private function set_alphaWhenDisabled(value:Float):Float { return mAlphaWhenDisabled = value; }
     
     /** Indicates if the button can be triggered. */
     public var enabled(get, set):Bool;
-    public function get_enabled():Bool { return mEnabled; }
-    public function set_enabled(value:Bool):Bool
+    private function get_enabled():Bool { return mEnabled; }
+    private function set_enabled(value:Bool):Bool
     {
         if (mEnabled != value)
         {
@@ -179,8 +179,8 @@ class Button extends DisplayObjectContainer
     
     /** The text that is displayed on the button. */
     public var text(get, set):String;
-    public function get_text():String { return mTextField != null ? mTextField.text : ""; }
-    public function set_text(value:String):String
+    private function get_text():String { return mTextField != null ? mTextField.text : ""; }
+    private function set_text(value:String):String
     {
         if (value.length == 0)
         {
@@ -204,8 +204,8 @@ class Button extends DisplayObjectContainer
     /** The name of the font displayed on the button. May be a system font or a registered 
       * bitmap font. */
     public var fontName(get, set):String;
-    public function get_fontName():String { return mTextField != null ? mTextField.fontName : "Verdana"; }
-    public function set_fontName(value:String):String
+    private function get_fontName():String { return mTextField != null ? mTextField.fontName : "Verdana"; }
+    private function set_fontName(value:String):String
     {
         createTextField();
         mTextField.fontName = value;
@@ -214,8 +214,8 @@ class Button extends DisplayObjectContainer
     
     /** The size of the font. */
     public var fontSize(get, set):Float;
-    public function get_fontSize():Float { return mTextField != null ? mTextField.fontSize : 12; }
-    public function set_fontSize(value:Float):Float
+    private function get_fontSize():Float { return mTextField != null ? mTextField.fontSize : 12; }
+    private function set_fontSize(value:Float):Float
     {
         createTextField();
         mTextField.fontSize = value;
@@ -224,8 +224,8 @@ class Button extends DisplayObjectContainer
     
     /** The color of the font. */
     public var fontColor(get, set):UInt;
-    public function get_fontColor():UInt { return mTextField != null ? mTextField.color : 0x0; }
-    public function set_fontColor(value:UInt):UInt
+    private function get_fontColor():UInt { return mTextField != null ? mTextField.color : 0x0; }
+    private function set_fontColor(value:UInt):UInt
     {
         createTextField();
         mTextField.color = value;
@@ -234,8 +234,8 @@ class Button extends DisplayObjectContainer
     
     /** Indicates if the font should be bold. */
     public var fontBold(get, set):Bool;
-    public function get_fontBold():Bool { return mTextField != null ? mTextField.bold : false; }
-    public function set_fontBold(value:Bool):Bool
+    private function get_fontBold():Bool { return mTextField != null ? mTextField.bold : false; }
+    private function set_fontBold(value:Bool):Bool
     {
         createTextField();
         mTextField.bold = value;
@@ -244,8 +244,8 @@ class Button extends DisplayObjectContainer
     
     /** The texture that is displayed when the button is not being touched. */
     public var upState(get, set):Texture;
-    public function get_upState():Texture { return mUpState; }
-    public function set_upState(value:Texture):Texture
+    private function get_upState():Texture { return mUpState; }
+    private function set_upState(value:Texture):Texture
     {
         if (mUpState != value)
         {
@@ -257,8 +257,8 @@ class Button extends DisplayObjectContainer
     
     /** The texture that is displayed while the button is touched. */
     public var downState(get, set):Texture;
-    public function get_downState():Texture { return mDownState; }
-    public function set_downState(value:Texture):Texture
+    private function get_downState():Texture { return mDownState; }
+    private function set_downState(value:Texture):Texture
     {
         if (mDownState != value)
         {
@@ -270,12 +270,12 @@ class Button extends DisplayObjectContainer
     
     /** The vertical alignment of the text on the button. */
     public var textVAlign(get, set):String;
-    public function get_textVAlign():String
+    private function get_textVAlign():String
     {
         return mTextField != null ? mTextField.vAlign : VAlign.CENTER;
     }
     
-    public function set_textVAlign(value:String):String
+    private function set_textVAlign(value:String):String
     {
         createTextField();
         mTextField.vAlign = value;
@@ -284,12 +284,12 @@ class Button extends DisplayObjectContainer
     
     /** The horizontal alignment of the text on the button. */
     public var textHAlign(get, set):String;
-    public function get_textHAlign():String
+    private function get_textHAlign():String
     {
         return mTextField != null ? mTextField.hAlign : HAlign.CENTER;
     }
     
-    public function set_textHAlign(value:String):String
+    private function set_textHAlign(value:String):String
     {
         createTextField();
         mTextField.hAlign = value;
@@ -298,8 +298,8 @@ class Button extends DisplayObjectContainer
     
     /** The bounds of the textfield on the button. Allows moving the text to a custom position. */
     public var textBounds(get, set):Rectangle;
-    public function get_textBounds():Rectangle { return mTextBounds.clone(); }
-    public function set_textBounds(value:Rectangle):Rectangle
+    private function get_textBounds():Rectangle { return mTextBounds.clone(); }
+    private function set_textBounds(value:Rectangle):Rectangle
     {
         mTextBounds = value.clone();
         createTextField();

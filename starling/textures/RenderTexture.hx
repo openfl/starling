@@ -289,7 +289,7 @@ class RenderTexture extends SubTexture
 
     /** Indicates if the texture is persistent over multiple draw calls. */
     public var isPersistent(get, never):Bool;
-    public function get_isPersistent():Bool { return mBufferTexture != null; }
+    private function get_isPersistent():Bool { return mBufferTexture != null; }
     
     /** @inheritDoc */
     public override function get_base():TextureBase { return mActiveTexture.base; }

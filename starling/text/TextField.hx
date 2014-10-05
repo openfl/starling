@@ -514,7 +514,7 @@ class TextField extends DisplayObjectContainer
     
     /** Returns the bounds of the text within the text field. */
     public var textBounds(get, never):Rectangle;
-    public function get_textBounds():Rectangle
+    private function get_textBounds():Rectangle
     {
         if (mRequiresRedraw) redraw();
         if (mTextBounds == null) mTextBounds = mQuadBatch.getBounds(mQuadBatch);
@@ -559,8 +559,8 @@ class TextField extends DisplayObjectContainer
     
     /** The displayed text. */
     public var text(get, set):String;
-    public function get_text():String { return mText; }
-    public function set_text(value:String):String
+    private function get_text():String { return mText; }
+    private function set_text(value:String):String
     {
         if (value == null) value = "";
         if (mText != value)
@@ -573,8 +573,8 @@ class TextField extends DisplayObjectContainer
     
     /** The name of the font (true type or bitmap font). */
     public var fontName(get, set):String;
-    public function get_fontName():String { return mFontName; }
-    public function set_fontName(value:String):String
+    private function get_fontName():String { return mFontName; }
+    private function set_fontName(value:String):String
     {
         if (mFontName != value)
         {
@@ -591,8 +591,8 @@ class TextField extends DisplayObjectContainer
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for 
      *  the original size. */
     public var fontSize(get, set):Float;
-    public function get_fontSize():Float { return mFontSize; }
-    public function set_fontSize(value:Float):Float
+    private function get_fontSize():Float { return mFontSize; }
+    private function set_fontSize(value:Float):Float
     {
         if (mFontSize != value)
         {
@@ -605,8 +605,8 @@ class TextField extends DisplayObjectContainer
     /** The color of the text. For bitmap fonts, use <code>Color.WHITE</code> to use the
      *  original, untinted color. @default black */
     public var color(get, set):UInt;
-    public function get_color():UInt { return mColor; }
-    public function set_color(value:UInt):UInt
+    private function get_color():UInt { return mColor; }
+    private function set_color(value:UInt):UInt
     {
         if (mColor != value)
         {
@@ -618,8 +618,8 @@ class TextField extends DisplayObjectContainer
     
     /** The horizontal alignment of the text. @default center @see starling.utils.HAlign */
     public var hAlign(get, set):String;
-    public function get_hAlign():String { return mHAlign; }
-    public function set_hAlign(value:String):String
+    private function get_hAlign():String { return mHAlign; }
+    private function set_hAlign(value:String):String
     {
         if (!HAlign.isValid(value))
             throw new ArgumentError("Invalid horizontal align: " + value);
@@ -634,8 +634,8 @@ class TextField extends DisplayObjectContainer
     
     /** The vertical alignment of the text. @default center @see starling.utils.VAlign */
     public var vAlign(get, set):String;
-    public function get_vAlign():String { return mVAlign; }
-    public function set_vAlign(value:String):String
+    private function get_vAlign():String { return mVAlign; }
+    private function set_vAlign(value:String):String
     {
         if (!VAlign.isValid(value))
             throw new ArgumentError("Invalid vertical align: " + value);
@@ -651,8 +651,8 @@ class TextField extends DisplayObjectContainer
     /** Draws a border around the edges of the text field. Useful for visual debugging. 
      *  @default false */
     public var border(get, set):Bool;
-    public function get_border():Bool { return mBorder != null; }
-    public function set_border(value:Bool):Bool
+    private function get_border():Bool { return mBorder != null; }
+    private function set_border(value:Bool):Bool
     {
         if (value && mBorder == null)
         {                
@@ -677,8 +677,8 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates whether the text is bold. @default false */
     public var bold(get, set):Bool;
-    public function get_bold():Bool { return mBold; }
-    public function set_bold(value:Bool):Bool 
+    private function get_bold():Bool { return mBold; }
+    private function set_bold(value:Bool):Bool 
     {
         if (mBold != value)
         {
@@ -690,8 +690,8 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates whether the text is italicized. @default false */
     public var italic(get, set):Bool;
-    public function get_italic():Bool { return mItalic; }
-    public function set_italic(value:Bool):Bool
+    private function get_italic():Bool { return mItalic; }
+    private function set_italic(value:Bool):Bool
     {
         if (mItalic != value)
         {
@@ -703,8 +703,8 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates whether the text is underlined. @default false */
     public var underline(get, set):Bool;
-    public function get_underline():Bool { return mUnderline; }
-    public function set_underline(value:Bool):Bool
+    private function get_underline():Bool { return mUnderline; }
+    private function set_underline(value:Bool):Bool
     {
         if (mUnderline != value)
         {
@@ -716,8 +716,8 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates whether kerning is enabled. @default true */
     public var kerning(get, set):Bool;
-    public function get_kerning():Bool { return mKerning; }
-    public function set_kerning(value:Bool):Bool
+    private function get_kerning():Bool { return mKerning; }
+    private function set_kerning(value:Bool):Bool
     {
         if (mKerning != value)
         {
@@ -730,8 +730,8 @@ class TextField extends DisplayObjectContainer
     /** Indicates whether the font size is scaled down so that the complete text fits
      *  into the text field. @default false */
     public var autoScale(get, set):Bool;
-    public function get_autoScale():Bool { return mAutoScale; }
-    public function set_autoScale(value:Bool):Bool
+    private function get_autoScale():Bool { return mAutoScale; }
+    private function set_autoScale(value:Bool):Bool
     {
         if (mAutoScale != value)
         {
@@ -746,8 +746,8 @@ class TextField extends DisplayObjectContainer
      *  implications on alignment: horizontally auto-sized text will always be left-, 
      *  vertically auto-sized text will always be top-aligned. @default "none" */
     public var autoSize(get, set):String;
-    public function get_autoSize():String { return mAutoSize; }
-    public function set_autoSize(value:String):String
+    private function get_autoSize():String { return mAutoSize; }
+    private function set_autoSize(value:String):String
     {
         if (mAutoSize != value)
         {
@@ -762,8 +762,8 @@ class TextField extends DisplayObjectContainer
      *  Otherwise, the CPU costs will exceed any gains you get from avoiding the additional
      *  draw call. @default false */
     public var batchable(get, set):Bool;
-    public function get_batchable():Bool { return mBatchable; }
-    public function set_batchable(value:Bool):Bool
+    private function get_batchable():Bool { return mBatchable; }
+    private function set_batchable(value:Bool):Bool
     { 
         mBatchable = value;
         if (mQuadBatch != null) mQuadBatch.batchable = value;
@@ -773,8 +773,8 @@ class TextField extends DisplayObjectContainer
     /** The native Flash BitmapFilters to apply to this TextField. 
      *  Only available when using standard (TrueType) fonts! */
     public var nativeFilters(get, set):Array<BitmapFilter>;
-    public function get_nativeFilters():Array<BitmapFilter> { return mNativeFilters; }
-    public function set_nativeFilters(value:Array<BitmapFilter>) : Array<BitmapFilter>
+    private function get_nativeFilters():Array<BitmapFilter> { return mNativeFilters; }
+    private function set_nativeFilters(value:Array<BitmapFilter>) : Array<BitmapFilter>
     {
         if (!mIsRenderedText)
             throw(new Error("The TextField.nativeFilters property cannot be used on Bitmap fonts."));

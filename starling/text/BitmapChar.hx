@@ -62,29 +62,29 @@ class BitmapChar
     
     /** The unicode ID of the char. */
     public var charID(get, never):Int;
-    public function get_charID():Int { return mCharID; }
+    private function get_charID():Int { return mCharID; }
     
     /** The number of points to move the char in x direction on character arrangement. */
     public var xOffset(get, never):Float;
-    public function get_xOffset():Float { return mXOffset; }
+    private function get_xOffset():Float { return mXOffset; }
     
     /** The number of points to move the char in y direction on character arrangement. */
     public var yOffset(get, never):Float;
-    public function get_yOffset():Float { return mYOffset; }
+    private function get_yOffset():Float { return mYOffset; }
     
     /** The number of points the cursor has to be moved to the right for the next char. */
     public var xAdvance(get, never):Float;
-    public function get_xAdvance():Float { return mXAdvance; }
+    private function get_xAdvance():Float { return mXAdvance; }
     
     /** The texture of the character. */
     public var texture(get, never):Texture;
-    public function get_texture():Texture { return mTexture; }
+    private function get_texture():Texture { return mTexture; }
     
     /** The width of the character in points. */
     public var width(get, never):Float;
-    public function get_width():Float { return mTexture.width; }
+    private function get_width():Float { return mTexture.width; }
     
     /** The height of the character in points. */
     public var height(get, never):Float;
-    public function get_height():Float { return mTexture.height; }
+    private function get_height():Float { return mTexture.height; }
 }

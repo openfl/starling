@@ -388,39 +388,39 @@ class BitmapFont
     
     /** The name of the font as it was parsed from the font file. */
     public var name(get, never):String;
-    public function get_name():String { return mName; }
+    private function get_name():String { return mName; }
     
     /** The native size of the font. */
     public var size(get, never):Float;
-    public function get_size():Float { return mSize; }
+    private function get_size():Float { return mSize; }
     
     /** The height of one line in points. */
     public var lineHeight(get, never):Float;
-    public function get_lineHeight():Float { return mLineHeight; }
-    public function set_lineHeight(value:Float):Void { mLineHeight = value; }
+    private function get_lineHeight():Float { return mLineHeight; }
+    private function set_lineHeight(value:Float):Void { mLineHeight = value; }
     
     /** The smoothing filter that is used for the texture. */ 
     public var smoothing(get, set):String;
-    public function get_smoothing():String { return mHelperImage.smoothing; }
-    public function set_smoothing(value:String):String { return mHelperImage.smoothing = value; } 
+    private function get_smoothing():String { return mHelperImage.smoothing; }
+    private function set_smoothing(value:String):String { return mHelperImage.smoothing = value; } 
     
     /** The baseline of the font. This property does not affect text rendering;
      *  it's just an information that may be useful for exact text placement. */
     public var baseline(get, set):Float;
-    public function get_baseline():Float { return mBaseline; }
-    public function set_baseline(value:Float):Float { return mBaseline = value; }
+    private function get_baseline():Float { return mBaseline; }
+    private function set_baseline(value:Float):Float { return mBaseline = value; }
     
     /** An offset that moves any generated text along the x-axis (in points).
      *  Useful to make up for incorrect font data. @default 0. */ 
     public var offsetX(get, set):Float;
-    public function get_offsetX():Float { return mOffsetX; }
-    public function set_offsetX(value:Float):Float { return mOffsetX = value; }
+    private function get_offsetX():Float { return mOffsetX; }
+    private function set_offsetX(value:Float):Float { return mOffsetX = value; }
     
     /** An offset that moves any generated text along the y-axis (in points).
      *  Useful to make up for incorrect font data. @default 0. */
     public var offsetY(get, set):Float;
-    public function get_offsetY():Float { return mOffsetY; }
-    public function set_offsetY(value:Float):Float { return mOffsetY = value; }
+    private function get_offsetY():Float { return mOffsetY; }
+    private function set_offsetY(value:Float):Float { return mOffsetY = value; }
 }
 
 class CharLocation

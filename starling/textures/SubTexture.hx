@@ -158,20 +158,20 @@ class SubTexture extends Texture
     
     /** The texture which the subtexture is based on. */ 
     public var parent(get, never):Texture;
-    public function get_parent():Texture { return mParent; }
+    private function get_parent():Texture { return mParent; }
     
     /** Indicates if the parent texture is disposed when this object is disposed. */
     public var ownsParent(get, never):Bool;
-    public function get_ownsParent():Bool { return mOwnsParent; }
+    private function get_ownsParent():Bool { return mOwnsParent; }
     
     /** If true, the SubTexture will show the parent region rotated by 90 degrees (CCW). */
     public var rotated(get, never):Bool;
-    public function get_rotated():Bool { return mRotated; }
+    private function get_rotated():Bool { return mRotated; }
 
     /** The clipping rectangle, which is the region provided on initialization 
      *  scaled into [0.0, 1.0]. */
     public var clipping(get, never):Rectangle;
-    public function get_clipping():Rectangle
+    private function get_clipping():Rectangle
     {
         var topLeft:Point = new Point();
         var bottomRight:Point = new Point();
@@ -191,7 +191,7 @@ class SubTexture extends Texture
      *
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var transformationMatrix(get, never):Matrix;
-    public function get_transformationMatrix():Matrix { return mTransformationMatrix; }
+    private function get_transformationMatrix():Matrix { return mTransformationMatrix; }
     
     /** @inheritDoc */
     public override function get_base():TextureBase { return mParent.base; }

@@ -69,13 +69,13 @@ class AtfData
     }
     
     public var format(get, never):String;
-    public function get_format():String { return mFormat; }
+    private function get_format():String { return mFormat; }
     public var width(get, never):Int;
-    public function get_width():Int { return mWidth; }
+    private function get_width():Int { return mWidth; }
     public var height(get, never):Int;
-    public function get_height():Int { return mHeight; }
+    private function get_height():Int { return mHeight; }
     public var numTextures(get, never):Int;
-    public function get_numTextures():Int { return mNumTextures; }
+    private function get_numTextures():Int { return mNumTextures; }
     public var data(get, never):ByteArray;
-    public function get_data():ByteArray { return mData; }
+    private function get_data():ByteArray { return mData; }
 }

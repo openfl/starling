@@ -151,8 +151,8 @@ class Image extends Quad
     
     /** The texture that is displayed on the quad. */
     public var texture(get, set):Texture;
-    public function get_texture():Texture { return mTexture; }
-    public function set_texture(value:Texture):Texture 
+    private function get_texture():Texture { return mTexture; }
+    private function set_texture(value:Texture):Texture 
     { 
         if (value == null)
         {
@@ -172,8 +172,8 @@ class Image extends Quad
     *   @default bilinear
     *   @see starling.textures.TextureSmoothing */ 
     public var smoothing(get, set):String;
-    public function get_smoothing():String { return mSmoothing; }
-    public function set_smoothing(value:String):String 
+    private function get_smoothing():String { return mSmoothing; }
+    private function set_smoothing(value:String):String 
     {
         if (TextureSmoothing.isValid(value))
             mSmoothing = value;

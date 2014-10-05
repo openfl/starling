@@ -287,7 +287,7 @@ class MovieClip extends Image implements IAnimatable
     
     /** The total duration of the clip in seconds. */
     public var totalTime(get, never):Float;
-    public function get_totalTime():Float 
+    private function get_totalTime():Float 
     {
         var numFrames:Int = mTextures.length;
         return mStartTimes[Std.int(numFrames-1)] + mDurations[Std.int(numFrames-1)];
@@ -295,27 +295,27 @@ class MovieClip extends Image implements IAnimatable
     
     /** The time that has passed since the clip was started (each loop starts at zero). */
     public var currentTime(get, never):Float;
-    public function get_currentTime():Float { return mCurrentTime; }
+    private function get_currentTime():Float { return mCurrentTime; }
     
     /** The total Float of frames. */
     public var numFrames(get, never):Int;
-    public function get_numFrames():Int { return mTextures.length; }
+    private function get_numFrames():Int { return mTextures.length; }
     
     /** Indicates if the clip should loop. */
     public var loop(get, set):Bool;
-    public function get_loop():Bool { return mLoop; }
-    public function set_loop(value:Bool):Bool { return mLoop = value; }
+    private function get_loop():Bool { return mLoop; }
+    private function set_loop(value:Bool):Bool { return mLoop = value; }
     
     /** If enabled, no new sounds will be started during playback. Sounds that are already
      *  playing are not affected. */
     public var muted(get, set):Bool;
-    public function get_muted():Bool { return mMuted; }
-    public function set_muted(value:Bool):Bool { return mMuted = value; }
+    private function get_muted():Bool { return mMuted; }
+    private function set_muted(value:Bool):Bool { return mMuted = value; }
 
     /** The index of the frame that is currently displayed. */
     public var currentFrame(get, set):Int;
-    public function get_currentFrame():Int { return mCurrentFrame; }
-    public function set_currentFrame(value:Int):Int
+    private function get_currentFrame():Int { return mCurrentFrame; }
+    private function set_currentFrame(value:Int):Int
     {
         mCurrentFrame = value;
         mCurrentTime = 0.0;
@@ -332,8 +332,8 @@ class MovieClip extends Image implements IAnimatable
      *  durations. If you change the fps, the durations of all frames will be scaled 
      *  relatively to the previous value. */
     public var fps(get, set):Float;
-    public function get_fps():Float { return 1.0 / mDefaultFrameDuration; }
-    public function set_fps(value:Float):Float
+    private function get_fps():Float { return 1.0 / mDefaultFrameDuration; }
+    private function set_fps(value:Float):Float
     {
         if (value <= 0) throw new ArgumentError("Invalid fps: " + value);
         
@@ -355,7 +355,7 @@ class MovieClip extends Image implements IAnimatable
     /** Indicates if the clip is still playing. Returns <code>false</code> when the end 
      *  is reached. */
     public var isPlaying(get, never):Bool;
-    public function get_isPlaying():Bool 
+    private function get_isPlaying():Bool 
     {
         if (mPlaying)
             return mLoop || mCurrentTime < totalTime;
@@ -365,7 +365,7 @@ class MovieClip extends Image implements IAnimatable
 
     /** Indicates if a (non-looping) movie has come to its end. */
     public var isComplete(get, never):Bool;
-    public function get_isComplete():Bool
+    private function get_isComplete():Bool
     {
         return !mLoop && mCurrentTime >= totalTime;
     }

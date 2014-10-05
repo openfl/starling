@@ -175,7 +175,7 @@ class RenderSupport
     /** Calculates the product of modelview and projection matrix. 
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var mvpMatrix(get, never):Matrix;
-    public function get_mvpMatrix():Matrix
+    private function get_mvpMatrix():Matrix
     {
         mMvpMatrix.copyFrom(mModelViewMatrix);
         mMvpMatrix.concat(mProjectionMatrix);
@@ -185,7 +185,7 @@ class RenderSupport
     /** Calculates the product of modelview and projection matrix and saves it in a 3D matrix. 
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var mvpMatrix3D(get, never):Matrix3D;
-    public function get_mvpMatrix3D():Matrix3D
+    private function get_mvpMatrix3D():Matrix3D
     {
         return MatrixUtil.convertTo3D(mvpMatrix, mMvpMatrix3D);
     }
@@ -193,13 +193,13 @@ class RenderSupport
     /** Returns the current modelview matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var modelViewMatrix(get, never):Matrix;
-    public function get_modelViewMatrix():Matrix { return mModelViewMatrix; }
+    private function get_modelViewMatrix():Matrix { return mModelViewMatrix; }
     
     /** Returns the current projection matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var projectionMatrix(get, set):Matrix;
-    public function get_projectionMatrix():Matrix { return mProjectionMatrix; }
-    public function set_projectionMatrix(value:Matrix):Matrix 
+    private function get_projectionMatrix():Matrix { return mProjectionMatrix; }
+    private function set_projectionMatrix(value:Matrix):Matrix 
     {
         mProjectionMatrix.copyFrom(value);
         applyClipRect();
@@ -217,8 +217,8 @@ class RenderSupport
     /** The blend mode to be used on rendering. To apply the factor, you have to manually call
      *  'applyBlendMode' (because the actual blend factors depend on the PMA mode). */
     public var blendMode(get, set):String;
-    public function get_blendMode():String { return mBlendMode; }
-    public function set_blendMode(value:String):String
+    private function get_blendMode():String { return mBlendMode; }
+    private function set_blendMode(value:String):String
     {
         if (value != BlendMode.AUTO) mBlendMode = value;
         return mBlendMode;
@@ -229,8 +229,8 @@ class RenderSupport
     /** The texture that is currently being rendered into, or 'null' to render into the 
      *  back buffer. If you set a new target, it is immediately activated. */
     public var renderTarget(get, set):Texture;
-    public function get_renderTarget():Texture { return mRenderTarget; }
-    public function set_renderTarget(target:Texture):Texture 
+    private function get_renderTarget():Texture { return mRenderTarget; }
+    private function set_renderTarget(target:Texture):Texture 
     {
         setRenderTarget(target);
         return mRenderTarget;
@@ -511,5 +511,5 @@ class RenderSupport
     
     /** Indicates the number of stage3D draw calls. */
     public var drawCount(get, never):Int;
-    public function get_drawCount():Int { return mDrawCount; }
+    private function get_drawCount():Int { return mDrawCount; }
 }

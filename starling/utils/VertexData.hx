@@ -424,7 +424,7 @@ class VertexData
     
     /** Indicates if any vertices have a non-white color or are not fully opaque. */
     public var tinted(get, never):Bool;
-    public function get_tinted():Bool
+    private function get_tinted():Bool
     {
         var offset:Int = COLOR_OFFSET;
         
@@ -473,8 +473,8 @@ class VertexData
     *  If you change this value, the color data is updated accordingly. If you don't want
     *  that, use the 'setPremultipliedAlpha' method instead. */
     public var premultipliedAlpha(get, set):Bool;
-    public function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
-    public function set_premultipliedAlpha(value:Bool):Bool
+    private function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
+    private function set_premultipliedAlpha(value:Bool):Bool
     {
         setPremultipliedAlpha(value);
         return mPremultipliedAlpha;
@@ -482,8 +482,8 @@ class VertexData
     
     /** The total number of vertices. */
     public var numVertices(get, set):Int;
-    public function get_numVertices():Int { return mNumVertices; }
-    public function set_numVertices(value:Int):Int
+    private function get_numVertices():Int { return mNumVertices; }
+    private function set_numVertices(value:Int):Int
     {
         //mRawData.fixed = false;
 #if js
@@ -521,9 +521,9 @@ class VertexData
     /** The raw vertex data; not a copy! */
 #if js
     public var rawData(get, never):Float32Array;
-    public function get_rawData():Float32Array { return mRawData; }
+    private function get_rawData():Float32Array { return mRawData; }
 #else
     public var rawData(get, never):Array<Float>;
-    public function get_rawData():Array<Float> { return mRawData; }
+    private function get_rawData():Array<Float> { return mRawData; }
 #end
 }

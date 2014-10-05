@@ -133,12 +133,12 @@ package starling.containers;
         
         // public var rightClickMenuEnabled(get, set) : Bool;
         
-        // public function get_rightClickMenuEnabled() : Bool
+        // private function get_rightClickMenuEnabled() : Bool
         // {
         //  return _rightClickMenuEnabled;
         // }
         
-        // public function set_rightClickMenuEnabled(val:Bool) : Bool
+        // private function set_rightClickMenuEnabled(val:Bool) : Bool
         // {
         //  _rightClickMenuEnabled = val;
             
@@ -148,12 +148,12 @@ package starling.containers;
         
         public var stage3DProxy(get, set) : Stage3DProxy;
         
-        public function get_stage3DProxy() : Stage3DProxy
+        private function get_stage3DProxy() : Stage3DProxy
         {
             return _stage3DProxy;
         }
         
-        public function set_stage3DProxy(stage3DProxy:Stage3DProxy) : Stage3DProxy
+        private function set_stage3DProxy(stage3DProxy:Stage3DProxy) : Stage3DProxy
         {   
             _stage3DProxy = stage3DProxy;
             
@@ -166,12 +166,12 @@ package starling.containers;
          * The starling instance used to draw the scene.
          */
         public var starlingPtr(get, set) : Starling;
-        public function get_starlingPtr() : Starling
+        private function get_starlingPtr() : Starling
         {
             return _starling;
         }
         
-        public function set_starlingPtr(value:Starling) : Starling
+        private function set_starlingPtr(value:Starling) : Starling
         {
             if (_starling != null)
                 _starling.dispose();
@@ -184,17 +184,17 @@ package starling.containers;
          * The amount of milliseconds the last render call took
          */
         public var deltaTime(get, null) : UInt;
-        public function get_deltaTime() : UInt
+        private function get_deltaTime() : UInt
         {
             return _deltaTime;
         }
         
         public var aspectRatio(get, set) : Float;
-        public function get_aspectRatio() : Float
+        private function get_aspectRatio() : Float
         {
             return _aspectRatio;
         }
-        public function set_aspectRatio(aspectRatio:Float) : Float
+        private function set_aspectRatio(aspectRatio:Float) : Float
         {
             _aspectRatio = aspectRatio;
             return _aspectRatio;
@@ -206,7 +206,7 @@ package starling.containers;
          * Not supported. Use filters3d instead.
          */
         @:getter(filters)
-        public function get_filters() : Array<Dynamic>
+        private function get_filters() : Array<Dynamic>
         {
             throw new Error("filters is not supported in View2D. Use filters3d instead.");
             return null;
@@ -216,7 +216,7 @@ package starling.containers;
          * Not supported. Use filters3d instead.
          */
         @:setter(filters)
-        public function set_filters(value:Array<Dynamic>) : Void
+        private function set_filters(value:Array<Dynamic>) : Void
         {
             throw new Error("filters is not supported in View2D. Use filters3d instead.");
         }
@@ -226,13 +226,13 @@ package starling.containers;
          * platform to 2048 pixels.
          */
         @:getter(width)
-        public function get_width() : Float
+        private function get_width() : Float
         {
             return _width;
         }
 
         @:setter(width)
-        public function set_width(value:Float) : Void
+        private function set_width(value:Float) : Void
         {
             // Backbuffer limitation in software mode. See comment in updateBackBuffer()
             if (_stage3DProxy!=null && _stage3DProxy.usesSoftwareRendering && value > 2048)
@@ -249,13 +249,13 @@ package starling.containers;
          * platform to 2048 pixels.
          */
         @:getter(height)
-        public function get_height() : Float
+        private function get_height() : Float
         {
             return _height;
         }
 
         @:setter(height)
-        public function set_height(value:Float) : Void
+        private function set_height(value:Float) : Void
         {
             // Backbuffer limitation in software mode. See comment in updateBackBuffer()
             if (_stage3DProxy!=null && _stage3DProxy.usesSoftwareRendering && value > 2048)
@@ -274,7 +274,7 @@ package starling.containers;
         // /**
         //  * Not supported. Use filters3d instead.
         //  */
-        // override public function get_filters() : Array<Dynamic>
+        // override private function get_filters() : Array<Dynamic>
         // {
         //     throw new Error("filters is not supported in View2D. Use filters3d instead.");
         //     return null;
@@ -283,7 +283,7 @@ package starling.containers;
         // /**
         //  * Not supported. Use filters3d instead.
         //  */
-        // override public function set_filters(value:Array<Dynamic>) : Array<Dynamic>
+        // override private function set_filters(value:Array<Dynamic>) : Array<Dynamic>
         // {
         //     throw new Error("filters is not supported in View2D. Use filters3d instead.");
         //     return null;
@@ -293,12 +293,12 @@ package starling.containers;
          * The width of the viewport. When software rendering is used, this is limited by the
          * platform to 2048 pixels.
          */
-        override public function get_width() : Float
+        override private function get_width() : Float
         {
             return _width;
         }
 
-        override public function set_width(value:Float) : Float
+        override private function set_width(value:Float) : Float
         {
             // Backbuffer limitation in software mode. See comment in updateBackBuffer()
             if (_stage3DProxy!=null && _stage3DProxy.usesSoftwareRendering && value > 2048)
@@ -317,12 +317,12 @@ package starling.containers;
          * The height of the viewport. When software rendering is used, this is limited by the
          * platform to 2048 pixels.
          */
-        override public function get_height() : Float
+        override private function get_height() : Float
         {
             return _height;
         }
 
-        override public function set_height(value:Float) : Float
+        override private function set_height(value:Float) : Float
         {
             // Backbuffer limitation in software mode. See comment in updateBackBuffer()
             if (_stage3DProxy!=null && _stage3DProxy.usesSoftwareRendering && value > 2048)
@@ -337,7 +337,7 @@ package starling.containers;
             return value;
         }
 
-        override public function set_visible(value:Bool) : Bool
+        override private function set_visible(value:Bool) : Bool
         {
             super.visible = value;
             
@@ -352,12 +352,12 @@ package starling.containers;
          * The amount of anti-aliasing to be used.
          */
         public var antiAlias(get, set) : UInt;
-        public function get_antiAlias() : UInt
+        private function get_antiAlias() : UInt
         {
             return _antiAlias;
         }
         
-        public function set_antiAlias(value:UInt) : UInt
+        private function set_antiAlias(value:UInt) : UInt
         {
             _antiAlias = value;
             _starling.antiAliasing = value;
@@ -371,12 +371,12 @@ package starling.containers;
          * to share the same Context3D object.
          */
         public var shareContext(get, set) : Bool;
-        public function get_shareContext() : Bool
+        private function get_shareContext() : Bool
         {
             return _shareContext;
         }
         
-        public function set_shareContext(value:Bool) : Bool
+        private function set_shareContext(value:Bool) : Bool
         {
             if (_shareContext == value)
                 return value;
@@ -561,47 +561,47 @@ package starling.containers;
         }
         
         // dead ends:
-        // override public function set_z(value:Float) : Float
+        // override private function set_z(value:Float) : Float
         // {
         //  return value;
         // }
         
-        // override public function set_scaleZ(value:Float) : Float
+        // override private function set_scaleZ(value:Float) : Float
         // {
         //  return value;
         // }
         
-        //override public function set_rotation(value:Float) : Float
+        //override private function set_rotation(value:Float) : Float
         //{
         //    return value;
         //}
         
-        // override public function set_rotationX(value:Float) : Float
+        // override private function set_rotationX(value:Float) : Float
         // {
         //  return value;
         // }
         
-        // override public function set_rotationY(value:Float) : Float
+        // override private function set_rotationY(value:Float) : Float
         // {
         //  return value;
         // }
         
-        // override public function set_rotationZ(value:Float) : Float
+        // override private function set_rotationZ(value:Float) : Float
         // {
         //  return value;
         // }
         
-        // override public function set_transform(value:Transform) : Transform
+        // override private function set_transform(value:Transform) : Transform
         // {
         //     return value;
         // }
         
-        // override public function set_scaleX(value:Float) : Float
+        // override private function set_scaleX(value:Float) : Float
         // {
         //     return value;
         // }
         
-        // override public function set_scaleY(value:Float) : Float
+        // override private function set_scaleY(value:Float) : Float
         // {
         //     return value;
         // }

@@ -337,8 +337,8 @@ class TouchProcessor
      *  That's an easy way to develop and test multitouch when there's only a mouse available.
      */
     public var simulateMultitouch(get, set):Bool;
-    public function get_simulateMultitouch():Bool { return mTouchMarker != null; }
-    public function set_simulateMultitouch(value:Bool):Bool
+    private function get_simulateMultitouch():Bool { return mTouchMarker != null; }
+    private function set_simulateMultitouch(value:Bool):Bool
     { 
         if (simulateMultitouch == value) return mTouchMarker != null; // no change
         if (value)
@@ -358,29 +358,29 @@ class TouchProcessor
     /** The time period (in seconds) in which two touches must occur to be recognized as
      *  a multitap gesture. */
     public var multitapTime(get, set):Float;
-    public function get_multitapTime():Float { return mMultitapTime; }
-    public function set_multitapTime(value:Float):Float { return mMultitapTime = value; }
+    private function get_multitapTime():Float { return mMultitapTime; }
+    private function set_multitapTime(value:Float):Float { return mMultitapTime = value; }
     
     /** The distance (in points) describing how close two touches must be to each other to
      *  be recognized as a multitap gesture. */
     public var multitapDistance(get, set):Float;
-    public function get_multitapDistance():Float { return mMultitapDistance; }
-    public function set_multitapDistance(value:Float):Float { return mMultitapDistance = value; }
+    private function get_multitapDistance():Float { return mMultitapDistance; }
+    private function set_multitapDistance(value:Float):Float { return mMultitapDistance = value; }
 
     /** The base object that will be used for hit testing. Per default, this reference points
      *  to the stage; however, you can limit touch processing to certain parts of your game
      *  by assigning a different object. */
     public var root(get, set):DisplayObject;
-    public function get_root():DisplayObject { return mRoot; }
-    public function set_root(value:DisplayObject):DisplayObject { return mRoot = value; }
+    private function get_root():DisplayObject { return mRoot; }
+    private function set_root(value:DisplayObject):DisplayObject { return mRoot = value; }
     
     /** The stage object to which the touch objects are (per default) dispatched. */
     public var stage(get, never):Stage;
-    public function get_stage():Stage { return mStage; }
+    private function get_stage():Stage { return mStage; }
     
     /** Returns the number of fingers / touch points that are currently on the stage. */
     public var numCurrentTouches(get, never):Int;
-    public function get_numCurrentTouches():Int { return mCurrentTouches.length; }
+    private function get_numCurrentTouches():Int { return mCurrentTouches.length; }
 
     // keyboard handling
     

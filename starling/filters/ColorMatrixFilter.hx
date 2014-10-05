@@ -268,8 +268,8 @@ class ColorMatrixFilter extends FragmentFilter
     
     /** A vector of 20 items arranged as a 4x5 matrix. */
     public var matrix(get, set):Array<Float>;
-    public function get_matrix():Array<Float> { return mUserMatrix; }
-    public function set_matrix(value:Array<Float>):Array<Float>
+    private function get_matrix():Array<Float> { return mUserMatrix; }
+    private function set_matrix(value:Array<Float>):Array<Float>
     {
         if (value != null && value.length != 20) 
             throw new ArgumentError("Invalid matrix length: must be 20");

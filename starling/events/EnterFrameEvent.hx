@@ -29,5 +29,5 @@ class EnterFrameEvent extends Event
     
     /** The time that has passed since the last frame (in seconds). */
     public var passedTime(get, never):Float;
-    public function get_passedTime():Float { return cast(data, Float); }
+    private function get_passedTime():Float { return cast(data, Float); }
 }
