@@ -131,23 +131,23 @@ class VertexData
         {
             while (sourceIndex < sourceEnd)
             {
-                x = mRawData[Std.int(sourceIndex++)];
-                y = mRawData[Std.int(sourceIndex++)];
+                x = mRawData[sourceIndex++];
+                y = mRawData[sourceIndex++];
                 
-                targetRawData[Std.int(targetIndex++)] = matrix.a * x + matrix.c * y + matrix.tx;
-                targetRawData[Std.int(targetIndex++)] = matrix.d * y + matrix.b * x + matrix.ty;
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
+                targetRawData[targetIndex++] = matrix.a * x + matrix.c * y + matrix.tx;
+                targetRawData[targetIndex++] = matrix.d * y + matrix.b * x + matrix.ty;
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
             }
         }
         else
         {
             while (sourceIndex < sourceEnd)
-                targetRawData[Std.int(targetIndex++)] = mRawData[Std.int(sourceIndex++)];
+                targetRawData[targetIndex++] = mRawData[sourceIndex++];
         }
     }
     
@@ -165,7 +165,7 @@ class VertexData
         var rawDataLength:Int = rawData.length;
         
         for (i in 0 ... rawDataLength)
-            mRawData[Std.int(targetIndex++)] = rawData[i];
+            mRawData[targetIndex++] = rawData[i];
         
         mNumVertices += data.numVertices;
         //mRawData.fixed = true;
@@ -178,7 +178,7 @@ class VertexData
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         mRawData[offset] = x;
-        mRawData[Std.int(offset+1)] = y;
+        mRawData[offset+1] = y;
     }
     
     /** Returns the position of a vertex. */
@@ -186,7 +186,7 @@ class VertexData
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         position.x = mRawData[offset];
-        position.y = mRawData[Std.int(offset+1)];
+        position.y = mRawData[offset+1];
     }
     
     /** Updates the RGB color and alpha value of a vertex in one step. */
@@ -199,33 +199,33 @@ class VertexData
         var multiplier:Float = mPremultipliedAlpha ? alpha : 1.0;
         
         mRawData[offset]        = ((color >> 16) & 0xff) / 255.0 * multiplier;
-        mRawData[Std.int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
-        mRawData[Std.int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
-        mRawData[Std.int(offset+3)] = alpha;
+        mRawData[offset+1] = ((color >>  8) & 0xff) / 255.0 * multiplier;
+        mRawData[offset+2] = ( color        & 0xff) / 255.0 * multiplier;
+        mRawData[offset+3] = alpha;
     }
     
     /** Updates the RGB color values of a vertex (alpha is not changed). */
     public function setColor(vertexID:Int, color:UInt):Void
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
-        var multiplier:Float = mPremultipliedAlpha ? mRawData[Std.int(offset+3)] : 1.0;
+        var multiplier:Float = mPremultipliedAlpha ? mRawData[offset+3] : 1.0;
         mRawData[offset]        = ((color >> 16) & 0xff) / 255.0 * multiplier;
-        mRawData[Std.int(offset+1)] = ((color >>  8) & 0xff) / 255.0 * multiplier;
-        mRawData[Std.int(offset+2)] = ( color        & 0xff) / 255.0 * multiplier;
+        mRawData[offset+1] = ((color >>  8) & 0xff) / 255.0 * multiplier;
+        mRawData[offset+2] = ( color        & 0xff) / 255.0 * multiplier;
     }
     
     /** Returns the RGB color of a vertex (no alpha). */
     public function getColor(vertexID:Int):UInt
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET;
-        var divisor:Float = mPremultipliedAlpha ? mRawData[Std.int(offset+3)] : 1.0;
+        var divisor:Float = mPremultipliedAlpha ? mRawData[offset+3] : 1.0;
         
         if (divisor == 0) return 0;
         else
         {
             var red:Float   = mRawData[offset]        / divisor;
-            var green:Float = mRawData[Std.int(offset+1)] / divisor;
-            var blue:Float  = mRawData[Std.int(offset+2)] / divisor;
+            var green:Float = mRawData[offset+1] / divisor;
+            var blue:Float  = mRawData[offset+2] / divisor;
             
             return (Std.int(red*255) << 16) | (Std.int(green*255) << 8) | Std.int(blue*255);
         }
@@ -252,7 +252,7 @@ class VertexData
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
         mRawData[offset]        = u;
-        mRawData[Std.int(offset+1)] = v;
+        mRawData[offset+1] = v;
     }
     
     /** Returns the texture coordinates of a vertex in the range 0-1. */
@@ -260,7 +260,7 @@ class VertexData
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + TEXCOORD_OFFSET;
         texCoords.x = mRawData[offset];
-        texCoords.y = mRawData[Std.int(offset+1)];
+        texCoords.y = mRawData[offset+1];
     }
     
     // utility functions
@@ -270,7 +270,7 @@ class VertexData
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         mRawData[offset]        += deltaX;
-        mRawData[Std.int(offset+1)] += deltaY;
+        mRawData[offset+1] += deltaY;
     }
 
     /** Transforms the position of subsequent vertices by multiplication with a 
@@ -283,10 +283,10 @@ class VertexData
         for (i in 0 ... numVertices)
         {
             x = mRawData[offset];
-            y = mRawData[Std.int(offset+1)];
+            y = mRawData[offset+1];
             
             mRawData[offset]        = matrix.a * x + matrix.c * y + matrix.tx;
-            mRawData[Std.int(offset+1)] = matrix.d * y + matrix.b * x + matrix.ty;
+            mRawData[offset+1] = matrix.d * y + matrix.b * x + matrix.ty;
             
             offset += ELEMENTS_PER_VERTEX;
         }
@@ -362,7 +362,7 @@ class VertexData
                 for (i in 0 ... numVertices)
                 {
                     x = mRawData[offset];
-                    y = mRawData[Std.int(offset+1)];
+                    y = mRawData[offset+1];
                     offset += ELEMENTS_PER_VERTEX;
                     
                     if (minX > x) minX = x;
@@ -376,7 +376,7 @@ class VertexData
                 for (i in 0 ... numVertices)
                 {
                     x = mRawData[offset];
-                    y = mRawData[Std.int(offset+1)];
+                    y = mRawData[offset+1];
                     offset += ELEMENTS_PER_VERTEX;
                     
                     MatrixUtil.transformCoords(transformationMatrix, x, y, sHelperPoint);
@@ -431,7 +431,7 @@ class VertexData
         for (i in 0 ... mNumVertices)
         {
             for (j in 0 ... 4)
-                if (mRawData[Std.int(offset+j)] != 1.0) return true;
+                if (mRawData[offset+j] != 1.0) return true;
 
             offset += ELEMENTS_PER_VERTEX;
         }
@@ -452,15 +452,15 @@ class VertexData
             var i:Int = COLOR_OFFSET;
             while(i<dataLength)
             {
-                var alpha:Float = mRawData[Std.int(i+3)];
+                var alpha:Float = mRawData[i+3];
                 var divisor:Float = mPremultipliedAlpha ? alpha : 1.0;
                 var multiplier:Float = value ? alpha : 1.0;
                 
                 if (divisor != 0)
                 {
                     mRawData[i]        = mRawData[i]        / divisor * multiplier;
-                    mRawData[Std.int(i+1)] = mRawData[Std.int(i+1)] / divisor * multiplier;
-                    mRawData[Std.int(i+2)] = mRawData[Std.int(i+2)] / divisor * multiplier;
+                    mRawData[i+1] = mRawData[i+1] / divisor * multiplier;
+                    mRawData[i+2] = mRawData[i+2] / divisor * multiplier;
                 }
                 i += ELEMENTS_PER_VERTEX;
             }
