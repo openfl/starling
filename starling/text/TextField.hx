@@ -250,7 +250,7 @@ class TextField extends DisplayObjectContainer
             height = Max.INT_MAX_VALUE;
             vAlign = VAlign.TOP;
         }
-#if (html5 || flash)
+#if (js || flash)
         var hAlign_openfl:TextFormatAlign;
         switch(hAlign)
         {
@@ -265,7 +265,7 @@ class TextField extends DisplayObjectContainer
 
         var textFormat:TextFormat = new TextFormat(mFontName, 
             mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
-#if (html5 || flash)
+#if (js || flash)
         textFormat.kerning = mKerning;
 #else
 // TODO: 

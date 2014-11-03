@@ -10,9 +10,7 @@
 
 package starling.utils;
 import haxe.ds.Vector;
-#if js
-import js.html.Float32Array;
-#end
+import openfl.utils.Float32Array;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -486,7 +484,7 @@ class VertexData
     private function set_numVertices(value:Int):Int
     {
         //mRawData.fixed = false;
-#if js
+
         var newArray:Float32Array = null;
         if (value * ELEMENTS_PER_VERTEX > mRawData.length)
         {
@@ -495,12 +493,13 @@ class VertexData
         }
         else
         {
+            #if html5
             newArray = new Float32Array(mRawData.buffer, 0, value * ELEMENTS_PER_VERTEX);
+            #else
+            newArray = new Float32Array(mRawData, 0, value * ELEMENTS_PER_VERTEX);
+            #end
         }
         mRawData = newArray;
-#else
-        //ArrayUtils.reSize(mRawData, value * ELEMENTS_PER_VERTEX);
-#end
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
@@ -519,11 +518,6 @@ class VertexData
     }
     
     /** The raw vertex data; not a copy! */
-#if js
     public var rawData(get, never):Float32Array;
     private function get_rawData():Float32Array { return mRawData; }
-#else
-    public var rawData(get, never):Array<Float>;
-    private function get_rawData():Array<Float> { return mRawData; }
-#end
 }

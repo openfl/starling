@@ -9,9 +9,7 @@
 // =================================================================================================
 
 package starling.textures;
-#if js
-import js.html.Float32Array;
-#end
+import openfl.utils.Float32Array;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
@@ -420,13 +418,8 @@ class Texture
      *  @param stride: the distance (in vector elements) of consecutive UV pairs.
      *  @param count: the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
-#if js
     public function adjustTexCoords(texCoords:Float32Array,
                                     startIndex:Int=0, stride:Int=0, count:Int=-1):Void
-#else
-    public function adjustTexCoords(texCoords:Vector<Float>,
-                                    startIndex:Int=0, stride:Int=0, count:Int=-1):Void
-#end
     {
         // override in subclasses
     }

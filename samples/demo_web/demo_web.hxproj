@@ -16,23 +16,16 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\HaxeToolkit\haxe\lib\starling\git" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl\git" />
-    <class path="C:\HaxeToolkit\haxe\lib\away3d\git" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl\2,0,1" />
-    <class path="src" />
-    <class path="C:\HaxeToolkit\haxe\lib\openfl\git\backends\html5" />
-    <class path="C:\HaxeToolkit\haxe\lib\away3d\git\backends\html5" />
-    <class path="bin\html5\haxe" />
+    <class path="." />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling=&#xA;away3d=1.0.1-alpha&#xA;openfl=2.0.1&#xA;tools=1.5.7&#xA;openfl-html5&#xA;display&#xA;html5&#xA;web&#xA;html5" />
+    <option directives="" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--no-output&#xA;--remap flash:openfl&#xA;--macro allowPackage(&quot;flash&quot;)" />
+    <option additional="" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
