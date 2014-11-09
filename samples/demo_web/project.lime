@@ -6,7 +6,7 @@
 
     <window width="320" height="480" if="desktop" />
     <window width="320" height="480" if="html5" />
-    <window orientation="landscape" vsync="true" if="cpp" />
+    <window orientation="landscape" vsync="true" if="native" />
 	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" />
 	
 	<source path="src" />
