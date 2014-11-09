@@ -54,11 +54,8 @@ class VertexData
     
     /** The offset of texture coordinates (u, v) within a vertex. */
     inline public static var TEXCOORD_OFFSET:Int = 6;
-#if js    
+
     private var mRawData:Float32Array;
-#else
-    private var mRawData:Array<Float>;
-#end
     private var mPremultipliedAlpha:Bool;
     private var mNumVertices:Int;
 
@@ -68,11 +65,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-#if js
         mRawData = new Float32Array(0);
-#else
-        mRawData = new Array<Float>();
-#end
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -87,11 +80,7 @@ class VertexData
         
         var clone:VertexData = new VertexData(0, mPremultipliedAlpha);
         clone.mNumVertices = numVertices;
-#if js
         clone.mRawData = new Float32Array(mRawData);
-#else
-        clone.mRawData = mRawData.copy();
-#end
 
         //clone.mRawData.fixed = true;
         return clone;
@@ -116,11 +105,8 @@ class VertexData
             numVertices = mNumVertices - vertexID;
         
         var x:Float, y:Float;
-#if js
+
         var targetRawData:Float32Array = targetData.mRawData;
-#else
-        var targetRawData:Array<Float> = targetData.mRawData;
-#end
         var targetIndex:Int = targetVertexID * ELEMENTS_PER_VERTEX;
         var sourceIndex:Int = vertexID * ELEMENTS_PER_VERTEX;
         var sourceEnd:Int = (vertexID + numVertices) * ELEMENTS_PER_VERTEX;
@@ -155,11 +141,7 @@ class VertexData
         //mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
-#if js
         var rawData:Float32Array = data.mRawData;
-#else
-        var rawData:Array<Float> = data.mRawData;
-#end
         var rawDataLength:Int = rawData.length;
         
         for (i in 0 ... rawDataLength)
@@ -493,11 +475,7 @@ class VertexData
         }
         else
         {
-            #if html5
-            newArray = new Float32Array(mRawData.buffer, 0, value * ELEMENTS_PER_VERTEX);
-            #else
-            newArray = new Float32Array(mRawData, 0, value * ELEMENTS_PER_VERTEX);
-            #end
+            newArray = mRawData.subarray(value * ELEMENTS_PER_VERTEX);
         }
         mRawData = newArray;
         

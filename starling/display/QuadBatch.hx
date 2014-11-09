@@ -165,11 +165,7 @@ class QuadBatch extends DisplayObject
         if (context == null)  throw new MissingContextError();
         
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
-#if js
         mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
-#else
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
-#end
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
@@ -203,11 +199,7 @@ class QuadBatch extends DisplayObject
         {
             // as last parameter, we could also use 'mNumQuads * 4', but on some
             // GPU hardware (iOS!), this is slower than updating the complete buffer.
-#if js
             mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, mVertexData.numVertices);
-#else
-            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
-#end
             mSyncRequired = false;
         }
     }
