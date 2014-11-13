@@ -470,14 +470,12 @@ class VertexData
         var newArray:Float32Array = null;
         if (value * ELEMENTS_PER_VERTEX > mRawData.length)
         {
-            newArray = new Float32Array(value * ELEMENTS_PER_VERTEX);
-            newArray.set(mRawData);
+            var new_rawData:Float32Array = new Float32Array(value * ELEMENTS_PER_VERTEX);
+            new_rawData.set(mRawData);
+            mRawData = new_rawData;
         }
         else
-        {
-            newArray = mRawData.subarray(value * ELEMENTS_PER_VERTEX);
-        }
-        mRawData = newArray;
+            mRawData = mRawData.subarray(value * ELEMENTS_PER_VERTEX);
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
