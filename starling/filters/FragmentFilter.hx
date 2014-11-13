@@ -10,6 +10,7 @@
 
 package starling.filters;
 import haxe.ds.Vector;
+import lime.utils.Int16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.display3D.Context3DVertexBufferFormat;
@@ -99,7 +100,7 @@ class FragmentFilter
     
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Array<UInt>;
+    private var mIndexData:Int16Array;
     private var mIndexBuffer:IndexBuffer3D;
     
     private var mCacheRequested:Bool;
@@ -136,7 +137,7 @@ class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        mIndexData = [0, 1, 2, 1, 3, 2];
+        mIndexData = new Int16Array([0, 1, 2, 1, 3, 2]);
         //mIndexData.fixed = true;
         
         createPrograms();
@@ -337,7 +338,7 @@ class FragmentFilter
         {
             mVertexBuffer = context.createVertexBuffer(4, VertexData.ELEMENTS_PER_VERTEX);
             mIndexBuffer  = context.createIndexBuffer(6);
-            mIndexBuffer.uploadFromVector(mIndexData, 0, 6);
+            mIndexBuffer.uploadFromInt16Array(mIndexData);
         }
         
         mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, 4);

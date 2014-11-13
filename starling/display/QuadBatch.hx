@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+import openfl.utils.Int16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.display3D.Context3DTextureFormat;
@@ -75,7 +76,7 @@ class QuadBatch extends DisplayObject
     private var mSmoothing:String;
     
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Vector<UInt>;
+    private var mIndexData:Int16Array;
     private var mIndexBuffer:IndexBuffer3D;
     
     /** The raw vertex data of the quad. After modifying its contents, call
@@ -94,7 +95,7 @@ class QuadBatch extends DisplayObject
     {
         super();
         mVertexData = new VertexData(0, true);
-        mIndexData = new Vector<UInt>(0, false);
+        mIndexData = new Int16Array(0);
         mNumQuads = 0;
         mTinted = false;
         mSyncRequired = false;
@@ -114,7 +115,7 @@ class QuadBatch extends DisplayObject
         destroyBuffers();
         
         mVertexData.numVertices = 0;
-        mIndexData = [];
+        mIndexData = null;
         mNumQuads = 0;
         
         super.dispose();
@@ -136,7 +137,7 @@ class QuadBatch extends DisplayObject
     {
         var clone:QuadBatch = new QuadBatch();
         clone.mVertexData = mVertexData.clone(0, mNumQuads * 4);
-        clone.mIndexData = mIndexData.slice(0, mNumQuads * 6);
+        clone.mIndexData = new Int16Array(mIndexData);
         clone.mNumQuads = mNumQuads;
         clone.mTinted = mTinted;
         clone.mTexture = mTexture;
@@ -168,7 +169,7 @@ class QuadBatch extends DisplayObject
         mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
-        mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
+        mIndexBuffer.uploadFromInt16Array(mIndexData);
         
         mSyncRequired = false;
     }
@@ -644,7 +645,15 @@ class QuadBatch extends DisplayObject
         if (mNumQuads > value) mNumQuads = value;
         
         mVertexData.numVertices = value * 4;
-        mIndexData.length = value * 6;
+        var newLength:Int = value * 6;
+        if (newLength > mIndexData.length)
+        {
+            var new_IndexData:Int16Array = new Int16Array(newLength);
+            new_IndexData.set(mIndexData);
+            mIndexData = new_IndexData;
+        }
+        else
+            mIndexData = mIndexData.subarray(0, newLength);
         
         for (i in oldCapacity ... value)
         {
