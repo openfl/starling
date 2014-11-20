@@ -487,7 +487,7 @@ package starling.containers;
 
             //_touch3DManager.updateCollider();
 
-            RenderSupport._clear();
+            RenderSupport._clear(stage.color);
             if (_starling.isStarted)
                 _starling.nextFrame();
             
