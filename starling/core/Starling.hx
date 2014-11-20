@@ -552,8 +552,8 @@ class Starling extends EventDispatcher
                 if (mProfile == "baselineConstrained")
                     configureBackBuffer(32, 32, mAntiAliasing, false);
                 
-                mStage3D.x = mClippedViewPort.x;
-                mStage3D.y = mClippedViewPort.y;
+                //mStage3D.x = mClippedViewPort.x;
+                //mStage3D.y = mClippedViewPort.y;
                 
                 configureBackBuffer(Std.int(mClippedViewPort.width), Std.int(mClippedViewPort.height),
                     mAntiAliasing, false, mSupportHighResolutions);
