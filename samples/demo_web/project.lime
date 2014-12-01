@@ -28,6 +28,7 @@
 
 	<haxedef name="source-map-content" if="html5" />
 	<haxedef name="dom" if="html5" />
+	<haxedef name="webgl" if="html5" />
     
     <haxedef name="disable_gl_renderer" />
 
