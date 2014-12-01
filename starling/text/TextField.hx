@@ -250,7 +250,7 @@ class TextField extends DisplayObjectContainer
             height = Max.INT_MAX_VALUE;
             vAlign = VAlign.TOP;
         }
-#if (js || flash)
+
         var hAlign_openfl:TextFormatAlign;
         switch(hAlign)
         {
@@ -259,17 +259,10 @@ class TextField extends DisplayObjectContainer
         case HAlign.RIGHT: hAlign_openfl = TextFormatAlign.RIGHT;
         default: hAlign_openfl = TextFormatAlign.LEFT;
         }
-#else
-        var hAlign_openfl:String = hAlign;
-#end
 
         var textFormat:TextFormat = new TextFormat(mFontName, 
             mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
-#if (js || flash)
         textFormat.kerning = mKerning;
-#else
-// TODO: 
-#end
         
         sNativeTextField.defaultTextFormat = textFormat;
         sNativeTextField.width = width;
