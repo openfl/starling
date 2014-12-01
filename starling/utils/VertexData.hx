@@ -249,8 +249,8 @@ class VertexData
     public function translateVertex(vertexID:Int, deltaX:Float, deltaY:Float):Void
     {
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
-        mRawData[offset]        += deltaX;
-        mRawData[offset+1] += deltaY;
+        mRawData[offset]        = mRawData[offset] + deltaX;
+        mRawData[offset+1] = mRawData[offset+1] + deltaY;
     }
 
     /** Transforms the position of subsequent vertices by multiplication with a 
@@ -304,7 +304,10 @@ class VertexData
         {
             var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
             for (i in 0 ... numVertices)
-                mRawData[Std.int(offset + i*ELEMENTS_PER_VERTEX)] *= factor;
+            {
+                var idx:Int = Std.int(offset + i*ELEMENTS_PER_VERTEX);
+                mRawData[idx] = mRawData[idx] * factor;
+            }
         }
     }
     
