@@ -200,7 +200,7 @@ class QuadBatch extends DisplayObject
         {
             // as last parameter, we could also use 'mNumQuads * 4', but on some
             // GPU hardware (iOS!), this is slower than updating the complete buffer.
-            mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, mVertexData.numVertices);
+            mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, mNumQuads * 4);
             mSyncRequired = false;
         }
     }
