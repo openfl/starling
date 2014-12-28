@@ -15,7 +15,7 @@ import starling.errors.AbstractClassError;
 class VAlign
 {
     /** @private */
-    public function VAlign() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** Top alignment. */
     inline public static var TOP:String    = "top";
