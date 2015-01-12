@@ -14,7 +14,6 @@
 	<source path="src" />
     <source path="../demo/src" />
 
-    <haxelib name="format" if="html5" />
 	<haxelib name="starling" />
     <haxelib name="openfl" />
     <haxelib name="away3d" />
