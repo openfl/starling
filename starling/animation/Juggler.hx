@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.animation;
-import away3d.utils.ArrayUtils;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
