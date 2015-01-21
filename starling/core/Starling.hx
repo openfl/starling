@@ -549,8 +549,10 @@ class Starling extends EventDispatcher
                 // the size happens in a separate operation) -- so we have no choice but to
                 // set the backbuffer to a very small size first, to be on the safe side.
                 
+                #if flash
                 if (mProfile == "baselineConstrained")
                     configureBackBuffer(32, 32, mAntiAliasing, false);
+                #end
                 
                 //mStage3D.x = mClippedViewPort.x;
                 //mStage3D.y = mClippedViewPort.y;
