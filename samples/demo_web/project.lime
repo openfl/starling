@@ -16,7 +16,6 @@
 
 	<haxelib name="starling" />
     <haxelib name="openfl" />
-    <haxelib name="away3d" />
 
     <assets path="../demo/assets/audio/wing_flap.ogg" rename="assets/audio/wing_flap.ogg" />
     <assets path="../demo/assets/textures/1x" rename="assets/textures/1x" />
@@ -27,9 +26,8 @@
 
 	<haxedef name="source-map-content" if="html5 || nodejs" />
 	<haxedef name="dom" if="html5" />
-	<haxedef name="webgl" if="html5" />
-    
-    <haxedef name="disable_gl_renderer" />
+	
+	<haxedef name="disable_gl_renderer" />
 
 	<android minimum-sdk-version="10" />
 	

@@ -10,8 +10,6 @@ import starling.textures.Texture;
 import starling.utils.AssetManager;
 import starling.events.Event;
 
-import starling.containers.View2D;
-
 import flash.display.StageScaleMode;
 import flash.display.StageAlign;
 import flash.events.MouseEvent;
@@ -28,7 +26,6 @@ class Demo_Web extends Sprite
     //private var Background:Class<Dynamic>;
     
     private var mStarling:Starling;
-    private var _view:View2D;
     
     public function new()
     {
@@ -45,21 +42,16 @@ class Demo_Web extends Sprite
         //setup the view
         var profile:String = "baselineConstrained";
         var rect:Rectangle = new Rectangle(0, 0, 320, 480);
-        _view = new View2D(false, profile, rect.width / rect.height);
-        this.addChild(_view);
         
         Starling.multitouchEnabled = true; // for Multitouch Scene
         Starling.handleLostContext = true; // required on Windows, needs more memory
         
-        mStarling = new Starling(Game, stage, rect, _view.stage3DProxy.stage3D, "auto", profile);
+        mStarling = new Starling(Game, stage, rect, null, "auto", profile);
         mStarling.simulateMultitouch = true;
         //mStarling.enableErrorChecking = Capabilities.isDebugger;
         mStarling.enableErrorChecking = false;
         mStarling.start();
-        _view.starlingPtr = mStarling;
-        
-        // this event is dispatched when stage3D is set up
-        mStarling.addEventListener(Event.ROOT_CREATED, onRootCreated);
+        onRootCreated(new Event("rootCreated", false, mStarling.root));
     }
     
     private function onAddedToStage(event:Event):Void
@@ -73,9 +65,6 @@ class Demo_Web extends Sprite
         // set framerate to 30 in software mode
         //if (mStarling.context.driverInfo.toLowerCase().indexOf("software") != -1)
         //    mStarling.nativeStage.frameRate = 30;
-        
-        // add listeners
-		_view.setRenderCallback(_onEnterFrame);
         
         // define which resources to load
         var assets:AssetManager = new AssetManager();
@@ -96,6 +85,5 @@ class Demo_Web extends Sprite
     */
     private function _onEnterFrame(e:openfl.events.Event):Void
     {
-        _view.render();
     }
 }

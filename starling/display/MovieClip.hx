@@ -9,7 +9,7 @@
 // =================================================================================================
 
 package starling.display;
-import away3d.utils.ArrayUtils;
+//import away3d.utils.ArrayUtils;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
 import openfl.errors.ArgumentError;
@@ -85,9 +85,9 @@ class MovieClip extends Image implements IAnimatable
         mSounds = new Array<Sound>();
         mDurations = new Array<Float>();
         mStartTimes = new Array<Float>();
-        ArrayUtils.reSize(mSounds, numFrames);
-        ArrayUtils.reSize(mDurations, numFrames);
-        ArrayUtils.reSize(mStartTimes, numFrames);
+        //ArrayUtils.reSize(mSounds, numFrames);
+        //ArrayUtils.reSize(mDurations, numFrames);
+        //ArrayUtils.reSize(mStartTimes, numFrames);
         
         for (i in 0 ... numFrames)
         {
