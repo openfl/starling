@@ -10,7 +10,7 @@
 
 package starling.core;
 import openfl.display3D.Context3DBlendFactor;
-import openfl.display3D.shaders.AGLSLShaderUtils;
+import openfl.display3D._shaders.AGLSLShaderUtils;
 import starling.utils.TextureUtils;
 
 import openfl.display3D.Context3D;

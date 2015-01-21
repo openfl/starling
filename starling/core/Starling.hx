@@ -10,7 +10,7 @@
 
 package starling.core;
 import haxe.Timer;
-import openfl.display3D.shaders.Shader;
+import openfl.display3D._shaders.Shader;
 import openfl.display.Sprite;
 import openfl.display.Stage3D;
 import openfl.display.StageAlign;
