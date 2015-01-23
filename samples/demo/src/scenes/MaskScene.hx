@@ -12,7 +12,7 @@ import starling.events.TouchPhase;
 import starling.filters.ColorMatrixFilter;
 import starling.text.TextField;
 
-class MaskScene extends Scene
+@:keep class MaskScene extends Scene
 {
     private var mContents:Sprite;
     private var mClipQuad:Quad;

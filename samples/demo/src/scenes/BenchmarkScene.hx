@@ -10,7 +10,7 @@ import starling.events.Event;
 import starling.text.TextField;
 import starling.utils.StringUtil.formatString;
 
-class BenchmarkScene extends Scene
+@:keep class BenchmarkScene extends Scene
 {
     private var mStartButton:Button;
     private var mResultText:TextField;

@@ -19,7 +19,7 @@ import starling.utils.AssetManager;
 
 import utils.ProgressBar;
 
-class Game extends Sprite
+@:keep class Game extends Sprite
 {
     // Embed the Ubuntu Font. Beware: the 'embedAsCFF'-part IS REQUIRED!!!
     //[Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]

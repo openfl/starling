@@ -5,7 +5,7 @@ import starling.utils.VAlign;
 
 import utils.RoundButton;
 
-class CustomHitTestScene extends Scene
+@:keep class CustomHitTestScene extends Scene
 {
     public function new()
     {

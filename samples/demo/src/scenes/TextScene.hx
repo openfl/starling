@@ -5,7 +5,7 @@ import starling.utils.Color;
 import starling.utils.HAlign;
 import starling.utils.VAlign;
 
-class TextScene extends Scene
+@:keep class TextScene extends Scene
 {
     public function new()
     {

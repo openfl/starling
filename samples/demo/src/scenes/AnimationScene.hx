@@ -10,7 +10,7 @@ import starling.textures.Texture;
 import starling.utils.Color;
 import starling.utils.MathUtil.deg2rad;
 
-class AnimationScene extends Scene
+@:keep class AnimationScene extends Scene
 {
     private var mStartButton:Button;
     private var mDelayButton:Button;

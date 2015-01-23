@@ -12,7 +12,7 @@ import starling.filters.DisplacementMapFilter;
 import starling.text.TextField;
 import starling.textures.Texture;
 
-class FilterScene extends Scene
+@:keep class FilterScene extends Scene
 {
     private var mButton:Button;
     private var mImage:Image;

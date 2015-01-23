@@ -14,7 +14,7 @@ import starling.events.TouchPhase;
 import starling.text.TextField;
 import starling.textures.RenderTexture;
 
-class RenderTextureScene extends Scene
+@:keep class RenderTextureScene extends Scene
 {
     private var mRenderTexture:RenderTexture;
     private var mCanvas:Image;

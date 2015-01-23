@@ -5,7 +5,7 @@ import starling.utils.MathUtil.deg2rad;
 
 import utils.TouchSheet;
 
-class TouchScene extends Scene
+@:keep class TouchScene extends Scene
 {
     public function new()
     {

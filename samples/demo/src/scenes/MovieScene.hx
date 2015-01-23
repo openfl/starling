@@ -7,7 +7,7 @@ import starling.display.MovieClip;
 import starling.events.Event;
 import starling.textures.Texture;
 
-class MovieScene extends Scene
+@:keep class MovieScene extends Scene
 {
     private var mMovie:MovieClip;
     

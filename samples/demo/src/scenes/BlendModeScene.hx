@@ -5,7 +5,7 @@ import starling.display.Image;
 import starling.events.Event;
 import starling.text.TextField;
 
-class BlendModeScene extends Scene
+@:keep class BlendModeScene extends Scene
 {
     private var mButton:Button;
     private var mImage:Image;

@@ -4,7 +4,7 @@ import starling.display.Image;
 import starling.text.TextField;
 import starling.textures.Texture;
 
-class TextureScene extends Scene
+@:keep class TextureScene extends Scene
 {
     public function new()
     {
