@@ -225,7 +225,7 @@ class QuadBatch extends DisplayObject
         RenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.blendMode);
         
         context.setProgram(getProgram(tinted));
-        if (tinted)
+        if (mTexture == null || tinted)
             context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
         context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 1, sRenderMatrix, true);
         context.setVertexBufferAt(0, mVertexBuffer, VertexData.POSITION_OFFSET, 
