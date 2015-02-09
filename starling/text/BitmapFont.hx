@@ -75,6 +75,8 @@ class BitmapFont
     private var mOffsetX:Float;
     private var mOffsetY:Float;
     private var mHelperImage:Image;
+    private var mLeftPadding:Float;
+    private var mRightPadding:Float;
     private var mCharLocationPool:Array<CharLocation>;
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
@@ -82,18 +84,19 @@ class BitmapFont
     public function new(texture:Texture=null, fontXml:Xml=null)
     {
         // if no texture is passed in, we create the minimal, embedded font
-        if (texture == null && fontXml == null)
+        /*if (texture == null && fontXml == null)
         {
             texture = MiniBitmapFont.texture;
             fontXml = MiniBitmapFont.xml;
-        }
+        }*/
         
         mName = "unknown";
         mLineHeight = mSize = mBaseline = 14;
+        mLeftPadding = mRightPadding = 0;
         mOffsetX = mOffsetY = 0.0;
         mTexture = texture;
         mChars = new Map<Int, BitmapChar>();
-        mHelperImage = new Image(texture);
+        mHelperImage = texture != null ? new Image(texture) : null;
         mCharLocationPool = new Array<CharLocation>();
         
         if (fontXml != null) parseFontXml(fontXml);
@@ -197,7 +200,7 @@ class BitmapFont
     }
     
     /** Draws text into a QuadBatch. */
-    public function fillQuadBatch(quadBatch:QuadBatch, width:Float, height:Float, text:String,
+    public function fillQuadBatch(textField:TextField, width:Float, height:Float, text:String,
                                   fontSize:Float=-1, color:UInt=0xffffff, 
                                   hAlign:String="center", vAlign:String="center",      
                                   autoScale:Bool=true, 
@@ -206,10 +209,17 @@ class BitmapFont
         var charLocations:Array<CharLocation> = arrangeChars(width, height, text, fontSize, 
                                                                hAlign, vAlign, autoScale, kerning);
         var numChars:Int = charLocations.length;
+        if (numChars == 0)
+            return;
+        if (mHelperImage == null)
+            mHelperImage = new Image(charLocations[0].char.texture);
         mHelperImage.color = color;
         
         if (numChars > 8192)
             throw new ArgumentError("Bitmap Font text is limited to 8192 characters.");
+        
+        var textureIndexMap:Map<Texture, Int> = new Map();
+        var nextTextureIndex:Int = 0;
 
         for (i in 0 ... numChars)
         {
@@ -219,6 +229,11 @@ class BitmapFont
             mHelperImage.x = charLocation.x;
             mHelperImage.y = charLocation.y;
             mHelperImage.scaleX = mHelperImage.scaleY = charLocation.scale;
+            
+            var idx:Null<Int> = textureIndexMap[mHelperImage.texture.root];
+            if (idx == null)
+                idx = textureIndexMap[mHelperImage.texture.root] = nextTextureIndex++;
+            var quadBatch:QuadBatch = textField.getQuadBatch(idx);
             quadBatch.addImage(mHelperImage);
         }
     }
@@ -290,7 +305,7 @@ class BitmapFont
                         currentX += char.xAdvance;
                         lastCharID = charID;
                         
-                        if (charLocation.x + char.width > containerWidth)
+                        if (mLeftPadding + mRightPadding + charLocation.x + char.width > containerWidth)
                         {
                             // when autoscaling, we must not split a word in half -> restart
                             if (autoScale && lastWhiteSpace == -1)
@@ -367,6 +382,8 @@ class BitmapFont
             
             if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right);
             else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
+            
+            if (xOffset < mLeftPadding) xOffset = Std.int(mLeftPadding);
             
             for (c in 0 ... numChars)
             {

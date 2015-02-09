@@ -2,30 +2,36 @@
 <project version="2">
   <!-- Output SWF options -->
   <output>
-    <movie outputType="Application" />
+    <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="project.lime" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
-    <movie version="3" />
+    <movie version="1" />
     <movie minorVersion="0" />
-    <movie platform="NME" />
+    <movie platform="Lime" />
     <movie background="#FFFFFF" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="." />
+    <class path="C:\HaxeToolkit\haxe\lib\starling\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\lime\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\nodejs\development" />
+    <class path="src" />
+    <class path="..\demo\src" />
+    <class path="bin\windows\nodejs\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="" />
+    <option directives="starling&#xA;openfl=2.2.4&#xA;lime=2.1.0&#xA;nodejs=2.2.6&#xA;openfl-next&#xA;tools=2.1.0&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;source-map-content&#xA;disable_gl_renderer&#xA;windows&#xA;desktop&#xA;nodejs&#xA;js-flatten" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="" />
+    <option additional="--macro allowPackage(&quot;sys&quot;)&#xA;--remap flash:openfl&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;--macro define(&quot;sys&quot;)&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -35,16 +41,12 @@
   <compileTargets>
     <compile path="src\Main.hx" />
   </compileTargets>
-  <!-- Assets to embed into the output SWF -->
-  <library>
-    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
-  </library>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand />
+  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->

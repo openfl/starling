@@ -716,11 +716,18 @@ class QuadBatch extends DisplayObject
                     "m44 op, va0, vc1 \n" + // 4x4 matrix transform to output clipspace
                     "mov v1, va2      \n";  // pass texture coordinates to fragment program
                 
-                fragmentShader = tinted ?
-                    "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
-                    "mul  oc, ft1,  v0       \n"   // multiply color with texel color
-                    :
-                    "tex  oc,  v1, fs0 <???> \n";  // sample texture 0
+                if (tinted)
+                {
+                    fragmentShader = (mTexture.format != Context3DTextureFormat.ALPHA) ?
+                        "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
+                        "mul  oc, ft1,  v0       \n"   // multiply color with texel color
+                        :
+                        "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
+                        "mov oc.xyz, v0.xyz\n" +       // replace output color with vertex color
+                        "mov oc.w, ft1.w\n";           // write alpha
+                }
+                else
+                    fragmentShader = "tex  oc,  v1, fs0 <???> \n";  // sample texture 0
                 
                 fragmentShader = StringTools.replace(fragmentShader, "<???>",
                     RenderSupport.getTextureLookupFlags(
@@ -754,6 +761,8 @@ class QuadBatch extends DisplayObject
             bitField |= 1 << 5;
         else if (format == Context3DTextureFormat.COMPRESSED_ALPHA)
             bitField |= 1 << 6;
+        else if (format == Context3DTextureFormat.ALPHA)
+            bitField |= 1 << 7;
         
         var name:String = sProgramNameCache[bitField];
         

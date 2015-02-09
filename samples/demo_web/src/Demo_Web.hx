@@ -75,6 +75,9 @@ class Demo_Web extends Sprite
         // background texture is embedded, because we need it right away!
         var bgTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("startup.jpg"), false);
         
+        // load font
+        Assets.getFont("assets/fonts/Ubuntu-R.ttf");
+        
         // game will first load resources, then start menu
         var game = cast(event.data, Game);
         game.start(bgTexture, assets);

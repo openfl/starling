@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.text;
+import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.StageQuality;
 import openfl.display3D.Context3DTextureFormat;
@@ -22,6 +23,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.text.AntiAliasType;
+import openfl.text.Font;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import starling.utils.MathUtil;
@@ -116,11 +118,13 @@ class TextField extends DisplayObjectContainer
     private var mBorder:DisplayObjectContainer;
     
     private var mImage:Image;
-    private var mQuadBatch:QuadBatch;
+    private var mQuadBatchSprite:Sprite;
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
+    #if (html5 || flash)
     private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
+    #end
     
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String, fontName:String="Verdana",
@@ -147,7 +151,7 @@ class TextField extends DisplayObjectContainer
     {
         removeEventListener(Event.FLATTEN, onFlatten);
         if (mImage != null) mImage.texture.dispose();
-        if (mQuadBatch != null) mQuadBatch.dispose();
+        if (mQuadBatchSprite != null) mQuadBatchSprite.dispose();
         super.dispose();
     }
     
@@ -181,10 +185,11 @@ class TextField extends DisplayObjectContainer
     
     private function createRenderedContents():Void
     {
-        if (mQuadBatch != null)
+        #if (html5 || flash)
+        if (mQuadBatchSprite != null)
         {
-            mQuadBatch.removeFromParent(true); 
-            mQuadBatch = null; 
+            mQuadBatchSprite.removeFromParent(true); 
+            mQuadBatchSprite = null; 
         }
         
         if (mTextBounds == null) 
@@ -220,6 +225,7 @@ class TextField extends DisplayObjectContainer
             mImage.texture = texture; 
             mImage.readjustSize(); 
         }
+        #end
     }
 
     /** This method is called immediately before the text is rendered. The intent of
@@ -235,6 +241,7 @@ class TextField extends DisplayObjectContainer
 
     private function renderText(scale:Float, resultTextBounds:Rectangle):BitmapData
     {
+        #if (html5 || flash)
         var width:Float  = mHitArea.width  * scale;
         var height:Float = mHitArea.height * scale;
         var hAlign:String = mHAlign;
@@ -333,6 +340,9 @@ class TextField extends DisplayObjectContainer
                                textWidth / scale, textHeight / scale);
         
         return bitmapData;
+        #else
+        return null;
+        #end
     }
     
     private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
@@ -417,17 +427,22 @@ class TextField extends DisplayObjectContainer
             mImage = null; 
         }
         
-        if (mQuadBatch == null) 
-        { 
-            mQuadBatch = new QuadBatch(); 
-            mQuadBatch.touchable = false;
-            addChild(mQuadBatch); 
+        if (mQuadBatchSprite == null)
+        {
+            mQuadBatchSprite = new Sprite();
+            addChild(mQuadBatchSprite);
         }
-        else
-            mQuadBatch.reset();
+        for (i in 0 ... mQuadBatchSprite.numChildren)
+        {
+            var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
+            quadBatch.reset();
+        }
         
         var bitmapFont:BitmapFont = getBitmapFont(mFontName);
-        if (bitmapFont == null) throw new Error("Bitmap font not registered: " + mFontName);
+        #if (cpp || neko || nodejs)
+        if (bitmapFont == null) bitmapFont = getFTBitmapFont(mFontName, Std.int(mFontSize));
+        #end
+        //if (bitmapFont == null) throw new Error("Bitmap font not registered: " + mFontName);
         
         var width:Float  = mHitArea.width;
         var height:Float = mHitArea.height;
@@ -445,14 +460,19 @@ class TextField extends DisplayObjectContainer
             vAlign = VAlign.TOP;
         }
         
-        bitmapFont.fillQuadBatch(mQuadBatch,
-            width, height, mText, mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning);
+        if (bitmapFont != null)
+            bitmapFont.fillQuadBatch(this,
+                width, height, mText, mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning);
         
-        mQuadBatch.batchable = mBatchable;
+        for (i in 0 ... mQuadBatchSprite.numChildren)
+        {
+            var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
+            quadBatch.batchable = mBatchable;
+        }
         
         if (mAutoSize != TextFieldAutoSize.NONE)
         {
-            mTextBounds = mQuadBatch.getBounds(mQuadBatch, mTextBounds);
+            if (mTextBounds == null) mTextBounds = mQuadBatchSprite.getBounds(mQuadBatchSprite);
             
             if (isHorizontalAutoSize)
                 mHitArea.width  = mTextBounds.x + mTextBounds.width;
@@ -464,6 +484,17 @@ class TextField extends DisplayObjectContainer
             // hit area doesn't change, text bounds can be created on demand
             mTextBounds = null;
         }
+    }
+    
+    public function getQuadBatch(index:Int):QuadBatch
+    {
+        if (index < mQuadBatchSprite.numChildren)
+            return cast mQuadBatchSprite.getChildAt(index);
+
+        var quadBatch:QuadBatch = new QuadBatch();
+        quadBatch.touchable = false;
+        mQuadBatchSprite.addChildAt(quadBatch, index);
+        return quadBatch;
     }
     
     // helpers
@@ -510,7 +541,10 @@ class TextField extends DisplayObjectContainer
     private function get_textBounds():Rectangle
     {
         if (mRequiresRedraw) redraw();
-        if (mTextBounds == null) mTextBounds = mQuadBatch.getBounds(mQuadBatch);
+        if (mTextBounds == null)
+        {
+            mTextBounds = mQuadBatchSprite.getBounds(mQuadBatchSprite);
+        }
         return mTextBounds.clone();
     }
     
@@ -576,7 +610,11 @@ class TextField extends DisplayObjectContainer
             
             mFontName = value;
             mRequiresRedraw = true;
+            #if (flash || html5)
             mIsRenderedText = getBitmapFont(value) == null;
+            #else
+            mIsRenderedText = false;
+            #end
         }
         return mFontName;
     }
@@ -759,7 +797,14 @@ class TextField extends DisplayObjectContainer
     private function set_batchable(value:Bool):Bool
     { 
         mBatchable = value;
-        if (mQuadBatch != null) mQuadBatch.batchable = value;
+        if (mQuadBatchSprite != null)
+        {
+            for (i in 0 ... mQuadBatchSprite.numChildren)
+            {
+                var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
+                quadBatch.batchable = value;
+            }
+        }
         return mBatchable;
     }
 
@@ -817,6 +862,24 @@ class TextField extends DisplayObjectContainer
         return bitmapFonts[name.toLowerCase()];
     }
     
+    public static function getFTBitmapFont(name:String, size:Int):FTBitmapFont
+    {
+        #if (cpp || neko || nodejs)
+        var nameWithSize:String = name + "@" + size;
+        var font:FTBitmapFont = ftBitmapFonts[nameWithSize];
+        if (font != null)
+            return font;
+        var openflFont:Font = Font.fromName(name);
+        if (openflFont == null)
+            return null;
+        font = new FTBitmapFont(openflFont, size);
+        ftBitmapFonts[nameWithSize] = font;
+        return font;
+        #else
+        return null;
+        #end
+    }
+    
     /** Stores the currently available bitmap fonts. Since a bitmap font will only work
      *  in one Stage3D context, they are saved in Starling's 'contextData' property. */
     private static var bitmapFonts(get, never):Map<String, BitmapFont>;
@@ -832,4 +895,6 @@ class TextField extends DisplayObjectContainer
         
         return fonts;
     }
+    
+    private static var ftBitmapFonts:Map<String, FTBitmapFont> = new Map();
 }
