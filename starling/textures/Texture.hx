@@ -21,7 +21,6 @@ import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-import starling.utils.TextureUtils;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -176,9 +175,10 @@ class Texture
      */
     public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool=true,
                                              optimizeForRenderToTexture:Bool=false,
-                                             scale:Float=1, format:String="bgra",
+                                             scale:Float=1, format:Context3DTextureFormat=null,
                                              repeat:Bool=false):Texture
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture;
         var asset = Type.createEmptyInstance(assetClass);
         
@@ -224,9 +224,10 @@ class Texture
      */
     public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=true,
                                       optimizeForRenderToTexture:Bool=false,
-                                      scale:Float=1, format:String="bgra",
+                                      scale:Float=1, format:Context3DTextureFormat=null,
                                       repeat:Bool=false):Texture
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture, 
                               scale, format, repeat);
     }
@@ -248,9 +249,10 @@ class Texture
      */
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
                                           optimizeForRenderToTexture:Bool=false,
-                                          scale:Float=1, format:String="bgra",
+                                          scale:Float=1, format:Context3DTextureFormat=null,
                                           repeat:Bool=false):Texture
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, false, 
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
@@ -280,7 +282,7 @@ class Texture
         
         var atfData:AtfData = new AtfData(data);
         var nativeTexture:openfl.display3D.textures.Texture = context.createTexture(
-            atfData.width, atfData.height, TextureUtils.ToContext3DTextureFormat(atfData.format), false);
+            atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format, 
             atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1, 
             false, false, scale, repeat);
@@ -306,8 +308,9 @@ class Texture
      */
     public static function fromColor(width:Float, height:Float, color:UInt=0xffffffff,
                                      optimizeForRenderToTexture:Bool=false, 
-                                     scale:Float=-1, format:String="bgra"):Texture
+                                     scale:Float=-1, format:Context3DTextureFormat=null):Texture
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(width, height, true, false, 
                                             optimizeForRenderToTexture, scale, format);
         texture.root.clear(color, Color.getAlpha(color) / 255.0);
@@ -338,9 +341,10 @@ class Texture
      */
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
-                                 scale:Float=-1, format:String="bgra", repeat:Bool=false):Texture
+                                 scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false):Texture
     {	
         if (scale <= 0) scale = Starling.current.contentScaleFactor;
+        if (format == null) format = Context3DTextureFormat.BGRA;
         
         var actualWidth:Int, actualHeight:Int;
         var nativeTexture:openfl.display3D.textures.TextureBase;
@@ -355,7 +359,7 @@ class Texture
         var isPot:Bool  = (origWidth == potWidth && origHeight == potHeight);
         var useRectTexture:Bool = !mipMapping && !repeat &&
             Starling.current.profile != "baselineConstrained" &&
-            format != "compressed";
+            format != Context3DTextureFormat.COMPRESSED;
         
         if (useRectTexture)
         {
@@ -364,14 +368,14 @@ class Texture
             
             // Rectangle Textures are supported beginning with AIR 3.8. By calling the new
             // methods only through those lookups, we stay compatible with older SDKs.
-            nativeTexture = context.createRectangleTexture(actualWidth, actualHeight, TextureUtils.ToContext3DTextureFormat(format), optimizeForRenderToTexture);
+            nativeTexture = context.createRectangleTexture(actualWidth, actualHeight, format, optimizeForRenderToTexture);
         }
         else
         {
             actualWidth  = potWidth;
             actualHeight = potHeight;
             
-            nativeTexture = context.createTexture(actualWidth, actualHeight, TextureUtils.ToContext3DTextureFormat(format),
+            nativeTexture = context.createTexture(actualWidth, actualHeight, format,
                                                   optimizeForRenderToTexture);
         }
         
@@ -468,8 +472,8 @@ class Texture
     private function get_root():ConcreteTexture { return null; }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
-    public var format(get, never):String;
-    private function get_format():String { return "bgra"; }
+    public var format(get, never):Context3DTextureFormat;
+    private function get_format():Context3DTextureFormat { return Context3DTextureFormat.BGRA; }
     
     /** Indicates if the texture contains mip maps. */ 
     public var mipMapping(get, never):Bool;

@@ -17,15 +17,16 @@ import starling.core.Starling;
 class TextureOptions
 {
     private var mScale:Float;
-    private var mFormat:String;
+    private var mFormat:Context3DTextureFormat;
     private var mMipMapping:Bool;
     private var mOptimizeForRenderToTexture:Bool = false;
     private var mOnReady:Void->Void = null;
     private var mRepeat:Bool = false;
     
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
-                                   format:String="bgra", repeat:Bool=false)
+                                   format:Context3DTextureFormat=null, repeat:Bool=false)
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         mScale = scale;
         mFormat = format;
         mMipMapping = mipMapping;
@@ -52,9 +53,9 @@ class TextureOptions
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
-    public var format(get, set):String;
-    private function get_format():String { return mFormat; }
-    private function set_format(value:String):String { return mFormat = value; }
+    public var format(get, set):Context3DTextureFormat;
+    private function get_format():Context3DTextureFormat { return mFormat; }
+    private function set_format(value:Context3DTextureFormat):Context3DTextureFormat { return mFormat = value; }
     
     /** Indicates if the texture contains mip maps. */ 
     public var mipMapping(get, set):Bool;

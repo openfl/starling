@@ -94,7 +94,7 @@ class DisplacementMapFilter extends FragmentFilter
         var mapFlags:String = RenderSupport.getTextureLookupFlags(
                                   mapTexture.format, mapTexture.mipMapping, mapTexture.repeat);
         var inputFlags:String = RenderSupport.getTextureLookupFlags(
-                                    "bgra", false, mRepeat);
+                                    Context3DTextureFormat.BGRA, false, mRepeat);
         var programName:String = formatString("DMF_m{0}_i{1}", [mapFlags, inputFlags]);
         
         if (target.hasProgram(programName))

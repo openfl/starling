@@ -735,9 +735,10 @@ class QuadBatch extends DisplayObject
     }
     
     private static function getImageProgramName(tinted:Bool, mipMap:Bool=true, 
-                                                repeat:Bool=false, format:String="bgra",
+                                                repeat:Bool=false, format:Context3DTextureFormat=null,
                                                 smoothing:String="bilinear"):String
     {
+        if (format == null) format = Context3DTextureFormat.BGRA;
         var bitField:UInt = 0;
         
         if (tinted) bitField |= 1;
@@ -749,9 +750,9 @@ class QuadBatch extends DisplayObject
         else if (smoothing == TextureSmoothing.TRILINEAR)
             bitField |= 1 << 4;
         
-        if (format == "compressed")
+        if (format == Context3DTextureFormat.COMPRESSED)
             bitField |= 1 << 5;
-        else if (format == "compressedAlpha")
+        else if (format == Context3DTextureFormat.COMPRESSED_ALPHA)
             bitField |= 1 << 6;
         
         var name:String = sProgramNameCache[bitField];

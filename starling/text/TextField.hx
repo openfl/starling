@@ -91,7 +91,7 @@ class TextField extends DisplayObjectContainer
     inline private static var BITMAP_FONT_DATA_NAME:String = "starling.display.TextField.BitmapFonts";
     
     // the texture format that is used for TTF rendering
-    private static var sDefaultTextureFormat:String = "bgra";
+    private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA;
     //    "BGRA_PACKED" in Context3DTextureFormat ? "bgraPacked4444" : "bgra";
 
     private var mFontSize:Float;
@@ -192,7 +192,7 @@ class TextField extends DisplayObjectContainer
         
         var scale:Float  = Starling.current.contentScaleFactor;
         var bitmapData:BitmapData = renderText(scale, mTextBounds);
-        var format:String = sDefaultTextureFormat;
+        var format:Context3DTextureFormat = sDefaultTextureFormat;
         
         mHitArea.width  = bitmapData.width  / scale;
         mHitArea.height = bitmapData.height / scale;
@@ -781,9 +781,9 @@ class TextField extends DisplayObjectContainer
      *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
      *  compromise between quality and memory consumption; use <pre>BGRA</pre> for
      *  the highest quality. */
-    public static var defaultTextureFormat(get, set):String;
-    public static function get_defaultTextureFormat():String { return sDefaultTextureFormat; }
-    public static function set_defaultTextureFormat(value:String):String
+    public static var defaultTextureFormat(get, set):Context3DTextureFormat;
+    public static function get_defaultTextureFormat():Context3DTextureFormat { return sDefaultTextureFormat; }
+    public static function set_defaultTextureFormat(value:Context3DTextureFormat):Context3DTextureFormat
     {
         return sDefaultTextureFormat = value;
     }

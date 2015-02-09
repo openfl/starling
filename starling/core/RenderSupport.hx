@@ -11,7 +11,6 @@
 package starling.core;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D._shaders.AGLSLShaderUtils;
-import starling.utils.TextureUtils;
 
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
@@ -473,15 +472,15 @@ class RenderSupport
     
     /** Returns the flags that are required for AGAL texture lookup, 
      *  including the '&lt;' and '&gt;' delimiters. */
-    public static function getTextureLookupFlags(format:String, mipMapping:Bool,
+    public static function getTextureLookupFlags(format:Context3DTextureFormat, mipMapping:Bool,
                                                  repeat:Bool=false,
                                                  smoothing:String="bilinear"):String
     {
         var options:Array<String> = ["2d", repeat ? "repeat" : "clamp"];
         
-        if (format == "compressed")
+        if (format == Context3DTextureFormat.COMPRESSED)
             options.push("dxt1");
-        else if (format == "compressedAlpha")
+        else if (format == Context3DTextureFormat.COMPRESSED_ALPHA)
             options.push("dxt5");
         
         if (smoothing == TextureSmoothing.NONE)

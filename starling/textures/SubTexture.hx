@@ -193,7 +193,7 @@ class SubTexture extends Texture
     public override function get_root():ConcreteTexture { return mParent.root; }
     
     /** @inheritDoc */
-    public override function get_format():String { return mParent.format; }
+    public override function get_format():Context3DTextureFormat { return mParent.format; }
     
     /** @inheritDoc */
     public override function get_width():Float { return mWidth; }

@@ -21,7 +21,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import starling.utils.TextureUtils;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -33,7 +32,7 @@ import starling.utils.Color;
 class ConcreteTexture extends Texture
 {
     private var mBase:TextureBase;
-    private var mFormat:String;
+    private var mFormat:Context3DTextureFormat;
     private var mWidth:Int;
     private var mHeight:Int;
     private var mMipMapping:Bool;
@@ -49,7 +48,7 @@ class ConcreteTexture extends Texture
     
     /** Creates a ConcreteTexture object from a TextureBase, storing information about size,
      *  mip-mapping, and if the channels contain premultiplied alpha values. */
-    public function new(base:TextureBase, format:String, width:Int, height:Int, 
+    public function new(base:TextureBase, format:Context3DTextureFormat, width:Int, height:Int, 
                                     mipMapping:Bool, premultipliedAlpha:Bool,
                                     optimizedForRenderTexture:Bool=false,
                                     scale:Float=1, repeat:Bool=false)
@@ -202,10 +201,10 @@ class ConcreteTexture extends Texture
     {
         var context:Context3D = Starling.current.context;
         if (Std.is(mBase, openfl.display3D.textures.Texture))
-            mBase = context.createTexture(mWidth, mHeight, TextureUtils.ToContext3DTextureFormat(mFormat), 
+            mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
         else  if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
-            mBase = context.createRectangleTexture(mWidth, mHeight, TextureUtils.ToContext3DTextureFormat(mFormat),
+            mBase = context.createRectangleTexture(mWidth, mHeight, mFormat,
                                                       mOptimizedForRenderTexture);
         
         mDataUploaded = false;
@@ -269,7 +268,7 @@ class ConcreteTexture extends Texture
     public override function get_root():ConcreteTexture { return this; }
     
     /** @inheritDoc */
-    public override function get_format():String { return mFormat; }
+    public override function get_format():Context3DTextureFormat { return mFormat; }
     
     /** @inheritDoc */
     public override function get_width():Float  { return mWidth / mScale;  }

@@ -17,7 +17,7 @@ import openfl.errors.Error;
 /** A parser for the ATF data format. */
 class AtfData
 {
-    private var mFormat:String;
+    private var mFormat:Context3DTextureFormat;
     private var mWidth:Int;
     private var mHeight:Int;
     private var mNumTextures:Int;
@@ -33,9 +33,9 @@ class AtfData
         
         switch (data.readUnsignedByte())
         {
-            case 0, 1: mFormat = "bgra";
-            case 2, 3: mFormat = "compressed";
-            case 4, 5: mFormat = "compressedAlpha"; // explicit string to stay compatible 
+            case 0, 1: mFormat = Context3DTextureFormat.BGRA;
+            case 2, 3: mFormat = Context3DTextureFormat.COMPRESSED;
+            case 4, 5: mFormat = Context3DTextureFormat.COMPRESSED_ALPHA; // explicit string to stay compatible 
                                                         // with older versions
             default: throw new Error("Invalid ATF format");
         }
@@ -68,8 +68,8 @@ class AtfData
         }
     }
     
-    public var format(get, never):String;
-    private function get_format():String { return mFormat; }
+    public var format(get, never):Context3DTextureFormat;
+    private function get_format():Context3DTextureFormat { return mFormat; }
     public var width(get, never):Int;
     private function get_width():Int { return mWidth; }
     public var height(get, never):Int;
