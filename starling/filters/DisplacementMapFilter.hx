@@ -18,6 +18,9 @@ import flash.display3D.Program3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
 import openfl.utils.Float32Array;
 
 import starling.core.RenderSupport;
@@ -148,6 +151,7 @@ class DisplacementMapFilter extends FragmentFilter
         context.setVertexBufferAt(2, mMapTexCoordBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, sOneHalf);
         context.setProgramConstantsFromMatrix(Context3DProgramType.FRAGMENT, 1, sMatrix, true);
+        context.setSamplerStateAt(1, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
         context.setTextureAt(1, mMapTexture.base);
     }
     

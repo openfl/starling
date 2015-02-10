@@ -9,6 +9,9 @@
 // =================================================================================================
 
 package starling.display;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DWrapMode;
 import openfl.utils.Int16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
@@ -237,6 +240,7 @@ class QuadBatch extends DisplayObject
         
         if (mTexture != null)
         {
+            context.setSamplerStateAt(0, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
             context.setTextureAt(0, mTexture.base);
             context.setVertexBufferAt(2, mVertexBuffer, VertexData.TEXCOORD_OFFSET, 
                                       Context3DVertexBufferFormat.FLOAT_2);

@@ -12,8 +12,11 @@ package starling.filters;
 import haxe.ds.Vector;
 import lime.utils.Int16Array;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DVertexBufferFormat;
+import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.Program3D;
 import openfl.display3D.VertexBuffer3D;
@@ -284,6 +287,7 @@ class FragmentFilter
             activate(i, context, passTexture);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, mMvpConstantID, 
                                                   support.mvpMatrix3D, true);
+            context.setSamplerStateAt(0, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
             context.setTextureAt(mBaseTextureID, passTexture.base);
             context.setVertexBufferAt(mVertexPosAtID, mVertexBuffer, VertexData.POSITION_OFFSET, 
                                   Context3DVertexBufferFormat.FLOAT_2);
