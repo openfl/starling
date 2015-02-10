@@ -44,7 +44,7 @@ class Demo_Web extends Sprite
         var rect:Rectangle = new Rectangle(0, 0, 320, 480);
         
         Starling.multitouchEnabled = true; // for Multitouch Scene
-        Starling.handleLostContext = true; // required on Windows, needs more memory
+        //Starling.handleLostContext = true; // required on Windows, needs more memory
         
         mStarling = new Starling(Game, stage, rect, null, "auto", profile);
         mStarling.simulateMultitouch = true;
