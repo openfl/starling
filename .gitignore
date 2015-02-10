@@ -1,1 +1,4 @@
 /samples/demo_web/bin
+/samples/demo/assets/fonts/*.eot
+/samples/demo/assets/fonts/*.svg
+/samples/demo/assets/fonts/*.woff
