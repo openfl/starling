@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/vroad/starling-openfl/issues"
   },
-  "homepage": "https://github.com/vroad/starling-openfl"
+  "homepage": "https://github.com/vroad/starling-openfl",
+  "dependencies": {
+    "ndll" : "~1.0.1"
+  }
 }
