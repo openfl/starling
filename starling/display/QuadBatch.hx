@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+import openfl.display3D.Context3DBufferUsage;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -73,6 +74,7 @@ class QuadBatch extends DisplayObject
     private var mNumQuads:Int;
     private var mSyncRequired:Bool;
     private var mBatchable:Bool;
+    private var mDynamicDraw:Bool;
 
     private var mTinted:Bool;
     private var mTexture:Texture;
@@ -103,6 +105,7 @@ class QuadBatch extends DisplayObject
         mTinted = false;
         mSyncRequired = false;
         mBatchable = false;
+        mDynamicDraw = true;
         
         // Handle lost context. We use the conventional event here (not the one from Starling)
         // so we're able to create a weak event listener; this avoids memory leaks when people 
@@ -148,6 +151,7 @@ class QuadBatch extends DisplayObject
         clone.mSyncRequired = true;
         clone.blendMode = blendMode;
         clone.alpha = alpha;
+        clone.dynamicDraw = mDynamicDraw;
         return clone;
     }
     
@@ -168,7 +172,7 @@ class QuadBatch extends DisplayObject
         if (numVertices == 0) return;
         if (context == null)  throw new MissingContextError();
         
-        mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
+        mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX, mDynamicDraw ? Context3DBufferUsage.DYNAMIC_DRAW : Context3DBufferUsage.STATIC_DRAW);
         mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
@@ -502,7 +506,12 @@ class QuadBatch extends DisplayObject
             objectAlpha = 1.0;
             blendMode = object.blendMode;
             ignoreCurrentFilter = true;
-            if (quadBatches.length == 0) quadBatches.push(new QuadBatch());
+            if (quadBatches.length == 0)
+            {
+                var qb:QuadBatch = new QuadBatch();
+                qb.dynamicDraw = false;
+                quadBatches.push(qb);
+            }
             else quadBatches[0].reset();
         }
         
@@ -571,7 +580,12 @@ class QuadBatch extends DisplayObject
                                         smoothing, blendMode, numQuads))
             {
                 quadBatchID++;
-                if (quadBatches.length <= quadBatchID) quadBatches.push(new QuadBatch());
+                if (quadBatches.length <= quadBatchID)
+                {
+                    var qb:QuadBatch = new QuadBatch();
+                    qb.dynamicDraw = false;
+                    quadBatches.push(qb);
+                }
                 quadBatch = quadBatches[quadBatchID];
                 quadBatch.reset();
             }
@@ -631,7 +645,13 @@ class QuadBatch extends DisplayObject
      *  @default false */
     public var batchable(get, set):Bool;
     private function get_batchable():Bool { return mBatchable; }
-    private function set_batchable(value:Bool):Bool { return mBatchable = value; } 
+    private function set_batchable(value:Bool):Bool { return mBatchable = value; }
+    
+    /*** Indicates if the batch should optimize drawing for the data that changes repeatedly.
+     * @default true */
+    public var dynamicDraw(get, set):Bool;
+    private function get_dynamicDraw():Bool { return mDynamicDraw; }
+    private function set_dynamicDraw(value:Bool):Bool { return mDynamicDraw = value; }
     
     /** Indicates the number of quads for which space is allocated (vertex- and index-buffers).
      *  If you add more quads than what fits into the current capacity, the QuadBatch is
