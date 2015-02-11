@@ -17,8 +17,5 @@
   "bugs": {
     "url": "https://github.com/vroad/starling-openfl/issues"
   },
-  "homepage": "https://github.com/vroad/starling-openfl",
-  "dependencies": {
-    "bindings" : "~1.2.1"
-  }
+  "homepage": "https://github.com/vroad/starling-openfl"
 }
