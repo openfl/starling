@@ -23,7 +23,7 @@ import utils.ProgressBar;
 {
     // Embed the Ubuntu Font. Beware: the 'embedAsCFF'-part IS REQUIRED!!!
     //[Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]
-    private static var UbuntuRegular:Class<Dynamic>;
+    //private static var UbuntuRegular:Class<Dynamic>;
     
     private var mLoadingProgress:ProgressBar;
     private var mMainMenu:MainMenu;

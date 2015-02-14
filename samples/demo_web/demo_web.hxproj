@@ -19,14 +19,14 @@
     <class path="C:\HaxeToolkit\haxe\lib\starling\git" />
     <class path="C:\HaxeToolkit\haxe\lib\openfl\git" />
     <class path="C:\HaxeToolkit\haxe\lib\lime\git" />
-    <class path="C:\HaxeToolkit\haxe\lib\nodejs\development" />
+    <class path="C:\HaxeToolkit\haxe\lib\nodejs\git" />
     <class path="src" />
     <class path="..\demo\src" />
     <class path="bin\windows\nodejs\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling&#xA;openfl=2.2.4&#xA;lime=2.1.0&#xA;nodejs=2.2.6&#xA;openfl-next&#xA;tools=2.1.0&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;source-map-content&#xA;disable_gl_renderer&#xA;windows&#xA;desktop&#xA;nodejs&#xA;js-flatten" />
+    <option directives="starling&#xA;openfl=2.2.6&#xA;lime=2.1.1&#xA;nodejs=2.2.7&#xA;openfl-next&#xA;tools=2.1.1&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;source-map-content&#xA;disable_gl_renderer&#xA;windows&#xA;desktop&#xA;nodejs&#xA;js-flatten" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />

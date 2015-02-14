@@ -35,7 +35,7 @@ import starling.text.TextField;
         mImage.y = 170;
         addChild(mImage);
         
-        mInfoText = new TextField(300, 32, "", "Verdana", 19);
+        mInfoText = new TextField(300, 32, "", Constants.DefaultFont, 19);
         mInfoText.x = 10;
         mInfoText.y = 330;
         addChild(mInfoText);

@@ -41,14 +41,14 @@ import starling.text.TextField;
         image.filter = cm;
         
         var scissorText:TextField = new TextField(256, 128, 
-            "Move the mouse (or a finger) over the screen to move the clipping rectangle.");
+            "Move the mouse (or a finger) over the screen to move the clipping rectangle.", Constants.DefaultFont);
         scissorText.x = (stageWidth - scissorText.width) / 2;
         scissorText.y = 240;
         mContents.addChild(scissorText);
         
         var maskText:TextField = new TextField(256, 128, 
             "Currently, Starling supports only stage-aligned clipping; more complex masks " +
-            "will be supported in future versions.");
+            "will be supported in future versions.", Constants.DefaultFont);
         maskText.x = scissorText.x;
         maskText.y = 290;
         mContents.addChild(maskText);

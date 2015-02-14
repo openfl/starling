@@ -74,7 +74,7 @@ class MainMenu extends Sprite
         
         //var driverInfo:String = Starling.current.context.driverInfo;
         var driverInfo:String = "No driver info available";
-        var infoText:TextField = new TextField(310, 64, driverInfo, "Verdana", 10);
+        var infoText:TextField = new TextField(310, 64, driverInfo, Constants.DefaultFont, 10);
         infoText.x = 5;
         infoText.y = 475 - infoText.height;
         infoText.vAlign = VAlign.BOTTOM;
