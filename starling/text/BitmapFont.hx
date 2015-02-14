@@ -380,7 +380,7 @@ class BitmapFont
             var right:Float = lastLocation.x - lastLocation.char.xOffset 
                                               + lastLocation.char.xAdvance;
             
-            if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right);
+            if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right - mRightPadding);
             else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
             
             if (xOffset < (mLeftPadding / scale)) xOffset = Std.int(mLeftPadding / scale);
