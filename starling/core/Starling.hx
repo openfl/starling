@@ -17,6 +17,7 @@ import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.OpenFLStage3D;
 import openfl.display3D.Program3D;
@@ -206,7 +207,7 @@ class Starling extends EventDispatcher
     private var mLeftMouseDown:Bool;
     private var mStatsDisplay:StatsDisplay;
     private var mShareContext:Bool;
-    private var mProfile:String;
+    private var mProfile:Context3DProfile;
     private var mContext:Context3D;
     private var mStarted:Bool;
     private var mRendering:Bool;
@@ -253,8 +254,9 @@ class Starling extends EventDispatcher
      */
     public function new(rootClass:Class<Dynamic>, stage:openfl.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
-                             renderMode:String="auto", profile:Dynamic="baselineConstrained")
+                             renderMode:String="auto", profile:Dynamic=null)
     {
+        if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (rootClass == null) throw new ArgumentError("Root class must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
@@ -361,13 +363,13 @@ class Starling extends EventDispatcher
     
     private function requestContext3D(stage3D:Stage3D, renderMode:String, profile:Dynamic):Void
     {
-        var profiles:Array<String> = new Array<String>();
-        var currentProfile:String;
+        var profiles:Array<Context3DProfile> = new Array();
+        var currentProfile:Context3DProfile;
         
         if (profile == "auto")
-            profiles = ["baselineExtended", "baseline", "baselineConstrained"];
-        else if (Std.is(profile, String))
-            profiles = [cast(profile, String)];
+            profiles = [Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
+        else if (Std.is(profile, Context3DProfile))
+            profiles = [cast(profile, Context3DProfile)];
         else if (Std.is(profile, Array))
         {
             var da:Array<Dynamic> = cast(profile, Array<Dynamic>);
@@ -550,7 +552,7 @@ class Starling extends EventDispatcher
                 // set the backbuffer to a very small size first, to be on the safe side.
                 
                 #if flash
-                if (mProfile == "baselineConstrained")
+                if (mProfile == Context3DProfile.BASELINE_CONSTRAINED)
                     configureBackBuffer(32, 32, mAntiAliasing, false);
                 #end
                 
@@ -1063,8 +1065,8 @@ class Starling extends EventDispatcher
     
     /** The Context3D profile as requested in the constructor. Beware that if you are 
      *  using a shared context, this is simply what you passed to the Starling constructor. */
-    public var profile(get, never):String;
-    private function get_profile():String { return mProfile; }
+    public var profile(get, never):Context3DProfile;
+    private function get_profile():Context3DProfile { return mProfile; }
     
     /** Indicates that if the device supports HiDPI screens Starling will attempt to allocate
      *  a larger back buffer than indicated via the viewPort size. Note that this is used

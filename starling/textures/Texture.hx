@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.textures;
+import openfl.display3D.Context3DProfile;
 import openfl.utils.Float32Array;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -358,7 +359,7 @@ class Texture
         var potHeight:Int  = PowerOfTwo.getNextPowerOfTwo(origHeight);
         var isPot:Bool  = (origWidth == potWidth && origHeight == potHeight);
         var useRectTexture:Bool = !mipMapping && !repeat &&
-            Starling.current.profile != "baselineConstrained" &&
+            Starling.current.profile != Context3DProfile.BASELINE_CONSTRAINED &&
             format != Context3DTextureFormat.COMPRESSED;
         
         if (useRectTexture)

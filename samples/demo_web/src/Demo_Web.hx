@@ -2,6 +2,7 @@ package;
 import flash.display.Sprite;
 import flash.system.Capabilities;
 import openfl.Assets;
+import openfl.display3D.Context3DProfile;
 import openfl.events.TouchEvent;
 import openfl.geom.Rectangle;
 
@@ -39,8 +40,7 @@ class Demo_Web extends Sprite
     
     private function start():Void
     {
-        //setup the view
-        var profile:String = "baselineConstrained";
+        var profile:Context3DProfile = Context3DProfile.BASELINE_CONSTRAINED;
         var rect:Rectangle = new Rectangle(0, 0, 320, 480);
         
         Starling.multitouchEnabled = true; // for Multitouch Scene
