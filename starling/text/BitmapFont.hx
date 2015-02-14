@@ -75,8 +75,10 @@ class BitmapFont
     private var mOffsetX:Float;
     private var mOffsetY:Float;
     private var mHelperImage:Image;
+    private var mTopPadding:Float;
     private var mLeftPadding:Float;
     private var mRightPadding:Float;
+    private var mBottomPadding:Float;
     private var mCharLocationPool:Array<CharLocation>;
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
@@ -92,7 +94,7 @@ class BitmapFont
         
         mName = "unknown";
         mLineHeight = mSize = mBaseline = 14;
-        mLeftPadding = mRightPadding = 0;
+        mTopPadding = mLeftPadding = mRightPadding = mBottomPadding = 0;
         mOffsetX = mOffsetY = 0.0;
         mTexture = texture;
         mChars = new Map<Int, BitmapChar>();
@@ -365,8 +367,10 @@ class BitmapFont
         var bottom:Float = currentY + mLineHeight;
         var yOffset:Int = 0;
         
-        if (vAlign == VAlign.BOTTOM)      yOffset =  Std.int(containerHeight - bottom);
+        if (vAlign == VAlign.BOTTOM)      yOffset =  Std.int(containerHeight - bottom - (mBottomPadding / scale));
         else if (vAlign == VAlign.CENTER) yOffset = Std.int((containerHeight - bottom) / 2);
+        
+        if (yOffset < (mTopPadding / scale)) yOffset = Std.int(mTopPadding / scale);
         
         for (lineID in 0 ... numLines)
         {
@@ -380,7 +384,7 @@ class BitmapFont
             var right:Float = lastLocation.x - lastLocation.char.xOffset 
                                               + lastLocation.char.xAdvance;
             
-            if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right - mRightPadding);
+            if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right - (mRightPadding / scale));
             else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
             
             if (xOffset < (mLeftPadding / scale)) xOffset = Std.int(mLeftPadding / scale);

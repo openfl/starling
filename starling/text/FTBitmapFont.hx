@@ -43,7 +43,8 @@ class FTBitmapFont extends BitmapFont
         mSize = size;
         mLineHeight = (fontData.ascend - fontData.descend) * mSize / fontData.em_size;
         mLeftPadding = 4;
-		mRightPadding = 4;
+        mRightPadding = 2;
+        mBottomPadding = 2;
     }
     
     override public function fillQuadBatch(textField:TextField, width:Float, height:Float, text:String, fontSize:Float = -1, color:UInt = 0xffffff, hAlign:String = "center", vAlign:String = "center", autoScale:Bool = true, kerning:Bool = true):Void 
