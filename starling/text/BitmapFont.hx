@@ -305,7 +305,7 @@ class BitmapFont
                         currentX += char.xAdvance;
                         lastCharID = charID;
                         
-                        if (mLeftPadding + mRightPadding + charLocation.x + char.width > containerWidth)
+                        if (((mLeftPadding + mRightPadding) / scale) + charLocation.x + char.width > containerWidth)
                         {
                             // when autoscaling, we must not split a word in half -> restart
                             if (autoScale && lastWhiteSpace == -1)
@@ -383,7 +383,7 @@ class BitmapFont
             if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right);
             else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
             
-            if (xOffset < mLeftPadding) xOffset = Std.int(mLeftPadding);
+            if (xOffset < (mLeftPadding / scale)) xOffset = Std.int(mLeftPadding / scale);
             
             for (c in 0 ... numChars)
             {
