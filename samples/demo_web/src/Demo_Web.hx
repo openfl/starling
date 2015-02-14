@@ -47,6 +47,7 @@ class Demo_Web extends Sprite
         //Starling.handleLostContext = true; // required on Windows, needs more memory
         
         mStarling = new Starling(Game, stage, rect, null, "auto", profile);
+        mStarling.statsDisplayFontName = Constants.DefaultFont;
         mStarling.simulateMultitouch = true;
         //mStarling.enableErrorChecking = Capabilities.isDebugger;
         mStarling.enableErrorChecking = false;

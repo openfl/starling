@@ -206,6 +206,7 @@ class Starling extends EventDispatcher
     private var mLastFrameTimestamp:Float;
     private var mLeftMouseDown:Bool;
     private var mStatsDisplay:StatsDisplay;
+    private var mStatsDisplayFontName:String;
     private var mShareContext:Bool;
     private var mProfile:Context3DProfile;
     private var mContext:Context3D;
@@ -1022,6 +1023,7 @@ class Starling extends EventDispatcher
             {
                 mStatsDisplay = new StatsDisplay();
                 mStatsDisplay.touchable = false;
+                mStatsDisplay.fontName = mStatsDisplayFontName;
                 mStage.addChild(mStatsDisplay);
             }
             
@@ -1038,6 +1040,16 @@ class Starling extends EventDispatcher
             else if (vAlign == VAlign.BOTTOM) mStatsDisplay.y = stageHeight - mStatsDisplay.height;
             else mStatsDisplay.y = Std.int((stageHeight - mStatsDisplay.height) / 2);
         }
+    }
+    
+    /** The font which StatsDisplay is rendered with. */
+    public var statsDisplayFontName(get, set):String;
+    public function get_statsDisplayFontName():String { return mStatsDisplayFontName; }
+    public function set_statsDisplayFontName(value:String):String
+    {
+        if (mStatsDisplay != null)
+            mStatsDisplay.fontName = value;
+        return mStatsDisplayFontName = value;
     }
     
     /** The Starling stage object, which is the root of the display tree that is rendered. */

@@ -38,10 +38,11 @@ class StatsDisplay extends Sprite
     private var mDrawCount:Int = 0;
     
     /** Creates a new Statistics Box. */
-    public function StatsDisplay()
+    public function new()
     {
-        mBackground = new Quad(50, 25, 0x0);
-        mTextField = new TextField(48, 25, "", BitmapFont.MINI, BitmapFont.NATIVE_SIZE, 0xffffff);
+        super();
+        mBackground = new Quad(70, 45, 0x0);
+        mTextField = new TextField(68, 45, "", "Verdana", 12, 0xffffffff);
         mTextField.x = 2;
         mTextField.hAlign = HAlign.LEFT;
         mTextField.vAlign = VAlign.TOP;
@@ -49,7 +50,7 @@ class StatsDisplay extends Sprite
         addChild(mBackground);
         addChild(mTextField);
         
-        blendMode = BlendMode.NONE;
+        //blendMode = BlendMode.NONE;
         
         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
@@ -86,7 +87,7 @@ class StatsDisplay extends Sprite
         mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
         mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
         
-        mTextField.text = "FPS: " + mFps + 
+        mTextField.text = "FPS: " + Math.round(mFps * 10) / 10 + 
                         "\nMEM: " + mMemory +
                         "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
     }
@@ -115,4 +116,9 @@ class StatsDisplay extends Sprite
     public var memory(get, set):Float;
     private function get_memory():Float { return mMemory; }
     private function set_memory(value:Float):Float { return mMemory = value; }
+
+    /** The font statsCounter is rendered with. */
+    public var fontName(get, set):String;
+    private function get_fontName():String { return mTextField.fontName; }
+    private function set_fontName(value:String):String { return mTextField.fontName = value; }
 }
