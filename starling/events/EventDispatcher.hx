@@ -37,7 +37,7 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var mEventListeners:Map<String, Array<Dynamic->Void>>;
+    private var mEventListeners:Map<String, Array<Dynamic>>;
     
     /** Helper object. */
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
@@ -50,12 +50,12 @@ class EventDispatcher
     public function addEventListener(type:String, listener:Dynamic):Void
     {
         if (mEventListeners == null)
-            mEventListeners = new Map<String, Array<Dynamic->Void>>();
+            mEventListeners = new Map<String, Array<Dynamic>>();
         
         var listeners:Array<Dynamic> = mEventListeners[type];
         if (listeners == null)
         {
-            mEventListeners[type] = new Array<Dynamic->Void>();
+            mEventListeners[type] = new Array<Dynamic>();
             mEventListeners[type].push(listener);
         }
         else if (listeners.indexOf(listener) == -1) // check for duplicates
@@ -67,7 +67,7 @@ class EventDispatcher
     {
         if (mEventListeners != null)
         {
-            var listeners:Array < Dynamic->Void > = mEventListeners[type];
+            var listeners:Array < Dynamic > = mEventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -76,7 +76,7 @@ class EventDispatcher
                 // (see comment in 'invokeEvent')
 
                 var index:Int = 0;
-                var restListeners:Vector<Dynamic->Void> = new Vector<Dynamic->Void>(numListeners-1);
+                var restListeners:Vector<Dynamic> = new Vector<Dynamic>(numListeners-1);
 
                 for (i in 0 ... numListeners)
                 {
@@ -128,7 +128,7 @@ class EventDispatcher
      *  method uses this method internally. */
     public function invokeEvent(event:Event):Bool
     {
-        var listeners:Array<Dynamic->Void> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)
@@ -141,8 +141,8 @@ class EventDispatcher
             
             for (i in 0 ... numListeners)
             {
-                var listener:Dynamic->Void = listeners[i];
-                listener(event);
+                var listener:Dynamic = listeners[i];
+                listener(event, event.data);
                 //var numArgs:Int = listener.length;
                 
                 //if (numArgs == 0) listener();
@@ -203,7 +203,7 @@ class EventDispatcher
     /** Returns if there are listeners registered for a certain event type. */
     public function hasEventListener(type:String):Bool
     {
-        var listeners:Array<Dynamic->Void> = mEventListeners != null ? mEventListeners[type] : null;
+        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[type] : null;
         return listeners != null ? listeners.length != 0 : false;
     }
 }
