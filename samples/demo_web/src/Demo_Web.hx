@@ -53,6 +53,12 @@ class Demo_Web extends Sprite
         mStarling.enableErrorChecking = false;
         mStarling.start();
         onRootCreated(new Event("rootCreated", false, mStarling.root));
+        
+        #if nodejs
+        // check if gc is enabled
+        if (untyped global.gc == null)
+            trace("--expose-gc is not enabled.");
+        #end
     }
     
     private function onAddedToStage(event:Event):Void

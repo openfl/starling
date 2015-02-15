@@ -98,7 +98,11 @@ import utils.ProgressBar;
     {
         // now would be a good time for a clean-up 
         //System.pauseForGCIfCollectionImminent(0);
+        #if nodejs
+        if (untyped global.gc != null) untyped global.gc();
+        #else
         System.gc();
+        #end
         
         if (mMainMenu == null)
             mMainMenu = new MainMenu();
