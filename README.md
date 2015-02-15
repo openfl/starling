@@ -33,6 +33,7 @@ starling-openfl limitations:
   * Noises that are used in DisplacementMapFilter example cannot be generated on OpenFL for now.
 * Mini-Bitmap Font is not supported.
 * On native targets, only loaded fonts can be specified with their name.
+* BitmapData is uploaded as non-premultiplied RGBA data.
 
 OpenFL Limitations(As of 2.2.4):
 
