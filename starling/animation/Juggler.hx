@@ -229,6 +229,7 @@ class Juggler implements IAnimatable
     {   
         var numObjects:Int = mObjects.length;
         var currentIndex:Int = 0;
+        var i:Int = 0;
         
         mElapsedTime += time;
         if (numObjects == 0) return;
@@ -237,7 +238,7 @@ class Juggler implements IAnimatable
         // of animatables. we must not process new objects right now (they will be processed
         // in the next frame), and we need to clean up any empty slots in the list.
 
-        for (i in 0 ... numObjects)
+        while (i < numObjects)
         {
             var object:IAnimatable = mObjects[i];
             if (object != null)
@@ -252,17 +253,18 @@ class Juggler implements IAnimatable
                 object.advanceTime(time);
                 ++currentIndex;
             }
+            
+            ++i;
         }
         
-        if (currentIndex != mObjects.length)
+        if (currentIndex != i)
         {
             numObjects = mObjects.length; // count might have changed!
 
-            var i:Int = mObjects.length;
             while (i < numObjects)
-                mObjects[Std.int(currentIndex++)] = mObjects[Std.int(i++)];
+                mObjects[currentIndex++] = mObjects[i++];
 
-            mObjects = mObjects.slice(0, currentIndex);
+            mObjects.splice(currentIndex, mObjects.length - currentIndex);
         }
     }
     
