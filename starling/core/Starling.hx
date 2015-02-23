@@ -378,7 +378,7 @@ class Starling extends EventDispatcher
                 profiles.push(profileStr);
         }
         else
-            throw new ArgumentError("Profile must be of type 'String' or 'Array'");
+            throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array'");
 
         var onFinished:Void->Void = null;
         function requestNextProfile():Void
