@@ -76,12 +76,12 @@ class EventDispatcher
                 // (see comment in 'invokeEvent')
 
                 var index:Int = 0;
-                var restListeners:Vector<Dynamic> = new Vector<Dynamic>(numListeners-1);
+                var restListeners:Array<Dynamic> = new Array<Dynamic>();
 
                 for (i in 0 ... numListeners)
                 {
                     var otherListener:Dynamic = listeners[i];
-                    if (otherListener != listener) restListeners[Std.int(index++)] = otherListener;
+                    if (otherListener != listener) restListeners[index++] = otherListener;
                 }
 
                 mEventListeners[type] = restListeners;
