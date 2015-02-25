@@ -299,7 +299,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = texture != null ? (quad.tinted || parentAlpha != 1.0) : false;
+            mTinted = texture != null ? (quad.tinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
