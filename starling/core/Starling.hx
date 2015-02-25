@@ -385,12 +385,17 @@ class Starling extends EventDispatcher
         {
             currentProfile = profiles.shift();
 
+            #if flash
             try { mStage3D.requestContext3D(renderMode); }
             catch (error:Error)
             {
-                if (profiles.length != 0) requestNextProfile(); // setTimeout(requestNextProfile, 1);
+                if (profiles.length != 0)
+                Timer.delay(requestNextProfile, 1);
                 else throw error;
             }
+            #else
+            mStage3D.requestContext3D(renderMode);
+            #end
         }
         
         function onCreated(event:Event):Void
@@ -404,8 +409,7 @@ class Starling extends EventDispatcher
             if (profiles.length != 0)
             {
                 event.stopImmediatePropagation();
-                //setTimeout(requestNextProfile, 1);
-                requestNextProfile();
+                Timer.delay(requestNextProfile, 1);
             }
             else onFinished();
         }
