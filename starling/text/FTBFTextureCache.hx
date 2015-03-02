@@ -19,7 +19,7 @@ class FTBFTextureCache
     {
         texture = Texture.empty(width, height, false, false, false, -1, Context3DTextureFormat.ALPHA, false);
         var tmpImage:UInt8Array = new UInt8Array(width * height);
-        var stdTexture:openfl.display3D.textures.Texture = try cast (texture.base, openfl.display3D.textures.Texture) catch(e:Dynamic) null;
+        var stdTexture:openfl.display3D.textures.Texture = Std.instance(texture.base, openfl.display3D.textures.Texture);
         if (stdTexture != null)
             stdTexture.uploadFromUInt8Array(tmpImage);
         else
@@ -45,7 +45,7 @@ class FTBFTextureCache
             return null;
         rect.width -= 1;
         rect.height -= 1;
-        var stdTexture:openfl.display3D.textures.Texture = try cast (texture.base, openfl.display3D.textures.Texture) catch (e:Dynamic) null;
+        var stdTexture:openfl.display3D.textures.Texture = Std.instance (texture.base, openfl.display3D.textures.Texture);
         if (stdTexture != null)
             stdTexture.uploadFromUInt8Array(bitmap, 0, Std.int(rect.x), Std.int(rect.y), width, height);
         else
