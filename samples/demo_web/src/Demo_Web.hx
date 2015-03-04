@@ -3,8 +3,11 @@ import flash.display.Sprite;
 import flash.system.Capabilities;
 import openfl.Assets;
 import openfl.display3D.Context3DProfile;
+import openfl.errors.Error;
 import openfl.events.TouchEvent;
 import openfl.geom.Rectangle;
+import starling.utils.Max;
+import starling.utils.RectangleUtil;
 
 import starling.core.Starling;
 import starling.textures.Texture;
@@ -31,8 +34,6 @@ class Demo_Web extends Sprite
     public function new()
     {
         super();
-        stage.scaleMode = StageScaleMode.NO_SCALE;
-		stage.align = StageAlign.TOP_LEFT;
 
         if (stage != null) start();
         else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
@@ -41,12 +42,12 @@ class Demo_Web extends Sprite
     private function start():Void
     {
         var profile:Context3DProfile = Context3DProfile.BASELINE_CONSTRAINED;
-        var rect:Rectangle = new Rectangle(0, 0, 320, 480);
         
         Starling.multitouchEnabled = true; // for Multitouch Scene
         //Starling.handleLostContext = true; // required on Windows, needs more memory
         
-        mStarling = new Starling(Game, stage, rect, null, "auto", profile);
+        mStarling = new Starling(Game, stage, new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), null, "auto", profile);
+        
         mStarling.statsDisplayFontName = Constants.DefaultFont;
         mStarling.simulateMultitouch = true;
         //mStarling.enableErrorChecking = Capabilities.isDebugger;
@@ -59,6 +60,8 @@ class Demo_Web extends Sprite
         if (untyped global.gc == null)
             trace("--expose-gc is not enabled.");
         #end
+        
+        this.stage.addEventListener(Event.RESIZE, onResize, false, Max.INT_MAX_VALUE, true);
     }
     
     private function onAddedToStage(event:Event):Void
@@ -90,10 +93,16 @@ class Demo_Web extends Sprite
         game.start(bgTexture, assets);
     }
 
-    /**
-    * render loop
-    */
-    private function _onEnterFrame(e:openfl.events.Event):Void
+    private function onResize(e:openfl.events.Event):Void
     {
+        //this.mStarling.stage.stageWidth = this.stage.stageWidth;
+        //this.mStarling.stage.stageHeight = this.stage.stageHeight;
+
+        var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, stage.stageWidth, stage.stageHeight));
+        try
+        {
+            this.mStarling.viewPort = viewPort;
+        }
+        catch(error:Error) {}
     }
 }
