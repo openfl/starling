@@ -6,7 +6,7 @@
 	<meta title="demo_web" package="com.demoweb" version="1.0.0" company="vroad" />
 	<app main="Demo_Web" file="Demo_Web" path="bin" />
 
-    <window width="320" height="480" if="desktop" />
+    <window width="320" height="480" if="native" />
     <window width="320" height="480" if="html5" />
     <window orientation="landscape" vsync="true" if="native" />
 	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" />
