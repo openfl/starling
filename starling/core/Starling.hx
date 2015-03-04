@@ -370,10 +370,10 @@ class Starling extends EventDispatcher
         if (profile == "auto")
             profiles = [Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
         else if (Std.is(profile, Context3DProfile))
-            profiles = [cast(profile, Context3DProfile)];
+            profiles = [cast profile];
         else if (Std.is(profile, Array))
         {
-            var da:Array<Dynamic> = cast(profile, Array<Dynamic>);
+            var da:Array<Dynamic> = cast profile;
             for(profileStr in da)
                 profiles.push(profileStr);
         }
@@ -755,7 +755,7 @@ class Starling extends EventDispatcher
         // figure out general touch properties
         if (Std.is(event, MouseEvent))
         {
-            var mouseEvent:MouseEvent = cast(event, MouseEvent);
+            var mouseEvent:MouseEvent = cast event;
             globalX = mouseEvent.stageX;
             globalY = mouseEvent.stageY;
             touchID = 0;

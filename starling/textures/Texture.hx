@@ -140,19 +140,19 @@ class Texture
         
         if (Std.is(data, Class))
         {
-            texture = fromEmbeddedAsset(cast(data, Class<Dynamic>),
+            texture = fromEmbeddedAsset(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
         else if (Std.is(data, BitmapData))
         {
-            texture = fromBitmapData(cast(data, BitmapData),
+            texture = fromBitmapData(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
         else if (Std.is(data, ByteArray))
         {
-            texture = fromAtfData(cast(data, ByteArray),
+            texture = fromAtfData(cast data,
                 options.scale, options.mipMapping, options.onReady, options.repeat);
         }
         else
@@ -185,7 +185,7 @@ class Texture
         
         if (Std.is(asset, Bitmap))
         {
-            texture = Texture.fromBitmap(cast(asset, Bitmap), mipMapping, false, scale, format, repeat);
+            texture = Texture.fromBitmap(cast asset, mipMapping, false, scale, format, repeat);
             texture.root.onRestore = function():Void
             {
                 texture.root.uploadBitmap(Type.createInstance(assetClass, []));
@@ -193,7 +193,7 @@ class Texture
         }
         else if (Std.is(asset, ByteArray))
         {
-            texture = Texture.fromAtfData(cast(asset, ByteArray), scale, mipMapping, null, repeat);
+            texture = Texture.fromAtfData(cast asset, scale, mipMapping, null, repeat);
             texture.root.onRestore = function():Void
             {
                 texture.root.uploadAtfData(Type.createInstance(assetClass, []));

@@ -803,5 +803,5 @@ class DisplayObject extends EventDispatcher
     /** The stage the display object is connected to, or null if it is not connected 
      *  to the stage. */
     public var stage(get ,never):Stage;
-    private function get_stage():Stage {return Std.is(this.base, Stage) ? cast(this.base, Stage) : null; }
+    private function get_stage():Stage {return Std.is(this.base, Stage) ? cast this.base : null; }
 }

@@ -96,7 +96,7 @@ class Tween extends EventDispatcher implements IAnimatable
         mCurrentCycle = -1;
         
         if (Std.is(transition, String))
-            this.transition = cast(transition, String);
+            this.transition = cast transition;
         else if (Reflect.isFunction(transition))
             this.transitionFunc = transition;
         else 

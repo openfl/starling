@@ -272,7 +272,7 @@ class Juggler implements IAnimatable
     {
         remove(cast(event.target, IAnimatable));
         
-        var tween:Tween = Std.is(event.target, Tween) ? cast(event.target, Tween) : null;
+        var tween:Tween = Std.is(event.target, Tween) ? cast event.target : null;
         if (tween != null && tween.isComplete)
             add(tween.nextTween);
     }

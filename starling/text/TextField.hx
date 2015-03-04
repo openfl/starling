@@ -381,13 +381,13 @@ class TextField extends DisplayObjectContainer
                 var distance:Float = 0;
                 if (Std.is(filter, BlurFilter))
                 {
-                    var f:BlurFilter = cast(filter, BlurFilter);
+                    var f:BlurFilter = cast filter;
                     blurX = f.blurX;
                     blurY = f.blurY; 
                 }
                 else if (Std.is(filter, DropShadowFilter))
                 {
-                    var f:DropShadowFilter = cast(filter, DropShadowFilter);
+                    var f:DropShadowFilter = cast filter;
                     blurX = f.blurX;
                     blurY = f.blurY;
                 }

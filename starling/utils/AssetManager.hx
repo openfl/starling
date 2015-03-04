@@ -657,12 +657,12 @@ class AssetManager extends EventDispatcher
             }
             else if (Std.is(asset, Sound))
             {
-                addSound(name, cast(asset, Sound));
+                addSound(name, cast asset);
                 onComplete();
             }
             else if (Std.is(asset, Xml))
             {
-                var xml:Xml = cast(asset, Xml);
+                var xml:Xml = cast asset;
                 var firstElement:Xml = xml.firstElement();
                 var rootNode:String = firstElement.nodeName.split(":").pop();
                 
@@ -705,7 +705,7 @@ class AssetManager extends EventDispatcher
             }
             else if (Std.is(asset, ByteArray))
             {
-                bytes = cast(asset, ByteArray);
+                bytes = cast asset;
                 
                 if (AtfData.isAtfData(bytes))
                 {
@@ -858,11 +858,11 @@ class AssetManager extends EventDispatcher
         if (Std.is(rawAsset, Class))
         {
             //setTimeout(complete, 1, new rawAsset());
-            Type.createInstance(rawAsset, []);
+            Type.createInstance(cast rawAsset, []);
         }
         else if (Std.is(rawAsset, String))
         {
-            url = cast(rawAsset, String);
+            url = cast rawAsset;
             extension = getExtensionFromUrl(url);
             
             urlLoader = new URLLoader();
@@ -889,7 +889,7 @@ class AssetManager extends EventDispatcher
         if (Std.is(rawAsset, String)/* || Std.is(rawAsset, FileReference)*/)
         {
             //name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast(rawAsset, FileReference).name;
-            name = cast(rawAsset, String);
+            name = cast rawAsset;
             name = (~/%20/g).replace(name, " "); // URLs use '%20' for spaces
             name = getBasenameFromUrl(name);
             

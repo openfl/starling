@@ -102,7 +102,7 @@ class ConcreteTexture extends Texture
         if (Std.is(mBase, openfl.display3D.textures.Texture))
         {
             var potTexture:openfl.display3D.textures.Texture = 
-                cast(mBase, openfl.display3D.textures.Texture);
+                cast mBase;
             
             potTexture.uploadFromBitmapData(data);
             
@@ -131,7 +131,7 @@ class ConcreteTexture extends Texture
         }
         else if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
         {
-            var baseTexrue = cast(mBase, openfl.display3D.textures.RectangleTexture);
+            var baseTexrue:openfl.display3D.textures.RectangleTexture = cast mBase;
             baseTexrue.uploadFromBitmapData(data);
         }
         
@@ -203,7 +203,7 @@ class ConcreteTexture extends Texture
         if (Std.is(mBase, openfl.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
-        else  if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
+        else if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
             mBase = context.createRectangleTexture(mWidth, mHeight, mFormat,
                                                       mOptimizedForRenderTexture);
         
