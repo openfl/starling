@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -11,6 +11,7 @@
 package starling.display
 {
 import flash.geom.Matrix;
+import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
@@ -53,6 +54,7 @@ public class Sprite extends DisplayObjectContainer
 {
     private var mFlattenedContents:Vector.<QuadBatch>;
     private var mFlattenRequested:Bool;
+    private var mFlattenOptimized:Bool;
     private var mClipRect:Rectangle;
     
     /** Helper objects. */
@@ -96,11 +98,15 @@ public class Sprite extends DisplayObjectContainer
      *  produce at least one draw call; if it were merged together with other objects, this
      *  would cause additional matrix operations, and the optimization would have been in vain.
      *  Thus, don't just blindly flatten all your sprites, but reserve flattening for sprites
-     *  with a big number of children.</p> 
+     *  with a big number of children.</p>
+     *
+     *  @param ignoreChildOrder If the child order is not important, you can further optimize
+     *           the number of draw calls. Naturally, this is not an option for all use-cases.
      */
-    public function flatten():Void
+    public function flatten(ignoreChildOrder:Bool=false):Void
     {
         mFlattenRequested = true;
+        mFlattenOptimized = ignoreChildOrder;
         broadcastEventWith(Event.FLATTEN);
     }
     
@@ -208,13 +214,15 @@ public class Sprite extends DisplayObjectContainer
             if (mFlattenRequested)
             {
                 QuadBatch.compile(this, mFlattenedContents);
+                if (mFlattenOptimized) QuadBatch.optimize(mFlattenedContents);
+
                 support.applyClipRect(); // compiling filters might change scissor rect. :-\
                 mFlattenRequested = false;
             }
             
             var alpha:Float = parentAlpha * this.alpha;
             var numBatches:Int = mFlattenedContents.length;
-            var mvpMatrix:Matrix = support.mvpMatrix;
+            var mvpMatrix:Matrix3D = support.mvpMatrix3D;
             
             support.finishQuadBatch();
             support.raiseDrawCount(numBatches);

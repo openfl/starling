@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //  Starling Framework
-//  Copyright 2011 Gamua OG. All Rights Reserved.
+//  Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //  This program is free software. You can redistribute and/or modify it
 //  in accordance with the terms of the accompanying license agreement.
@@ -11,8 +11,10 @@
 package starling.utils
 {
 import flash.geom.Matrix;
+import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import flash.geom.Vector3D;
 
 /** The VertexData class manages a raw list of vertex information, allowing direct upload
  *  to Stage3D vertex buffers. <em>You only have to work with this class if you create display 
@@ -60,6 +62,8 @@ public class VertexData
 
     /** Helper object. */
     private static var sHelperPoint:Point = new Point();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
+    private static var sHelperRect:Rectangle = new Rectangle();
     
     /** Create a new VertexData object with a specified number of vertices. */
     public function VertexData(numVertices:Int, premultipliedAlpha:Bool=false)
@@ -371,13 +375,67 @@ public class VertexData
         return resultRect;
     }
     
+    /** Calculates the bounds of the vertices, projected into the XY-plane of a certain
+     *  3D space as they appear from a certain camera position. Note that 'camPos' is expected
+     *  in the target coordinate system (the same that the XY-plane lies in).
+     *  If you pass a 'resultRectangle', the result will be stored in this rectangle
+     *  instead of creating a new object. To use all vertices for the calculation, set
+     *  'numVertices' to '-1'. */
+    public function getBoundsProjected(transformationMatrix:Matrix3D, camPos:Vector3D,
+                                       vertexID:Int=0, numVertices:Int=-1,
+                                       resultRect:Rectangle=null):Rectangle
+    {
+        if (camPos == null) throw new ArgumentError("camPos must not be null");
+        if (resultRect == null) resultRect = new Rectangle();
+        if (numVertices < 0 || vertexID + numVertices > mNumVertices)
+            numVertices = mNumVertices - vertexID;
+
+        if (numVertices == 0)
+        {
+            if (transformationMatrix)
+                MatrixUtil.transformCoords3D(transformationMatrix, 0, 0, 0, sHelperPoint3D);
+            else
+                sHelperPoint3D.setTo(0, 0, 0);
+
+            MathUtil.intersectLineWithXYPlane(camPos, sHelperPoint3D, sHelperPoint);
+            resultRect.setTo(sHelperPoint.x, sHelperPoint.y, 0, 0);
+        }
+        else
+        {
+            var minX:Float = Float.MAX_VALUE, maxX:Float = -Float.MAX_VALUE;
+            var minY:Float = Float.MAX_VALUE, maxY:Float = -Float.MAX_VALUE;
+            var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
+            var x:Float, y:Float, i:Int;
+
+            for (i=0; i<numVertices; ++i)
+            {
+                x = mRawData[offset];
+                y = mRawData[Int(offset+1)];
+                offset += ELEMENTS_PER_VERTEX;
+
+                if (transformationMatrix)
+                    MatrixUtil.transformCoords3D(transformationMatrix, x, y, 0, sHelperPoint3D);
+                else
+                    sHelperPoint3D.setTo(x, y, 0);
+
+                MathUtil.intersectLineWithXYPlane(camPos, sHelperPoint3D, sHelperPoint);
+
+                if (minX > sHelperPoint.x) minX = sHelperPoint.x;
+                if (maxX < sHelperPoint.x) maxX = sHelperPoint.x;
+                if (minY > sHelperPoint.y) minY = sHelperPoint.y;
+                if (maxY < sHelperPoint.y) maxY = sHelperPoint.y;
+            }
+            resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
+        }
+        return resultRect;
+    }
+
     /** Creates a string that contains the values of all included vertices. */
     public function toString():String
     {
         var result:String = "[VertexData \n";
         var position:Point = new Point();
         var texCoords:Point = new Point();
-        var color:UInt;
         
         for (var i:Int=0; i<numVertices; ++i)
         {

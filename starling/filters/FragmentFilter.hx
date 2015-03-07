@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2012 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -18,6 +18,7 @@ import flash.display3D.Program3D;
 import flash.display3D.VertexBuffer3D;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix;
+import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import flash.utils.getQualifiedClassName;
@@ -36,6 +37,7 @@ import starling.events.Event;
 import starling.textures.Texture;
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
+import starling.utils.SystemUtil;
 import starling.utils.VertexData;
 import starling.utils.getNextPowerOfTwo;
 
@@ -105,13 +107,16 @@ public class FragmentFilter
     private var mCacheRequested:Bool;
     private var mCache:QuadBatch;
     
-    /** helper objects. */
-    private var mProjMatrix:Matrix = new Matrix();
-    private static var sBounds:Rectangle  = new Rectangle();
-    private static var sBoundsPot:Rectangle = new Rectangle();
+    /** Helper objects. */
     private static var sStageBounds:Rectangle = new Rectangle();
     private static var sTransformationMatrix:Matrix = new Matrix();
     
+    /** Helper objects that may be used recursively (thus not static). */
+    private var mHelperMatrix:Matrix     = new Matrix();
+    private var mHelperMatrix3D:Matrix3D = new Matrix3D();
+    private var mHelperRect:Rectangle    = new Rectangle();
+    private var mHelperRect2:Rectangle   = new Rectangle();
+
     /** Creates a new Fragment filter with the specified number of passes and resolution.
      *  This constructor may only be called by the constructor of a subclass. */
     public function FragmentFilter(numPasses:Int=1, resolution:Float=1.0)
@@ -128,8 +133,9 @@ public class FragmentFilter
         mMarginX = mMarginY = 0.0;
         mOffsetX = mOffsetY = 0;
         mResolution = resolution;
+        mPassTextures = new <Texture>[];
         mMode = FragmentFilterMode.REPLACE;
-        
+
         mVertexData = new VertexData(4);
         mVertexData.setTexCoords(0, 0, 0);
         mVertexData.setTexCoords(1, 1, 0);
@@ -138,8 +144,9 @@ public class FragmentFilter
         
         mIndexData = new <UInt>[0, 1, 2, 1, 3, 2];
         mIndexData.fixed = true;
-        
-        createPrograms();
+
+        if (Starling.current.contextValid)
+            createPrograms();
         
         // Handle lost context. By using the conventional event, we can make it weak; this  
         // avoids memory leaks when people forget to call "dispose" on the filter.
@@ -161,8 +168,8 @@ public class FragmentFilter
     {
         mVertexBuffer = null;
         mIndexBuffer  = null;
-        mPassTextures = null;
-        
+
+        disposePassTextures();
         createPrograms();
         if (mCache) cache();
     }
@@ -197,60 +204,69 @@ public class FragmentFilter
             object.render(support, parentAlpha);
     }
     
-    private function renderPasses(object:DisplayObject, support:RenderSupport, 
+    private function renderPasses(object:DisplayObject, support:RenderSupport,
                                   parentAlpha:Float, intoCache:Bool=false):QuadBatch
     {
         var passTexture:Texture;
         var cacheTexture:Texture = null;
-        var stage:Stage = object.stage;
         var context:Context3D = Starling.context;
+        var targetSpace:DisplayObject = object.stage;
+        var stage:Stage  = Starling.current.stage;
         var scale:Float = Starling.current.contentScaleFactor;
+        var projMatrix:Matrix     = mHelperMatrix;
+        var projMatrix3D:Matrix3D = mHelperMatrix3D;
+        var bounds:Rectangle      = mHelperRect;
+        var boundsPot:Rectangle   = mHelperRect2;
         
-        if (stage   == null) throw new Error("Filtered object must be on the stage.");
         if (context == null) throw new MissingContextError();
         
-        // the bounds of the object in stage coordinates 
-        calculateBounds(object, stage, mResolution * scale, !intoCache, sBounds, sBoundsPot);
+        // the bounds of the object in stage coordinates
+        // (or, if the object is not connected to the stage, in its base object's coordinates)
+        calculateBounds(object, targetSpace, mResolution * scale, !intoCache, bounds, boundsPot);
         
-        if (sBounds.isEmpty())
+        if (bounds.isEmpty())
         {
             disposePassTextures();
             return intoCache ? new QuadBatch() : null; 
         }
         
-        updateBuffers(context, sBoundsPot);
-        updatePassTextures(sBoundsPot.width, sBoundsPot.height, mResolution * scale);
+        updateBuffers(context, boundsPot);
+        updatePassTextures(boundsPot.width, boundsPot.height, mResolution * scale);
         
         support.finishQuadBatch();
         support.raiseDrawCount(mNumPasses);
         support.pushMatrix();
+        support.pushMatrix3D();
         
         // save original projection matrix and render target
-        mProjMatrix.copyFrom(support.projectionMatrix); 
+        projMatrix.copyFrom(support.projectionMatrix);
+        projMatrix3D.copyFrom(support.projectionMatrix3D);
         var previousRenderTarget:Texture = support.renderTarget;
         
-        if (previousRenderTarget)
+        if (previousRenderTarget && !SystemUtil.supportsRelaxedTargetClearRequirement)
             throw new IllegalOperationError(
-                "It's currently not possible to stack filters! " +
-                "This limitation will be removed in a future Stage3D version.");
+                "To nest filters, you need at least Flash Player / AIR version 15.");
         
-        if (intoCache) 
-            cacheTexture = Texture.empty(sBoundsPot.width, sBoundsPot.height, PMA, false, true, 
+        if (intoCache)
+            cacheTexture = Texture.empty(boundsPot.width, boundsPot.height, PMA, false, true,
                                          mResolution * scale);
         
         // draw the original object into a texture
         support.renderTarget = mPassTextures[0];
         support.clear();
         support.blendMode = BlendMode.NORMAL;
-        support.setOrthographicProjection(sBounds.x, sBounds.y, sBoundsPot.width, sBoundsPot.height);
+        support.setProjectionMatrix(
+            bounds.x, bounds.y, boundsPot.width, boundsPot.height,
+            stage.stageWidth, stage.stageHeight, stage.cameraPosition);
+
         object.render(support, parentAlpha);
         support.finishQuadBatch();
         
         // prepare drawing of actual filter passes
         RenderSupport.setBlendFactors(PMA);
         support.loadIdentity();  // now we'll draw in stage coordinates!
-        support.pushClipRect(sBounds);
-        
+        support.pushClipRect(bounds);
+
         context.setVertexBufferAt(mVertexPosAtID, mVertexBuffer, VertexData.POSITION_OFFSET, 
                                   Context3DVertexBufferFormat.FLOAT_2);
         context.setVertexBufferAt(mTexCoordsAtID, mVertexBuffer, VertexData.TEXCOORD_OFFSET,
@@ -276,7 +292,8 @@ public class FragmentFilter
                 else
                 {
                     // draw into back buffer, at original (stage) coordinates
-                    support.projectionMatrix = mProjMatrix;
+                    support.projectionMatrix   = projMatrix;
+                    support.projectionMatrix3D = projMatrix3D;
                     support.renderTarget = previousRenderTarget;
                     support.translateMatrix(mOffsetX, mOffsetY);
                     support.blendMode = object.blendMode;
@@ -300,13 +317,15 @@ public class FragmentFilter
         context.setTextureAt(mBaseTextureID, null);
         
         support.popMatrix();
+        support.popMatrix3D();
         support.popClipRect();
         
         if (intoCache)
         {
             // restore support settings
             support.renderTarget = previousRenderTarget;
-            support.projectionMatrix.copyFrom(mProjMatrix);
+            support.projectionMatrix.copyFrom(projMatrix);
+            support.projectionMatrix3D.copyFrom(projMatrix3D);
             
             // Create an image containing the cache. To have a display object that contains
             // the filter output in object coordinates, we wrap it in a QuadBatch: that way,
@@ -315,9 +334,12 @@ public class FragmentFilter
             var quadBatch:QuadBatch = new QuadBatch();
             var image:Image = new Image(cacheTexture);
             
-            stage.getTransformationMatrix(object, sTransformationMatrix);
-            MatrixUtil.prependTranslation(sTransformationMatrix, 
-                                          sBounds.x + mOffsetX, sBounds.y + mOffsetY);
+            // targetSpace could be null, so we calculate the matrix from the other side
+            // and invert.
+
+            object.getTransformationMatrix(targetSpace, sTransformationMatrix).invert();
+            MatrixUtil.prependTranslation(sTransformationMatrix,
+                bounds.x + mOffsetX, bounds.y + mOffsetY);
             quadBatch.addImage(image, 1.0, sTransformationMatrix);
 
             return quadBatch;
@@ -344,27 +366,18 @@ public class FragmentFilter
         mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, 4);
     }
     
-    private function updatePassTextures(width:Int, height:Int, scale:Float):Void
+    private function updatePassTextures(width:Float, height:Float, scale:Float):Void
     {
         var numPassTextures:Int = mNumPasses > 1 ? 2 : 1;
-        var needsUpdate:Bool = mPassTextures == null || 
+        var needsUpdate:Bool =
             mPassTextures.length != numPassTextures ||
-            mPassTextures[0].width != width || mPassTextures[0].height != height;  
+            Math.abs(mPassTextures[0].nativeWidth  - width  * scale) > 0.1 ||
+            Math.abs(mPassTextures[0].nativeHeight - height * scale) > 0.1;
         
         if (needsUpdate)
         {
-            if (mPassTextures)
-            {
-                for each (var texture:Texture in mPassTextures) 
-                    texture.dispose();
-                
-                mPassTextures.length = numPassTextures;
-            }
-            else
-            {
-                mPassTextures = new Vector.<Texture>(numPassTextures);
-            }
-            
+            disposePassTextures();
+
             for (var i:Int=0; i<numPassTextures; ++i)
                 mPassTextures[i] = Texture.empty(width, height, PMA, false, true, scale);
         }
@@ -379,32 +392,41 @@ public class FragmentFilter
      *  rectangles: one with the exact filter bounds, the other with an extended rectangle that
      *  will yield to a POT size when multiplied with the current scale factor / resolution.
      */
-    private function calculateBounds(object:DisplayObject, stage:Stage, scale:Float, 
-                                     intersectWithStage:Bool, 
+    private function calculateBounds(object:DisplayObject, targetSpace:DisplayObject,
+                                     scale:Float, intersectWithStage:Bool,
                                      resultRect:Rectangle,
                                      resultPotRect:Rectangle):Void
     {
-        var marginX:Float, marginY:Float;
+        var stage:Stage;
+        var marginX:Float = mMarginX;
+        var marginY:Float = mMarginY;
         
-        if (object == stage || object == Starling.current.root)
+        if (targetSpace is Stage)
         {
-            // optimize for full-screen effects
-            marginX = marginY = 0;
-            resultRect.setTo(0, 0, stage.stageWidth, stage.stageHeight);
+            stage = targetSpace as Stage;
+
+            if (object == stage || object == object.root)
+            {
+                // optimize for full-screen effects
+                marginX = marginY = 0;
+                resultRect.setTo(0, 0, stage.stageWidth, stage.stageHeight);
+            }
+            else
+            {
+                object.getBounds(stage, resultRect);
+            }
+
+            if (intersectWithStage)
+            {
+                sStageBounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
+                RectangleUtil.intersect(resultRect, sStageBounds, resultRect);
+            }
         }
         else
         {
-            marginX = mMarginX;
-            marginY = mMarginY;
-            object.getBounds(stage, resultRect);
+            object.getBounds(targetSpace, resultRect);
         }
-        
-        if (intersectWithStage)
-        {
-            sStageBounds.setTo(0, 0, stage.stageWidth, stage.stageHeight);
-            RectangleUtil.intersect(resultRect, sStageBounds, resultRect);
-        }
-        
+
         if (!resultRect.isEmpty())
         {    
             // the bounds are a rectangle around the object, in stage coordinates,
@@ -427,7 +449,7 @@ public class FragmentFilter
         for each (var texture:Texture in mPassTextures)
             texture.dispose();
         
-        mPassTextures = null;
+        mPassTextures.length = 0;
     }
     
     private function disposeCache():Void
@@ -449,11 +471,12 @@ public class FragmentFilter
         throw new Error("Method has to be implemented in subclass!");
     }
 
-    /** Subclasses must override this method and use it to activate their fragment- and 
-     *  to vertext-programs.
-     *  The 'activate' call directly precedes the call to 'context.drawTriangles'. Set up
+    /** Subclasses must override this method and use it to activate their fragment- and
+     *  vertex-programs.
+     *
+     *  <p>The 'activate' call directly precedes the call to 'context.drawTriangles'. Set up
      *  the context the way your filter needs it. The following constants and attributes 
-     *  are set automatically:
+     *  are set automatically:</p>
      *  
      *  <ul><li>vertex constants 0-3: mvpMatrix (3D)</li>
      *      <li>vertex attribute 0: vertex position (FLOAT_2)</li>
@@ -461,11 +484,12 @@ public class FragmentFilter
      *      <li>texture 0: input texture</li>
      *  </ul>
      *  
-     *  @param pass: the current render pass, starting with '0'. Multipass filters can
-     *               provide different logic for each pass.
-     *  @param context: the current context3D (the same as in Starling.context, passed
-     *               just for convenience)
-     *  @param texture: the input texture, which is already bound to sampler 0. */
+     *  @param pass    the current render pass, starting with '0'. Multipass filters can
+     *                 provide different logic for each pass.
+     *  @param context the current context3D (the same as in Starling.context, passed
+     *                 just for convenience)
+     *  @param texture the input texture, which is already bound to sampler 0.
+     *  */
     protected function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         throw new Error("Method has to be implemented in subclass!");
@@ -516,15 +540,16 @@ public class FragmentFilter
         if (mCache) return mCache;
         else
         {
-            var renderSupport:RenderSupport;
+            var support:RenderSupport;
             var stage:Stage = object.stage;
-            
-            if (stage == null) 
-                throw new Error("Filtered object must be on the stage.");
-            
-            renderSupport = new RenderSupport();
-            object.getTransformationMatrix(stage, renderSupport.modelViewMatrix);
-            return renderPasses(object, renderSupport, 1.0, true);
+            var quadBatch:QuadBatch;
+
+            support = new RenderSupport();
+            object.getTransformationMatrix(stage, support.modelViewMatrix);
+            quadBatch = renderPasses(object, support, 1.0, true);
+            support.dispose();
+
+            return quadBatch;
         }
     }
     

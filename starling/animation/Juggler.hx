@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -38,7 +38,7 @@ import starling.events.EventDispatcher;
  *  <pre>
  *  juggler.delayCall(object.removeFromParent, 1.0);
  *  juggler.delayCall(object.addChild, 2.0, theChild);
- *  juggler.delayCall(function():Void { doSomethingFunny(); }, 3.0);
+ *  juggler.delayCall(function():void { doSomethingFunny(); }, 3.0);
  *  </pre>
  * 
  *  @see Tween
@@ -61,7 +61,7 @@ public class Juggler implements IAnimatable
     {
         if (object && mObjects.indexOf(object) == -1) 
         {
-            mObjects.push(object);
+            mObjects[mObjects.length] = object;
         
             var dispatcher:EventDispatcher = object as EventDispatcher;
             if (dispatcher) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);

@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -103,6 +103,7 @@ public class TextField extends DisplayObjectContainer
     private var mNativeFilters:Array;
     private var mRequiresRedraw:Bool;
     private var mIsRenderedText:Bool;
+    private var mIsHtmlText:Bool;
     private var mTextBounds:Rectangle;
     private var mBatchable:Bool;
     
@@ -183,23 +184,28 @@ public class TextField extends DisplayObjectContainer
         if (mTextBounds == null) 
             mTextBounds = new Rectangle();
         
-        var scale:Float  = Starling.contentScaleFactor;
+        var texture:Texture;
+        var scale:Float = Starling.contentScaleFactor;
         var bitmapData:BitmapData = renderText(scale, mTextBounds);
         var format:String = sDefaultTextureFormat;
         
         mHitArea.width  = bitmapData.width  / scale;
         mHitArea.height = bitmapData.height / scale;
         
-        var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
+        texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         texture.root.onRestore = function():Void
         {
             if (mTextBounds == null)
                 mTextBounds = new Rectangle();
-            
+
+            bitmapData = renderText(scale, mTextBounds);
             texture.root.uploadBitmapData(renderText(scale, mTextBounds));
+            bitmapData.dispose();
+            bitmapData = null;
         };
         
         bitmapData.dispose();
+        bitmapData = null;
         
         if (mImage == null) 
         {
@@ -221,8 +227,8 @@ public class TextField extends DisplayObjectContainer
      *  over a range of characters or the complete TextField) to modify the format to
      *  your needs.
      *  
-     *  @param textField:  the flash.text.TextField object that you can format.
-     *  @param textFormat: the default text format that's currently set on the text field.
+     *  @param textField  the flash.text.TextField object that you can format.
+     *  @param textFormat the default text format that's currently set on the text field.
      */
     protected function formatText(textField:flash.text.TextField, textFormat:TextFormat):Void {}
 
@@ -254,8 +260,11 @@ public class TextField extends DisplayObjectContainer
         sNativeTextField.antiAliasType = AntiAliasType.ADVANCED;
         sNativeTextField.selectable = false;            
         sNativeTextField.multiline = true;            
-        sNativeTextField.wordWrap = true;            
-        sNativeTextField.text = mText;
+        sNativeTextField.wordWrap = true;         
+
+        if (mIsHtmlText) sNativeTextField.htmlText = mText;
+        else             sNativeTextField.text     = mText;
+           
         sNativeTextField.embedFonts = true;
         sNativeTextField.filters = mNativeFilters;
         
@@ -699,16 +708,29 @@ public class TextField extends DisplayObjectContainer
         if (mQuadBatch) mQuadBatch.batchable = value;
     }
 
-    /** The native Flash BitmapFilters to apply to this TextField. 
-     *  Only available when using standard (TrueType) fonts! */
+    /** The native Flash BitmapFilters to apply to this TextField.
+     *
+     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public function get nativeFilters():Array { return mNativeFilters; }
     public function set nativeFilters(value:Array) : Void
     {
-        if (!mIsRenderedText)
-            throw(new Error("The TextField.nativeFilters property cannot be used on Bitmap fonts."));
-        
         mNativeFilters = value.concat();
         mRequiresRedraw = true;
+    }
+
+    /** Indicates if the assigned text should be interpreted as HTML code. For a description
+     *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
+     *  Clickable hyperlinks and external images are not supported.
+     *
+     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
+    public function get isHtmlText():Bool { return mIsHtmlText; }
+    public function set isHtmlText(value:Bool):Void
+    {
+        if (mIsHtmlText != value)
+        {
+            mIsHtmlText = value;
+            mRequiresRedraw = true;
+        }
     }
     
     /** The Context3D texture format that is used for rendering of all TrueType texts.

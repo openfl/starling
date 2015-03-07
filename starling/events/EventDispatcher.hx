@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -56,7 +56,7 @@ public class EventDispatcher
         if (listeners == null)
             mEventListeners[type] = new <Function>[listener];
         else if (listeners.indexOf(listener) == -1) // check for duplicates
-            listeners.push(listener);
+            listeners[listeners.length] = listener; // avoid 'push'
     }
     
     /** Removes an event listener from the object. */
@@ -181,7 +181,7 @@ public class EventDispatcher
         }
         
         chain.length = 0;
-        sBubbleChains.push(chain);
+        sBubbleChains[sBubbleChains.length] = chain; // avoid 'push'
     }
     
     /** Dispatches an event with the given parameters to all objects that have registered 
@@ -200,8 +200,7 @@ public class EventDispatcher
     /** Returns if there are listeners registered for a certain event type. */
     public function hasEventListener(type:String):Bool
     {
-        var listeners:Vector.<Function> = mEventListeners ?
-            mEventListeners[type] as Vector.<Function> : null;
+        var listeners:Vector.<Function> = mEventListeners ? mEventListeners[type] : null;
         return listeners ? listeners.length != 0 : false;
     }
 }

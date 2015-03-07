@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -12,6 +12,8 @@ package starling.textures
 {
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
+
+import starling.utils.cleanMasterString;
 
 /** A texture atlas is a collection of many smaller textures in one big image. This class
  *  is used to access textures from such an atlas.
@@ -70,7 +72,8 @@ import flash.utils.Dictionary;
 public class TextureAtlas
 {
     private var mAtlasTexture:Texture;
-    private var mTextureInfos:Dictionary;
+    private var mSubTextures:Dictionary;
+    private var mSubTextureNames:Vector.<String>;
     
     /** helper objects */
     private static var sNames:Vector.<String> = new <String>[];
@@ -78,7 +81,7 @@ public class TextureAtlas
     /** Create a texture atlas from a texture by parsing the regions from an XML file. */
     public function TextureAtlas(texture:Texture, atlasXml:XML=null)
     {
-        mTextureInfos = new Dictionary();
+        mSubTextures = new Dictionary();
         mAtlasTexture = texture;
         
         if (atlasXml)
@@ -97,35 +100,36 @@ public class TextureAtlas
     protected function parseAtlasXml(atlasXml:XML):Void
     {
         var scale:Float = mAtlasTexture.scale;
+        var region:Rectangle = new Rectangle();
+        var frame:Rectangle  = new Rectangle();
         
         for each (var subTexture:XML in atlasXml.SubTexture)
         {
-            var name:String        = subTexture.attribute("name");
-            var x:Float           = parseFloat(subTexture.attribute("x")) / scale;
-            var y:Float           = parseFloat(subTexture.attribute("y")) / scale;
-            var width:Float       = parseFloat(subTexture.attribute("width")) / scale;
-            var height:Float      = parseFloat(subTexture.attribute("height")) / scale;
-            var frameX:Float      = parseFloat(subTexture.attribute("frameX")) / scale;
-            var frameY:Float      = parseFloat(subTexture.attribute("frameY")) / scale;
-            var frameWidth:Float  = parseFloat(subTexture.attribute("frameWidth")) / scale;
-            var frameHeight:Float = parseFloat(subTexture.attribute("frameHeight")) / scale;
-            var rotated:Bool    = parseBool(subTexture.attribute("rotated"));
-            
-            var region:Rectangle = new Rectangle(x, y, width, height);
-            var frame:Rectangle  = frameWidth > 0 && frameHeight > 0 ?
-                    new Rectangle(frameX, frameY, frameWidth, frameHeight) : null;
-            
-            addRegion(name, region, frame, rotated);
+            var name:String        = cleanMasterString(subTexture.@name);
+            var x:Float           = parseFloat(subTexture.@x) / scale;
+            var y:Float           = parseFloat(subTexture.@y) / scale;
+            var width:Float       = parseFloat(subTexture.@width)  / scale;
+            var height:Float      = parseFloat(subTexture.@height) / scale;
+            var frameX:Float      = parseFloat(subTexture.@frameX) / scale;
+            var frameY:Float      = parseFloat(subTexture.@frameY) / scale;
+            var frameWidth:Float  = parseFloat(subTexture.@frameWidth)  / scale;
+            var frameHeight:Float = parseFloat(subTexture.@frameHeight) / scale;
+            var rotated:Bool    = parseBool( subTexture.@rotated);
+
+            region.setTo(x, y, width, height);
+            frame.setTo(frameX, frameY, frameWidth, frameHeight);
+
+            if (frameWidth > 0 && frameHeight > 0)
+                addRegion(name, region, frame, rotated);
+            else
+                addRegion(name, region, null,  rotated);
         }
     }
     
-    /** Retrieves a subtexture by name. Returns <code>null</code> if it is not found. */
+    /** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */
     public function getTexture(name:String):Texture
     {
-        var info:TextureInfo = mTextureInfos[name];
-        
-        if (info == null) return null;
-        else return Texture.fromTexture(mAtlasTexture, info.region, info.frame, info.rotated);
+        return mSubTextures[name];
     }
     
     /** Returns all textures that start with a certain string, sorted alphabetically
@@ -135,7 +139,7 @@ public class TextureAtlas
         if (result == null) result = new <Texture>[];
         
         for each (var name:String in getNames(prefix, sNames)) 
-            result.push(getTexture(name)); 
+            result[result.length] = getTexture(name); // avoid 'push'
 
         sNames.length = 0;
         return result;
@@ -144,78 +148,74 @@ public class TextureAtlas
     /** Returns all texture names that start with a certain string, sorted alphabetically. */
     public function getNames(prefix:String="", result:Vector.<String>=null):Vector.<String>
     {
+        var name:String;
         if (result == null) result = new <String>[];
         
-        for (var name:String in mTextureInfos)
+        if (mSubTextureNames == null)
+        {
+            // optimization: store sorted list of texture names
+            mSubTextureNames = new <String>[];
+            for (name in mSubTextures) mSubTextureNames[mSubTextureNames.length] = name;
+            mSubTextureNames.sort(Array.CASEINSENSITIVE);
+        }
+
+        for each (name in mSubTextureNames)
             if (name.indexOf(prefix) == 0)
-                result.push(name);
+                result[result.length] = name;
         
-        result.sort(Array.CASEINSENSITIVE);
         return result;
     }
     
-    /** Returns the region rectangle associated with a specific name. */
+    /** Returns the region rectangle associated with a specific name, or <code>null</code>
+     *  if no region with that name has been registered. */
     public function getRegion(name:String):Rectangle
     {
-        var info:TextureInfo = mTextureInfos[name];
-        return info ? info.region : null;
+        var subTexture:SubTexture = mSubTextures[name];
+        return subTexture ? subTexture.region : null;
     }
     
     /** Returns the frame rectangle of a specific region, or <code>null</code> if that region 
      *  has no frame. */
     public function getFrame(name:String):Rectangle
     {
-        var info:TextureInfo = mTextureInfos[name];
-        return info ? info.frame : null;
+        var subTexture:SubTexture = mSubTextures[name];
+        return subTexture ? subTexture.frame : null;
     }
     
     /** If true, the specified region in the atlas is rotated by 90 degrees (clockwise). The
      *  SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
     public function getRotation(name:String):Bool
     {
-        var info:TextureInfo = mTextureInfos[name];
-        return info ? info.rotated : false;
+        var subTexture:SubTexture = mSubTextures[name];
+        return subTexture ? subTexture.rotated : false;
     }
 
-    /** Adds a named region for a subtexture (described by rectangle with coordinates in 
-     *  pixels) with an optional frame. */
+    /** Adds a named region for a SubTexture (described by rectangle with coordinates in
+     *  points) with an optional frame. */
     public function addRegion(name:String, region:Rectangle, frame:Rectangle=null,
                               rotated:Bool=false):Void
     {
-        mTextureInfos[name] = new TextureInfo(region, frame, rotated);
+        mSubTextures[name] = new SubTexture(mAtlasTexture, region, false, frame, rotated);
+        mSubTextureNames = null;
     }
     
     /** Removes a region with a certain name. */
     public function removeRegion(name:String):Void
     {
-        delete mTextureInfos[name];
+        var subTexture:SubTexture = mSubTextures[name];
+        if (subTexture) subTexture.dispose();
+        delete mSubTextures[name];
+        mSubTextureNames = null;
     }
     
     /** The base texture that makes up the atlas. */
     public function get texture():Texture { return mAtlasTexture; }
     
     // utility methods
-    
+
     private static function parseBool(value:String):Bool
     {
         return value.toLowerCase() == "true";
     }
-}
-}
-
-import flash.geom.Rectangle;
-import starling.textures.Texture;
-
-class TextureInfo
-{
-public var region:Rectangle;
-public var frame:Rectangle;
-public var rotated:Bool;
-
-public function TextureInfo(region:Rectangle, frame:Rectangle, rotated:Bool)
-{
-    this.region = region;
-    this.frame = frame;
-    this.rotated = rotated;       
 }
 }

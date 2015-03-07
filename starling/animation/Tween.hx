@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -20,7 +20,7 @@ import starling.events.EventDispatcher;
  *  
  *  <p>The primary use of this class is to do standard animations like movement, fading, 
  *  rotation, etc. But there are no limits on what to animate; as long as the property you want
- *  to animate is numeric (<code>Int, UInt, Float</code>), the tween can handle it. For a list 
+ *  to animate is numeric (<code>int, uint, Number</code>), the tween can handle it. For a list 
  *  of available Transition types, look at the "Transitions" class.</p> 
  *  
  *  <p>Here is an example of a tween that moves an object to the right, rotates it, and 
@@ -90,8 +90,8 @@ public class Tween extends EventDispatcher implements IAnimatable
         mTotalTime = Math.max(0.0001, time);
         mProgress = 0.0;
         mDelay = mRepeatDelay = 0.0;
-        mOnStart = mOnUpdate = mOnComplete = null;
-        mOnStartArgs = mOnUpdateArgs = mOnCompleteArgs = null;
+        mOnStart = mOnUpdate = mOnRepeat = mOnComplete = null;
+        mOnStartArgs = mOnUpdateArgs = mOnRepeatArgs = mOnCompleteArgs = null;
         mRoundToInt = mReverse = false;
         mRepeatCount = 1;
         mCurrentCycle = -1;
@@ -116,9 +116,9 @@ public class Tween extends EventDispatcher implements IAnimatable
     {
         if (mTarget == null) return; // tweening null just does nothing.
                
-        mProperties.push(property);
-        mStartValues.push(Float.NaN);
-        mEndValues.push(endValue);
+        mProperties[mProperties.length] = property;
+        mStartValues[mStartValues.length] = Float.NaN;
+        mEndValues[mEndValues.length] = endValue;
     }
     
     /** Animates the 'scaleX' and 'scaleY' properties of an object simultaneously. */
@@ -161,7 +161,7 @@ public class Tween extends EventDispatcher implements IAnimatable
         if (mCurrentCycle < 0 && previousTime <= 0 && mCurrentTime > 0)
         {
             mCurrentCycle++;
-            if (mOnStart != null) mOnStart.apply(null, mOnStartArgs);
+            if (mOnStart != null) mOnStart.apply(this, mOnStartArgs);
         }
 
         var ratio:Float = mCurrentTime / mTotalTime;
@@ -184,7 +184,7 @@ public class Tween extends EventDispatcher implements IAnimatable
         }
 
         if (mOnUpdate != null) 
-            mOnUpdate.apply(null, mOnUpdateArgs);
+            mOnUpdate.apply(this, mOnUpdateArgs);
         
         if (previousTime < mTotalTime && mCurrentTime >= mTotalTime)
         {
@@ -193,7 +193,7 @@ public class Tween extends EventDispatcher implements IAnimatable
                 mCurrentTime = -mRepeatDelay;
                 mCurrentCycle++;
                 if (mRepeatCount > 1) mRepeatCount--;
-                if (mOnRepeat != null) mOnRepeat.apply(null, mOnRepeatArgs);
+                if (mOnRepeat != null) mOnRepeat.apply(this, mOnRepeatArgs);
             }
             else
             {
@@ -205,7 +205,7 @@ public class Tween extends EventDispatcher implements IAnimatable
                 // add it to another juggler; so this event has to be dispatched *before*
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                if (onComplete != null) onComplete.apply(null, onCompleteArgs);
+                if (onComplete != null) onComplete.apply(this, onCompleteArgs);
             }
         }
         
