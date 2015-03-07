@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -9,10 +9,12 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.errors.ArgumentError;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
+import flash.errors.ArgumentError;
+import flash.geom.Matrix;
+import flash.geom.Matrix3D;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.geom.Vector3D;
 
 import starling.core.RenderSupport;
 import starling.utils.VertexData;
@@ -42,7 +44,9 @@ class Quad extends DisplayObject
     
     /** Helper objects. */
     private static var sHelperPoint:Point = new Point();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperMatrix3D:Matrix3D = new Matrix3D();
     
     /** Creates a quad with a certain size and color. The last parameter controls if the 
      *  alpha value should be premultiplied into the color values on rendering, which can
@@ -91,6 +95,12 @@ class Quad extends DisplayObject
                              sHelperPoint.x * scaleX, sHelperPoint.y * scaleY);
             if (scaleX < 0) { resultRect.width  *= -1; resultRect.x -= resultRect.width;  }
             if (scaleY < 0) { resultRect.height *= -1; resultRect.y -= resultRect.height; }
+        }
+        else if (is3D && stage != null)
+        {
+            stage.getCameraPosition(targetSpace, sHelperPoint3D);
+            getTransformationMatrix3D(targetSpace, sHelperMatrix3D);
+            mVertexData.getBoundsProjected(sHelperMatrix3D, sHelperPoint3D, 0, 4, resultRect);
         }
         else
         {

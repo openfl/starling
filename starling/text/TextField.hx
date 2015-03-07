@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -111,6 +111,7 @@ class TextField extends DisplayObjectContainer
     private var mNativeFilters:Array<BitmapFilter>;
     private var mRequiresRedraw:Bool;
     private var mIsRenderedText:Bool;
+    private var mIsHtmlText:Bool;
     private var mTextBounds:Rectangle;
     private var mBatchable:Bool;
     
@@ -195,23 +196,28 @@ class TextField extends DisplayObjectContainer
         if (mTextBounds == null) 
             mTextBounds = new Rectangle();
         
-        var scale:Float  = Starling.current.contentScaleFactor;
+        var texture:Texture;
+        var scale:Float = Starling.current.contentScaleFactor;
         var bitmapData:BitmapData = renderText(scale, mTextBounds);
         var format:Context3DTextureFormat = sDefaultTextureFormat;
         
         mHitArea.width  = bitmapData.width  / scale;
         mHitArea.height = bitmapData.height / scale;
         
-        var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
+        texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         texture.root.onRestore = function():Void
         {
             if (mTextBounds == null)
                 mTextBounds = new Rectangle();
-            
+
+            bitmapData = renderText(scale, mTextBounds);
             texture.root.uploadBitmapData(renderText(scale, mTextBounds));
+            bitmapData.dispose();
+            bitmapData = null;
         };
         
         bitmapData.dispose();
+        bitmapData = null;
         
         if (mImage == null) 
         {
@@ -234,10 +240,10 @@ class TextField extends DisplayObjectContainer
      *  over a range of characters or the complete TextField) to modify the format to
      *  your needs.
      *  
-     *  @param textField:  the openfl.text.TextField object that you can format.
-     *  @param textFormat: the default text format that's currently set on the text field.
+     *  @param textField  the flash.text.TextField object that you can format.
+     *  @param textFormat the default text format that's currently set on the text field.
      */
-    private function formatText(textField:openfl.text.TextField, textFormat:TextFormat):Void {}
+    private function formatText(textField:flash.text.TextField, textFormat:TextFormat):Void {}
 
     private function renderText(scale:Float, resultTextBounds:Rectangle):BitmapData
     {
@@ -277,8 +283,11 @@ class TextField extends DisplayObjectContainer
         sNativeTextField.antiAliasType = AntiAliasType.ADVANCED;
         sNativeTextField.selectable = false;            
         sNativeTextField.multiline = true;            
-        sNativeTextField.wordWrap = true;            
-        sNativeTextField.text = mText;
+        sNativeTextField.wordWrap = true;         
+
+        if (mIsHtmlText) sNativeTextField.htmlText = mText;
+        else             sNativeTextField.text     = mText;
+           
         sNativeTextField.embedFonts = true;
         sNativeTextField.filters = mNativeFilters;
         
@@ -808,18 +817,33 @@ class TextField extends DisplayObjectContainer
         return mBatchable;
     }
 
-    /** The native Flash BitmapFilters to apply to this TextField. 
-     *  Only available when using standard (TrueType) fonts! */
+    /** The native Flash BitmapFilters to apply to this TextField.
+     *
+     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var nativeFilters(get, set):Array<BitmapFilter>;
     private function get_nativeFilters():Array<BitmapFilter> { return mNativeFilters; }
     private function set_nativeFilters(value:Array<BitmapFilter>) : Array<BitmapFilter>
     {
-        if (!mIsRenderedText)
-            throw(new Error("The TextField.nativeFilters property cannot be used on Bitmap fonts."));
-        
         mNativeFilters = value.copy();
         mRequiresRedraw = true;
         return mNativeFilters;
+    }
+
+    /** Indicates if the assigned text should be interpreted as HTML code. For a description
+     *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
+     *  Clickable hyperlinks and external images are not supported.
+     *
+     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
+    public var isHtmlText(get, set):Bool;
+    public function get_isHtmlText():Bool { return mIsHtmlText; }
+    public function set_isHtmlText(value:Bool):Bool
+    {
+        if (mIsHtmlText != value)
+        {
+            mIsHtmlText = value;
+            mRequiresRedraw = true;
+        }
+        return mIsHtmlText;
     }
     
     /** The Context3D texture format that is used for rendering of all TrueType texts.

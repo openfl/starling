@@ -1,9 +1,12 @@
 package starling.utils;
 import flash.display.Bitmap;
 import flash.display.Loader;
+import flash.display.LoaderInfo;
+import flash.display3D.Context3DTextureFormat;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
+import flash.events.SecurityErrorEvent;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundTransform;
@@ -18,11 +21,11 @@ import flash.net.URLRequest;
 import flash.system.LoaderContext;
 import flash.system.System;
 import flash.utils.ByteArray;
-//import flash.utils.Dictionary;
-//import flash.utils.clearTimeout;
+import flash.utils.Dictionary;
 //import flash.utils.describeType;
-//import flash.utils.Type.getClassName;
-//import flash.utils.setTimeout;
+//import flash.utils.getQualifiedClassName;
+import haxe.Timer;
+import haxe.Json;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -36,6 +39,24 @@ import starling.textures.TextureOptions;
 
 /** Dispatched when all textures have been restored after a context loss. */
 //[Event(name="texturesRestored", type="starling.events.Event")]
+
+/** Dispatched when an URLLoader fails with an IO_ERROR while processing the queue.
+ *  The 'data' property of the Event contains the URL-String that could not be loaded. */
+//[Event(name="ioError", type="starling.events.Event")]
+
+/** Dispatched when an URLLoader fails with a SECURITY_ERROR while processing the queue.
+ *  The 'data' property of the Event contains the URL-String that could not be loaded. */
+//[Event(name="securityError", type="starling.events.Event")]
+
+/** Dispatched when an XML or JSON file couldn't be parsed.
+ *  The 'data' property of the Event contains the name of the asset that could not be parsed. */
+//[Event(name="parseError", type="starling.events.Event")]
+
+typedef QueuedAsset = {
+    name:String,
+    asset:Dynamic,
+    options:TextureOptions
+}
 
 /** The AssetManager handles loading and accessing a variety of asset types. You can 
  *  add assets directly (via the 'add...' methods) or asynchronously via a queue. This allows
@@ -65,6 +86,33 @@ import starling.textures.TextureOptions;
  *  not reappear all at once, but during a timeframe of several seconds. If you want, you can
  *  pause your game during that time; the AssetManager dispatches an "Event.TEXTURES_RESTORED"
  *  event when all textures have been restored.</p>
+ *
+ *  <strong>Error handling</strong>
+ *
+ *  <p>Loading of some assets may fail while the queue is being processed. In that case, the
+ *  AssetManager will dispatch events of type "IO_ERROR", "SECURITY_ERROR" or "PARSE_ERROR".
+ *  You can listen to those events and handle the errors manually (e.g., you could enqueue
+ *  them once again and retry, or provide placeholder textures). Queue processing will
+ *  continue even when those events are dispatched.</p>
+ *
+ *  <strong>Using variable texture formats</strong>
+ *
+ *  <p>When you enqueue a texture, its properties for "format", "scale", "mipMapping", and
+ *  "repeat" will reflect the settings of the AssetManager at the time they were enqueued.
+ *  This means that you can enqueue a bunch of textures, then change the settings and enqueue
+ *  some more. Like this:</p>
+ *
+ *  <listing>
+ *  var appDir:File = File.applicationDirectory;
+ *  var assets:AssetManager = new AssetManager();
+ *  
+ *  assets.textureFormat = Context3DTextureFormat.BGRA;
+ *  assets.enqueue(appDir.resolvePath("textures/32bit"));
+ *  
+ *  assets.textureFormat = Context3DTextureFormat.BGRA_PACKED;
+ *  assets.enqueue(appDir.resolvePath("textures/16bit"));
+ *  
+ *  assets.loadQueue(...);</listing>
  */
 class AssetManager extends EventDispatcher
 {
@@ -74,16 +122,15 @@ class AssetManager extends EventDispatcher
     private var mStarling:Starling;
     private var mNumLostTextures:Int;
     private var mNumRestoredTextures:Int;
+    private var mNumLoadingQueues:Int;
 
     private var mDefaultTextureOptions:TextureOptions;
     private var mCheckPolicyFile:Bool;
     private var mKeepAtlasXmls:Bool;
     private var mKeepFontXmls:Bool;
+    private var mNumConnections:Int;
     private var mVerbose:Bool;
-    
-    private var mQueue:Array<Dynamic>;
-    private var mIsLoading:Bool;
-    private var mTimeoutID:UInt;
+    private var mQueue:Array<QueuedAsset>;
     
     private var mTextures:Map<String, Texture>;
     private var mAtlases:Map<String, TextureAtlas>;
@@ -103,12 +150,14 @@ class AssetManager extends EventDispatcher
     public function new(scaleFactor:Float=1, useMipmaps:Bool=false)
     {
         mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
-        mTextures = new Map<String, Texture>();
-        mAtlases = new Map<String, TextureAtlas>();
-        mSounds = new Map<String, Sound>();
-        mXmls = new Map<String, Xml>();
-        mObjects = new Map<String, Dynamic>();
-        mByteArrays = new Map<String, ByteArray>();
+        mTextures = new Map();
+        mAtlases = new Map();
+        mSounds = new Map();
+        mXmls = new Map();
+        mObjects = new Map();
+        mByteArrays = new Map();
+        mNumConnections = 3;
+        mVerbose = true;
         mQueue = [];
     }
     
@@ -154,8 +203,8 @@ class AssetManager extends EventDispatcher
         if (result == null) result = new Array<Texture>();
         
         for (name in getTextureNames(prefix, sNames))
-            result.push(getTexture(name));
-        
+            result[result.length] = getTexture(name); // avoid 'push'
+
         sNames = [];
         return result;
     }
@@ -395,9 +444,7 @@ class AssetManager extends EventDispatcher
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
-        mIsLoading = false;
-        mQueue = [];
-        //clearTimeout(mTimeoutID);
+        mQueue.splice(0, mQueue.length);
         dispatchEventWith(Event.CANCEL);
     }
     
@@ -494,12 +541,13 @@ class AssetManager extends EventDispatcher
     /** Enqueues a single asset with a custom name that can be used to access it later.
      *  If the asset is a texture, you can also add custom texture options.
      *  
-     *  @param asset:   The asset that will be enqueued; accepts the same objects as the
+     *  @param asset    The asset that will be enqueued; accepts the same objects as the
      *                  'enqueue' method.
-     *  @param name:    The name under which the asset will be found later. If you pass null or
+     *  @param name     The name under which the asset will be found later. If you pass null or
      *                  omit the parameter, it's attempted to generate a name automatically.
-     *  @param options: Custom options that will be used if 'asset' points to texture data.
-     *  @return         the name under which the asset was registered. */
+     *  @param options  Custom options that will be used if 'asset' points to texture data.
+     *  @return         the name with which the asset was registered.
+     */
     public function enqueueWithName(asset:Dynamic, name:String=null,
                                     options:TextureOptions=null):String
     {
@@ -507,7 +555,7 @@ class AssetManager extends EventDispatcher
         //    asset = unescape(asset["url"]);
         
         if (name == null)    name = getName(asset);
-        if (options == null) options = mDefaultTextureOptions;
+        if (options == null) options = mDefaultTextureOptions.clone();
         else                 options = options.clone();
         
         log("Enqueuing '" + name + "'");
@@ -529,104 +577,198 @@ class AssetManager extends EventDispatcher
      *  if you are working with more than one Starling instance, be sure to call
      *  "makeCurrent()" on the appropriate instance before processing the queue.</p>
      *
-     *  @param onProgress: <code>function(ratio:Float):Void;</code> 
+     *  @param onProgress <code>function(ratio:Number):void;</code>
      */
     public function loadQueue(onProgress:Float->Void):Void
     {
+        if (onProgress == null)
+            throw new ArgumentError("Argument 'onProgress' must not be null");
+
+        if (mQueue.length == 0)
+        {
+            onProgress(1.0);
+            return;
+        }
+
         mStarling = Starling.current;
         
         if (mStarling == null || mStarling.context == null)
-            throw new Error("The Starling instance needs to be ready before textures can be loaded.");
-        
-        if (mIsLoading)
-            throw new Error("The queue is already being processed");
-        
-        var xmls:Array<Xml> = new Array<Xml>();
-        var numElements:Int = mQueue.length;
-        var currentRatio:Float = 0.0;
-        
-        mIsLoading = true;
+            throw new Error("The Starling instance needs to be ready before assets can be loaded.");
 
-        var processNext:Void->Void = null;
+        var PROGRESS_PART_ASSETS:Float = 0.9;
+        var PROGRESS_PART_XMLS:Float = 1.0 - PROGRESS_PART_ASSETS;
+
+        var i:Int;
+        var canceled:Bool = false;
+        var xmls:Array<Xml> = new Array<Xml>();
+        var assetInfos:Array<QueuedAsset> = mQueue.copy();
+        var assetCount:Int = mQueue.length;
+        var assetProgress:Array<Float> = [];
+        var assetIndex:Int = 0;
+        
+        var loadNextQueueElement:Void->Void = null;
+        var cancel:Void->Void = null;
+        var loadQueueElement:Int->QueuedAsset->Void = null;
+        var updateAssetProgress:Int->Float->Void = null;
         var processXmls:Void->Void = null;
-        var progress:Float->Void = null;
-        function resume():Void
+        var processXml:Int->Void = null;
+        var finish:Void->Void = null;
+        var resume:Void->Void = null;
+        
+        //for (i=0; i<assetCount; ++i)
+        for (i in 0 ... assetCount)
+            assetProgress[i] = 0.0;
+
+        //for (i=0; i<mNumConnections; ++i)
+        for (i in 0 ... mNumConnections)
+            loadNextQueueElement();
+
+        mQueue.splice(0, mQueue.length);
+        mNumLoadingQueues++;
+        addEventListener(Event.CANCEL, cancel);
+
+        function loadNextQueueElement():Void
         {
-            currentRatio = mQueue.length != 0 ? 1.0 - (mQueue.length / numElements) : 1.0;
-            
-            if (mQueue.length != 0)
-                processNext();//mTimeoutID = setTimeout(processNext, 1);
-            else
+            if (assetIndex < assetInfos.length)
             {
-                processXmls();
-                mIsLoading = false;
+                // increment asset index *before* using it, since
+                // 'loadQueueElement' could by synchronous in subclasses.
+                var index:Int = assetIndex++;
+                loadQueueElement(index, assetInfos[index]);
             }
+        }
+
+        function loadQueueElement(index:Int, assetInfo:QueuedAsset):Void
+        {
+            if (canceled) return;
             
-            if (onProgress != null)
-                onProgress(currentRatio);
-        }
-        
-        processNext = function():Void
-        {
-            var assetInfo:Dynamic = mQueue.shift();
-            //clearTimeout(mTimeoutID);
+            var onElementProgress:Float->Void = function(progress:Float):Void
+            {
+                updateAssetProgress(index, progress * 0.8); // keep 20 % for completion
+            };
+            var onElementLoaded:Void->Void = function():Void
+            {
+                updateAssetProgress(index, 1.0);
+                assetCount--;
+
+                if (assetCount > 0) loadNextQueueElement();
+                else                processXmls();
+            };
+            
             processRawAsset(assetInfo.name, assetInfo.asset, assetInfo.options,
-                            xmls, progress, resume);
+                xmls, onElementProgress, onElementLoaded);
         }
         
-        processXmls = function():Void
+        function updateAssetProgress(index:Int, progress:Float):Void
         {
-            // xmls are processed seperately at the end, because the textures they reference
+            assetProgress[index] = progress;
+
+            var sum:Float = 0.0;
+            var len:Int = assetProgress.length;
+
+            //for (i=0; i<len; ++i)
+            for (i in 0 ... len)
+                sum += assetProgress[i];
+
+            onProgress(sum / len * PROGRESS_PART_ASSETS);
+        }
+        
+        function processXmls():Void
+        {
+            // xmls are processed separately at the end, because the textures they reference
             // have to be available for other XMLs. Texture atlases are processed first:
             // that way, their textures can be referenced, too.
             
             xmls.sort(function(a:Xml, b:Xml):Int { 
                 return a.nodeName.split(":").pop() == "TextureAtlas" ? -1 : 1; 
             });
-            
-            for(xml in xmls)
+
+            Timer.delay(function() { processXml(0); }, 1);
+        }
+
+        function processXml(index:Int):Void
+        {
+            if (canceled) return;
+            else if (index == xmls.length)
             {
-                var name:String;
-                var texture:Texture;
-                var rootNode:String = xml.nodeName.split(":").pop();
-                
-                if (rootNode == "TextureAtlas")
-                {
-                    name = getName(xml.get("imagePath").toString());
-                    texture = getTexture(name);
-                    
-                    if (texture != null)
-                    {
-                        addTextureAtlas(name, new TextureAtlas(texture, xml));
-
-                        if (mKeepAtlasXmls) addXml(name, xml);
-                        //else System.disposeXML(xml);
-                    }
-                    else log("Cannot create atlas: texture '" + name + "' is missing.");
-                }
-                else if (rootNode == "font")
-                {
-                    name = getName(xml.elementsNamed("pages").next().elementsNamed("page").next().get("file"));
-                    texture = getTexture(name);
-                    
-                    if (texture != null)
-                    {
-                        log("Adding bitmap font '" + name + "'");
-                        TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
-
-                        if (mKeepFontXmls) addXml(name, xml);
-                        //else System.disposeXML(xml);
-                    }
-                    else log("Cannot create bitmap font: texture '" + name + "' is missing.");
-                }
-                else
-                    throw new Error("XML contents not recognized: " + rootNode);
+                finish();
+                return;
             }
+
+            var name:String;
+            var texture:Texture;
+            var xml:Xml = xmls[index];
+            var rootNode:String = xml.nodeName;
+            var xmlProgress:Float = (index + 1) / (xmls.length + 1);
+
+            if (rootNode == "TextureAtlas")
+            {
+                name = getName(xml.get("imagePath"));
+                texture = getTexture(name);
+
+                if (texture != null)
+                {
+                    addTextureAtlas(name, new TextureAtlas(texture, xml));
+
+                    if (mKeepAtlasXmls) addXml(name, xml);
+                    /*
+                    else
+                        System.disposeXML(xml);
+                    */
+                }
+                else log("Cannot create atlas: texture '" + name + "' is missing.");
+            }
+            else if (rootNode == "font")
+            {
+                name = getName(xml.elementsNamed("pages").next().elementsNamed("page").next().get("file"));
+                texture = getTexture(name);
+
+                if (texture != null)
+                {
+                    log("Adding bitmap font '" + name + "'");
+                    TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
+
+                    if (mKeepFontXmls) addXml(name, xml);
+                    /*
+                    else System.disposeXML(xml);
+                    */
+                }
+                else log("Cannot create bitmap font: texture '" + name + "' is missing.");
+            }
+            else
+                throw new Error("XML contents not recognized: " + rootNode);
+
+            onProgress(PROGRESS_PART_ASSETS + PROGRESS_PART_XMLS * xmlProgress);
+            Timer.delay(function() { processXml(index + 1); }, 1);
         }
         
-        progress = function(ratio:Float):Void
+        function cancel():Void
         {
-            onProgress(currentRatio + (1.0 / numElements) * Math.min(1.0, ratio) * 0.99);
+            removeEventListener(Event.CANCEL, cancel);
+            mNumLoadingQueues--;
+            canceled = true;
+        }
+
+        function finish():Void
+        {
+            // now would be a good time for a clean-up
+            #if flash
+            System.pauseForGCIfCollectionImminent(0);
+            #end
+            System.gc();
+
+            // We dance around the final "onProgress" call with some "setTimeout" calls here
+            // to make sure the progress bar gets the chance to be rendered. Otherwise, all
+            // would happen in one frame.
+
+            Timer.delay(function():Void
+            {
+                if (!canceled)
+                {
+                    cancel();
+                    onProgress(1.0);
+                }
+            }, 1);
         }
         resume();
     }
@@ -642,6 +784,8 @@ class AssetManager extends EventDispatcher
         {
             var texture:Texture;
             var bytes:ByteArray;
+            var object:Dynamic = null;
+            var xml:Xml = null;
             
             // the 'current' instance might have changed by now
             // if we're running in a set-up with multiple instances.
@@ -662,14 +806,12 @@ class AssetManager extends EventDispatcher
             }
             else if (Std.is(asset, Xml))
             {
-                var xml:Xml = cast asset;
-                var firstElement:Xml = xml.firstElement();
-                var rootNode:String = firstElement.nodeName.split(":").pop();
+                xml = cast asset;
                 
-                if (rootNode == "TextureAtlas" || rootNode == "font")
-                    xmls.push(firstElement);
+                if (xml.nodeName == "TextureAtlas" || xml.nodeName == "font")
+                    xmls.push(xml);
                 else
-                    addXml(name, firstElement);
+                    addXml(name, xml);
                 
                 onComplete();
             }
@@ -709,7 +851,7 @@ class AssetManager extends EventDispatcher
                 
                 if (AtfData.isAtfData(bytes))
                 {
-                    options.onReady = onComplete;
+                    options.onReady = prependCallback(options.onReady, onComplete);
                     texture = Texture.fromData(bytes, options);
                     texture.root.onRestore = function():Void
                     {
@@ -732,13 +874,28 @@ class AssetManager extends EventDispatcher
                 }
                 else if (byteArrayStartsWith(bytes, "{") || byteArrayStartsWith(bytes, "["))
                 {
-                    addObject(name, Json.parse(bytes.readUTFBytes(bytes.length)));
+                    try { object = Json.parse(bytes.readUTFBytes(bytes.length)); }
+                    catch (e:Error)
+                    {
+                        log("Could not parse JSON: " + e.message);
+                        dispatchEventWith(Event.PARSE_ERROR, false, name);
+                    }
+
+                    if (object) addObject(name, object);
+
                     bytes.clear();
                     onComplete();
                 }
                 else if (byteArrayStartsWith(bytes, "<"))
                 {
-                    process(Xml.parse(bytes.toString()));
+                    try { xml = Xml.parse(bytes.toString()); }
+                    catch (e:Error)
+                    {
+                        log("Could not parse XML: " + e.message);
+                        dispatchEventWith(Event.PARSE_ERROR, false, name);
+                    }
+
+                    process(xml);
                     bytes.clear();
                 }
                 else
@@ -749,7 +906,7 @@ class AssetManager extends EventDispatcher
             }
             else
             {
-                log("Ignoring unsupported asset type: " + Type.getClassName(asset));
+                addObject(name, asset);
                 onComplete();
             }
             
@@ -773,20 +930,69 @@ class AssetManager extends EventDispatcher
         loadRawAsset(rawAsset, progress, process);
     }
     
-    private function loadRawAsset(rawAsset:Dynamic, onProgress:Float->Void, onComplete:Dynamic->Void):Void
+    /** This method is called internally for each element of the queue when it is loaded.
+     *  'rawAsset' is typically either a class (pointing to an embedded asset) or a string
+     *  (containing the path to a file). For texture data, it will also be called after a
+     *  context loss.
+     *
+     *  <p>The method has to transform this object into one of the types that the AssetManager
+     *  can work with, e.g. a Bitmap, a Sound, XML data, or a ByteArray. This object needs to
+     *  be passed to the 'onComplete' callback.</p>
+     *
+     *  <p>The calling method will then process this data accordingly (e.g. a Bitmap will be
+     *  transformed into a texture). Unknown types will be available via 'getObject()'.</p>
+     *
+     *  <p>When overriding this method, you can call 'onProgress' with a number between 0 and 1
+     *  to update the total queue loading progress.</p>
+     */
+    private function loadRawAsset(rawAsset:Dynamic, onProgress:Float->Void, onComplete:Array<Dynamic>->Void):Void
     {
         var extension:String = null;
+        var loaderInfo:LoaderInfo = null;
         var urlLoader:URLLoader = null;
         var url:String = null;
-
+        
         var complete:Dynamic->Void = null;
+        var onIoError:IOErrorEvent->Void = null;
+        var onSecurityError:SecurityErrorEvent->Void = null;
+        var onHttpResponseStatus:HTTPStatusEvent->Void = null;
+        var onLoadProgress:ProgressEvent->Void = null;
+        var onUrlLoaderComplete:Dynamic->Void = null;
         var onLoaderComplete:Dynamic->Void = null;
+        
+        if (Std.is(rawAsset, Class))
+        {
+            Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
+        }
+        else if (Std.is(rawAsset, String))
+        {
+            url = cast rawAsset;
+            extension = getExtensionFromUrl(url);
+            
+            urlLoader = new URLLoader();
+            urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
+            urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+            urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+            urlLoader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+            urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+            urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
+            urlLoader.load(new URLRequest(url));
+        }
+        
         function onIoError(event:IOErrorEvent):Void
         {
             log("IO error: " + event.text);
+            dispatchEventWith(Event.IO_ERROR, false, url);
             complete(null);
         }
-        
+
+        function onSecurityError(event:SecurityErrorEvent):Void
+        {
+            log("security error: " + event.text);
+            dispatchEventWith(Event.SECURITY_ERROR, false, url);
+            complete(null);
+        }
+
         function onHttpResponseStatus(event:HTTPStatusEvent):Void
         {
             if (extension == null)
@@ -801,7 +1007,7 @@ class AssetManager extends EventDispatcher
 
         function onLoadProgress(event:ProgressEvent):Void
         {
-            if (onProgress != null)
+            if (onProgress != null && event.bytesTotal > 0)
                 onProgress(event.bytesLoaded / event.bytesTotal);
         }
         
@@ -809,11 +1015,6 @@ class AssetManager extends EventDispatcher
         {
             var bytes:ByteArray = transformData(cast(urlLoader.data, ByteArray), url);
             var sound:Sound;
-            
-            urlLoader.removeEventListener(IOErrorEvent.IO_ERROR, onIoError);
-            urlLoader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-            urlLoader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-            urlLoader.removeEventListener(Event.COMPLETE, onUrlLoaderComplete);
             
             if (extension != null)
                 extension = extension.toLowerCase();
@@ -829,7 +1030,9 @@ class AssetManager extends EventDispatcher
                     //var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
                     var loader:Loader = new Loader();
                     //loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
-                    loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
+                    loaderInfo = loader.contentLoaderInfo;
+                    loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+                    loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
                     //loader.loadBytes(bytes, loaderContext);
                     loader.loadBytes(bytes);
                 default: // any XML / JSON / binary data 
@@ -837,22 +1040,38 @@ class AssetManager extends EventDispatcher
             }
         }
         
-        onLoaderComplete = function(event:Dynamic):Void
+        function onLoaderComplete(event:Dynamic):Void
         {
             urlLoader.data.clear();
-            event.target.removeEventListener(Event.COMPLETE, onLoaderComplete);
             complete(event.target.content);
         }
         
-        complete = function(asset:Dynamic):Void
+        function complete(asset:Dynamic):Void
         {
+            // clean up event listeners
+
+            if (urlLoader != null)
+            {
+                urlLoader.removeEventListener(IOErrorEvent.IO_ERROR, onIoError);
+                urlLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+                urlLoader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+                urlLoader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+                urlLoader.removeEventListener(Event.COMPLETE, onUrlLoaderComplete);
+            }
+
+            if (loaderInfo != null)
+            {
+                loaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onIoError);
+                loaderInfo.removeEventListener(Event.COMPLETE, onLoaderComplete);
+            }
+
             // On mobile, it is not allowed / endorsed to make stage3D calls while the app
             // is in the background. Thus, we pause queue processing if that's the case.
             
-            //if (SystemUtil.isDesktop)
+            if (SystemUtil.isDesktop)
                 onComplete(asset);
-            //else
-            //    SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+            else
+                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
         }
         
         if (Std.is(rawAsset, Class))
@@ -883,7 +1102,6 @@ class AssetManager extends EventDispatcher
      *  assets. */
     private function getName(rawAsset:Dynamic):String
     {
-        //var matches:Array;
         var name:String;
         
         if (Std.is(rawAsset, String)/* || Std.is(rawAsset, FileReference)*/)
@@ -961,8 +1179,8 @@ class AssetManager extends EventDispatcher
         
         for (name in dictionary.keys())
             if (name.indexOf(prefix) == 0)
-                result.push(name);
-        
+                result[result.length] = name; // avoid 'push'
+
         //result.sort(Array.CASEINSENSITIVE);
         result.sort(compare);
         return result;
@@ -978,6 +1196,7 @@ class AssetManager extends EventDispatcher
         return null;
     }
 
+    /** Extracts the base name of a file path or URL, i.e. the file name without extension. */
     private function getBasenameFromUrl(url:String):String
     {
         var isMatched:Bool = NAME_REGEX.match(url);
@@ -985,11 +1204,26 @@ class AssetManager extends EventDispatcher
         else return null;
     }
 
+    /** Extracts the file extension from an URL. */
     private function getExtensionFromUrl(url:String):String
     {
         var isMatched:Bool = NAME_REGEX.match(url);
         if (isMatched) return NAME_REGEX.matched(2);
         else return null;
+    }
+
+    private function prependCallback(oldCallback:Void->Void, newCallback:Void->Void):Void->Void
+    {
+        // TODO: it might make sense to add this (together with "appendCallback")
+        //       as a public utility method ("FunctionUtil"?)
+
+        if (oldCallback == null) return newCallback;
+        else if (newCallback == null) return oldCallback;
+        else return function():Void
+        {
+            newCallback();
+            oldCallback();
+        };
     }
 
     private function compare(a:String, b:String) {return (a < b) ? -1 : (a > b) ? 1 : 0;}
@@ -1005,27 +1239,44 @@ class AssetManager extends EventDispatcher
     public var numQueuedAssets(get, never):Int;
     private function get_numQueuedAssets():Int { return mQueue.length; }
     
-    /** When activated, the class will trace information about added/enqueued assets. */
+    /** When activated, the class will trace information about added/enqueued assets.
+     *  @default true */
     public var verbose(get, set):Bool;
     private function get_verbose():Bool { return mVerbose; }
     private function set_verbose(value:Bool):Bool { return mVerbose = value; }
     
+    /** Indicates if a queue is currently being loaded. */
+    public var isLoading(get, never):Bool;
+    public function get_isLoading():Bool { return mNumLoadingQueues > 0; }
+
     /** For bitmap textures, this flag indicates if mip maps should be generated when they 
      *  are loaded; for ATF textures, it indicates if mip maps are valid and should be
-     *  used. */
+     *  used. @default false */
     public var useMipMaps(get, set):Bool;
     private function get_useMipMaps():Bool { return mDefaultTextureOptions.mipMapping; }
     private function set_useMipMaps(value:Bool):Bool { return mDefaultTextureOptions.mipMapping = value; }
     
+    /** Textures that are created from Bitmaps or ATF files will have the repeat setting
+     *  assigned here. @default false */
+    public var textureRepeat(get, set):Bool;
+    public function get_textureRepeat():Bool { return mDefaultTextureOptions.repeat; }
+    public function set_textureRepeat(value:Bool):Bool { return mDefaultTextureOptions.repeat = value; }
+
     /** Textures that are created from Bitmaps or ATF files will have the scale factor 
-     *  assigned here. */
+     *  assigned here. @default 1 */
     public var scaleFactor(get, set):Float;
-    private function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
-    private function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
+    public function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
+    public function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
+
+    /** Textures that are created from Bitmaps will be uploaded to the GPU with the
+     *  <code>Context3DTextureFormat</code> assigned to this property. @default "bgra" */
+    public var textureFormat(get, set):Context3DTextureFormat;
+    public function get_textureFormat():Context3DTextureFormat { return mDefaultTextureOptions.format; }
+    public function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return mDefaultTextureOptions.format = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      *  loading an object from a remote server. More information about this topic can be found 
-     *  in the 'flash.system.LoaderContext' documentation. */
+     *  in the 'flash.system.LoaderContext' documentation. @default false */
     public var checkPolicyFile(get, set):Bool;
     private function get_checkPolicyFile():Bool { return mCheckPolicyFile; }
     private function set_checkPolicyFile(value:Bool):Bool { return mCheckPolicyFile = value; }
@@ -1041,6 +1292,12 @@ class AssetManager extends EventDispatcher
      *  If true, you can access an XML under the same name as the bitmap font.
      *  If false, XMLs will be disposed when the font was created. @default false. */
     public var keepFontXmls(get, set):Bool;
-    private function get_keepFontXmls():Bool { return mKeepFontXmls; }
-    private function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
+    public function get_keepFontXmls():Bool { return mKeepFontXmls; }
+    public function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
+
+    /** The maximum number of parallel connections that are spawned when loading the queue.
+     *  More connections can reduce loading times, but require more memory. @default 3. */
+    public var numConnections(get, set):Int;
+    public function get_numConnections():Int { return mNumConnections; }
+    public function set_numConnections(value:Int):Int { return mNumConnections = value; }
 }

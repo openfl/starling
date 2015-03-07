@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2012 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -59,7 +59,7 @@ class ColorMatrixFilter extends FragmentFilter
     private static var sTmpMatrix2:Array<Float> = new Array<Float>();
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
-     *  @param matrix: a vector of 20 items arranged as a 4x5 matrix.   
+     *  @param matrix a vector of 20 items arranged as a 4x5 matrix.
      */
     public function new(matrix:Array<Float>=null)
     {
@@ -111,18 +111,18 @@ class ColorMatrixFilter extends FragmentFilter
     // color manipulation
     
     /** Inverts the colors of the filtered objects. */
-    public function invert():Void
+    public function invert():ColorMatrixFilter
     {
-        concatValues(-1,  0,  0,  0, 255,
-                      0, -1,  0,  0, 255,
-                      0,  0, -1,  0, 255,
-                      0,  0,  0,  1,   0);
+        return concatValues(-1,  0,  0,  0, 255,
+                             0, -1,  0,  0, 255,
+                             0,  0, -1,  0, 255,
+                             0,  0,  0,  1,   0);
     }
     
     /** Changes the saturation. Typical values are in the range (-1, 1).
      *  Values above zero will raise, values below zero will reduce the saturation.
      *  '-1' will produce a grayscale image. */ 
-    public function adjustSaturation(sat:Float):Void
+    public function adjustSaturation(sat:Float):ColorMatrixFilter
     {
         sat += 1;
         
@@ -131,46 +131,46 @@ class ColorMatrixFilter extends FragmentFilter
         var invLumG:Float = invSat * LUMA_G;
         var invLumB:Float = invSat * LUMA_B;
         
-        concatValues((invLumR + sat), invLumG, invLumB, 0, 0,
-                     invLumR, (invLumG + sat), invLumB, 0, 0,
-                     invLumR, invLumG, (invLumB + sat), 0, 0,
-                     0, 0, 0, 1, 0);
+        return concatValues((invLumR + sat), invLumG, invLumB, 0, 0,
+                             invLumR, (invLumG + sat), invLumB, 0, 0,
+                             invLumR, invLumG, (invLumB + sat), 0, 0,
+                             0, 0, 0, 1, 0);
     }
     
     /** Changes the contrast. Typical values are in the range (-1, 1).
      *  Values above zero will raise, values below zero will reduce the contrast. */
-    public function adjustContrast(value:Float):Void
+    public function adjustContrast(value:Float):ColorMatrixFilter
     {
         var s:Float = value + 1;
         var o:Float = 128 * (1 - s);
         
-        concatValues(s, 0, 0, 0, o,
-                     0, s, 0, 0, o,
-                     0, 0, s, 0, o,
-                     0, 0, 0, 1, 0);
+        return concatValues(s, 0, 0, 0, o,
+                            0, s, 0, 0, o,
+                            0, 0, s, 0, o,
+                            0, 0, 0, 1, 0);
     }
     
     /** Changes the brightness. Typical values are in the range (-1, 1).
      *  Values above zero will make the image brighter, values below zero will make it darker.*/ 
-    public function adjustBrightness(value:Float):Void
+    public function adjustBrightness(value:Float):ColorMatrixFilter
     {
         value *= 255;
         
-        concatValues(1, 0, 0, 0, value,
-                     0, 1, 0, 0, value,
-                     0, 0, 1, 0, value,
-                     0, 0, 0, 1, 0);
+        return concatValues(1, 0, 0, 0, value,
+                            0, 1, 0, 0, value,
+                            0, 0, 1, 0, value,
+                            0, 0, 0, 1, 0);
     }
     
     /** Changes the hue of the image. Typical values are in the range (-1, 1). */
-    public function adjustHue(value:Float):Void
+    public function adjustHue(value:Float):ColorMatrixFilter
     {
         value *= Math.PI;
         
         var cos:Float = Math.cos(value);
         var sin:Float = Math.sin(value);
         
-        concatValues(
+        return concatValues(
             ((LUMA_R + (cos * (1 - LUMA_R))) + (sin * -(LUMA_R))), ((LUMA_G + (cos * -(LUMA_G))) + (sin * -(LUMA_G))), ((LUMA_B + (cos * -(LUMA_B))) + (sin * (1 - LUMA_B))), 0, 0,
             ((LUMA_R + (cos * -(LUMA_R))) + (sin * 0.143)), ((LUMA_G + (cos * (1 - LUMA_G))) + (sin * 0.14)), ((LUMA_B + (cos * -(LUMA_B))) + (sin * -0.283)), 0, 0,
             ((LUMA_R + (cos * -(LUMA_R))) + (sin * -((1 - LUMA_R)))), ((LUMA_G + (cos * -(LUMA_G))) + (sin * LUMA_G)), ((LUMA_B + (cos * (1 - LUMA_B))) + (sin * LUMA_B)), 0, 0,
@@ -178,9 +178,9 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Tints the image in a certain color, analog to what can be done in Flash Pro.
-     *  @param color: the RGB color with which the image should be tinted.
-     *  @param amount: the intensity with which tinting should be applied. Range (0, 1). */
-    public function tint(color:UInt, amount:Float=1.0):Void
+     *  @param color the RGB color with which the image should be tinted.
+     *  @param amount the intensity with which tinting should be applied. Range (0, 1). */
+    public function tint(color:UInt, amount:Float=1.0):ColorMatrixFilter
     {
         var r:Float = Color.getRed(color)   / 255.0;
         var g:Float = Color.getGreen(color) / 255.0;
@@ -191,7 +191,7 @@ class ColorMatrixFilter extends FragmentFilter
         var gA:Float = amount * g;
         var bA:Float = amount * b;
 
-        concatValues(
+        return concatValues(
             q + rA * LUMA_R, rA * LUMA_G, rA * LUMA_B, 0, 0,
             gA * LUMA_R, q + gA * LUMA_G, gA * LUMA_B, 0, 0,
             bA * LUMA_R, bA * LUMA_G, q + bA * LUMA_B, 0, 0,
@@ -201,13 +201,14 @@ class ColorMatrixFilter extends FragmentFilter
     // matrix manipulation
     
     /** Changes the filter matrix back to the identity matrix. */
-    public function reset():Void
+    public function reset():ColorMatrixFilter
     {
         matrix = null;
+        return this;
     }
     
     /** Concatenates the current matrix with another one. */
-    public function concat(matrix:Array<Float>):Void
+    public function concat(matrix:Array<Float>):ColorMatrixFilter
     {
         var i:Int = 0;
 
@@ -228,6 +229,7 @@ class ColorMatrixFilter extends FragmentFilter
         
         copyMatrix(sTmpMatrix1, mUserMatrix);
         updateShaderMatrix();
+        return this;
     }
     
     /** Concatenates the current matrix with another one, passing its contents directly. */
@@ -235,12 +237,13 @@ class ColorMatrixFilter extends FragmentFilter
                                   m5:Float, m6:Float, m7:Float, m8:Float, m9:Float, 
                                   m10:Float, m11:Float, m12:Float, m13:Float, m14:Float, 
                                   m15:Float, m16:Float, m17:Float, m18:Float, m19:Float
-                                  ):Void
+                                  ):ColorMatrixFilter
     {
         sTmpMatrix2 = [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
             m10, m11, m12, m13, m14, m15, m16, m17, m18, m19];
         
         concat(sTmpMatrix2);
+        return this;
     }
 
     private function copyMatrix(from:Array<Float>, to:Array<Float>):Void

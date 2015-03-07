@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -89,8 +89,8 @@ class Tween extends EventDispatcher implements IAnimatable
         mTotalTime = Math.max(0.0001, time);
         mProgress = 0.0;
         mDelay = mRepeatDelay = 0.0;
-        mOnStart = mOnUpdate = mOnComplete = null;
-        mOnStartArgs = mOnUpdateArgs = mOnCompleteArgs = null;
+        mOnStart = mOnUpdate = mOnRepeat = mOnComplete = null;
+        mOnStartArgs = mOnUpdateArgs = mOnRepeatArgs = mOnCompleteArgs = null;
         mRoundToInt = mReverse = false;
         mRepeatCount = 1;
         mCurrentCycle = -1;
@@ -115,9 +115,9 @@ class Tween extends EventDispatcher implements IAnimatable
     {
         if (mTarget == null) return; // tweening null just does nothing.
                
-        mProperties.push(property);
-        mStartValues.push(Math.NaN);
-        mEndValues.push(endValue);
+        mProperties[mProperties.length] = property;
+        mStartValues[mStartValues.length] = Math.NaN;
+        mEndValues[mEndValues.length] = endValue;
     }
     
     /** Animates the 'scaleX' and 'scaleY' properties of an object simultaneously. */

@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -282,16 +282,36 @@ class MiniBitmapFont
     public static var texture(get, never):Texture;
     public static function get_texture():Texture
     {
-        // TODO: Implement MiniBitmapFont.get_texture()
-        return null;
+        var bitmapData:BitmapData = getBitmapData();
+        var texture:Texture = Texture.fromBitmapData(bitmapData, false);
+        bitmapData.dispose();
+        bitmapData = null;
 
-        //var bmpData:BitmapData = new BitmapData(BITMAP_WIDTH, BITMAP_HEIGHT);
-        //var bmpBytes:Bytes = Bytes.ofData(BITMAP_DATA);
-        //
-        //var uncompressed:Bytes = InflateImpl.run(new BytesInput(bmpBytes));
-        //bmpData.setPixels(new Rectangle(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT), ByteArray.fromBytes(uncompressed));
-        //
-        //return Texture.fromBitmapData(bmpData, false);
+        texture.root.onRestore = function():Void
+        {
+            bitmapData = getBitmapData();
+            texture.root.uploadBitmapData(bitmapData);
+            bitmapData.dispose();
+            bitmapData = null;
+        };
+
+        return texture;
+    }
+
+    private static function getBitmapData():BitmapData
+    {
+        var bmpData:BitmapData = new BitmapData(BITMAP_WIDTH, BITMAP_HEIGHT);
+        var bmpBytes:ByteArray = new ByteArray();
+        var numBytes:Int = BITMAP_DATA.length;
+        
+        for (var i:Int=0; i<numBytes; ++i)
+            bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
+        
+        bmpBytes.uncompress();
+        bmpData.setPixels(new Rectangle(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT), bmpBytes);
+        bmpBytes.clear();
+        
+        return bmpData;
     }
 
     public static var xml(get, never):Xml;
