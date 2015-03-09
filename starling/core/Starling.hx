@@ -18,6 +18,7 @@ import openfl.display.StageScaleMode;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DRenderMode;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.OpenFLStage3D;
 import openfl.display3D.Program3D;
@@ -255,13 +256,14 @@ class Starling extends EventDispatcher
      */
     public function new(rootClass:Class<Dynamic>, stage:openfl.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
-                             renderMode:String="auto", profile:Dynamic=null)
+                             renderMode:Context3DRenderMode=null, profile:Dynamic=null)
     {
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (rootClass == null) throw new ArgumentError("Root class must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (stage3D == null) stage3D = OpenFLStage3D.getStage3D(stage, 0);
+        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
 
         SystemUtil.initialize();
         sAll.push(this);
@@ -362,7 +364,7 @@ class Starling extends EventDispatcher
     
     // functions
     
-    private function requestContext3D(stage3D:Stage3D, renderMode:String, profile:Dynamic):Void
+    private function requestContext3D(stage3D:Stage3D, renderMode:Context3DRenderMode, profile:Dynamic):Void
     {
         var profiles:Array<Context3DProfile> = new Array();
         var currentProfile:Context3DProfile;

@@ -46,7 +46,7 @@ class Demo_Web extends Sprite
         Starling.multitouchEnabled = true; // for Multitouch Scene
         //Starling.handleLostContext = true; // required on Windows, needs more memory
         
-        mStarling = new Starling(Game, stage, new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), null, "auto", profile);
+        mStarling = new Starling(Game, stage, new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), null, null, profile);
         
         mStarling.statsDisplayFontName = Constants.DefaultFont;
         mStarling.simulateMultitouch = true;

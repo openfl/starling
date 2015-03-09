@@ -9,9 +9,9 @@
 // =================================================================================================
 
 package starling.text;
-import lime.graphics.Font.NativeKerningData;
-import lime.graphics.Font.NativeFontData;
-import lime.graphics.Font.NativeGlyphData;
+import lime.text.Font.NativeKerningData;
+import lime.text.Font.NativeFontData;
+import lime.text.Font.NativeGlyphData;
 #if (cpp || neko || nodejs)
 import openfl.geom.Rectangle;
 import openfl.utils.UInt8Array;
@@ -19,8 +19,7 @@ import starling.display.Image;
 import starling.textures.SubTexture;
 import starling.utils.PowerOfTwo;
 import starling.textures.Texture;
-import lime.graphics.Font.GlyphRect;
-import lime.graphics.ImageBuffer;
+import lime.text.Font.GlyphRect;
 import openfl.text.Font;
 import starling.core.Starling;
 import starling.display.QuadBatch;
@@ -59,7 +58,7 @@ class FTBitmapFont extends BitmapFont
             return;
         
         var intFontSize:Int = Std.int(mSize);
-        var glyphRects:Map<Int, lime.graphics.Font.GlyphRect> = mFont.glyphs[intFontSize];
+        var glyphRects:Map<Int, GlyphRect> = mFont.glyphs[intFontSize];
         var textToRender:String = "";
         for (i in 0 ... text.length)
         {
