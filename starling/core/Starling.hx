@@ -268,6 +268,7 @@ class Starling extends EventDispatcher
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (rootClass == null) throw new ArgumentError("Root class must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (stage3D == null) stage3D = OpenFLStage3D.getStage3D(stage, 0);
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
 
