@@ -45,6 +45,8 @@ import openfl.ui.Multitouch;
 import openfl.ui.MultitouchInputMode;
 import openfl.utils.ByteArray;
 import starling.text.BitmapFont;
+import starling.text.FTBFTextureCache;
+import starling.text.TextRenderer;
 import starling.utils.Execute;
 //import openfl.utils.Dictionary;
 //import openfl.utils.getTimer;
@@ -228,6 +230,10 @@ class Starling extends EventDispatcher
     private static var sContextData:Map<Stage3D, Dynamic> = new Map<Stage3D, Dynamic>();
     private static var sPrograms:Map<Stage3D, Map<String, Program3D>> = new Map<Stage3D, Map<String, Program3D>>();
     private static var sBitmapFonts:Map<Stage3D, Map<String, BitmapFont>> = new Map<Stage3D, Map<String, BitmapFont>>();
+    #if (cpp || neko || nodejs)
+    private static var sTextRenderers:Map<Stage3D, Map<String, TextRenderer>> = new Map();
+    private static var sFontCaches:Map<Stage3D, Array<FTBFTextureCache>> = new Map(); 
+    #end
     private static var sAll:Array<Starling> = new Array<Starling>();
     
     // construction
@@ -929,6 +935,44 @@ class Starling extends EventDispatcher
     {
         sBitmapFonts.set(mStage3D, fonts);
         return fonts;
+    }
+    
+    /** Returns the text renderers associated with the context. */
+    public var textRenderers(get, set):Map<String, TextRenderer>;
+    @:noCompletion private function get_textRenderers():Map<String, TextRenderer>
+    {
+        #if (cpp || neko || nodejs)
+        return sTextRenderers.get(mStage3D);
+        #else
+        return null;
+        #end
+    }
+    
+    @:noCompletion private function set_textRenderers(textRenderers:Map<String, TextRenderer>):Map<String, TextRenderer>
+    {
+        #if (cpp || neko || nodejs)
+        sTextRenderers.set(mStage3D, textRenderers);
+        #end
+        return textRenderers;
+    }
+    
+    /** Returns the font caches associated with the context. */
+    public var fontCaches(get, set):Array<FTBFTextureCache>;
+    @:noCompletion private function get_fontCaches():Array<FTBFTextureCache>
+    {
+        #if (cpp || neko || nodejs)
+        return sFontCaches.get(mStage3D);
+        #else
+        return null;
+        #end
+    }
+    
+    @:noCompletion public function set_fontCaches(fontCaches:Array<FTBFTextureCache>):Array<FTBFTextureCache>
+    {
+        #if (cpp || neko || nodejs)
+        sFontCaches.set(mStage3D, fontCaches);
+        #end
+        return fontCaches;
     }
     
     /** Returns the actual width (in pixels) of the back buffer. This can differ from the

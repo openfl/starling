@@ -122,9 +122,7 @@ class TextField extends DisplayObjectContainer
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
-    #if (html5 || flash)
     private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
-    #end
     
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String, fontName:String="Verdana",
@@ -185,7 +183,6 @@ class TextField extends DisplayObjectContainer
     
     private function createRenderedContents():Void
     {
-        #if (html5 || flash)
         if (mQuadBatchSprite != null)
         {
             mQuadBatchSprite.removeFromParent(true); 
@@ -196,22 +193,18 @@ class TextField extends DisplayObjectContainer
             mTextBounds = new Rectangle();
         
         var scale:Float  = Starling.current.contentScaleFactor;
-        var bitmapData:BitmapData = renderText(scale, mTextBounds);
-        var format:Context3DTextureFormat = sDefaultTextureFormat;
+        var texture:Texture = renderText(scale, mTextBounds);
         
-        mHitArea.width  = bitmapData.width  / scale;
-        mHitArea.height = bitmapData.height / scale;
+        mHitArea.width  = texture.width  / scale;
+        mHitArea.height = texture.height / scale;
         
-        var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         texture.root.onRestore = function():Void
         {
             if (mTextBounds == null)
                 mTextBounds = new Rectangle();
             
-            texture.root.uploadBitmapData(renderText(scale, mTextBounds));
+            texture = renderText(scale, mTextBounds);
         };
-        
-        bitmapData.dispose();
         
         if (mImage == null) 
         {
@@ -225,7 +218,6 @@ class TextField extends DisplayObjectContainer
             mImage.texture = texture; 
             mImage.readjustSize(); 
         }
-        #end
     }
 
     /** This method is called immediately before the text is rendered. The intent of
@@ -239,9 +231,8 @@ class TextField extends DisplayObjectContainer
      */
     private function formatText(textField:openfl.text.TextField, textFormat:TextFormat):Void {}
 
-    private function renderText(scale:Float, resultTextBounds:Rectangle):BitmapData
+    private function renderText(scale:Float, resultTextBounds:Rectangle):Texture
     {
-        #if (html5 || flash)
         var width:Float  = mHitArea.width  * scale;
         var height:Float = mHitArea.height * scale;
         var hAlign:String = mHAlign;
@@ -317,9 +308,13 @@ class TextField extends DisplayObjectContainer
         var filterOffset:Point = calculateFilterOffset(sNativeTextField, hAlign, vAlign);
         
         // finally: draw text field to bitmap data
+        var texture:Texture;
+        var format:Context3DTextureFormat = sDefaultTextureFormat;
+        #if (flash || html5)
         var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
         var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
-            filterOffset.x, filterOffset.y + Std.int(textOffsetY)-2);
+            filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
+        
         //var drawWithQualityFunc:Function = 
         //    "drawWithQuality" in bitmapData ? bitmapData["drawWithQuality"] : null;
         
@@ -330,7 +325,21 @@ class TextField extends DisplayObjectContainer
         //    drawWithQualityFunc.call(bitmapData, sNativeTextField, drawMatrix, 
         //                             null, null, null, false, StageQuality.MEDIUM);
         //else
-            bitmapData.draw(sNativeTextField, drawMatrix);
+        bitmapData.draw(sNativeTextField, drawMatrix);
+        texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
+        bitmapData.dispose();
+        #else
+        texture = Texture.empty(Std.int(width), Std.int(height), false, false, true);
+        var renderers:Map<String, TextRenderer> = TextField.textRenderers;
+        var formatStr:String = textFormat.font + "@" + textFormat.size;
+        var textRenderer:TextRenderer = renderers.get(formatStr);
+        if (textRenderer == null)
+        {
+            textRenderer = new TextRenderer(@:privateAccess sNativeTextField.__getFontInstance(textFormat), Std.int(textFormat.size));
+            renderers.set(formatStr, textRenderer);
+        }
+        textRenderer.renderText(sNativeTextField, texture, mText, textFormat, filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
+        #end
         
         sNativeTextField.text = "";
         
@@ -339,10 +348,7 @@ class TextField extends DisplayObjectContainer
                                (textOffsetY + filterOffset.y) / scale,
                                textWidth / scale, textHeight / scale);
         
-        return bitmapData;
-        #else
-        return null;
-        #end
+        return texture;
     }
     
     private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
@@ -439,10 +445,7 @@ class TextField extends DisplayObjectContainer
         }
         
         var bitmapFont:BitmapFont = getBitmapFont(mFontName);
-        #if (cpp || neko || nodejs)
-        if (bitmapFont == null) bitmapFont = getFTBitmapFont(mFontName, Std.int(mFontSize));
-        #end
-        //if (bitmapFont == null) throw new Error("Bitmap font not registered: " + mFontName);
+        if (bitmapFont == null) throw new Error("Bitmap font not registered: " + mFontName);
         
         var width:Float  = mHitArea.width;
         var height:Float = mHitArea.height;
@@ -610,11 +613,7 @@ class TextField extends DisplayObjectContainer
             
             mFontName = value;
             mRequiresRedraw = true;
-            #if (flash || html5)
             mIsRenderedText = getBitmapFont(value) == null;
-            #else
-            mIsRenderedText = false;
-            #end
         }
         return mFontName;
     }
@@ -862,24 +861,6 @@ class TextField extends DisplayObjectContainer
         return bitmapFonts[name.toLowerCase()];
     }
     
-    public static function getFTBitmapFont(name:String, size:Int):FTBitmapFont
-    {
-        #if (cpp || neko || nodejs)
-        var nameWithSize:String = name + "@" + size;
-        var font:FTBitmapFont = ftBitmapFonts[nameWithSize];
-        if (font != null)
-            return font;
-        var openflFont:Font = Font.fromName(name);
-        if (openflFont == null)
-            return null;
-        font = new FTBitmapFont(openflFont, size);
-        ftBitmapFonts[nameWithSize] = font;
-        return font;
-        #else
-        return null;
-        #end
-    }
-    
     /** Stores the currently available bitmap fonts. Since a bitmap font will only work
      *  in one Stage3D context, they are saved in Starling's 'contextData' property. */
     private static var bitmapFonts(get, never):Map<String, BitmapFont>;
@@ -896,5 +877,17 @@ class TextField extends DisplayObjectContainer
         return fonts;
     }
     
-    private static var ftBitmapFonts:Map<String, FTBitmapFont> = new Map();
+    private static var textRenderers(get, never):Map<String, TextRenderer>;
+    private static function get_textRenderers():Map<String, TextRenderer>
+    {
+        var renderers:Map<String, TextRenderer> = Starling.current.textRenderers;
+        
+        if (renderers == null)
+        {
+            renderers = new Map<String, TextRenderer>();
+            Starling.current.textRenderers = renderers;
+        }
+        
+        return renderers;
+    }
 }

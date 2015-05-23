@@ -1,6 +1,6 @@
 // Imported from: http://www.openfl.org/archive/community/programming-haxe/gm2d-rectangle-packing-class/
 
-package starling.utils;
+package starling.text;
 /*
 	Implements different bin packer algorithms that use the MAXRECTS data structure.
 	See http://clb.demon.fi/projects/even-more-rectangle-bin-packing
@@ -20,10 +20,10 @@ package starling.utils;
 class MaxRectsBinPack
 {
 	//public var usedRectangles:FastList<Rect>;
-	public var freeRectangles:Array<IntRect>;
+	public var freeRectangles:Array<Rect>;
 
-	public var binWidth(default, null):Int;
-	public var binHeight(default, null):Int;
+	private var binWidth:Int;
+	private var binHeight:Int;
 		
 	public function new(width:Int, height:Int):Void
 	{
@@ -34,10 +34,10 @@ class MaxRectsBinPack
 	{
 		binWidth = width;
 		binHeight = height;
-		freeRectangles = new Array<IntRect>();
-		freeRectangles.push(new IntRect(0, 0, width, height));
+		freeRectangles = new Array<Rect>();
+		freeRectangles.push(new Rect(0, 0, width, height));
 	}
-	public function quickInsert(width:Int, height:Int):IntRect
+	public function quickInsert(width:Int, height:Int):Rect
 	{
 		var newNode = quickFindPositionForNewNodeBestAreaFit(width, height);
 		
@@ -60,10 +60,10 @@ class MaxRectsBinPack
 		pruneFreeList();
 		return newNode;
 	}
-	private inline function quickFindPositionForNewNodeBestAreaFit(width:Int, height:Int):IntRect {
+	private inline function quickFindPositionForNewNodeBestAreaFit(width:Int, height:Int):Rect {
 		var score = Math.POSITIVE_INFINITY;
 		var areaFit:Int;
-		var bestNode:IntRect = new IntRect();
+		var bestNode:Rect = new Rect();
 		for(r in freeRectangles) {
 			// Try to place the rectangle in upright (non-flipped) orientation.
 			if (r.width >= width && r.height >= height) {
@@ -80,8 +80,8 @@ class MaxRectsBinPack
 		return bestNode;
 	}
 	
-	private function splitFreeNode(freeNode:IntRect, usedNode:IntRect):Bool {
-		var newNode:IntRect;
+	private function splitFreeNode(freeNode:Rect, usedNode:Rect):Bool {
+		var newNode:Rect;
 		// Test with SAT if the rectangles even intersect.
 		if (usedNode.x >= freeNode.x + freeNode.width ||
 			usedNode.x + usedNode.width <= freeNode.x ||
@@ -128,8 +128,8 @@ class MaxRectsBinPack
 		var i = 0;
 		var j = 0;
 		var len = freeRectangles.length;
-		var tmpRect:IntRect;
-		var tmpRect2:IntRect;
+		var tmpRect:Rect;
+		var tmpRect2:Rect;
 		while (i < len)
 		{
 			j = i + 1;
@@ -153,7 +153,7 @@ class MaxRectsBinPack
 			i++;
 		}
 	}
-	private inline function isContainedIn(a:IntRect, b:IntRect):Bool
+	private inline function isContainedIn(a:Rect, b:Rect):Bool
 	{
 		return a.x >= b.x && a.y >= b.y	&& a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height;
 	}
