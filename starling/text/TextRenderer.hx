@@ -167,7 +167,7 @@ class TextRenderer
             line_i++;
             
         }
-    
+        
         
         if (sSupport == null)
             sSupport = new RenderSupport();
