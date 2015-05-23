@@ -478,7 +478,7 @@ class VertexData
             mRawData = new_rawData;
         }
         else
-            mRawData = mRawData.subarray(value * ELEMENTS_PER_VERTEX);
+            mRawData = mRawData.subarray(value * ELEMENTS_PER_VERTEX, mRawData.length);
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
