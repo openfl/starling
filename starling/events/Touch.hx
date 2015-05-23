@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -13,7 +13,6 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 
 import starling.display.DisplayObject;
-import starling.utils.MatrixUtil;
 import starling.utils.StringUtil;
 
 /** A Touch object contains information about the presence or movement of a finger 
@@ -52,6 +51,7 @@ class Touch
     
     /** Helper object. */
     private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperPoint:Point = new Point();
     
     /** Creates a new Touch object. */
     public function new(id:Int)
@@ -68,9 +68,8 @@ class Touch
      *  of creating a new object.*/
     public function getLocation(space:DisplayObject, resultPoint:Point=null):Point
     {
-        if (resultPoint == null) resultPoint = new Point();
-        space.base.getTransformationMatrix(space, sHelperMatrix);
-        return MatrixUtil.transformCoords(sHelperMatrix, mGlobalX, mGlobalY, resultPoint); 
+        sHelperPoint.setTo(mGlobalX, mGlobalY);
+        return space.globalToLocal(sHelperPoint, resultPoint);
     }
     
     /** Converts the previous location of a touch to the local coordinate system of a display 
@@ -78,9 +77,8 @@ class Touch
      *  of creating a new object.*/
     public function getPreviousLocation(space:DisplayObject, resultPoint:Point=null):Point
     {
-        if (resultPoint == null) resultPoint = new Point();
-        space.base.getTransformationMatrix(space, sHelperMatrix);
-        return MatrixUtil.transformCoords(sHelperMatrix, mPreviousGlobalX, mPreviousGlobalY, resultPoint);
+        sHelperPoint.setTo(mPreviousGlobalX, mPreviousGlobalY);
+        return space.globalToLocal(sHelperPoint, resultPoint);
     }
     
     /** Returns the movement of the touch between the current and previous location. 

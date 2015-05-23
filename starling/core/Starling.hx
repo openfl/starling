@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2012 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -9,48 +9,40 @@
 // =================================================================================================
 
 package starling.core;
+import flash.errors.Error;
+import flash.errors.ArgumentError;
+import flash.display.Shape;
+import flash.display.Sprite;
+import flash.display.Stage3D;
+import flash.display.StageAlign;
+import flash.display.StageScaleMode;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DCompareMode;
+import flash.display3D.Context3DProfile;
+import flash.display3D.Context3DRenderMode;
+import flash.display3D.Context3DTriangleFace;
+import flash.display3D.OpenFLStage3D;
+import flash.display3D.Program3D;
+import flash.display3D._shaders.Shader;
+import flash.errors.IllegalOperationError;
+import flash.events.ErrorEvent;
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
+import flash.events.TouchEvent;
+import flash.geom.Rectangle;
+import flash.system.Capabilities;
+import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
+import flash.text.TextFormatAlign;
+import flash.ui.Mouse;
+import flash.ui.Multitouch;
+import flash.ui.MultitouchInputMode;
+import flash.utils.ByteArray;
+import flash.utils.Dictionary;
+import flash.Lib;
 import haxe.Timer;
-import openfl.display3D._shaders.Shader;
-import openfl.display.Sprite;
-import openfl.display.Stage3D;
-import openfl.display.StageAlign;
-import openfl.display.StageScaleMode;
-import openfl.display3D.Context3D;
-import openfl.display3D.Context3DCompareMode;
-import openfl.display3D.Context3DProfile;
-import openfl.display3D.Context3DRenderMode;
-import openfl.display3D.Context3DTriangleFace;
-import openfl.display3D.OpenFLStage3D;
-import openfl.display3D.Program3D;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
-import openfl.errors.IllegalOperationError;
-import openfl.events.ErrorEvent;
-import openfl.events.Event;
-import openfl.events.KeyboardEvent;
-import openfl.events.MouseEvent;
-import openfl.events.TouchEvent;
-import openfl.geom.Rectangle;
-import openfl.Lib;
-import openfl.system.Capabilities;
-import openfl.text.TextField;
-import openfl.text.TextFieldAutoSize;
-import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
-#if html5
-import openfl.ui.KeyLocation;
-#end
-import openfl.ui.Mouse;
-import openfl.ui.Multitouch;
-import openfl.ui.MultitouchInputMode;
-import openfl.utils.ByteArray;
-import starling.text.BitmapFont;
-import starling.text.FTBFTextureCache;
-import starling.text.TextRenderer;
-import starling.utils.Execute;
-//import openfl.utils.Dictionary;
-//import openfl.utils.getTimer;
-//import openfl.utils.setTimeout;
 
 import starling.animation.Juggler;
 import starling.display.DisplayObject;
@@ -59,15 +51,19 @@ import starling.events.EventDispatcher;
 import starling.events.ResizeEvent;
 import starling.events.TouchPhase;
 import starling.events.TouchProcessor;
+import starling.text.BitmapFont;
 import starling.utils.HAlign;
 import starling.utils.SystemUtil;
 import starling.utils.VAlign;
 
-/** Dispatched when a new render context is created. */
+/** Dispatched when a new render context is created. The 'data' property references the context. */
 //[Event(name="context3DCreate", type="starling.events.Event")]
 
-/** Dispatched when the root class has been created. */
+/** Dispatched when the root class has been created. The 'data' property references that object. */
 //[Event(name="rootCreated", type="starling.events.Event")]
+
+/** Dispatched when a fatal error is encountered. The 'data' property contains an error string. */
+//[Event(name="fatalError", type="starling.events.Event")]
 
 /** The Starling class represents the core of the Starling framework.
  *
@@ -189,7 +185,7 @@ import starling.utils.VAlign;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    inline public static var VERSION:String = "1.5.1";
+    inline public static var VERSION:String = "1.6";
     
     /** The key for the shader programs stored in 'contextData' */
     inline private static var PROGRAM_DATA_NAME:String = "Starling.programs"; 
@@ -220,7 +216,7 @@ class Starling extends EventDispatcher
     private var mViewPort:Rectangle;
     private var mPreviousViewPort:Rectangle;
     private var mClippedViewPort:Rectangle;
-    
+
     private var mNativeStage:openfl.display.Stage;
     private var mNativeOverlay:openfl.display.Sprite;
     private var mNativeStageContentScaleFactor:Float;
@@ -264,6 +260,7 @@ class Starling extends EventDispatcher
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
                              renderMode:Context3DRenderMode=null, profile:Dynamic=null)
     {
+        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (rootClass == null) throw new ArgumentError("Root class must not be null");
@@ -322,7 +319,7 @@ class Starling extends EventDispatcher
                 throw new ArgumentError("When sharing the context3D, " +
                     "the actual profile has to be supplied");
             else
-                mProfile = profile;
+                mProfile = cast(profile, Context3DProfile);
             
             mShareContext = true;
             Timer.delay(initialize, 1); // we don't call it right away, because Starling should
@@ -377,7 +374,7 @@ class Starling extends EventDispatcher
         var currentProfile:Context3DProfile;
         
         if (profile == "auto")
-            profiles = [Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
+            profiles = [/*Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
         else if (Std.is(profile, Context3DProfile))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
@@ -390,6 +387,7 @@ class Starling extends EventDispatcher
             throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array'");
 
         var onFinished:Void->Void = null;
+        var onError:Event->Void = null;
         function requestNextProfile():Void
         {
             currentProfile = profiles.shift();
@@ -409,8 +407,18 @@ class Starling extends EventDispatcher
         
         function onCreated(event:Event):Void
         {
-            mProfile = currentProfile;
-            onFinished();
+            var context:Context3D = stage3D.context3D;
+
+            if (renderMode == Context3DRenderMode.AUTO && profiles.length != 0 &&
+                context.driverInfo.indexOf("Software") != -1)
+            {
+                onError(event);
+            }
+            else
+            {
+                mProfile = currentProfile;
+                onFinished();
+            }
         }
         
         function onError(event:Event):Void
@@ -451,14 +459,10 @@ class Starling extends EventDispatcher
         mContext = mStage3D.context3D;
         mContext.enableErrorChecking = mEnableErrorChecking;
         
-        //if (mProfile == null)
-        //    mProfile = Reflect.getProperty(mContext, "profile");
-        
-        updateViewPort(true);
-        
         trace("[Starling] Initialization complete.");
         trace("[Starling] Display Driver:", mContext.driverInfo);
         
+        updateViewPort(true);
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, mContext);
     }
     
@@ -512,7 +516,6 @@ class Starling extends EventDispatcher
         
         makeCurrent();
         updateViewPort();
-        updateNativeOverlay();
         mSupport.nextFrame();
         
         var scaleX:Float = mViewPort.width  / mStage.stageWidth;
@@ -522,11 +525,12 @@ class Starling extends EventDispatcher
         mContext.setCulling(Context3DTriangleFace.NONE);
         
         mSupport.renderTarget = null; // back buffer
-        mSupport.setOrthographicProjection(
-            mViewPort.x < 0 ? -mViewPort.x / scaleX : 0.0, 
+        mSupport.setProjectionMatrix(
+            mViewPort.x < 0 ? -mViewPort.x / scaleX : 0.0,
             mViewPort.y < 0 ? -mViewPort.y / scaleY : 0.0,
-            mClippedViewPort.width  / scaleX, 
-            mClippedViewPort.height / scaleY);
+            mClippedViewPort.width  / scaleX,
+            mClippedViewPort.height / scaleY,
+            mStage.stageWidth, mStage.stageHeight, mStage.cameraPosition);
         
         if (!mShareContext)
             RenderSupport._clear(mStage.color, 1.0);
@@ -601,10 +605,17 @@ class Starling extends EventDispatcher
         mNativeOverlay.scaleY = mViewPort.height / mStage.stageHeight;
     }
     
-    private function showFatalError(message:String):Void
+    /** Stops Starling right away and displays an error message on the native overlay.
+     *  This method will also cause Starling to dispatch a FATAL_ERROR event. */
+    public function stopWithFatalError(message:String):Void
     {
+        var background:Shape = new Shape();
+        background.graphics.beginFill(0x0, 0.8);
+        background.graphics.drawRect(0, 0, mStage.stageWidth, mStage.stageHeight);
+        background.graphics.endFill();
+
         var textField:TextField = new TextField();
-        var textFormat:TextFormat = new TextFormat("Verdana", 12, 0xFFFFFF);
+        var textFormat:TextFormat = new TextFormat("Verdana", 14, 0xFFFFFF);
         textFormat.align = TextFormatAlign.CENTER;
         textField.defaultTextFormat = textFormat;
         textField.wordWrap = true;
@@ -614,10 +625,15 @@ class Starling extends EventDispatcher
         textField.x = (mStage.stageWidth  - textField.width)  / 2;
         textField.y = (mStage.stageHeight - textField.height) / 2;
         textField.background = true;
-        textField.backgroundColor = 0x440000;
+        textField.backgroundColor = 0x550000;
 
         updateNativeOverlay();
+        nativeOverlay.addChild(background);
         nativeOverlay.addChild(textField);
+        stop(true);
+
+        trace("[Starling]", message);
+        dispatchEventWith(starling.events.Event.FATAL_ERROR, false, message);
     }
     
     /** Make this Starling instance the <code>current</code> one. */
@@ -655,25 +671,25 @@ class Starling extends EventDispatcher
     
     private function onStage3DError(event:ErrorEvent):Void
     {
-        //if (event.errorID == 3702)
-        //{
-        //    var mode:String = Capabilities.playerType == "Desktop" ? "renderMode" : "wmode";
-        //    showFatalError("Context3D not available! Possible reasons: wrong " + mode +
-        //                   " or missing device support.");
-        //}
-        //else
-            showFatalError("Stage3D error: " + event.text);
+        #if flash
+        if (event.errorID == 3702)
+        {
+            var mode:String = Capabilities.playerType == "Desktop" ? "renderMode" : "wmode";
+            stopWithFatalError("Context3D not available! Possible reasons: wrong " + mode +
+                               " or missing device support.");
+        }
+        else
+        #end
+            stopWithFatalError("Stage3D error: " + event.text);
     }
     
     private function onContextCreated(event:Event):Void
     {
         if (!handleLostContext && mContext != null)
         {
-            stop();
             event.stopImmediatePropagation();
-            showFatalError("Fatal error: The application lost the device context!");
-            trace("[Starling] The device context was lost. " + 
-                  "Enable 'Starling.handleLostContext' to avoid this error.");
+            stopWithFatalError("The application lost the device context!");
+            trace("[Starling] Enable 'Starling.handleLostContext' to avoid this error.");
         }
         else
         {
@@ -683,7 +699,7 @@ class Starling extends EventDispatcher
     
     private function onEnterFrame(event:Event):Void
     {
-        // On mobile, the native display list is only updated on stage3D draw calls. 
+        // On mobile, the native display list is only updated on stage3D draw calls.
         // Thus, we render even when Starling is paused.
         
         if (!mShareContext)
@@ -691,6 +707,8 @@ class Starling extends EventDispatcher
             if (mStarted) nextFrame();
             else if (mRendering) render();
         }
+
+        updateNativeOverlay();
     }
 #if html5
     private static function convertKeyLocationToUInt(keyLocation:KeyLocation):UInt
@@ -976,17 +994,30 @@ class Starling extends EventDispatcher
         return fontCaches;
     }
     
-    /** Returns the actual width (in pixels) of the back buffer. This can differ from the
-     *  width of the viewPort rectangle if it is partly outside the native stage. */
+    /** Returns the current width of the back buffer. In most cases, this value is in pixels;
+     *  however, if the app is running on an HiDPI display with an activated
+     *  'supportHighResolutions' setting, you have to multiply with 'backBufferPixelsPerPoint'
+     *  for the actual pixel count. */
     public var backBufferWidth(get, never):Int;
     private function get_backBufferWidth():Int { return Std.int(mClippedViewPort.width); }
-    
-    /** Returns the actual height (in pixels) of the back buffer. This can differ from the
-     *  height of the viewPort rectangle if it is partly outside the native stage. */
+
+    /** Returns the current height of the back buffer. In most cases, this value is in pixels;
+     *  however, if the app is running on an HiDPI display with an activated
+     *  'supportHighResolutions' setting, you have to multiply with 'backBufferPixelsPerPoint'
+     *  for the actual pixel count.  */
     public var backBufferHeight(get, never):Int;
     private function get_backBufferHeight():Int { return Std.int(mClippedViewPort.height); }
-    
-    /** Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd"-keys is enabled. 
+
+    /** The number of pixel per point returned by the 'backBufferWidth/Height' properties.
+     *  Except for desktop HiDPI displays with an activated 'supportHighResolutions' setting,
+     *  this will always return '1'. */
+    public var backBufferPixelsPerPoint(get, never):Int;
+    public function get_backBufferPixelsPerPoint():Int
+    {
+        return Std.int(mNativeStageContentScaleFactor);
+    }
+
+    /** Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd"-keys is enabled.
      *  @default false */
     public var simulateMultitouch(get, set):Bool;
     private function get_simulateMultitouch():Bool { return mSimulateMultitouch; }
@@ -1126,15 +1157,16 @@ class Starling extends EventDispatcher
     private function get_shareContext() : Bool { return mShareContext; }
     private function set_shareContext(value : Bool) : Bool { return mShareContext = value; }
     
-    /** The Context3D profile as requested in the constructor. Beware that if you are 
-     *  using a shared context, this is simply what you passed to the Starling constructor. */
+    /** The Context3D profile used for rendering. Beware that if you are using a shared
+     *  context in AIR 3.9 / Flash Player 11 or below, this is simply what you passed to
+     *  the Starling constructor. */
     public var profile(get, never):Context3DProfile;
     private function get_profile():Context3DProfile { return mProfile; }
     
     /** Indicates that if the device supports HiDPI screens Starling will attempt to allocate
      *  a larger back buffer than indicated via the viewPort size. Note that this is used
      *  on Desktop only; mobile AIR apps still use the "requestedDisplayResolution" parameter
-     *  the application descriptor XML. */
+     *  the application descriptor XML. @default false */
     public var supportHighResolutions(get, set):Bool;
     private function get_supportHighResolutions():Bool { return mSupportHighResolutions; }
     private function set_supportHighResolutions(value:Bool):Bool 
@@ -1216,9 +1248,24 @@ class Starling extends EventDispatcher
     /** Indicates if Starling should automatically recover from a lost device context.
      *  On some systems, an upcoming screensaver or entering sleep mode may 
      *  invalidate the render context. This setting indicates if Starling should recover from 
-     *  such incidents. Beware that this has a huge impact on memory consumption!
-     *  It is recommended to enable this setting on Android and Windows, but to deactivate it
-     *  on iOS and Mac OS X. @default false */
+     *  such incidents.
+     *
+     *  <p>Beware: if used carelessly, this property may have a huge impact on memory
+     *  consumption. That's because, by default, it will make Starling keep a copy of each
+     *  texture in memory.</p>
+     *
+     *  <p>However, this downside can be avoided by using the "AssetManager" to load textures.
+     *  The AssetManager is smart enough to restore them directly from their sources. You can
+     *  also do this by setting up "root.onRestore" on your manually loaded textures.</p>
+     *
+     *  <p>A context loss can happen on almost every platform. It's very common on Windows
+     *  and Android, but rare on OS X and iOS (e.g. it may occur when opening up the camera
+     *  roll). It's recommended to always enable this property, while using the AssetManager
+     *  for texture loading.</p>
+     *  
+     *  @default false
+     *  @see starling.utils.AssetManager
+     */
     public static var handleLostContext(get, set):Bool;
     public static function get_handleLostContext():Bool { return sHandleLostContext; }
     public static function set_handleLostContext(value:Bool):Bool 

@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -62,7 +62,17 @@ class Event
     inline public static var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
     /** Event type that is dispatched by the AssetManager after a context loss. */
     inline public static var TEXTURES_RESTORED:String = "texturesRestored";
-    
+    /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
+    inline public static var IO_ERROR:String = "ioError";
+    /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
+    inline public static var SECURITY_ERROR:String = "securityError";
+    /** Event type that is dispatched by the AssetManager when an xml or json file couldn't
+     *  be parsed. */
+    inline public static var PARSE_ERROR:String = "parseError";
+    /** Event type that is dispatched by the Starling instance when it encounters a problem
+     *  from which it cannot recover, e.g. a lost device context. */
+    inline public static var FATAL_ERROR:String = "fatalError";
+
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     inline public static var CHANGE:String = "change";
     /** An event type to be utilized in custom events. Not used by Starling right now. */

@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -147,7 +147,7 @@ class ConcreteTexture extends Texture
      *  synchronously and will be visible right away. If it's <code>true</code> or a function,
      *  the data will be decoded asynchronously. The texture will remain unchanged until the
      *  upload is complete, at which time the callback function will be executed. This is the
-     *  expected function definition: <code>function(texture:Texture):Void;</code></p>
+     *  expected function definition: <code>function(texture:Texture):void;</code></p>
      */
     public function uploadAtfData(data:ByteArray, offset:Int=0, async:Void->Void=null):Void
     {

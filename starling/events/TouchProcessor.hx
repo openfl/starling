@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -104,6 +104,7 @@ class TouchProcessor
         var touch:Touch;
         
         mElapsedTime += passedTime;
+        sUpdatedTouches.splice(0, sUpdatedTouches.length);
         
         // remove old taps
         if (mLastTaps.length > 0)
@@ -158,9 +159,9 @@ class TouchProcessor
      *  given touches. Called internally by "advanceTime". To calculate updated targets,
      *  the method will call "hitTest" on the "root" object.
      *  
-     *  @param touches:   a list of all touches that have changed just now.
-     *  @param shiftDown: indicates if the shift key was down when the touches occurred.
-     *  @param CtrlDown:  indicates if the ctrl or cmd key was down when the touches occurred.
+     *  @param touches    a list of all touches that have changed just now.
+     *  @param shiftDown  indicates if the shift key was down when the touches occurred.
+     *  @param ctrlDown   indicates if the ctrl or cmd key was down when the touches occurred.
      */
     private function processTouches(touches:Array<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void

@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2013 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -52,7 +52,9 @@ class TextureOptions
         return mScale;
     }
     
-    /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
+    /** The <code>Context3DTextureFormat</code> of the underlying texture data. Only used
+     *  for textures that are created from Bitmaps; the format of ATF files is set when they
+     *  are created. */
     public var format(get, set):Context3DTextureFormat;
     private function get_format():Context3DTextureFormat { return mFormat; }
     private function set_format(value:Context3DTextureFormat):Context3DTextureFormat { return mFormat = value; }
@@ -80,7 +82,7 @@ class TextureOptions
      *  immediately when the 'Texture.from...' method returns, anyway).
      *  
      *  <p>This is the expected function definition: 
-     *  <code>function(texture:Texture):Void;</code></p> 
+     *  <code>function(texture:Texture):void;</code></p> 
      */
     public var onReady(get, set):Void->Void;
     private function get_onReady():Void->Void { return mOnReady; }

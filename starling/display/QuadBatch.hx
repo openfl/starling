@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2012 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -9,23 +9,26 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.display3D.Context3DBufferUsage;
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display3D.Context3DWrapMode;
 import openfl.utils.Int16Array;
-import openfl.display3D.Context3D;
-import openfl.display3D.Context3DProgramType;
-import openfl.display3D.Context3DTextureFormat;
-import openfl.display3D.Context3DVertexBufferFormat;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.Program3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.errors.Error;
-import openfl.geom.Matrix;
-import openfl.geom.Matrix3D;
-import openfl.geom.Rectangle;
-import openfl.Vector;
+
+import flash.errors.Error;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DBufferUsage;
+import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DMipFilter;
+import flash.display3D.Context3DTextureFilter;
+import flash.display3D.Context3DTextureFormat;
+import flash.display3D.Context3DVertexBufferFormat;
+import flash.display3D.Context3DWrapMode;
+import flash.display3D.IndexBuffer3D;
+import flash.display3D.Program3D;
+import flash.display3D.VertexBuffer3D;
+import flash.errors.IllegalOperationError;
+import flash.geom.Matrix;
+import flash.geom.Matrix3D;
+import flash.geom.Rectangle;
+//import flash.utils.Dictionary;
+//import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -35,7 +38,6 @@ import starling.filters.FragmentFilter;
 import starling.filters.FragmentFilterMode;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
-import starling.utils.MatrixUtil;
 import starling.utils.VertexData;
 
 /** Optimizes rendering of a number of quads with an identical state.
@@ -158,6 +160,10 @@ class QuadBatch extends DisplayObject
     private function expand():Void
     {
         var oldCapacity:Int = this.capacity;
+
+        if (oldCapacity >= MAX_NUM_QUADS)
+            throw new Error("Exceeded maximum number of quads!");
+
         this.capacity = oldCapacity < 8 ? 16 : oldCapacity * 2;
     }
     
@@ -215,7 +221,7 @@ class QuadBatch extends DisplayObject
     /** Renders the current batch with custom settings for model-view-projection matrix, alpha 
      *  and blend mode. This makes it possible to render batches that are not part of the 
      *  display list. */ 
-    public function renderCustom(mvpMatrix:Matrix, parentAlpha:Float=1.0,
+    public function renderCustom(mvpMatrix:Matrix3D, parentAlpha:Float=1.0,
                                  blendMode:String=null):Void
     {
         if (mNumQuads == 0) return;
@@ -228,13 +234,12 @@ class QuadBatch extends DisplayObject
         sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = pma ? parentAlpha : 1.0;
         sRenderAlpha[3] = parentAlpha;
         
-        MatrixUtil.convertTo3D(mvpMatrix, sRenderMatrix);
         RenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.blendMode);
         
         context.setProgram(getProgram(tinted));
         if (mTexture == null || tinted)
             context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
-        context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 1, sRenderMatrix, true);
+        context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 1, mvpMatrix, true);
         context.setVertexBufferAt(0, mVertexBuffer, VertexData.POSITION_OFFSET, 
                                   Context3DVertexBufferFormat.FLOAT_2); 
         
@@ -312,7 +317,7 @@ class QuadBatch extends DisplayObject
         mSyncRequired = true;
         mNumQuads++;
     }
-    
+
     /** Adds another QuadBatch to this batch. Just like the 'addQuad' method, you have to
      *  make sure that you only add batches with an equal state. */
     public function addQuadBatch(quadBatch:QuadBatch, parentAlpha:Float=1.0, 
@@ -430,7 +435,20 @@ class QuadBatch extends DisplayObject
         
         mSyncRequired = true;
     }
-    
+
+    /** Replaces a quad or image at a certain index with another one. */
+    public function setQuad(quadID:Float, quad:Quad):Void
+    {
+        var matrix:Matrix = quad.transformationMatrix;
+        var alpha:Float  = quad.alpha;
+        var vertexID:Int  = Std.int(quadID * 4);
+
+        quad.copyVertexDataTransformedTo(mVertexData, vertexID, matrix);
+        if (alpha != 1.0) mVertexData.scaleAlpha(vertexID, alpha, 4);
+
+        mSyncRequired = true;
+    }
+
     /** Calculates the bounds of a specific quad, optionally transformed by a matrix.
      *  If you pass a 'resultRect', the result will be stored in this rectangle
      *  instead of creating a new object. */
@@ -464,7 +482,7 @@ class QuadBatch extends DisplayObject
             {
                 support.finishQuadBatch();
                 support.raiseDrawCount();
-                renderCustom(support.mvpMatrix, alpha * parentAlpha, support.blendMode);
+                renderCustom(support.mvpMatrix3D, alpha * parentAlpha, support.blendMode);
             }
         }
     }
@@ -481,6 +499,33 @@ class QuadBatch extends DisplayObject
         compileObject(object, quadBatches, -1, new Matrix());
     }
     
+    /** Naively optimizes a list of batches by merging all that have an identical state.
+     *  Naturally, this will change the z-order of some of the batches, so this method is
+     *  useful only for specific use-cases. */
+    public static function optimize(quadBatches:Array<QuadBatch>):Void
+    {
+        var batch1:QuadBatch, batch2:QuadBatch;
+        //for (var i:Int=0; i<quadBatches.length; ++i)
+        for (i in 0 ... quadBatches.length)
+        {
+            batch1 = quadBatches[i];
+            //for (var j:Int=i+1; j<quadBatches.length; )
+            var j:Int = i + 1;
+            while (j < quadBatches.length)
+            {
+                batch2 = quadBatches[j];
+                if (!batch1.isStateChange(batch2.tinted, 1.0, batch2.texture,
+                                          batch2.smoothing, batch2.blendMode))
+                {
+                    batch1.addQuadBatch(batch2);
+                    batch2.dispose();
+                    quadBatches.splice(j, 1);
+                }
+                else ++j;
+            }
+        }
+    }
+
     private static function compileObject(object:DisplayObject, 
                                           quadBatches:Array<QuadBatch>,
                                           quadBatchID:Int,
@@ -489,6 +534,9 @@ class QuadBatch extends DisplayObject
                                           blendMode:String=null,
                                           ignoreCurrentFilter:Bool=false):Int
     {
+        if (Std.is(object, Sprite3D))
+            throw new IllegalOperationError("Sprite3D objects cannot be flattened");
+
         var i:Int;
         var quadBatch:QuadBatch;
         var isRootObject:Bool = false;

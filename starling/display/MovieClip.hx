@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -10,9 +10,10 @@
 
 package starling.display;
 //import away3d.utils.ArrayUtils;
+import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
-import openfl.errors.ArgumentError;
+import flash.media.SoundTransform;
 
 import starling.animation.IAnimatable;
 import starling.events.Event;
@@ -48,13 +49,14 @@ class MovieClip extends Image implements IAnimatable
     private var mSounds:Array<Sound>;
     private var mDurations:Array<Float>;
     private var mStartTimes:Array<Float>;
-    
+
     private var mDefaultFrameDuration:Float;
     private var mCurrentTime:Float;
     private var mCurrentFrame:Int;
     private var mLoop:Bool;
     private var mPlaying:Bool;
     private var mMuted:Bool;
+    private var mSoundTransform:SoundTransform = null;
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
      *  The movie will have the size of the first frame. */  
@@ -225,7 +227,6 @@ class MovieClip extends Image implements IAnimatable
         var previousFrame:Int = mCurrentFrame;
         var restTime:Float = 0.0;
         var breakAfterFrame:Bool = false;
-        var hasCompleteListener:Bool = hasEventListener(Event.COMPLETE); 
         var dispatchCompleteEvent:Bool = false;
         var totalTime:Float = this.totalTime;
         
@@ -244,7 +245,7 @@ class MovieClip extends Image implements IAnimatable
             {
                 if (mCurrentFrame == finalFrame)
                 {
-                    if (mLoop && !hasCompleteListener)
+                    if (mLoop && !hasEventListener(Event.COMPLETE))
                     {
                         mCurrentTime -= totalTime;
                         mCurrentFrame = 0;
@@ -253,7 +254,7 @@ class MovieClip extends Image implements IAnimatable
                     {
                         breakAfterFrame = true;
                         restTime = mCurrentTime - totalTime;
-                        dispatchCompleteEvent = hasCompleteListener;
+                        dispatchCompleteEvent = true;
                         mCurrentFrame = finalFrame;
                         mCurrentTime = totalTime;
                     }
@@ -264,13 +265,13 @@ class MovieClip extends Image implements IAnimatable
                 }
                 
                 var sound:Sound = mSounds[mCurrentFrame];
-                if (sound != null && !mMuted) sound.play();
+                if (sound != null && !mMuted) sound.play(0, 0, mSoundTransform);
                 if (breakAfterFrame) break;
             }
             
             // special case when we reach *exactly* the total time.
             if (mCurrentFrame == finalFrame && mCurrentTime == totalTime)
-                dispatchCompleteEvent = hasCompleteListener;
+                dispatchCompleteEvent = true;
         }
         
         if (mCurrentFrame != previousFrame)
@@ -312,6 +313,11 @@ class MovieClip extends Image implements IAnimatable
     private function get_muted():Bool { return mMuted; }
     private function set_muted(value:Bool):Bool { return mMuted = value; }
 
+    /** The SoundTransform object used for playback of all frame sounds. @default null */
+    public var soundTransform(get, set):SoundTransform;
+    public function get_soundTransform():SoundTransform { return mSoundTransform; }
+    public function set_soundTransform(value:SoundTransform):SoundTransform { return mSoundTransform = value; }
+
     /** The index of the frame that is currently displayed. */
     public var currentFrame(get, set):Int;
     private function get_currentFrame():Int { return mCurrentFrame; }
@@ -343,11 +349,8 @@ class MovieClip extends Image implements IAnimatable
         mDefaultFrameDuration = newFrameDuration;
         
         for (i in 0 ... numFrames) 
-        {
-            var duration:Float = mDurations[i] * acceleration;
-            mDurations[i] = duration;
-        }
-        
+            mDurations[i] *= acceleration;
+
         updateStartTimes();
         return 1.0 / mDefaultFrameDuration;
     }
