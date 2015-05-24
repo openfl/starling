@@ -344,7 +344,7 @@ class Texture
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false):Texture
-    {	
+    {
         if (scale <= 0) scale = Starling.current.contentScaleFactor;
         if (format == null) format = Context3DTextureFormat.BGRA;
         

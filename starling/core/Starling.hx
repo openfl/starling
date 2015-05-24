@@ -36,6 +36,7 @@ import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
 import flash.text.TextFormatAlign;
+import flash.ui.KeyLocation;
 import flash.ui.Mouse;
 import flash.ui.Multitouch;
 import flash.ui.MultitouchInputMode;
@@ -43,6 +44,8 @@ import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.Lib;
 import haxe.Timer;
+import starling.text.FTBFTextureCache;
+import starling.text.TextRenderer;
 
 import starling.animation.Juggler;
 import starling.display.DisplayObject;
@@ -217,8 +220,8 @@ class Starling extends EventDispatcher
     private var mPreviousViewPort:Rectangle;
     private var mClippedViewPort:Rectangle;
 
-    private var mNativeStage:openfl.display.Stage;
-    private var mNativeOverlay:openfl.display.Sprite;
+    private var mNativeStage:flash.display.Stage;
+    private var mNativeOverlay:flash.display.Sprite;
     private var mNativeStageContentScaleFactor:Float;
 
     private static var sCurrent:Starling;
@@ -256,7 +259,7 @@ class Starling extends EventDispatcher
      *                        profile automatically.</li>
      *                    </ul>
      */
-    public function new(rootClass:Class<Dynamic>, stage:openfl.display.Stage, 
+    public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
                              renderMode:Context3DRenderMode=null, profile:Dynamic=null)
     {
@@ -378,11 +381,7 @@ class Starling extends EventDispatcher
         else if (Std.is(profile, Context3DProfile))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
-        {
-            var da:Array<Dynamic> = cast profile;
-            for(profileStr in da)
-                profiles.push(profileStr);
-        }
+            profiles = cast profile;
         else
             throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array'");
 
@@ -393,11 +392,10 @@ class Starling extends EventDispatcher
             currentProfile = profiles.shift();
 
             #if flash
-            try { mStage3D.requestContext3D(renderMode); }
+            try { mStage3D.requestContext3D(renderMode, currentProfile); }
             catch (error:Error)
             {
-                if (profiles.length != 0)
-                Timer.delay(requestNextProfile, 1);
+                if (profiles.length != 0) Timer.delay(requestNextProfile, 1);
                 else throw error;
             }
             #else
@@ -421,7 +419,7 @@ class Starling extends EventDispatcher
             }
         }
         
-        function onError(event:Event):Void
+        onError = function(event:Event):Void
         {
             if (profiles.length != 0)
             {
@@ -436,7 +434,7 @@ class Starling extends EventDispatcher
             mStage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             mStage3D.removeEventListener(ErrorEvent.ERROR, onError);
         }
-
+        
         mStage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
         mStage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
         
@@ -574,15 +572,19 @@ class Starling extends EventDispatcher
                     configureBackBuffer(32, 32, mAntiAliasing, false);
                 #end
                 
-                //mStage3D.x = mClippedViewPort.x;
-                //mStage3D.y = mClippedViewPort.y;
+                #if flash
+                mStage3D.x = mClippedViewPort.x;
+                mStage3D.y = mClippedViewPort.y;
+                #end
                 
                 configureBackBuffer(Std.int(mClippedViewPort.width), Std.int(mClippedViewPort.height),
                     mAntiAliasing, false, mSupportHighResolutions);
                 
-                //if (mSupportHighResolutions && "contentsScaleFactor" in mNativeStage)
-                //    mNativeStageContentScaleFactor = mNativeStage["contentsScaleFactor"];
-                //else
+                #if flash
+                if (mSupportHighResolutions && "contentsScaleFactor" in mNativeStage)
+                    mNativeStageContentScaleFactor = mNativeStage["contentsScaleFactor"];
+                else
+                #end
                     mNativeStageContentScaleFactor = 1.0;
             }
         }
@@ -594,6 +596,12 @@ class Starling extends EventDispatcher
                                          enableDepthAndStencil:Bool,
                                          wantsBestResolution:Bool=false):Void
     {
+        /*
+        var configureBackBuffer:Function = mContext.configureBackBuffer;
+        var methodArgs:Array = [width, height, antiAlias, enableDepthAndStencil];
+        if (configureBackBuffer.length > 4) methodArgs.push(wantsBestResolution);
+        configureBackBuffer.apply(mContext, methodArgs);
+        */
         mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil);
     }
 
@@ -671,7 +679,6 @@ class Starling extends EventDispatcher
     
     private function onStage3DError(event:ErrorEvent):Void
     {
-        #if flash
         if (event.errorID == 3702)
         {
             var mode:String = Capabilities.playerType == "Desktop" ? "renderMode" : "wmode";
@@ -679,13 +686,12 @@ class Starling extends EventDispatcher
                                " or missing device support.");
         }
         else
-        #end
             stopWithFatalError("Stage3D error: " + event.text);
     }
     
     private function onContextCreated(event:Event):Void
     {
-        if (!handleLostContext && mContext != null)
+        if (!Starling.handleLostContext && mContext != null)
         {
             event.stopImmediatePropagation();
             stopWithFatalError("The application lost the device context!");
@@ -738,14 +744,17 @@ class Starling extends EventDispatcher
         makeCurrent();
         mStage.broadcastEvent(keyEvent);
         
-        //if (keyEvent.isDefaultPrevented())
-        //    event.preventDefault();
+        #if flash
+        if (keyEvent.isDefaultPrevented())
+            event.preventDefault();
+        #end
     }
     
     private function onResize(event:Event):Void
     {
         var stageWidth:Int  = event.target.stageWidth;
         var stageHeight:Int = event.target.stageHeight;
+
         function dispatchResizeEvent():Void
         {
             // on Android, the context is not valid while we're resizing. To avoid problems
@@ -821,13 +830,13 @@ class Starling extends EventDispatcher
         // figure out touch phase
         switch (event.type)
         {
-            case TouchEvent.TOUCH_BEGIN: phase = TouchPhase.BEGAN;
-            case TouchEvent.TOUCH_MOVE:  phase = TouchPhase.MOVED;
-            case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED;
-            case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN;
-            case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED;
+            case TouchEvent.TOUCH_BEGIN: phase = TouchPhase.BEGAN; //break;
+            case TouchEvent.TOUCH_MOVE:  phase = TouchPhase.MOVED; //break;
+            case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED; //break;
+            case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN; //break;
+            case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED; //break;
             case MouseEvent.MOUSE_MOVE: 
-                phase = (mLeftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
+                phase = (mLeftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER); //break;
         }
         
         // move position into viewport bounds
@@ -845,7 +854,7 @@ class Starling extends EventDispatcher
     private var touchEventTypes(get, never):Array<String>;
     private function get_touchEventTypes():Array<String>
     {
-        var types:Array<String> = new Array<String>();
+        var types:Array<String> = [];
         
         if (multitouchEnabled)
         {
@@ -854,7 +863,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        //if (!multitouchEnabled/* || Mouse.supportsCursor*/)
+        //if (!multitouchEnabled #if flash || Mouse.supportsCursor #end)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
@@ -1089,11 +1098,7 @@ class Starling extends EventDispatcher
     /** Displays the statistics box at a certain position. */
     public function showStatsAt(hAlign:String="left", vAlign:String="top", scale:Float=1):Void
     {
-        function onRootCreated():Void
-        {
-            showStatsAt(hAlign, vAlign, scale);
-            removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
-        }
+        var onRootCreated:Void->Void = null;
         if (mContext == null)
         {
             // Starling is not yet ready - we postpone this until it's initialized.
@@ -1121,6 +1126,12 @@ class Starling extends EventDispatcher
             if (vAlign == VAlign.TOP) mStatsDisplay.y = 0;
             else if (vAlign == VAlign.BOTTOM) mStatsDisplay.y = stageHeight - mStatsDisplay.height;
             else mStatsDisplay.y = Std.int((stageHeight - mStatsDisplay.height) / 2);
+        }
+        
+        function onRootCreated():Void
+        {
+            showStatsAt(hAlign, vAlign, scale);
+            removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
         }
     }
     
@@ -1214,19 +1225,25 @@ class Starling extends EventDispatcher
     public static function get_all():Array<Starling> { return sAll; }
     
     /** The render context of the currently active Starling instance. */
-    //public static var context(get, never):Context3D;
-    //public static function get_context():Context3D { return sCurrent ? sCurrent.context : null; }
+    /*
+    public static var context(get, never):Context3D;
+    public static function get_context():Context3D { return sCurrent ? sCurrent.context : null; }
+    */
     
     /** The default juggler of the currently active Starling instance. */
-    //public static var juggler(get, never):Juggler;
-    //public static function get_juggler():Juggler { return sCurrent ? sCurrent.juggler : null; }
+    /*
+    public static var juggler(get, never):Juggler;
+    public static function get_juggler():Juggler { return sCurrent ? sCurrent.juggler : null; }
+    */
     
     /** The contentScaleFactor of the currently active Starling instance. */
-    //public static var contentScaleFactor(get, never):Float;
-    //public static function get_contentScaleFactor():Float 
-    //{
-    //    return sCurrent ? sCurrent.contentScaleFactor : 1.0;
-    //}
+    /*
+    public static var contentScaleFactor(get, never):Float;
+    public static function get_contentScaleFactor():Float 
+    {
+        return sCurrent ? sCurrent.contentScaleFactor : 1.0;
+    }
+    */
     
     /** Indicates if multitouch input should be supported. */
     public static var multitouchEnabled(get, set):Bool;

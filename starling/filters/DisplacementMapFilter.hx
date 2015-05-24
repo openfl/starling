@@ -22,6 +22,7 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.utils.Float32Array;
+import starling.utils.ArrayUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -183,10 +184,11 @@ class DisplacementMapFilter extends FragmentFilter
         else if (mComponentY == BitmapDataChannel.BLUE)  columnY = 2;
         else                                             columnY = 3;
         
-        sMatrixData[Std.int(columnX * 4    )] = mScaleX * scale / textureWidth;
-        sMatrixData[Std.int(columnY * 4 + 1)] = mScaleY * scale / textureHeight;
+        sMatrixData[columnX * 4] = mScaleX * scale / textureWidth;
+        sMatrixData[columnY * 4] = mScaleY * scale / textureHeight;
         
-        sMatrix.copyRawDataFrom(sMatrixData);
+        //sMatrix.copyRawDataFrom(sMatrixData);
+        ArrayUtil.copyArrayToVector(sMatrixData, sMatrix.rawData);
         
         // vertex buffer: (containing map texture coordinates)
         // The size of input texture and map texture may be different. We need to calculate

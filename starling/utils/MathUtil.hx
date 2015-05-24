@@ -20,7 +20,7 @@ class MathUtil
     private static var TWO_PI:Float = Math.PI * 2.0;
 
     /** @private */
-    public function MathUtil() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
 
     /** Calculates the intersection point between the xy-plane and an infinite line
      *  that is defined by two 3D points. */
@@ -68,12 +68,12 @@ class MathUtil
     /** Converts an angle from degrees into radians. */
     public static function deg2rad(deg:Float):Float
     {
-        return deg / 180.0 * Math.PI;   
+        return deg / 180.0 * Math.PI;
     }
     
     /** Converts an angle from radians into degrees. */
     public static function rad2deg(rad:Float):Float
     {
-        return rad / Math.PI * 180.0;            
+        return rad / Math.PI * 180.0;
     }
 }

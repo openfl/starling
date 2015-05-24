@@ -86,8 +86,8 @@ class BlendMode
     /** Erases the background when drawn on a RenderTexture. */
     inline public static var ERASE:String = "erase";
     
-        /** Draws under/below existing objects; useful especially on RenderTextures. */
-        inline public static var BELOW:String = "below";
+    /** Draws under/below existing objects; useful especially on RenderTextures. */
+    inline public static var BELOW:String = "below";
     
     // accessing modes
     

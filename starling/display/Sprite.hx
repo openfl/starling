@@ -79,8 +79,7 @@ class Sprite extends DisplayObjectContainer
     {
         if (mFlattenedContents != null)
         {
-            var max:Int = mFlattenedContents.length;
-            for (i in 0 ... max)
+            for (i in 0 ... mFlattenedContents.length)
                 mFlattenedContents[i].dispose();
             
             mFlattenedContents = null;

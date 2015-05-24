@@ -25,6 +25,7 @@ import starling.events.Event;
 import starling.filters.FragmentFilter;
 import starling.utils.MatrixUtil;
 import starling.utils.Max;
+import starling.utils.SafeCast.safe_cast;
 
 /**
  *  A DisplayObjectContainer represents a collection of display objects.
@@ -84,11 +85,13 @@ class DisplayObjectContainer extends DisplayObject
     public function new()
     {
         super();
-        //if (Capabilities.isDebugger &&
-        //    Type.getClassName(this) == "starling.display::DisplayObjectContainer")
-        //{
-        //    throw new AbstractClassError();
-        //}
+        /*
+        if (Capabilities.isDebugger &&
+            Type.getClassName(this) == "starling.display::DisplayObjectContainer")
+        {
+            throw new AbstractClassError();
+        }
+        */
         
         mChildren = new Array<DisplayObject>();
     }
@@ -140,12 +143,9 @@ class DisplayObjectContainer extends DisplayObject
                 
                 if (stage != null)
                 {
-                    if (Std.is(child, DisplayObjectContainer))
-                    {
-                        var container:DisplayObjectContainer = cast child;
-                        container.broadcastEventWith(Event.ADDED_TO_STAGE);
-                    }
-                    else child.dispatchEventWith(Event.ADDED_TO_STAGE);
+                    var container:DisplayObjectContainer = safe_cast(child, DisplayObjectContainer);
+                    if (container != null) container.broadcastEventWith(Event.ADDED_TO_STAGE);
+                    else           child.dispatchEventWith(Event.ADDED_TO_STAGE);
                 }
             }
             
@@ -177,7 +177,7 @@ class DisplayObjectContainer extends DisplayObject
             
             if (stage != null)
             {
-                var container:DisplayObjectContainer = Std.is(child, DisplayObjectContainer) ? cast child : null;
+                var container:DisplayObjectContainer = safe_cast(child, DisplayObjectContainer);
                 if (container != null) container.broadcastEventWith(Event.REMOVED_FROM_STAGE);
                 else           child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
             }
@@ -268,9 +268,9 @@ class DisplayObjectContainer extends DisplayObject
      *  of the Vector class). */
     public function sortChildren(compareFunction:Dynamic):Void
     {
-        sSortBuffer = sSortBuffer.slice(0, mChildren.length);
+        sSortBuffer = sSortBuffer.splice(mChildren.length, sSortBuffer.length - mChildren.length);
         mergeSort(mChildren, compareFunction, 0, mChildren.length, sSortBuffer);
-        sSortBuffer = [];
+        sSortBuffer.splice(0, sSortBuffer.length);
     }
     
     /** Determines if a certain object is a child of the container (recursively). */
@@ -361,7 +361,6 @@ class DisplayObjectContainer extends DisplayObject
         var numChildren:Int = mChildren.length;
         var blendMode:String = support.blendMode;
         
-        var i:Int = 0;
         for (i in 0 ... numChildren)
         {
             var child:DisplayObject = mChildren[i];
@@ -397,11 +396,11 @@ class DisplayObjectContainer extends DisplayObject
         var fromIndex:Int = sBroadcastListeners.length;
         getChildEventListeners(this, event.type, sBroadcastListeners);
         var toIndex:Int = sBroadcastListeners.length;
-
+        
         for(i in fromIndex ... toIndex)
             sBroadcastListeners[i].dispatchEvent(event);
         
-        sBroadcastListeners = sBroadcastListeners.slice(0, fromIndex);
+        sBroadcastListeners.splice(fromIndex, sBroadcastListeners.length - fromIndex);
     }
     
     /** Dispatches an event with the given parameters on all children (recursively). 
@@ -469,7 +468,7 @@ class DisplayObjectContainer extends DisplayObject
             
             // copy the sorted subvector back to the input
             for (i in startIndex ... endIndex)
-                input[i] = buffer[Std.int(i - startIndex)];
+                input[i] = buffer[i - startIndex];
         }
     }
     
@@ -477,7 +476,7 @@ class DisplayObjectContainer extends DisplayObject
     private function getChildEventListeners(object:DisplayObject, eventType:String, 
                                              listeners:Array<DisplayObject>):Void
     {
-        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
+        var container:DisplayObjectContainer = safe_cast(object, DisplayObjectContainer);
         
         if (object.hasEventListener(eventType))
             listeners[listeners.length] = object; // avoiding 'push'                

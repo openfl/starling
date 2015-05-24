@@ -11,10 +11,12 @@
 package starling.core;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D._shaders.AGLSLShaderUtils;
+import starling.utils.ArrayUtil;
 
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DTextureFormat;
+import flash.display3D.Context3DWrapMode;
 import flash.display3D.Program3D;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -166,7 +168,8 @@ class RenderSupport
         sMatrixData[8]  =  scaleX - 1 - 2 * scaleX * (x - offsetX) / stageWidth;
         sMatrixData[9]  = -scaleY + 1 + 2 * scaleY * (y - offsetY) / stageHeight;
 
-        mProjectionMatrix3D.copyRawDataFrom(sMatrixData);
+        //mProjectionMatrix3D.copyRawDataFrom(sMatrixData);
+        ArrayUtil.copyArrayToVector(sMatrixData, mProjectionMatrix3D.rawData);
         mProjectionMatrix3D.prependTranslation(
             -stageWidth /2.0 - offsetX,
             -stageHeight/2.0 - offsetY,
@@ -229,13 +232,13 @@ class RenderSupport
         if (mMatrixStack.length < mMatrixStackSize + 1)
             mMatrixStack.push(new Matrix());
     
-        mMatrixStack[Std.int(mMatrixStackSize++)].copyFrom(mModelViewMatrix);
+        mMatrixStack[mMatrixStackSize++].copyFrom(mModelViewMatrix);
     }
     
     /** Restores the modelview matrix that was last pushed to the stack. */
     public function popMatrix():Void
     {
-        mModelViewMatrix.copyFrom(mMatrixStack[Std.int(--mMatrixStackSize)]);
+        mModelViewMatrix.copyFrom(mMatrixStack[--mMatrixStackSize]);
     }
     
     /** Empties the matrix stack, resets the modelview matrix to the identity matrix. */
@@ -583,14 +586,10 @@ class RenderSupport
     /** Clears the render context with a certain color and alpha value. */
     public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        Starling.current.context.clear(
-            Color.getRed(rgb)   / 255.0, 
-            Color.getGreen(rgb) / 255.0, 
-            Color.getBlue(rgb)  / 255.0,
-            alpha);
+        RenderSupport._clear(rgb, alpha);
     }
     
-    /** Assembles fragment- and vertex-shaders, cast(passed, Strings), to a Program3D. If you
+    /** Assembles fragment- and vertex-shaders, passed as Strings, to a Program3D. If you
      *  pass a 'resultProgram', it will be uploaded to that program; otherwise, a new program
      *  will be created on the current Stage3D context. */ 
     public static function assembleAgal(vertexShader:String, fragmentShader:String,

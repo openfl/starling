@@ -176,7 +176,7 @@ class TextRenderer
         
         var rootWidth:Float = texture.root.width;
         var rootHeight:Float = texture.root.height;
-        sSupport.setOrthographicProjection(0, 0, rootWidth, rootHeight);
+        sSupport.setProjectionMatrix(0, 0, rootWidth, rootHeight);
         sClipRect.setTo(0, 0, texture.width, texture.height);
         sSupport.pushClipRect(sClipRect);
         

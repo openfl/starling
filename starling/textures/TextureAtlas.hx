@@ -139,7 +139,7 @@ class TextureAtlas
         for (name in getNames(prefix, sNames)) 
             result[result.length] = getTexture(name); // avoid 'push'
 
-        sNames = [];
+        sNames.splice(0, sNames.length);
         return result;
     }
     

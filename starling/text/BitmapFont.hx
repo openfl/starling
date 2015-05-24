@@ -77,10 +77,7 @@ class BitmapFont
     private var mOffsetX:Float;
     private var mOffsetY:Float;
     private var mHelperImage:Image;
-    private var mTopPadding:Float;
-    private var mLeftPadding:Float;
-    private var mRightPadding:Float;
-    private var mBottomPadding:Float;
+
     /** Helper objects. */
     private static var sLines:Array<Array<CharLocation>> = [];
     
@@ -97,11 +94,10 @@ class BitmapFont
         
         mName = "unknown";
         mLineHeight = mSize = mBaseline = 14;
-        mTopPadding = mLeftPadding = mRightPadding = mBottomPadding = 0;
         mOffsetX = mOffsetY = 0.0;
         mTexture = texture;
         mChars = new Map<Int, BitmapChar>();
-        mHelperImage = texture != null ? new Image(texture) : null;
+        mHelperImage = new Image(texture);
         
         if (fontXml != null) parseFontXml(fontXml);
     }
@@ -239,7 +235,7 @@ class BitmapFont
     }
     
     /** Draws text into a QuadBatch. */
-    public function fillQuadBatch(textField:TextField, width:Float, height:Float, text:String,
+    public function fillQuadBatch(quadBatch:QuadBatch, width:Float, height:Float, text:String,
                                   fontSize:Float=-1, color:UInt=0xffffff, 
                                   hAlign:String="center", vAlign:String="center",      
                                   autoScale:Bool=true, 
@@ -248,14 +244,7 @@ class BitmapFont
         var charLocations:Array<CharLocation> = arrangeChars(width, height, text, fontSize, 
                                                                hAlign, vAlign, autoScale, kerning);
         var numChars:Int = charLocations.length;
-        if (numChars == 0)
-            return;
-        if (mHelperImage == null)
-            mHelperImage = new Image(charLocations[0].char.texture);
         mHelperImage.color = color;
-        
-        var textureIndexMap:Map<ConcreteTexture, Int> = new Map();
-        var nextTextureIndex:Int = 0;
         
         for (i in 0 ... numChars)
         {
@@ -265,11 +254,6 @@ class BitmapFont
             mHelperImage.x = charLocation.x;
             mHelperImage.y = charLocation.y;
             mHelperImage.scaleX = mHelperImage.scaleY = charLocation.scale;
-            
-            var idx:Null<Int> = textureIndexMap[mHelperImage.texture.root];
-            if (idx == null)
-                idx = textureIndexMap[mHelperImage.texture.root] = nextTextureIndex++;
-            var quadBatch:QuadBatch = textField.getQuadBatch(idx);
             quadBatch.addImage(mHelperImage);
         }
 
@@ -291,9 +275,10 @@ class BitmapFont
         var containerWidth:Float = 0.0;
         var containerHeight:Float = 0.0;
         var scale:Float = 0.0;
-
-        var currentX:Float = 0;
-        var currentY:Float = 0;
+				
+		var currentX:Float = 0;
+		var currentY:Float = 0;
+        
         while (!finished)
         {
             sLines.splice(0, sLines.length);
@@ -305,8 +290,6 @@ class BitmapFont
             {
                 var lastWhiteSpace:Int = -1;
                 var lastCharID:Int = -1;
-                var currentX:Float = 0;
-                var currentY:Float = 0;
                 var currentLine:Array<CharLocation> = CharLocation.vectorFromPool();
                 
                 numChars = text.length;
@@ -341,7 +324,7 @@ class BitmapFont
                         currentX += char.xAdvance;
                         lastCharID = charID;
                         
-                        if (((mLeftPadding + mRightPadding) / scale) + charLocation.x + char.width > containerWidth)
+                        if (charLocation.x + char.width > containerWidth)
                         {
                             // when autoscaling, we must not split a word in half -> restart
                             if (autoScale && lastWhiteSpace == -1)
@@ -401,10 +384,8 @@ class BitmapFont
         var bottom:Float = currentY + mLineHeight;
         var yOffset:Int = 0;
         
-        if (vAlign == VAlign.BOTTOM)      yOffset =  Std.int(containerHeight - bottom - (mBottomPadding / scale));
+        if (vAlign == VAlign.BOTTOM)      yOffset = Std.int(containerHeight - bottom);
         else if (vAlign == VAlign.CENTER) yOffset = Std.int((containerHeight - bottom) / 2);
-        
-        if (yOffset < (mTopPadding / scale)) yOffset = Std.int(mTopPadding / scale);
         
         for (lineID in 0 ... numLines)
         {
@@ -418,10 +399,8 @@ class BitmapFont
             var right:Float = lastLocation.x - lastLocation.char.xOffset 
                                               + lastLocation.char.xAdvance;
             
-            if (hAlign == HAlign.RIGHT)       xOffset =  Std.int(containerWidth - right - (mRightPadding / scale));
+            if (hAlign == HAlign.RIGHT)       xOffset = Std.int(containerWidth - right);
             else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
-            
-            if (xOffset < (mLeftPadding / scale)) xOffset = Std.int(mLeftPadding / scale);
             
             for (c in 0 ... numChars)
             {

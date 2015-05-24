@@ -138,7 +138,7 @@ class Touch
             mBubbleChain = [element];
             
             while ((element = element.parent) != null)
-                mBubbleChain[Std.int(length++)] = element;
+                mBubbleChain[length++] = element;
         }
         else
         {

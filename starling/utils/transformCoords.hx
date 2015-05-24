@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.utils;
-{
 import flash.geom.Matrix;
 import flash.geom.Point;
 

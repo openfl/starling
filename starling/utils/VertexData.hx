@@ -221,7 +221,7 @@ class VertexData
         if (mPremultipliedAlpha)
             setColorAndAlpha(vertexID, getColor(vertexID), alpha);
         else
-            mRawData[Std.int(vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3)] = alpha;
+            mRawData[vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3] = alpha;
     }
     
     /** Returns the alpha value of a vertex in the range 0-1. */

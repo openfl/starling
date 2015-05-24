@@ -412,7 +412,7 @@ class FragmentFilter
         
         if (Std.is(targetSpace, Stage))
         {
-            stage = cast(targetSpace, Stage);
+            stage = cast targetSpace;
 
             if (object == stage || object == object.root)
             {

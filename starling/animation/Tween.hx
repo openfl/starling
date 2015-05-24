@@ -102,9 +102,9 @@ class Tween extends EventDispatcher implements IAnimatable
         else 
             throw new ArgumentError("Transition must be either a string or a function");
         
-        if (mProperties != null)  mProperties = []; else mProperties  = new Array<String>();
-        if (mStartValues != null) mStartValues = []; else mStartValues = new Array<Float>();
-        if (mEndValues != null)   mEndValues = []; else mEndValues   = new Array<Float>();
+        if (mProperties != null)  mProperties.splice(0, mProperties.length); else mProperties  = new Array<String>();
+        if (mStartValues != null) mStartValues.splice(0, mStartValues.length); else mStartValues = new Array<Float>();
+        if (mEndValues != null)   mEndValues.splice(0, mEndValues.length); else mEndValues   = new Array<Float>();
         
         return this;
     }

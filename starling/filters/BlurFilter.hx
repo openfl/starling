@@ -288,7 +288,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in y-direction (stage coordinates). 
-     *  The Float of required passes will be <code>Math.ceil(value)</code>. */
+     *  The number of required passes will be <code>Math.ceil(value)</code>. */
     public var blurY(get, set):Float;
     private function get_blurY():Float { return mBlurY; }
     private function set_blurY(value:Float):Float 

@@ -119,7 +119,7 @@ class TextField extends DisplayObjectContainer
     private var mBorder:DisplayObjectContainer;
     
     private var mImage:Image;
-    private var mQuadBatchSprite:Sprite;
+    private var mQuadBatch:QuadBatch;
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
@@ -150,7 +150,7 @@ class TextField extends DisplayObjectContainer
     {
         removeEventListener(Event.FLATTEN, onFlatten);
         if (mImage != null) mImage.texture.dispose();
-        if (mQuadBatchSprite != null) mQuadBatchSprite.dispose();
+        if (mQuadBatch != null) mQuadBatch.dispose();
         super.dispose();
     }
     
@@ -184,10 +184,10 @@ class TextField extends DisplayObjectContainer
     
     private function createRenderedContents():Void
     {
-        if (mQuadBatchSprite != null)
+        if (mQuadBatch != null)
         {
-            mQuadBatchSprite.removeFromParent(true); 
-            mQuadBatchSprite = null; 
+            mQuadBatch.removeFromParent(true); 
+            mQuadBatch = null; 
         }
         
         if (mTextBounds == null) 
@@ -438,16 +438,14 @@ class TextField extends DisplayObjectContainer
             mImage = null; 
         }
         
-        if (mQuadBatchSprite == null)
-        {
-            mQuadBatchSprite = new Sprite();
-            addChild(mQuadBatchSprite);
+        if (mQuadBatch == null) 
+        { 
+            mQuadBatch = new QuadBatch(); 
+            mQuadBatch.touchable = false;
+            addChild(mQuadBatch); 
         }
-        for (i in 0 ... mQuadBatchSprite.numChildren)
-        {
-            var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
-            quadBatch.reset();
-        }
+        else
+            mQuadBatch.reset();
         
         var bitmapFont:BitmapFont = getBitmapFont(mFontName);
         if (bitmapFont == null) throw new Error("Bitmap font not registered: " + mFontName);
@@ -468,19 +466,14 @@ class TextField extends DisplayObjectContainer
             vAlign = VAlign.TOP;
         }
         
-        if (bitmapFont != null)
-            bitmapFont.fillQuadBatch(this,
-                width, height, mText, mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning);
+        bitmapFont.fillQuadBatch(mQuadBatch,
+            width, height, mText, mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning);
         
-        for (i in 0 ... mQuadBatchSprite.numChildren)
-        {
-            var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
-            quadBatch.batchable = mBatchable;
-        }
+        mQuadBatch.batchable = mBatchable;
         
         if (mAutoSize != TextFieldAutoSize.NONE)
         {
-            if (mTextBounds == null) mTextBounds = mQuadBatchSprite.getBounds(mQuadBatchSprite);
+            mTextBounds = mQuadBatch.getBounds(mQuadBatch, mTextBounds);
             
             if (isHorizontalAutoSize)
                 mHitArea.width  = mTextBounds.x + mTextBounds.width;
@@ -492,17 +485,6 @@ class TextField extends DisplayObjectContainer
             // hit area doesn't change, text bounds can be created on demand
             mTextBounds = null;
         }
-    }
-    
-    public function getQuadBatch(index:Int):QuadBatch
-    {
-        if (index < mQuadBatchSprite.numChildren)
-            return cast mQuadBatchSprite.getChildAt(index);
-
-        var quadBatch:QuadBatch = new QuadBatch();
-        quadBatch.touchable = false;
-        mQuadBatchSprite.addChildAt(quadBatch, index);
-        return quadBatch;
     }
     
     // helpers
@@ -549,10 +531,7 @@ class TextField extends DisplayObjectContainer
     private function get_textBounds():Rectangle
     {
         if (mRequiresRedraw) redraw();
-        if (mTextBounds == null)
-        {
-            mTextBounds = mQuadBatchSprite.getBounds(mQuadBatchSprite);
-        }
+        if (mTextBounds == null) mTextBounds = mQuadBatch.getBounds(mQuadBatch);
         return mTextBounds.clone();
     }
     
@@ -695,10 +674,7 @@ class TextField extends DisplayObjectContainer
             addChild(mBorder);
             
             for (i in 0 ... 4)
-            {
                 mBorder.addChild(new Quad(1.0, 1.0));
-                //++i; // TODO: ?
-            }
             
             updateBorder();
         }
@@ -801,15 +777,8 @@ class TextField extends DisplayObjectContainer
     private function set_batchable(value:Bool):Bool
     { 
         mBatchable = value;
-        if (mQuadBatchSprite != null)
-        {
-            for (i in 0 ... mQuadBatchSprite.numChildren)
-            {
-                var quadBatch:QuadBatch = cast mQuadBatchSprite.getChildAt(i);
-                quadBatch.batchable = value;
-            }
-        }
-        return mBatchable;
+        if (mQuadBatch != null) mQuadBatch.batchable = value;
+		return mBatchable;
     }
 
     /** The native Flash BitmapFilters to apply to this TextField.

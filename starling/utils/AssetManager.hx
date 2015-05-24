@@ -10,22 +10,30 @@ import flash.events.SecurityErrorEvent;
 import flash.media.Sound;
 import flash.media.SoundChannel;
 import flash.media.SoundTransform;
-import haxe.Json;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
-//import flash.net.FileReference;
+#if flash
+import flash.net.FileReference;
+#end
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
-//import flash.system.ImageDecodingPolicy;
+#if flash
+import flash.system.ImageDecodingPolicy;
+#end
 import flash.system.LoaderContext;
 import flash.system.System;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
-//import flash.utils.describeType;
-//import flash.utils.getQualifiedClassName;
-import haxe.Timer;
+#if flash
+import flash.utils.describeType;
+import flash.utils.getQualifiedClassName;
+#end
+#if 0
+import flash.utils.setTimeout;
+#end
 import haxe.Json;
+import haxe.Timer;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -164,16 +172,18 @@ class AssetManager extends EventDispatcher
     /** Disposes all contained textures. */
     public function dispose():Void
     {
-        for(texture in mTextures)
+        for (texture in mTextures)
             texture.dispose();
         
-        for(atlas in mAtlases)
+        for (atlas in mAtlases)
             atlas.dispose();
         
-        //for(xml in mXmls)
-        //    System.disposeXML(xml);
+        #if 0
+        for  (xml in mXmls)
+            System.disposeXML(xml);
+        #end
         
-        for(byteArray in mByteArrays)
+        for (byteArray in mByteArrays)
             byteArray.clear();
     }
     
@@ -187,7 +197,7 @@ class AssetManager extends EventDispatcher
         if (mTextures.exists(name)) return mTextures[name];
         else
         {
-            for(atlas in mAtlases)
+            for (atlas in mAtlases)
             {
                 var texture:Texture = atlas.getTexture(name);
                 if (texture != null) return texture;
@@ -205,7 +215,7 @@ class AssetManager extends EventDispatcher
         for (name in getTextureNames(prefix, sNames))
             result[result.length] = getTexture(name); // avoid 'push'
 
-        sNames = [];
+        sNames.splice(0, sNames.length);
         return result;
     }
     
@@ -214,7 +224,7 @@ class AssetManager extends EventDispatcher
     {
         result = getDictionaryKeys(mTextures, prefix, result);
         
-        for(atlas in mAtlases)
+        for (atlas in mAtlases)
             atlas.getNames(prefix, result);
         
         result.sort(compare);
@@ -224,7 +234,7 @@ class AssetManager extends EventDispatcher
     /** Returns a texture atlas with a certain name, or null if it's not found. */
     public function getTextureAtlas(name:String):TextureAtlas
     {
-        return cast(mAtlases[name], TextureAtlas);
+        return mAtlases[name];
     }
     
     /** Returns a sound with a certain name, or null if it's not found. */
@@ -347,7 +357,9 @@ class AssetManager extends EventDispatcher
         if (mXmls.exists(name))
         {
             log("Warning: name was already in use; the previous XML will be replaced.");
-            //System.disposeXML(mXmls[name]);
+            #if 0
+            System.disposeXML(mXmls[name]);
+            #end
         }
 
         mXmls[name] = xml;
@@ -417,8 +429,10 @@ class AssetManager extends EventDispatcher
     {
         log("Removing xml '"+ name + "'");
         
-        //if (dispose && mXmls.exists(name))
-        //    System.disposeXML(mXmls[name]);
+        #if 0
+        if (dispose && mXmls.exists(name))
+            System.disposeXML(mXmls[name]);
+        #end
         
         mXmls.remove(name);
     }
@@ -494,26 +508,29 @@ class AssetManager extends EventDispatcher
      */
     public function enqueue(rawAssets:Array<Dynamic>):Void
     {
-        for(rawAsset in rawAssets)
+        for (rawAsset in rawAssets)
         {
             if (Std.is(rawAsset, Array))
             {
                 enqueue(rawAsset);
             }
-/*            else if (Std.is(rawAsset, Class))
+            #if 0
+            else if (Std.is(rawAsset, Class))
             {
-                var cls:Class<Dynamic> = cast(rawAsset, Class<Dynamic>);
+                var typeXml:XML = describeType(rawAsset);
+                var childNode:XML;
+                
                 if (mVerbose)
                     log("Looking for static embedded assets in '" + 
-                        cls + "'"); 
+                        (typeXml.@name).split("::").pop() + "'"); 
                 
-                for (childNode in typeXml.constant.att.type == "Class")
-                    enqueueWithName(rawAsset[childNode.att.name], childNode.att.name);
+                for each (childNode in typeXml.constant.(@type == "Class"))
+                    enqueueWithName(rawAsset[childNode.@name], childNode.@name);
                 
-                for (childNode in typeXml.variable.att.type == "Class")
-                    enqueueWithName(rawAsset[childNode.att.name], childNode.att.name);
+                for each (childNode in typeXml.variable.(@type == "Class"))
+                    enqueueWithName(rawAsset[childNode.@name], childNode.@name);
             }
-            else if (Type.getClassName(rawAsset) == "flash.filesystem::File")
+            else if (getQualifiedClassName(rawAsset) == "flash.filesystem::File")
             {
                 if (!rawAsset["exists"])
                 {
@@ -522,11 +539,12 @@ class AssetManager extends EventDispatcher
                 else if (!rawAsset["isHidden"])
                 {
                     if (rawAsset["isDirectory"])
-                        enqueue(rawAsset["getDirectoryListing"]());
+                        enqueue.apply(this, rawAsset["getDirectoryListing"]());
                     else
                         enqueueWithName(rawAsset);
                 }
-            }*/
+            }
+            #end
             else if (Std.is(rawAsset, String))
             {
                 enqueueWithName(rawAsset);
@@ -551,8 +569,10 @@ class AssetManager extends EventDispatcher
     public function enqueueWithName(asset:Dynamic, name:String=null,
                                     options:TextureOptions=null):String
     {
-        //if (Type.getClassName(asset) == "flash.filesystem::File")
-        //    asset = unescape(asset["url"]);
+        #if 0
+        if (getQualifiedClassName(asset) == "flash.filesystem::File")
+            asset = unescape(asset["url"]);
+        #end
         
         if (name == null)    name = getName(asset);
         if (options == null) options = mDefaultTextureOptions.clone();
@@ -711,10 +731,10 @@ class AssetManager extends EventDispatcher
                     addTextureAtlas(name, new TextureAtlas(texture, xml));
 
                     if (mKeepAtlasXmls) addXml(name, xml);
-                    /*
+                    #if 0
                     else
                         System.disposeXML(xml);
-                    */
+                    #end
                 }
                 else log("Cannot create atlas: texture '" + name + "' is missing.");
             }
@@ -729,9 +749,9 @@ class AssetManager extends EventDispatcher
                     TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
 
                     if (mKeepFontXmls) addXml(name, xml);
-                    /*
+                    #if 0
                     else System.disposeXML(xml);
-                    */
+                    #end
                 }
                 else log("Cannot create bitmap font: texture '" + name + "' is missing.");
             }
@@ -770,7 +790,6 @@ class AssetManager extends EventDispatcher
                 }
             }, 1);
         }
-        resume();
     }
     
     private function processRawAsset(name:String, rawAsset:Dynamic, options:TextureOptions,
@@ -778,8 +797,14 @@ class AssetManager extends EventDispatcher
                                      onProgress:Float->Void, onComplete:Void->Void):Void
     {
         var canceled:Bool = false;
-
+        
         var cancel:Void->Void = null;
+        var progress:Float->Void = null;
+        var process:Dynamic->Void = null;
+        
+        addEventListener(Event.CANCEL, cancel);
+        loadRawAsset(rawAsset, progress, process);
+        
         function process(asset:Dynamic):Void
         {
             var texture:Texture;
@@ -818,8 +843,7 @@ class AssetManager extends EventDispatcher
             else if (Starling.handleLostContext && mStarling.context.driverInfo == "Disposed")
             {
                 log("Context lost while processing assets, retrying ...");
-                //setTimeout(process, 1, asset);
-                process(asset);
+                Timer.delay(function():Void{ process(asset); }, 1);
                 return; // to keep CANCEL event listener intact
             }
             else if (Std.is(asset, Bitmap))
@@ -830,7 +854,7 @@ class AssetManager extends EventDispatcher
                     mNumLostTextures++;
                     loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                     {
-                        try { texture.root.uploadBitmap(cast(asset, Bitmap)); }
+                        try { texture.root.uploadBitmap(cast asset); }
                         catch (e:Error) { log("Texture restoration failed: " + e.message); }
                         
                         asset.bitmapData.dispose();
@@ -858,7 +882,7 @@ class AssetManager extends EventDispatcher
                         mNumLostTextures++;
                         loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                         {
-                            try { texture.root.uploadAtfData(cast(asset, ByteArray), 0); }
+                            try { texture.root.uploadAtfData(cast asset, 0, true); }
                             catch (e:Error) { log("Texture restoration failed: " + e.message); }
                             
                             asset.clear();
@@ -922,12 +946,10 @@ class AssetManager extends EventDispatcher
             if (!canceled) onProgress(ratio);
         }
         
-        cancel = function():Void
+        function cancel():Void
         {
             canceled = true;
         }
-        addEventListener(Event.CANCEL, cancel);
-        loadRawAsset(rawAsset, progress, process);
     }
     
     /** This method is called internally for each element of the queue when it is loaded.
@@ -1027,14 +1049,17 @@ class AssetManager extends EventDispatcher
                     bytes.clear();
                     complete(sound);
                 case "jpg", "jpeg", "png", "gif":
-                    //var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
+                    #if 0
+                    var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
+                    #end
                     var loader:Loader = new Loader();
-                    //loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+                    #if 0
+                    loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
+                    #end
                     loaderInfo = loader.contentLoaderInfo;
                     loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
                     loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-                    //loader.loadBytes(bytes, loaderContext);
-                    loader.loadBytes(bytes);
+                    loader.loadBytes(bytes #if 0, loaderContext #end);
                 default: // any XML / JSON / binary data 
                     complete(bytes);
             }
@@ -1073,25 +1098,6 @@ class AssetManager extends EventDispatcher
             else
                 SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
         }
-        
-        if (Std.is(rawAsset, Class))
-        {
-            //setTimeout(complete, 1, new rawAsset());
-            Type.createInstance(cast rawAsset, []);
-        }
-        else if (Std.is(rawAsset, String))
-        {
-            url = cast rawAsset;
-            extension = getExtensionFromUrl(url);
-            
-            urlLoader = new URLLoader();
-            urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-            urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
-            urlLoader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-            urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-            urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
-            urlLoader.load(new URLRequest(url));
-        }
     }
     
     // helpers
@@ -1104,9 +1110,11 @@ class AssetManager extends EventDispatcher
     {
         var name:String;
         
-        if (Std.is(rawAsset, String)/* || Std.is(rawAsset, FileReference)*/)
+        if (Std.is(rawAsset, String)#if 0 || Std.is(rawAsset, FileReference)#end)
         {
-            //name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast(rawAsset, FileReference).name;
+            #if 0
+            name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast(rawAsset, FileReference).name;
+            #end
             name = cast rawAsset;
             name = (~/%20/g).replace(name, " "); // URLs use '%20' for spaces
             name = getBasenameFromUrl(name);

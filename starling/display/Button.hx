@@ -423,4 +423,9 @@ class Button extends DisplayObjectContainer
         mContents.addChild(mOverlay); // make sure it's always on top
         return mOverlay;
     }
+
+    /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
+     *  @default true */
+    public override function get_useHandCursor():Bool { return mUseHandCursor; }
+    public override function set_useHandCursor(value:Bool):Bool { return mUseHandCursor = value; }
 }

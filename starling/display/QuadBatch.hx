@@ -10,6 +10,7 @@
 
 package starling.display;
 import openfl.utils.Int16Array;
+import starling.utils.SafeCast.safe_cast;
 
 import flash.errors.Error;
 import flash.display3D.Context3D;
@@ -542,9 +543,9 @@ class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
-        var quad:Quad = Std.is(object, Quad) ? cast object : null;
-        var batch:QuadBatch = Std.is(object, QuadBatch) ? cast object : null;
+        var container:DisplayObjectContainer = safe_cast(object, DisplayObjectContainer) ? cast object : null;
+        var quad:Quad = safe_cast(object, Quad) ? cast object : null;
+        var batch:QuadBatch = safe_cast(object, QuadBatch) ? cast object : null;
         var filter:FragmentFilter = object.filter;
         
         if (quadBatchID == -1)
@@ -608,7 +609,7 @@ class QuadBatch extends DisplayObject
             
             if (quad != null)
             {
-                var image:Image = Std.is(quad, Image) ? cast quad : null;
+                var image:Image = safe_cast(quad, Image) ? cast quad : null;
                 texture = image != null ? image.texture : null;
                 smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;
@@ -729,12 +730,12 @@ class QuadBatch extends DisplayObject
         
         for (i in oldCapacity ... value)
         {
-            mIndexData[Std.int(i*6  )] = i*4;
-            mIndexData[Std.int(i*6+1)] = i*4 + 1;
-            mIndexData[Std.int(i*6+2)] = i*4 + 2;
-            mIndexData[Std.int(i*6+3)] = i*4 + 1;
-            mIndexData[Std.int(i*6+4)] = i*4 + 3;
-            mIndexData[Std.int(i*6+5)] = i*4 + 2;
+            mIndexData[i*6] = i*4;
+            mIndexData[i*6+1] = i*4 + 1;
+            mIndexData[i*6+2] = i*4 + 2;
+            mIndexData[i*6+3] = i*4 + 1;
+            mIndexData[i*6+4] = i*4 + 3;
+            mIndexData[i*6+5] = i*4 + 2;
         }
 
         destroyBuffers();

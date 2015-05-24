@@ -137,14 +137,14 @@ class SubTexture extends Texture
         while(i<endIndex)
         {
             u = texCoords[    i   ];
-            v = texCoords[Std.int(i+1)];
+            v = texCoords[i+1];
             
             MatrixUtil.transformCoords(sMatrix, u, v, sTexCoords);
             
             texCoords[    i   ] = sTexCoords.x;
             texCoords[i + 1] = sTexCoords.y;
             
-            i += 2;
+            i += 2 + stride;
         }
     }
     

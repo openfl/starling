@@ -175,7 +175,7 @@ class EventDispatcher
         else chain = [element];
         
         while ((element = element.parent) != null)
-            chain[Std.int(length++)] = element;
+            chain[length++] = element;
 
         for (i in 0 ... length)
         {

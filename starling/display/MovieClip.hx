@@ -119,7 +119,7 @@ class MovieClip extends Image implements IAnimatable
         mDurations.insert(frameID, duration);
         
         if (frameID > 0 && frameID == numFrames) 
-            mStartTimes[frameID] = mStartTimes[Std.int(frameID-1)] + mDurations[Std.int(frameID-1)];
+            mStartTimes[frameID] = mStartTimes[frameID-1] + mDurations[frameID-1];
         else
             updateStartTimes();
     }
@@ -208,12 +208,11 @@ class MovieClip extends Image implements IAnimatable
     {
         var numFrames:Int = this.numFrames;
         
-        // TODO: ?
-        //mStartTimes.length = 0;
+        mStartTimes.splice(0, mStartTimes.length);
         mStartTimes[0] = 0;
         
         for (i in 1 ... numFrames)
-            mStartTimes[i] = mStartTimes[Std.int(i-1)] + mDurations[Std.int(i-1)];
+            mStartTimes[i] = mStartTimes[i-1] + mDurations[i-1];
     }
     
     // IAnimatable
@@ -291,7 +290,7 @@ class MovieClip extends Image implements IAnimatable
     private function get_totalTime():Float 
     {
         var numFrames:Int = mTextures.length;
-        return mStartTimes[Std.int(numFrames-1)] + mDurations[Std.int(numFrames-1)];
+        return mStartTimes[numFrames-1] + mDurations[numFrames-1];
     }
     
     /** The time that has passed since the clip was started (each loop starts at zero). */
@@ -334,7 +333,7 @@ class MovieClip extends Image implements IAnimatable
         return mCurrentFrame;
     }
     
-    /** The default Float of frames per second. Individual frames can have different 
+    /** The default number of frames per second. Individual frames can have different 
      *  durations. If you change the fps, the durations of all frames will be scaled 
      *  relatively to the previous value. */
     public var fps(get, set):Float;

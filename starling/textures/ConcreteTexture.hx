@@ -27,6 +27,7 @@ import starling.core.Starling;
 import starling.errors.MissingContextError;
 import starling.events.Event;
 import starling.utils.Color;
+import starling.utils.SafeCast.safe_cast;
 
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture. */
 class ConcreteTexture extends Texture
@@ -149,37 +150,40 @@ class ConcreteTexture extends Texture
      *  upload is complete, at which time the callback function will be executed. This is the
      *  expected function definition: <code>function(texture:Texture):void;</code></p>
      */
-    public function uploadAtfData(data:ByteArray, offset:Int=0, async:Void->Void=null):Void
-    {
-        var eventType:String = "textureReady"; // defined here for backwards compatibility
-        
-        var self:ConcreteTexture = this;
-        var isAsync:Bool =  async != null;
-        var potTexture:openfl.display3D.textures.Texture = 
-              cast(mBase, openfl.display3D.textures.Texture);
-
-        function onTextureReady(event:Event):Void
-        {
-            potTexture.removeEventListener(eventType, onTextureReady);
-
-            // TODO:
-            //var callback:Dynamic = async;
-            //if (Reflect.isFunction(callback))
-            //{
-            //    if (callback.length == 1) Reflect.callMethod(self]);
-            //    else callback();
-            //}
-        }
-        
-        if (potTexture == null)
-            throw new Error("This texture type does not support ATF data");
-        
-        if (Reflect.isFunction(async))
-            potTexture.addEventListener(eventType, onTextureReady);
-        
-        potTexture.uploadCompressedTextureFromByteArray(data, offset, isAsync);
-        mDataUploaded = true;
-    }
+    public function uploadAtfData(data:ByteArray, offset:Int=0, async:Dynamic=null):Void
+	{
+		var eventType:String = "textureReady"; // defined here for backwards compatibility
+		var onTextureReady:Dynamic->Void = null;
+		
+		var self:ConcreteTexture = this;
+		var isAsync:Bool = Reflect.isFunction(async) || async == true;
+		var potTexture:flash.display3D.textures.Texture = 
+			  safe_cast(mBase, flash.display3D.textures.Texture);
+		
+		if (potTexture == null)
+			throw new Error("This texture type does not support ATF data");
+		
+		if (Reflect.isFunction(async))
+			potTexture.addEventListener(eventType, onTextureReady);
+		
+		potTexture.uploadCompressedTextureFromByteArray(data, offset, isAsync);
+		mDataUploaded = true;
+		
+		function onTextureReady(event:Dynamic):Void
+		{
+			potTexture.removeEventListener(eventType, onTextureReady);
+			
+			var callback:Dynamic = async;
+			if (callback != null)
+			{
+				callback(self);
+				#if 0
+				if (callback.length == 1) callback(self);
+				else callback();
+				#end
+			}
+		}
+	}
     
     // texture backup (context loss)
     
@@ -258,7 +262,7 @@ class ConcreteTexture extends Texture
             Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         }
         else mOnRestore = null;
-		return mOnRestore;
+        return mOnRestore;
     }
     
     /** @inheritDoc */

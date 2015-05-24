@@ -30,7 +30,7 @@ import starling.utils.MatrixUtil;
  * 
  *  <p>This class represents the Starling version of the stage. Don't confuse it with its 
  *  Flash equivalent: while the latter contains objects of the type 
- *  <code>openfl.display.DisplayObject</code>, the Starling stage contains only objects of the
+ *  <code>flash.display.DisplayObject</code>, the Starling stage contains only objects of the
  *  type <code>starling.display.DisplayObject</code>. Those classes are not compatible, and 
  *  you cannot exchange one type with the other.</p>
  * 
