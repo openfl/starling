@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -9,14 +9,19 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.errors.ArgumentError;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.system.Capabilities;
-import openfl.ui.Mouse;
-//import openfl.ui.MouseCursor;
-//import openfl.utils.getQualifiedClassName;
+import flash.errors.ArgumentError;
+import flash.errors.IllegalOperationError;
+import flash.geom.Matrix;
+import flash.geom.Matrix3D;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.geom.Vector3D;
+import flash.system.Capabilities;
+import flash.ui.Mouse;
+#if flash
+import flash.ui.MouseCursor;
+#end
+//import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -27,6 +32,7 @@ import starling.events.EventDispatcher;
 import starling.events.TouchEvent;
 import starling.filters.FragmentFilter;
 import starling.utils.HAlign;
+import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.VAlign;
 
@@ -124,8 +130,6 @@ import starling.utils.VAlign;
  */
 class DisplayObject extends EventDispatcher
 {
-    private static var TWO_PI:Float = Math.PI * 2.0;
-    
     // members
     
     private var mX:Float;
@@ -145,13 +149,19 @@ class DisplayObject extends EventDispatcher
     private var mUseHandCursor:Bool;
     private var mParent:DisplayObjectContainer;  
     private var mTransformationMatrix:Matrix;
+    private var mTransformationMatrix3D:Matrix3D;
     private var mOrientationChanged:Bool;
     private var mFilter:FragmentFilter;
+    private var mIs3D:Bool;
     
     /** Helper objects. */
     private static var sAncestors:Array<DisplayObject> = new Array<DisplayObject>();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperRect:Rectangle = new Rectangle();
     private static var sHelperMatrix:Matrix  = new Matrix();
+    private static var sHelperMatrixAlt:Matrix  = new Matrix();
+    private static var sHelperMatrix3D:Matrix3D  = new Matrix3D();
+    private static var sHelperMatrixAlt3D:Matrix3D  = new Matrix3D();
     
     /** @private */ 
     public function new()
@@ -230,23 +240,7 @@ class DisplayObject extends EventDispatcher
         
         // 1. find a common parent of this and the target space
         
-        commonParent = null;
-        currentObject = this;
-        
-        while (currentObject != null)
-        {
-            sAncestors[sAncestors.length] = currentObject; // avoiding 'push'
-            currentObject = currentObject.mParent;
-        }
-        
-        currentObject = targetSpace;
-        while (currentObject != null && sAncestors.indexOf(currentObject) == -1)
-            currentObject = currentObject.mParent;
-        
-        sAncestors = [];
-        
-        if (currentObject != null) commonParent = currentObject;
-        else throw new ArgumentError("Object not connected to target");
+        commonParent = findCommonParent(this, targetSpace);
         
         // 2. move up from this to common parent
         
@@ -276,7 +270,7 @@ class DisplayObject extends EventDispatcher
         resultMatrix.concat(sHelperMatrix);
         
         return resultMatrix;
-    }        
+    }
     
     /** Returns a rectangle that completely encloses the object as it appears in another 
      *  coordinate system. If you pass a 'resultRectangle', the result will be stored in this 
@@ -304,8 +298,16 @@ class DisplayObject extends EventDispatcher
      *  creating a new object. */
     public function localToGlobal(localPoint:Point, resultPoint:Point=null):Point
     {
-        getTransformationMatrix(base, sHelperMatrix);
-        return MatrixUtil.transformCoords(sHelperMatrix, localPoint.x, localPoint.y, resultPoint);
+        if (is3D)
+        {
+            sHelperPoint3D.setTo(localPoint.x, localPoint.y, 0);
+            return local3DToGlobal(sHelperPoint3D, resultPoint);
+        }
+        else
+        {
+            getTransformationMatrix(base, sHelperMatrixAlt);
+            return MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, resultPoint);
+        }
     }
     
     /** Transforms a point from global (stage) coordinates to the local coordinate system.
@@ -313,9 +315,18 @@ class DisplayObject extends EventDispatcher
      *  creating a new object. */
     public function globalToLocal(globalPoint:Point, resultPoint:Point=null):Point
     {
-        getTransformationMatrix(base, sHelperMatrix);
-        sHelperMatrix.invert();
-        return MatrixUtil.transformCoords(sHelperMatrix, globalPoint.x, globalPoint.y, resultPoint);
+        if (is3D)
+        {
+            globalToLocal3D(globalPoint, sHelperPoint3D);
+            return MathUtil.intersectLineWithXYPlane(
+                stage.cameraPosition, sHelperPoint3D, resultPoint);
+        }
+        else
+        {
+            getTransformationMatrix(base, sHelperMatrixAlt);
+            sHelperMatrixAlt.invert();
+            return MatrixUtil.transformPoint(sHelperMatrixAlt, globalPoint, resultPoint);
+        }
     }
     
     /** Renders the display object with the help of a support object. Never call this method
@@ -353,6 +364,116 @@ class DisplayObject extends EventDispatcher
         else throw new ArgumentError("Invalid vertical alignment: " + vAlign);
     }
     
+    // 3D transformation
+
+    /** Creates a matrix that represents the transformation from the local coordinate system
+     *  to another. This method supports three dimensional objects created via 'Sprite3D'.
+     *  If you pass a 'resultMatrix', the result will be stored in this matrix
+     *  instead of creating a new object. */
+    public function getTransformationMatrix3D(targetSpace:DisplayObject,
+                                              resultMatrix:Matrix3D=null):Matrix3D
+    {
+        var commonParent:DisplayObject;
+        var currentObject:DisplayObject;
+
+        if (resultMatrix != null) resultMatrix.identity();
+        else resultMatrix = new Matrix3D();
+
+        if (targetSpace == this)
+        {
+            return resultMatrix;
+        }
+        else if (targetSpace == mParent || (targetSpace == null && mParent == null))
+        {
+            resultMatrix.copyFrom(transformationMatrix3D);
+            return resultMatrix;
+        }
+        else if (targetSpace == null || targetSpace == base)
+        {
+            // targetCoordinateSpace 'null' represents the target space of the base object.
+            // -> move up from this to base
+
+            currentObject = this;
+            while (currentObject != targetSpace)
+            {
+                resultMatrix.append(currentObject.transformationMatrix3D);
+                currentObject = currentObject.mParent;
+            }
+
+            return resultMatrix;
+        }
+        else if (targetSpace.mParent == this) // optimization
+        {
+            targetSpace.getTransformationMatrix3D(this, resultMatrix);
+            resultMatrix.invert();
+
+            return resultMatrix;
+        }
+
+        // 1. find a common parent of this and the target space
+
+        commonParent = findCommonParent(this, targetSpace);
+
+        // 2. move up from this to common parent
+
+        currentObject = this;
+        while (currentObject != commonParent)
+        {
+            resultMatrix.append(currentObject.transformationMatrix3D);
+            currentObject = currentObject.mParent;
+        }
+
+        if (commonParent == targetSpace)
+            return resultMatrix;
+
+        // 3. now move up from target until we reach the common parent
+
+        sHelperMatrix3D.identity();
+        currentObject = targetSpace;
+        while (currentObject != commonParent)
+        {
+            sHelperMatrix3D.append(currentObject.transformationMatrix3D);
+            currentObject = currentObject.mParent;
+        }
+
+        // 4. now combine the two matrices
+
+        sHelperMatrix3D.invert();
+        resultMatrix.append(sHelperMatrix3D);
+
+        return resultMatrix;
+    }
+
+    /** Transforms a 3D point from the local coordinate system to global (stage) coordinates.
+     *  This is achieved by projecting the 3D point onto the (2D) view plane.
+     *
+     *  <p>If you pass a 'resultPoint', the result will be stored in this point instead of
+     *  creating a new object.</p> */
+    public function local3DToGlobal(localPoint:Vector3D, resultPoint:Point=null):Point
+    {
+        var stage:Stage = this.stage;
+        if (stage == null) throw new IllegalOperationError("Object not connected to stage");
+
+        getTransformationMatrix3D(stage, sHelperMatrixAlt3D);
+        MatrixUtil.transformPoint3D(sHelperMatrixAlt3D, localPoint, sHelperPoint3D);
+        return MathUtil.intersectLineWithXYPlane(
+            stage.cameraPosition, sHelperPoint3D, resultPoint);
+    }
+
+    /** Transforms a point from global (stage) coordinates to the 3D local coordinate system.
+     *  If you pass a 'resultPoint', the result will be stored in this point instead of
+     *  creating a new object. */
+    public function globalToLocal3D(globalPoint:Point, resultPoint:Vector3D=null):Vector3D
+    {
+        var stage:Stage = this.stage;
+        if (stage == null) throw new IllegalOperationError("Object not connected to stage");
+
+        getTransformationMatrix3D(stage, sHelperMatrixAlt3D);
+        sHelperMatrixAlt3D.invert();
+        return MatrixUtil.transformCoords3D(
+            sHelperMatrixAlt3D, globalPoint.x, globalPoint.y, 0, resultPoint);
+    }
+
     // internal methods
     
     /** @private */
@@ -370,6 +491,12 @@ class DisplayObject extends EventDispatcher
             mParent = value; 
     }
     
+    /** @private */
+    private function setIs3D(value:Bool):Void
+    {
+        mIs3D = value;
+    }
+
     // helpers
     
     private function isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
@@ -377,18 +504,27 @@ class DisplayObject extends EventDispatcher
         return (a - epsilon < b) && (a + epsilon > b);
     }
     
-    private function normalizeAngle(angle:Float):Float
+    private function findCommonParent(object1:DisplayObject,
+                                            object2:DisplayObject):DisplayObject
     {
-        // move to equivalent value in range [0 deg, 360 deg] without a loop
-        angle = angle % TWO_PI;
+        var currentObject:DisplayObject = object1;
 
-        // move to [-180 deg, +180 deg]
-        if (angle < -Math.PI) angle += TWO_PI;
-        if (angle >  Math.PI) angle -= TWO_PI;
+        while (currentObject != null)
+        {
+            sAncestors[sAncestors.length] = currentObject; // avoiding 'push'
+            currentObject = currentObject.mParent;
+        }
 
-        return angle;
+        currentObject = object2;
+        while (currentObject != null && sAncestors.indexOf(currentObject) == -1)
+            currentObject = currentObject.mParent;
+
+        sAncestors.splice(0, sAncestors.length);
+
+        if (currentObject != null) return currentObject;
+        else throw new ArgumentError("Object not connected to target");
     }
-    
+
     // stage event handling
     
     public override function dispatchEvent(event:Event):Void
@@ -407,6 +543,7 @@ class DisplayObject extends EventDispatcher
     // part of the stage, (b) it must not cause memory leaks when the user forgets to call
     // dispose and (c) there might be multiple listeners for this event.
     
+    /** @inheritDoc */
     public override function addEventListener(type:String, listener:Dynamic):Void
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
@@ -419,6 +556,7 @@ class DisplayObject extends EventDispatcher
         super.addEventListener(type, listener);
     }
     
+    /** @inheritDoc */
     public override function removeEventListener(type:String, listener:Dynamic):Void
     {
         super.removeEventListener(type, listener);
@@ -431,16 +569,17 @@ class DisplayObject extends EventDispatcher
         }
     }
     
+    /** @inheritDoc */
     public override function removeEventListeners(type:String=null):Void
     {
-        super.removeEventListeners(type);
-        
-        if (type == null || type == Event.ENTER_FRAME)
+        if ((type == null || type == Event.ENTER_FRAME) && hasEventListener(Event.ENTER_FRAME))
         {
             removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
             removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
             removeEnterFrameListenerFromStage();
         }
+
+        super.removeEventListeners(type);
     }
     
     private function addEnterFrameListenerToStage(e:Event = null):Void
@@ -551,6 +690,27 @@ class DisplayObject extends EventDispatcher
         return mTransformationMatrix;
     }
     
+    /** The 3D transformation matrix of the object relative to its parent.
+     *
+     *  <p>For 2D objects, this property returns just a 3D version of the 2D transformation
+     *  matrix. Only the 'Sprite3D' class supports real 3D transformations.</p>
+     *
+     *  <p>CAUTION: not a copy, but the actual object!</p> */
+    public var transformationMatrix3D(get, never):Matrix3D;
+    public function get_transformationMatrix3D():Matrix3D
+    {
+        // this method needs to be overriden in 3D-supporting subclasses (like Sprite3D).
+
+        if (mTransformationMatrix3D == null)
+            mTransformationMatrix3D = new Matrix3D();
+
+        return MatrixUtil.convertTo3D(transformationMatrix, mTransformationMatrix3D);
+    }
+
+    /** Indicates if this object or any of its parents is a 'Sprite3D' object. */
+    public var is3D(get, never):Bool;
+    public function get_is3D():Bool { return mIs3D; }
+
     /** Indicates if the mouse cursor should transform into a hand while it's over the sprite. 
      *  @default false */
     public var useHandCursor(get, set):Bool;
@@ -580,7 +740,9 @@ class DisplayObject extends EventDispatcher
         return getBounds(mParent);
     }
     
-    /** The width of the object in pixels. */
+    /** The width of the object in pixels.
+     *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
+     *  be accurate until the object is part of the display list. */
     public var width(get, set):Float;
     private function get_width():Float { return getBounds(mParent, sHelperRect).width; }
     private function set_width(value:Float):Float
@@ -594,7 +756,9 @@ class DisplayObject extends EventDispatcher
         return getBounds(mParent, sHelperRect).width;
     }
     
-    /** The height of the object in pixels. */
+    /** The height of the object in pixels.
+     *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
+     *  be accurate until the object is part of the display list. */
     public var height(get, set):Float;
     private function get_height():Float { return getBounds(mParent, sHelperRect).height; }
     private function set_height(value:Float):Float
@@ -688,7 +852,7 @@ class DisplayObject extends EventDispatcher
     private function get_skewX():Float { return mSkewX; }
     private function set_skewX(value:Float):Float 
     {
-        value = normalizeAngle(value);
+        value = MathUtil.normalizeAngle(value);
         
         if (mSkewX != value)
         {
@@ -703,7 +867,7 @@ class DisplayObject extends EventDispatcher
     private function get_skewY():Float { return mSkewY; }
     private function set_skewY(value:Float):Float 
     {
-        value = normalizeAngle(value);
+        value = MathUtil.normalizeAngle(value);
         
         if (mSkewY != value)
         {
@@ -719,7 +883,7 @@ class DisplayObject extends EventDispatcher
     private function get_rotation():Float { return mRotation; }
     private function set_rotation(value:Float):Float 
     {
-        value = normalizeAngle(value);
+        value = MathUtil.normalizeAngle(value);
 
         if (mRotation != value)
         {            
@@ -763,7 +927,7 @@ class DisplayObject extends EventDispatcher
     
     /** The filter that is attached to the display object. The starling.filters
      *  package contains several classes that define specific filters you can use. 
-     *  Beware that you should NOT use the same filter on more than one object (for 
+     *  Beware that a filter should NOT be attached to different objects simultaneously (for
      *  performance reasons). Furthermore, when you set this property to 'null' or
      *  assign a different filter, the previous filter is NOT disposed automatically
      *  (since you might want to reuse it). */

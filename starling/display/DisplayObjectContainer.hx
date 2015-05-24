@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -9,19 +9,22 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.errors.ArgumentError;
-import openfl.errors.RangeError;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.system.Capabilities;
-import starling.utils.Max;
+import flash.errors.ArgumentError;
+import flash.errors.RangeError;
+import flash.geom.Matrix;
+import flash.geom.Matrix3D;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.geom.Vector3D;
+import flash.system.Capabilities;
+//import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
 import starling.errors.AbstractClassError;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
 import starling.utils.MatrixUtil;
+import starling.utils.Max;
 
 /**
  *  A DisplayObjectContainer represents a collection of display objects.
@@ -69,7 +72,9 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperMatrix3D:Matrix3D = new Matrix3D();
     private static var sHelperPoint:Point = new Point();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sBroadcastListeners:Array<DisplayObject> = new Array<DisplayObject>();
     private static var sSortBuffer:Array<DisplayObject> = new Array<DisplayObject>();
     
@@ -296,7 +301,7 @@ class DisplayObjectContainer extends DisplayObject
         }
         else if (numChildren == 1)
         {
-            resultRect = mChildren[0].getBounds(targetSpace, resultRect);
+            mChildren[0].getBounds(targetSpace, resultRect);
         }
         else
         {
@@ -307,10 +312,11 @@ class DisplayObjectContainer extends DisplayObject
             for (i in 0 ... numChildren)
             {
                 mChildren[i].getBounds(targetSpace, resultRect);
-                minX = minX < resultRect.x ? minX : resultRect.x;
-                maxX = maxX > resultRect.right ? maxX : resultRect.right;
-                minY = minY < resultRect.y ? minY : resultRect.y;
-                maxY = maxY > resultRect.bottom ? maxY : resultRect.bottom;
+
+                if (minX > resultRect.x)      minX = resultRect.x;
+                if (maxX < resultRect.right)  maxX = resultRect.right;
+                if (minY > resultRect.y)      minY = resultRect.y;
+                if (maxY < resultRect.bottom) maxY = resultRect.bottom;
             }
             
             resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
@@ -318,7 +324,7 @@ class DisplayObjectContainer extends DisplayObject
         
         return resultRect;
     }
-    
+
     /** @inheritDoc */
     public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {

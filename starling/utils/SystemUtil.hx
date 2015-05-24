@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2014 Gamua OG. All Rights Reserved.
+//	Copyright 2011-2014 Gamua. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -22,7 +22,9 @@ class SystemUtil
 {
     private static var sInitialized:Bool = false;
     private static var sApplicationActive:Bool = true;
-    private static var sWaitingCalls:Array<Dynamic> = new Array<Dynamic>();
+    private static var sWaitingCalls:Array<Array<Dynamic>> = [];
+    private static var sPlatform:String;
+    private static var sVersion:String;
     private static var sAIR:Bool;
     
     /** @private */
@@ -35,6 +37,7 @@ class SystemUtil
         if (sInitialized) return;
         
         sInitialized = true;
+        sVersion = Capabilities.version.substr(4);
         
         try
         {
@@ -119,5 +122,24 @@ class SystemUtil
         #else
         return "";
         #end
+    }
+
+    /** Returns the Flash Player/AIR version string. The format of the version number is:
+     *  <em>majorVersion,minorVersion,buildNumber,internalBuildNumber</em>. */
+    public static function get_version():String
+    {
+        initialize();
+        return sVersion;
+    }
+
+    /** Prior to Flash/AIR 15, there was a restriction that the clear function must be
+     *  called on a render target before drawing. This requirement was removed subsequently,
+     *  and this property indicates if that's the case in the current runtime. */
+    public static var supportsRelaxedTargetClearRequirement(get, never):Bool;
+    public static function get_supportsRelaxedTargetClearRequirement():Bool
+    {
+        var reg = ~/\d+/;
+        reg.match(sVersion);
+        return Std.parseInt(reg.matched(0)) >= 15;
     }
 }
