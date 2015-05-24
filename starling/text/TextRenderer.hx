@@ -12,6 +12,7 @@ package starling.text;
 import lime.text.GlyphPosition;
 import lime.text.TextLayout;
 import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
 import openfl.text.TextLineMetrics;
 import starling.display.BlendMode;
 import starling.textures.RenderTexture;
@@ -91,11 +92,12 @@ class TextRenderer
             //x position must be reset every line and recalculated 
             x = oldX;
             
-            x += switch (format.align)
+            var align:TextFormatAlign = format.align != null ? format.align : TextFormatAlign.LEFT;
+            x += switch (align)
             {
-                case LEFT, JUSTIFY: 0;
+                case LEFT, JUSTIFY: 2;
                 case CENTER: ((textField.__width) - tlm.width) / 2;
-                case RIGHT:  ((textField.__width) - tlm.width);
+                case RIGHT:  ((textField.__width) - tlm.width) - 2;
             }
             
             textLayout.text = null;
@@ -180,6 +182,7 @@ class TextRenderer
         
         sSupport.setRenderTarget(texture);
         sSupport.clear();
+        sSupport.blendMode = BlendMode.NONE;
         
         for (quadBatch in sQuadBatches.keys())
         {
