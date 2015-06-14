@@ -172,7 +172,7 @@ class Tween extends EventDispatcher implements IAnimatable
         for(i in 0 ... numProperties)
         {                
             if (mStartValues[i] != mStartValues[i]) // isNaN check - "isNaN" causes allocation! 
-                mStartValues[i] = cast(Reflect.getProperty(mTarget, mProperties[i]), Float);
+                mStartValues[i] = Reflect.getProperty(mTarget, mProperties[i]);
             
             var startValue:Float = mStartValues[i];
             var endValue:Float = mEndValues[i];
