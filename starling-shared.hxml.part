@@ -1,0 +1,4 @@
+--no-output
+-lib codegen
+--macro "CodeImport.generate()"
+--macro "CodeGen.haxeExtern('hxclasses', null, 'starling', null, null, 'starling')"
