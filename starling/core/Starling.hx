@@ -21,7 +21,6 @@ import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.display3D.Context3DTriangleFace;
-import flash.display3D.OpenFLStage3D;
 import flash.display3D.Program3D;
 import flash.display3D._shaders.Shader;
 import flash.errors.IllegalOperationError;
@@ -269,7 +268,7 @@ class Starling extends EventDispatcher
         if (rootClass == null) throw new ArgumentError("Root class must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
-        if (stage3D == null) stage3D = OpenFLStage3D.getStage3D(stage, 0);
+        if (stage3D == null) stage3D = stage.stage3Ds[0];
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
 
         SystemUtil.initialize();
