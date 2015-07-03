@@ -262,7 +262,7 @@ class TextField extends DisplayObjectContainer
         }
 
         var textFormat:TextFormat = new TextFormat(mFontName, 
-            mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
+            Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
         textFormat.kerning = mKerning;
         
         sNativeTextField.defaultTextFormat = textFormat;
@@ -359,7 +359,7 @@ class TextField extends DisplayObjectContainer
     
     private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
     {
-        var size:Float   = textField.defaultTextFormat.size;
+        var size:Int   = textField.defaultTextFormat.size;
         var maxHeight:Int = Std.int(textField.height - 4);
         var maxWidth:Int  = Std.int(textField.width - 4);
         
