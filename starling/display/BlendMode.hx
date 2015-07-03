@@ -96,8 +96,9 @@ class BlendMode
     public static function getBlendFactors(mode:String, premultipliedAlpha:Bool=true):Array<Context3DBlendFactor>
     {
         var modes:Map<String, Array<Context3DBlendFactor>> = sBlendFactors[premultipliedAlpha ? 1 : 0];
-        if (modes.exists(mode))
-            return modes[mode];
+        var ret = modes[mode];
+        if (ret != null)
+            return ret;
         else throw new ArgumentError("Invalid blend mode");
     }
     
