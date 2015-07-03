@@ -5,8 +5,7 @@
 -cp C:/HaxeToolkit/haxe/lib/lime/git/hxclasses
 -D lime=2.4.3
 --macro allowPackage("sys")
--cp C:\HaxeToolkit\haxe\lib\nodejs\git
--cp C:\HaxeToolkit\haxe\lib\nodejs\git\hxclasses
+-lib nodejs
 -D nodejs=2.2.7
 -cp C:/HaxeToolkit/haxe/lib/openfl/git
 -cp C:/HaxeToolkit/haxe/lib/openfl/git/hxclasses
