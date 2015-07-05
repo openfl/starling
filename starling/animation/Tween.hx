@@ -78,6 +78,7 @@ class Tween extends EventDispatcher implements IAnimatable
      *         documentation about the required function signature. */ 
     public function new(target:Dynamic, time:Float, transition:Dynamic="linear")        
     {
+         super();
          reset(target, time, transition);
     }
 

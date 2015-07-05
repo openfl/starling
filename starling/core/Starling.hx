@@ -262,6 +262,7 @@ class Starling extends EventDispatcher
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
                              renderMode:Context3DRenderMode=null, profile:Dynamic=null)
     {
+        super();
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");

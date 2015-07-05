@@ -167,6 +167,7 @@ class DisplayObject extends EventDispatcher
     /** @private */ 
     public function new()
     {
+        super();
         /*
         if (Capabilities.isDebugger && 
             getQualifiedClassName(this) == "starling.display::DisplayObject")

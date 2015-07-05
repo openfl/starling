@@ -157,6 +157,7 @@ class AssetManager extends EventDispatcher
      *  how enqueued bitmaps will be converted to textures. */
     public function new(scaleFactor:Float=1, useMipmaps:Bool=false)
     {
+        super();
         mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
         mTextures = new Map();
         mAtlases = new Map();

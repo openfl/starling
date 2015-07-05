@@ -43,8 +43,8 @@ class EventDispatcher
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
     
     /** Creates an EventDispatcher. */
-    //public function EventDispatcher()
-    //{  }
+    public function new()
+    {  }
     
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Dynamic):Void
