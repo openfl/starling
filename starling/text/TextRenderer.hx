@@ -63,6 +63,9 @@ class TextRenderer
     
     public function renderText(textField:openfl.text.TextField, texture:Texture, text:String, format:TextFormat, offsetX:Float, offsetY:Float)
     {
+        var currentSupport:RenderSupport = @:privateAccess Starling.current.mSupport;
+        currentSupport.finishQuadBatch();
+        
         // based on OpenFL's TextFieldGraphics
         
         var bounds:Rectangle = textField.getBounds(null);
@@ -194,6 +197,9 @@ class TextRenderer
         sSupport.nextFrame();
         sSupport.renderTarget = null;
         sSupport.popClipRect();
+        
+        currentSupport.renderTarget = currentSupport.renderTarget;
+        currentSupport.applyClipRect();
     }
     
     private function addChars(text:String, result:Array<BitmapChar> = null)
