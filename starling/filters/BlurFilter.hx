@@ -40,7 +40,7 @@ class BlurFilter extends FragmentFilter
     private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Array<Float> = new Array<Float>();
+    private var sTmpWeights:Array<Float> = [0, 0, 0, 0, 0];
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>. 
@@ -62,8 +62,6 @@ class BlurFilter extends FragmentFilter
         mBlurX = blurX;
         mBlurY = blurY;
         updateMarginsAndPasses();
-        for(i in 0 ... 5)
-            sTmpWeights[i] = 0;
     }
     
     /** Creates a blur filter that is set up for a drop shadow effect. */
