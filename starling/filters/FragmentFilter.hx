@@ -76,7 +76,7 @@ class FragmentFilter
     private inline static var MIN_TEXTURE_SIZE:Int = 64;
     
     /** All filter processing is expected to be done with premultiplied alpha. */
-    private inline static var PMA:Bool = false;
+    private inline static var PMA:Bool = true;
     
     /** The standard vertex shader code. It will be used automatically if you don't create
      *  a custom vertex shader yourself. */

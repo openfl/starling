@@ -23,7 +23,7 @@ class FTBFTextureCache
 
     public function new(width:Int, height:Int)
     {
-        texture = Texture.empty(width, height, false, false, false, -1, Context3DTextureFormat.ALPHA, false);
+        texture = Texture.empty(width, height, true, false, false, -1, Context3DTextureFormat.ALPHA, false);
         var tmpImage:UInt8Array = new UInt8Array(width * height);
         var stdTexture:openfl.display3D.textures.Texture = Std.instance(texture.base, openfl.display3D.textures.Texture);
         if (stdTexture != null)

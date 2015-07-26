@@ -255,7 +255,7 @@ class Texture
                                           repeat:Bool=false):Texture
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
-        var texture:Texture = Texture.empty(data.width / scale, data.height / scale, false, 
+        var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true, 
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
         

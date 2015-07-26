@@ -89,10 +89,10 @@ class ColorMatrixFilter extends FragmentFilter
             var fragmentShader:String =
                 "tex ft0, v0,  fs0 <2d, clamp, linear, mipnone>  \n" + // read texture color
                 "max ft0, ft0, fc5              \n" + // avoid division through zero in next step
-                //"div ft0.xyz, ft0.xyz, ft0.www  \n" + // restore original (non-PMA) RGB values
+                "div ft0.xyz, ft0.xyz, ft0.www  \n" + // restore original (non-PMA) RGB values
                 "m44 ft0, ft0, fc0              \n" + // multiply color with 4x4 matrix
                 "add ft0, ft0, fc4              \n" + // add offset
-                //"mul ft0.xyz, ft0.xyz, ft0.www  \n" + // multiply with alpha again (PMA)
+                "mul ft0.xyz, ft0.xyz, ft0.www  \n" + // multiply with alpha again (PMA)
                 "mov oc, ft0                    \n";  // copy to output
 
             mShaderProgram = target.registerProgramFromSource(PROGRAM_NAME,
