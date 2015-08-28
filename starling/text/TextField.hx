@@ -9,7 +9,7 @@
 // =================================================================================================
 
 package starling.text;
-import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.text.TextEngine;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.StageQuality;
@@ -341,7 +341,7 @@ class TextField extends DisplayObjectContainer
         var textRenderer:TextRenderer = renderers.get(formatStr);
         if (textRenderer == null)
         {
-            textRenderer = new TextRenderer(@:privateAccess CairoTextField.getFontInstance(textFormat), Std.int(textFormat.size));
+            textRenderer = new TextRenderer(@:privateAccess TextEngine.getFontInstance(textFormat), Std.int(textFormat.size));
             renderers.set(formatStr, textRenderer);
         }
         textRenderer.renderText(sNativeTextField, texture, mText, textFormat, filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);

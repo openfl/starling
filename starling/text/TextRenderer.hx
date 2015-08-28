@@ -11,6 +11,7 @@
 package starling.text;
 import lime.text.GlyphPosition;
 import lime.text.TextLayout;
+import openfl._internal.text.TextEngine;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.text.TextLineMetrics;
@@ -48,6 +49,7 @@ class TextRenderer
     private var mFont:Font;
     private var mSize:Int;
     private var mGlyphs:Map<Glyph, GlyphTextureInfo>;
+    private var mTextLayout:TextLayout;
     
     private static var fontCaches(get, never):Array<FTBFTextureCache>;
     private static var sClipRect:Rectangle = new Rectangle();
@@ -59,11 +61,13 @@ class TextRenderer
         mFont = font;
         mSize = size;
         mGlyphs = new Map();
+        mTextLayout = new TextLayout();
     }
     
     public function renderText(textField:openfl.text.TextField, texture:Texture, text:String, format:TextFormat, offsetX:Float, offsetY:Float)
     {
         var currentSupport:RenderSupport = @:privateAccess Starling.current.mSupport;
+        var previousRenderTarget:Texture = currentSupport.renderTarget;
         currentSupport.finishQuadBatch();
         
         // based on OpenFL's TextFieldGraphics
@@ -79,10 +83,8 @@ class TextRenderer
         
         var lines:Array<String> = text.split("\n");
         
-        if (textField.__textLayout == null)
-            textField.__textLayout = new TextLayout();
-        
-        var textLayout:TextLayout = textField.__textLayout;
+        var textEngine:TextEngine = textField.__textEngine;
+        var textLayout:TextLayout = mTextLayout;
         
         var line_i:Int = 0;
         var oldX:Float = x;
@@ -99,8 +101,8 @@ class TextRenderer
             x += switch (align)
             {
                 case LEFT, JUSTIFY: 2;
-                case CENTER: ((textField.__width) - tlm.width) / 2;
-                case RIGHT:  ((textField.__width) - tlm.width) - 2;
+                case CENTER: ((textEngine.width) - tlm.width) / 2;
+                case RIGHT:  ((textEngine.width) - tlm.width) - 2;
             }
             
             textLayout.text = null;
@@ -198,8 +200,7 @@ class TextRenderer
         sSupport.renderTarget = null;
         sSupport.popClipRect();
         
-        currentSupport.renderTarget = currentSupport.renderTarget;
-        currentSupport.applyClipRect();
+        currentSupport.renderTarget = previousRenderTarget;
     }
     
     private function addChars(text:String, result:Array<BitmapChar> = null)
