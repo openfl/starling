@@ -66,9 +66,11 @@ class TextRenderer
     
     public function renderText(textField:openfl.text.TextField, texture:Texture, text:String, format:TextFormat, offsetX:Float, offsetY:Float)
     {
-        var currentSupport:RenderSupport = @:privateAccess Starling.current.mSupport;
-        var previousRenderTarget:Texture = currentSupport.renderTarget;
-        currentSupport.finishQuadBatch();
+        var prevSupport:RenderSupport = @:privateAccess Starling.current.mSupport;
+        prevSupport.finishQuadBatch();
+        if (sSupport == null)
+            sSupport = new RenderSupport();
+        var previousRenderTarget:Texture = sSupport.renderTarget;
         
         // based on OpenFL's TextFieldGraphics
         
@@ -175,10 +177,6 @@ class TextRenderer
             
         }
         
-        
-        if (sSupport == null)
-            sSupport = new RenderSupport();
-        
         var rootWidth:Float = texture.root.width;
         var rootHeight:Float = texture.root.height;
         sSupport.setProjectionMatrix(0, 0, rootWidth, rootHeight);
@@ -200,7 +198,7 @@ class TextRenderer
         sSupport.renderTarget = null;
         sSupport.popClipRect();
         
-        currentSupport.renderTarget = previousRenderTarget;
+        sSupport.renderTarget = previousRenderTarget;
     }
     
     private function addChars(text:String, result:Array<BitmapChar> = null)

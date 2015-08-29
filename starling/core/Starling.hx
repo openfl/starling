@@ -225,9 +225,7 @@ class Starling extends EventDispatcher
 
     private static var sCurrent:Starling;
     private static var sHandleLostContext:Bool;
-    private static var sContextData:Map<Stage3D, Dynamic> = new Map<Stage3D, Dynamic>();
-    private static var sPrograms:Map<Stage3D, Map<String, Program3D>> = new Map<Stage3D, Map<String, Program3D>>();
-    private static var sBitmapFonts:Map<Stage3D, Map<String, BitmapFont>> = new Map<Stage3D, Map<String, BitmapFont>>();
+    private static var sContextData:Map<Stage3D, Map<String, Dynamic>> = new Map<Stage3D, Map<String, Dynamic>>();
     #if (cpp || neko || nodejs)
     private static var sTextRenderers:Map<Stage3D, Map<String, TextRenderer>> = new Map();
     private static var sFontCaches:Map<Stage3D, Array<FTBFTextureCache>> = new Map(); 
@@ -295,8 +293,8 @@ class Starling extends EventDispatcher
         mSupport  = new RenderSupport();
         
         // for context data, we actually reference by stage3D, since it survives a context loss
-        var contextData:Map<String, Program3D> = new Map<String, Program3D>();
-        sPrograms.set(stage3D, contextData);
+        sContextData[stage3D] = new Map<String, Dynamic>();
+        sContextData[stage3D][PROGRAM_DATA_NAME] = new Map<String, Program3D>();
 
         // all other modes are problematic in Starling, so we force those here
         stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -926,7 +924,7 @@ class Starling extends EventDispatcher
     }
     
     private var programs(get, never):Map<String, Program3D>;
-    private function get_programs():Map<String, Program3D> { return sPrograms[stage3D]; }
+    private function get_programs():Map<String, Program3D> { return contextData[PROGRAM_DATA_NAME]; }
     
     // properties
     
@@ -947,22 +945,10 @@ class Starling extends EventDispatcher
      *  (e.g. textures), use this dictionary instead of creating a static class variable.
      *  The Dictionary is actually bound to the stage3D instance, thus it survives a 
      *  context loss. */
-    public var contextData(get, never):Dynamic;
-    private function get_contextData():Dynamic
+    public var contextData(get, never):Map<String, Dynamic>;
+    private function get_contextData():Map<String, Dynamic>
     {
         return sContextData.get(mStage3D);
-    }
-
-    /** Returns the bitmap fonts associated with the context. */
-    public var bitmapFonts(get, set):Map<String, BitmapFont>;
-    private function get_bitmapFonts():Map<String, BitmapFont>
-    {
-        return sBitmapFonts.get(mStage3D);
-    }
-    private function set_bitmapFonts(fonts:Map<String, BitmapFont>):Map<String, BitmapFont>
-    {
-        sBitmapFonts.set(mStage3D, fonts);
-        return fonts;
     }
     
     /** Returns the text renderers associated with the context. */

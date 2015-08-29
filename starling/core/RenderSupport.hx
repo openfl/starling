@@ -44,6 +44,8 @@ import starling.utils.RectangleUtil;
  */
 class RenderSupport
 {
+    inline private static var RENDER_TARGET_NAME:String = "Starling.renderTarget";
+    
     // members
     
     private var mProjectionMatrix:Matrix;
@@ -62,7 +64,6 @@ class RenderSupport
 
     private var mDrawCount:Int;
     private var mBlendMode:String;
-    private var mRenderTarget:Texture;
     
     private var mClipRectStack:Array<Rectangle>;
     private var mClipRectStackSize:Int;
@@ -98,7 +99,6 @@ class RenderSupport
         mMatrixStack3DSize = 0;
         
         mDrawCount = 0;
-        mRenderTarget = null;
         mBlendMode = BlendMode.NORMAL;
         mClipRectStack = new Array<Rectangle>();
         mClipRectStackSize = 0;
@@ -361,11 +361,11 @@ class RenderSupport
     /** The texture that is currently being rendered into, or 'null' to render into the 
      *  back buffer. If you set a new target, it is immediately activated. */
     public var renderTarget(get, set):Texture;
-    private function get_renderTarget():Texture { return mRenderTarget; }
+    private function get_renderTarget():Texture { return Starling.current.contextData[RENDER_TARGET_NAME]; }
     private function set_renderTarget(target:Texture):Texture 
     {
         setRenderTarget(target);
-        return mRenderTarget;
+        return target;
     }
 
     /** Changes the the current render target.
@@ -375,7 +375,7 @@ class RenderSupport
      */
     public function setRenderTarget(target:Texture, antiAliasing:Int=0):Void
     {
-        mRenderTarget = target;
+        Starling.current.contextData[RENDER_TARGET_NAME] = target;
         applyClipRect();
         
         if (target != null) Starling.current.context.setRenderToTexture(target.base, false, antiAliasing);
@@ -433,11 +433,12 @@ class RenderSupport
         {
             var width:Int, height:Int;
             var rect:Rectangle = mClipRectStack[mClipRectStackSize-1];
+            var renderTarget:Texture = this.renderTarget;
             
-            if (mRenderTarget != null)
+            if (renderTarget != null)
             {
-                width  = Std.int(mRenderTarget.root.nativeWidth);
-                height = Std.int(mRenderTarget.root.nativeHeight);
+                width  = Std.int(renderTarget.root.nativeWidth);
+                height = Std.int(renderTarget.root.nativeHeight);
             }
             else
             {

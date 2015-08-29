@@ -856,12 +856,12 @@ class TextField extends DisplayObjectContainer
     private static var bitmapFonts(get, never):Map<String, BitmapFont>;
     private static function get_bitmapFonts():Map<String, BitmapFont>
     {
-        var fonts:Map<String, BitmapFont> = Starling.current.bitmapFonts;
+        var fonts:Map<String, BitmapFont> = Starling.current.contextData[BITMAP_FONT_DATA_NAME];
         
         if (fonts == null)
         {
-            fonts = new Map<String, BitmapFont>();
-            Starling.current.bitmapFonts = fonts;
+            fonts = new Map();
+            Starling.current.contextData[BITMAP_FONT_DATA_NAME] = fonts;
         }
         
         return fonts;
