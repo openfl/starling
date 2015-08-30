@@ -52,7 +52,13 @@ class MathUtil
 
         return angle;
     }
-
+    
+    /** Moves 'value' into the range between 'min' and 'max'. */
+    public static function clamp(value:Float, min:Float, max:Float):Float
+    {
+        return value < min ? min : (value > max ? max : value);
+    }
+    
     /** Returns the smallest value in an array. */
     public static function min(values:Array<Float>):Float
     {
@@ -64,7 +70,7 @@ class MathUtil
                 min = values[i];
         return min;
     }
-
+    
     /** Converts an angle from degrees into radians. */
     public static function deg2rad(deg:Float):Float
     {

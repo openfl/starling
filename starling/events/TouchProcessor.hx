@@ -246,6 +246,33 @@ class TouchProcessor
         
         enqueue(0, TouchPhase.HOVER, exitX, exitY);
     }
+
+    /** Force-end all current touches. Changes the phase of all touches to 'ENDED' and
+     *  immediately dispatches a new TouchEvent (if touches are present). Called automatically
+     *  when the app receives a 'DEACTIVATE' event. */
+    public function cancelTouches():Void
+    {
+        if (mCurrentTouches.length > 0)
+        {
+            // abort touches
+            for (touch in mCurrentTouches)
+            {
+                if (touch.phase == TouchPhase.BEGAN || touch.phase == TouchPhase.MOVED ||
+                    touch.phase == TouchPhase.STATIONARY)
+                {
+                    touch.phase = TouchPhase.ENDED;
+                    touch.cancelled = true;
+                }
+            }
+
+            // dispatch events
+            processTouches(mCurrentTouches, mShiftDown, mCtrlDown);
+        }
+
+        // purge touches
+        mCurrentTouches.splice(0, mCurrentTouches.length);
+        mQueue.splice(0, mQueue.length);
+    }
     
     private function createOrUpdateTouch(touchID:Int, phase:String,
                                          globalX:Float, globalY:Float,
@@ -444,24 +471,6 @@ class TouchProcessor
     
     private function onInterruption(event:Dynamic):Void
     {
-        if (mCurrentTouches.length > 0)
-        {
-            // abort touches
-            for(touch in mCurrentTouches)
-            {
-                if (touch.phase == TouchPhase.BEGAN || touch.phase == TouchPhase.MOVED ||
-                    touch.phase == TouchPhase.STATIONARY)
-                {
-                    touch.phase = TouchPhase.ENDED;
-                }
-            }
-
-            // dispatch events
-            processTouches(mCurrentTouches, mShiftDown, mCtrlDown);
-        }
-
-        // purge touches
-        mCurrentTouches = [];
-        mQueue = [];
+        cancelTouches();
     }
 }

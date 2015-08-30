@@ -9,11 +9,15 @@
 // =================================================================================================
 
 package starling.utils;
+import flash.display3D.Context3D;
+import flash.events.Event;
+import flash.events.EventDispatcher;
+import flash.system.Capabilities;
+#if 0
+import flash.utils.getDefinitionByName;
+#end
+import flash.Lib;
 import openfl.errors.Error;
-import openfl.events.Event;
-import openfl.events.EventDispatcher;
-import openfl.Lib;
-import openfl.system.Capabilities;
 
 import starling.errors.AbstractClassError;
 
@@ -26,6 +30,7 @@ class SystemUtil
     private static var sPlatform:String;
     private static var sVersion:String;
     private static var sAIR:Bool;
+    private static var sSupportsDepthAndStencil:Bool = false/*true*/;
     
     /** @private */
     public function SystemUtil() { throw new AbstractClassError(); }
@@ -41,9 +46,18 @@ class SystemUtil
         
         try
         {
-            Lib.current.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
-            Lib.current.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);
-            
+            var nativeApp = Lib.current;
+
+            nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
+            nativeApp.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);
+
+            #if 0
+            var appDescriptor:XML = nativeApp["applicationDescriptor"];
+            var ns:Namespace = appDescriptor.namespace();
+            var ds:String = appDescriptor.ns::initialWindow.ns::depthAndStencil.toString().toLowerCase();
+
+            sSupportsDepthAndStencil = (ds == "true");
+            #end
             sAIR = true;
         }
         catch (e:Error)
@@ -141,5 +155,22 @@ class SystemUtil
         var reg = ~/\d+/;
         reg.match(sVersion);
         return Std.parseInt(reg.matched(0)) >= 15;
+    }
+
+    /** Returns the value of the 'initialWindow.depthAndStencil' node of the application
+     *  descriptor, if this in an AIR app; otherwise always <code>true</code>. */
+    public static var supportsDepthAndStencil(get, never):Bool;
+    public static function get_supportsDepthAndStencil():Bool
+    {
+        return sSupportsDepthAndStencil;
+    }
+
+    /** Indicates if Context3D supports video textures. At the time of this writing,
+     *  video textures are only supported on Windows, OS X and iOS, and only in AIR
+     *  applications (not the Flash Player). */
+    public static var supportsVideoTexture(get, never):Bool;
+    public static function get_supportsVideoTexture():Bool
+    {
+        return Type.getInstanceFields(Context3D).indexOf("supportsVideoTexture") != -1;
     }
 }

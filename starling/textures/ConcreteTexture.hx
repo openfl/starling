@@ -9,29 +9,40 @@
 // =================================================================================================
 
 package starling.textures;
-import haxe.CallStack;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display3D.Context3D;
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.display3D.Context3D;
+import flash.display3D.textures.TextureBase;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+#if flash
+import flash.media.Camera;
+#end
+import flash.net.NetStream;
+import flash.utils.ByteArray;
+#if 0
+import flash.utils.getQualifiedClassName;
+#end
 import openfl.display3D.Context3DTextureFormat;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.display3D.textures.TextureBase;
 import openfl.errors.Error;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.utils.ByteArray;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
 import starling.errors.MissingContextError;
+import starling.errors.NotSupportedError;
 import starling.events.Event;
 import starling.utils.Color;
 import starling.utils.SafeCast.safe_cast;
+//import starling.utils.execute;
+
+//use namespace starling_internal;
 
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture. */
 class ConcreteTexture extends Texture
 {
+    inline private static var TEXTURE_READY:String = "textureReady"; // defined here for backwards compatibility
+    
     private var mBase:TextureBase;
     private var mFormat:Context3DTextureFormat;
     private var mWidth:Int;
@@ -43,6 +54,7 @@ class ConcreteTexture extends Texture
     private var mRepeat:Bool;
     private var mOnRestore:Void -> Void;
     private var mDataUploaded:Bool;
+    private var mTextureReadyCallback:Dynamic;
     
     /** helper object */
     private static var sOrigin:Point = new Point();
@@ -66,13 +78,19 @@ class ConcreteTexture extends Texture
         mRepeat = repeat;
         mOnRestore = null;
         mDataUploaded = false;
+        mTextureReadyCallback = null;
     }
     
     /** Disposes the TextureBase object. */
     public override function dispose():Void
     {
-        if (mBase != null) mBase.dispose();
-        this.onRestore = null; // removes event listener 
+        if (mBase != null)
+        {
+            mBase.removeEventListener(TEXTURE_READY, onTextureReady);
+            mBase.dispose();
+        }
+
+        this.onRestore = null; // removes event listener
         super.dispose();
     }
     
@@ -152,10 +170,6 @@ class ConcreteTexture extends Texture
      */
     public function uploadAtfData(data:ByteArray, offset:Int=0, async:Dynamic=null):Void
     {
-        var eventType:String = "textureReady"; // defined here for backwards compatibility
-        var onTextureReady:Dynamic->Void = null;
-        
-        var self:ConcreteTexture = this;
         var isAsync:Bool = Reflect.isFunction(async) || async == true;
         var potTexture:flash.display3D.textures.Texture = 
               safe_cast(mBase, flash.display3D.textures.Texture);
@@ -164,25 +178,50 @@ class ConcreteTexture extends Texture
             throw new Error("This texture type does not support ATF data");
         
         if (Reflect.isFunction(async))
-            potTexture.addEventListener(eventType, onTextureReady);
+        {
+            mTextureReadyCallback = async;
+            mBase.addEventListener(TEXTURE_READY, onTextureReady);
+        }
         
         potTexture.uploadCompressedTextureFromByteArray(data, offset, isAsync);
         mDataUploaded = true;
-        
-        function onTextureReady(event:Dynamic):Void
+    }
+
+    public function attachNetStream(netStream:NetStream, onComplete:Dynamic=null):Void
+    {
+        attachVideo("NetStream", netStream, onComplete);
+    }
+
+    #if flash
+    public function attachCamera(camera:Camera, onComplete:Function=null):Void
+    {
+        attachVideo("Camera", camera, onComplete);
+    }
+    #end
+
+    private function attachVideo(type:String, attachment:Dynamic, onComplete:Dynamic=null):Void
+    {
+        var className:String = Type.getClassName(Type.getClass(mBase));
+
+        if (className == "flash.display3D.textures.VideoTexture")
         {
-            potTexture.removeEventListener(eventType, onTextureReady);
-            
-            var callback:Dynamic = async;
-            if (Reflect.isFunction(callback))
-            {
-                callback(self);
-                #if 0
-                if (callback.length == 1) callback(self);
-                else callback();
-                #end
-            }
+            mDataUploaded = true;
+            mTextureReadyCallback = onComplete;
+            Reflect.callMethod(mBase, Reflect.getProperty(mBase, "attach" + type), attachment);
+            mBase.addEventListener(TEXTURE_READY, onTextureReady);
         }
+        else throw new Error("This texture type does not support " + type + " data");
+    }
+
+    private function onTextureReady(event:Dynamic):Void
+    {
+        mBase.removeEventListener(TEXTURE_READY, onTextureReady);
+        #if 0
+        execute(mTextureReadyCallback, this);
+        #else
+        mTextureReadyCallback(this);
+        #end
+        mTextureReadyCallback = null;
     }
     
     // texture backup (context loss)
@@ -191,7 +230,7 @@ class ConcreteTexture extends Texture
     {
         // recreate the underlying texture & restore contents
         createBase();
-        mOnRestore();
+        if (mOnRestore != null) mOnRestore();
         
         // if no texture has been uploaded above, we init the texture with transparent pixels.
         if (!mDataUploaded) clear();
@@ -204,13 +243,19 @@ class ConcreteTexture extends Texture
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
-        if (Std.is(mBase, openfl.display3D.textures.Texture))
+        var className:String = Type.getClassName(Type.getClass(mBase));
+        
+        if (className == "flash.display3D.textures.Texture")
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
-        else if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
-            mBase = context.createRectangleTexture(mWidth, mHeight, mFormat,
-                                                      mOptimizedForRenderTexture);
-        
+        else if (className == "flash.display3D.textures.RectangleTexture")
+            mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createRectangleTexture"), [mWidth, mHeight, mFormat,
+                                                      mOptimizedForRenderTexture]);
+        else if (className == "flash.display3D.textures.VideoTexture")
+            mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
+        else
+            throw new NotSupportedError("Texture type not supported: " + className);
+
         mDataUploaded = false;
     }
     

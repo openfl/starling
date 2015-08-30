@@ -56,6 +56,8 @@ class Event
     inline public static var COMPLETE:String = "complete";
     /** Event type for a (re)created stage3D rendering context. */
     inline public static var CONTEXT3D_CREATE:String = "context3DCreate";
+    /** Event type that is dispatched by the Starling instance directly before rendering. */
+    inline public static var RENDER:String = "render";
     /** Event type that indicates that the root DisplayObject has been created. */
     inline public static var ROOT_CREATED:String = "rootCreated";
     /** Event type for an animated object that requests to be removed from the juggler. */
@@ -85,6 +87,8 @@ class Event
     inline public static var CLOSE:String = "close";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     inline public static var SELECT:String = "select";
+    /** An event type to be utilized in custom events. Not used by Starling right now. */
+    inline public static var READY:String = "ready";
     
     private static var sEventPool:Array<Event> = new Array<Event>();
     

@@ -86,11 +86,18 @@ class BitmapFont
     public function new(texture:Texture=null, fontXml:Xml=null)
     {
         // if no texture is passed in, we create the minimal, embedded font
-        /*if (texture == null && fontXml == null)
+        #if 0
+        if (texture == null && fontXml == null)
         {
             texture = MiniBitmapFont.texture;
             fontXml = MiniBitmapFont.xml;
-        }*/
+        }
+        else
+        #end
+        if (texture != null && fontXml == null)
+        {
+            throw new ArgumentError("fontXml cannot be null!");
+        }
         
         mName = "unknown";
         mLineHeight = mSize = mBaseline = 14;
@@ -99,7 +106,7 @@ class BitmapFont
         mChars = new Map<Int, BitmapChar>();
         mHelperImage = new Image(texture);
         
-        if (fontXml != null) parseFontXml(fontXml);
+        parseFontXml(fontXml);
     }
     
     /** Disposes the texture of the bitmap font! */
@@ -239,10 +246,10 @@ class BitmapFont
                                   fontSize:Float=-1, color:UInt=0xffffff, 
                                   hAlign:String="center", vAlign:String="center",      
                                   autoScale:Bool=true, 
-                                  kerning:Bool=true):Void
+                                  kerning:Bool=true, leading:Float=0):Void
     {
-        var charLocations:Array<CharLocation> = arrangeChars(width, height, text, fontSize, 
-                                                               hAlign, vAlign, autoScale, kerning);
+        var charLocations:Array<CharLocation> = arrangeChars(
+                width, height, text, fontSize, hAlign, vAlign, autoScale, kerning, leading);
         var numChars:Int = charLocations.length;
         mHelperImage.color = color;
         
@@ -264,7 +271,8 @@ class BitmapFont
      *  Returns a Vector of CharLocations. */
     private function arrangeChars(width:Float, height:Float, text:String, fontSize:Float=-1,
                                   hAlign:String="center", vAlign:String="center",
-                                  autoScale:Bool=true, kerning:Bool=true):Array<CharLocation>
+                                  autoScale:Bool=true, kerning:Bool=true,
+                                  leading:Float=0):Array<CharLocation>
     {
         if (text == null || text.length == 0) return CharLocation.vectorFromPool();
         if (fontSize < 0) fontSize *= -mSize;
@@ -332,9 +340,10 @@ class BitmapFont
 
                             // remove characters and add them again to next line
                             var numCharsToRemove:Int = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace;
-                            var removeIndex:Int = currentLine.length - numCharsToRemove;
-                            
-                            currentLine.splice(removeIndex, numCharsToRemove);
+
+                            //for (var j:Int=0; j<numCharsToRemove; ++j) // faster than 'splice'
+                            for (j in 0 ... numCharsToRemove)
+                                currentLine.pop();
                             
                             if (currentLine.length == 0)
                                 break;
@@ -356,11 +365,11 @@ class BitmapFont
                         if (lastWhiteSpace == i)
                             currentLine.pop();
                         
-                        if (currentY + 2*mLineHeight <= containerHeight)
+                        if (currentY + leading + 2 * mLineHeight <= containerHeight)
                         {
                             currentLine = CharLocation.vectorFromPool();
                             currentX = 0;
-                            currentY += mLineHeight;
+                            currentY += mLineHeight + leading;
                             lastWhiteSpace = -1;
                             lastCharID = -1;
                         }

@@ -75,6 +75,7 @@ class DisplacementMapFilter extends FragmentFilter
         mComponentY = componentY;
         mScaleX = scaleX;
         mScaleY = scaleY;
+        mRepeat = repeat;
         this.mapPoint = mapPoint;
         
         super();
@@ -193,11 +194,11 @@ class DisplacementMapFilter extends FragmentFilter
         // vertex buffer: (containing map texture coordinates)
         // The size of input texture and map texture may be different. We need to calculate
         // the right values for the texture coordinates at the filter vertices.
-        
-        var mapX:Float = mMapPoint.x   / mapTexture.width;
-        var mapY:Float = mMapPoint.y   / mapTexture.height;
-        var maxU:Float = textureWidth  / mapTexture.nativeWidth;
-        var maxV:Float = textureHeight / mapTexture.nativeHeight;
+
+        var mapX:Float = mMapPoint.x   /  mapTexture.width;
+        var mapY:Float = mMapPoint.y   /  mapTexture.height;
+        var maxU:Float = textureWidth  / (mapTexture.width  * scale);
+        var maxV:Float = textureHeight / (mapTexture.height * scale);
         
         sMapTexCoords[0] = -mapX;        sMapTexCoords[1] = -mapY;
         sMapTexCoords[2] = -mapX + maxU; sMapTexCoords[3] = -mapY;

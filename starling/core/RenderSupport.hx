@@ -11,12 +11,15 @@
 package starling.core;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D._shaders.AGLSLShaderUtils;
+import openfl.display3D.Context3DProfile;
 import starling.utils.ArrayUtil;
 
 import flash.display3D.Context3D;
+import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DStencilAction;
 import flash.display3D.Context3DTextureFormat;
-import flash.display3D.Context3DWrapMode;
+import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -35,6 +38,7 @@ import starling.textures.TextureSmoothing;
 import starling.utils.Color;
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
+import starling.utils.SystemUtil;
 
 /** A class that contains helper methods simplifying Stage3D rendering.
  *
@@ -45,7 +49,7 @@ import starling.utils.RectangleUtil;
 class RenderSupport
 {
     inline private static var RENDER_TARGET_NAME:String = "Starling.renderTarget";
-    
+
     // members
     
     private var mProjectionMatrix:Matrix;
@@ -64,13 +68,13 @@ class RenderSupport
 
     private var mDrawCount:Int;
     private var mBlendMode:String;
-    
+
     private var mClipRectStack:Array<Rectangle>;
     private var mClipRectStackSize:Int;
     
     private var mQuadBatches:Array<QuadBatch>;
     private var mCurrentQuadBatchID:Int;
-    
+
     /** helper objects */
     private static var sPoint:Point = new Point();
     private static var sPoint3D:Vector3D = new Vector3D();
@@ -104,8 +108,8 @@ class RenderSupport
         mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = [new QuadBatch()];
-        
+        mQuadBatches = [createQuadBatch()];
+
         loadIdentity();
         setProjectionMatrix(0, 0, 400, 300);
     }
@@ -361,8 +365,12 @@ class RenderSupport
     /** The texture that is currently being rendered into, or 'null' to render into the 
      *  back buffer. If you set a new target, it is immediately activated. */
     public var renderTarget(get, set):Texture;
-    private function get_renderTarget():Texture { return Starling.current.contextData[RENDER_TARGET_NAME]; }
-    private function set_renderTarget(target:Texture):Texture 
+    public function get_renderTarget():Texture
+    {
+        return Starling.current.contextData[RENDER_TARGET_NAME];
+    }
+
+    public function set_renderTarget(target:Texture):Texture 
     {
         setRenderTarget(target);
         return target;
@@ -377,9 +385,12 @@ class RenderSupport
     {
         Starling.current.contextData[RENDER_TARGET_NAME] = target;
         applyClipRect();
-        
-        if (target != null) Starling.current.context.setRenderToTexture(target.base, false, antiAliasing);
-        else        Starling.current.context.setRenderToBackBuffer();
+
+        if (target != null)
+            Starling.current.context.setRenderToTexture(target.base,
+                    SystemUtil.supportsDepthAndStencil, antiAliasing);
+        else
+            Starling.current.context.setRenderToBackBuffer();
     }
     
     // clipping
@@ -387,9 +398,9 @@ class RenderSupport
     /** The clipping rectangle can be used to limit rendering in the current render target to
      *  a certain area. This method expects the rectangle in stage coordinates. Internally,
      *  it uses the 'scissorRectangle' of stage3D, which works with pixel coordinates. 
-     *  Any pushed rectangle is intersected with the previous rectangle; the method returns
-     *  that intersection. */ 
-    public function pushClipRect(rectangle:Rectangle):Rectangle
+     *  Per default, any pushed rectangle is intersected with the previous rectangle;
+     *  the method returns that intersection. */
+    public function pushClipRect(rectangle:Rectangle, intersectWithCurrent:Bool=true):Rectangle
     {
         if (mClipRectStack.length < mClipRectStackSize + 1)
             mClipRectStack.push(new Rectangle());
@@ -398,7 +409,7 @@ class RenderSupport
         rectangle = mClipRectStack[mClipRectStackSize];
         
         // intersect with the last pushed clip rect
-        if (mClipRectStackSize > 0)
+        if (intersectWithCurrent && mClipRectStackSize > 0)
             RectangleUtil.intersect(rectangle, mClipRectStack[mClipRectStackSize-1], 
                                     rectangle);
         
@@ -418,7 +429,7 @@ class RenderSupport
             applyClipRect();
         }
     }
-    
+
     /** Updates the context3D scissor rectangle using the current clipping rectangle. This
      *  method is called automatically when either the render target, the projection matrix,
      *  or the clipping rectangle changes. */
@@ -469,7 +480,90 @@ class RenderSupport
             context.setScissorRectangle(null);
         }
     }
-    
+
+    // stencil masks
+
+    private var mMasks:Array<DisplayObject> = new Array<DisplayObject>();
+    private var mStencilReferenceValue:UInt = 0;
+
+    /** Draws a display object into the stencil buffer, incrementing the buffer on each
+     *  used pixel. The stencil reference value is incremented as well; thus, any subsequent
+     *  stencil tests outside of this area will fail.
+     *
+     *  <p>If 'mask' is part of the display list, it will be drawn at its conventional stage
+     *  coordinates. Otherwise, it will be drawn with the current modelview matrix.</p>
+     */
+    public function pushMask(mask:DisplayObject):Void
+    {
+        mMasks[mMasks.length] = mask;
+        mStencilReferenceValue++;
+
+        var context:Context3D = Starling.current.context;
+        if (context == null) return;
+
+        finishQuadBatch();
+
+        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                Context3DCompareMode.EQUAL, Context3DStencilAction.INCREMENT_SATURATE);
+
+        drawMask(mask);
+
+        context.setStencilReferenceValue(mStencilReferenceValue);
+        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+    }
+
+    /** Redraws the most recently pushed mask into the stencil buffer, decrementing the
+     *  buffer on each used pixel. This effectively removes the object from the stencil buffer,
+     *  restoring the previous state. The stencil reference value will be decremented.
+     */
+    public function popMask():Void
+    {
+        var mask:DisplayObject = mMasks.pop();
+        mStencilReferenceValue--;
+
+        var context:Context3D = Starling.current.context;
+        if (context == null) return;
+
+        finishQuadBatch();
+
+        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                Context3DCompareMode.EQUAL, Context3DStencilAction.DECREMENT_SATURATE);
+
+        drawMask(mask);
+
+        context.setStencilReferenceValue(mStencilReferenceValue);
+        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+    }
+
+    private function drawMask(mask:DisplayObject):Void
+    {
+        pushMatrix();
+
+        var stage:Stage = mask.stage;
+        if (stage != null) mask.getTransformationMatrix(stage, mModelViewMatrix);
+        else       transformMatrix(mask);
+
+        mask.render(this, 0.0);
+        finishQuadBatch();
+
+        popMatrix();
+    }
+
+    /** The current stencil reference value, which is per default the depth of the current
+     *  stencil mask stack. Only change this value if you know what you're doing. */
+    public var stencilReferenceValue(get, set):UInt;
+    private function get_stencilReferenceValue():UInt { return mStencilReferenceValue; }
+    private function set_stencilReferenceValue(value:UInt):UInt
+    {
+        mStencilReferenceValue = value;
+
+        if (Starling.current.contextValid)
+            Starling.current.context.setStencilReferenceValue(value);
+        return mStencilReferenceValue;
+    }
+
     // optimized quad rendering
     
     /** Adds a quad to the current batch of unrendered quads. If there is a state change,
@@ -489,14 +583,17 @@ class RenderSupport
     
     /** Adds a batch of quads to the current batch of unrendered quads. If there is a state 
      *  change, all previous quads are rendered at once. 
-     *  
-     *  <p>Note that you should call this method only for objects with a small number of quads 
-     *  (we recommend no more than 16). Otherwise, the additional CPU effort will be more
-     *  expensive than what you save by avoiding the draw call.</p> */
+     *
+     *  <p>Note that copying the contents of the QuadBatch to the current "cumulative"
+     *  batch takes some time. If the batch consists of more than just a few quads,
+     *  you may be better off calling the "render(Custom)" method on the batch instead.
+     *  Otherwise, the additional CPU effort will be more expensive than what you save by
+     *  avoiding the draw call. (Rule of thumb: no more than 16-20 quads.)</p> */
     public function batchQuadBatch(quadBatch:QuadBatch, parentAlpha:Float):Void
     {
         if (mQuadBatches[mCurrentQuadBatchID].isStateChange(
-            quadBatch.tinted, parentAlpha, quadBatch.texture, quadBatch.smoothing, mBlendMode))
+                quadBatch.tinted, parentAlpha, quadBatch.texture, quadBatch.smoothing,
+                mBlendMode, quadBatch.numQuads))
         {
             finishQuadBatch();
         }
@@ -529,7 +626,7 @@ class RenderSupport
             ++mDrawCount;
             
             if (mQuadBatches.length <= mCurrentQuadBatchID)
-                mQuadBatches.push(new QuadBatch());
+                mQuadBatches.push(createQuadBatch());
         }
     }
     
@@ -538,7 +635,8 @@ class RenderSupport
     {
         resetMatrix();
         trimQuadBatches();
-        
+
+        mMasks.splice(0, mMasks.length);
         mCurrentQuadBatchID = 0;
         mBlendMode = BlendMode.NORMAL;
         mDrawCount = 0;
@@ -557,6 +655,15 @@ class RenderSupport
             for (i in 0 ... numToRemove)
                 mQuadBatches.pop().dispose();
         }
+    }
+
+    private function createQuadBatch():QuadBatch
+    {
+        var profile:Context3DProfile = Starling.current.profile;
+        var forceTinted:Bool = (profile != Context3DProfile.BASELINE_CONSTRAINED && profile != Context3DProfile.BASELINE);
+        var quadBatch:QuadBatch = new QuadBatch();
+        quadBatch.forceTinted = forceTinted;
+        return quadBatch;
     }
     
     // other helper methods

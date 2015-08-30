@@ -197,9 +197,24 @@ class Juggler implements IAnimatable
      *
      *  <p>To cancel the tween, call 'Juggler.removeTweens' with the same target, or pass
      *  the returned 'IAnimatable' instance to 'Juggler.remove()'. Do not use the returned
-     *  IAnimatable otherwise; it is taken from a pool and will be reused.</p> */
+     *  IAnimatable otherwise; it is taken from a pool and will be reused.</p>
+     *
+     *  <p>Note that some property types may be animated in a special way:</p>
+     *  <ul>
+     *    <li>If the property contains the string <code>color</code> or <code>Color</code>,
+     *        it will be treated as an unsigned integer with a color value
+     *        (e.g. <code>0xff0000</code> for red). Each color channel will be animated
+     *        individually.</li>
+     *    <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
+     *    <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
+     *        making sure it always uses the shortest possible arc for the rotation.</li>
+     *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
+     *  </ul>
+     */
     public function tween(target:Dynamic, time:Float, properties:Array<Dynamic>):IAnimatable
     {
+        if (target == null) throw new ArgumentError("target must not be null");
+
         var tween:Tween = Tween.fromPool(target, time);
         
         for (property in properties)

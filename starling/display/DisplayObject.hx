@@ -154,9 +154,12 @@ class DisplayObject extends EventDispatcher
     private var mOrientationChanged:Bool;
     private var mFilter:FragmentFilter;
     private var mIs3D:Bool;
+    private var mMask:DisplayObject;
+    private var mIsMask:Bool;
     
     /** Helper objects. */
     private static var sAncestors:Array<DisplayObject> = new Array<DisplayObject>();
+    private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperRect:Rectangle = new Rectangle();
     private static var sHelperMatrix:Matrix  = new Matrix();
@@ -185,11 +188,13 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Disposes all resources of the display object. 
-      * GPU buffers are released, event listeners are removed, filters are disposed. */
+      * GPU buffers are released, event listeners are removed, filters and masks are disposed. */
     public function dispose():Void
     {
         if (mFilter != null) mFilter.dispose();
+        if (mMask != null) mMask.dispose();
         removeEventListeners();
+        mask = null; // revert 'isMask' property, just to be sure.
     }
     
     /** Removes the object from its parent, if it has one, and optionally disposes it. */
@@ -291,12 +296,36 @@ class DisplayObject extends EventDispatcher
     {
         // on a touch test, invisible or untouchable objects cause the test to fail
         if (forTouch && (!mVisible || !mTouchable)) return null;
+
+        // if we've got a mask and the hit occurs outside, fail
+        if (mMask != null && !hitTestMask(localPoint)) return null;
         
         // otherwise, check bounding box
         if (getBounds(this, sHelperRect).containsPoint(localPoint)) return this;
         else return null;
     }
-    
+
+    /** Checks if a certain point is inside the display object's mask. If there is no mask,
+     *  this method always returns <code>true</code> (because having no mask is equivalent
+     *  to having one that's infinitely big). */
+    public function hitTestMask(localPoint:Point):Bool
+    {
+        if (mMask != null)
+        {
+            if (mMask.stage != null) getTransformationMatrix(mMask, sHelperMatrixAlt);
+            else
+            {
+                sHelperMatrixAlt.copyFrom(mMask.transformationMatrix);
+                sHelperMatrixAlt.invert();
+            }
+
+            var helperPoint:Point = localPoint == sHelperPoint ? new Point() : sHelperPoint;
+            MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, helperPoint);
+            return mMask.hitTest(helperPoint, true) != null;
+        }
+        else return true;
+    }
+
     /** Transforms a point from the local coordinate system to global (stage) coordinates.
      *  If you pass a 'resultPoint', the result will be stored in this point instead of 
      *  creating a new object. */
@@ -342,19 +371,20 @@ class DisplayObject extends EventDispatcher
         throw new AbstractMethodError();
     }
     
-    /** Indicates if an object occupies any visible area. (Which is the case when its 'alpha', 
-     *  'scaleX' and 'scaleY' values are not zero, and its 'visible' property is enabled.) */
+    /** Indicates if an object occupies any visible area. This is the case when its 'alpha',
+     *  'scaleX' and 'scaleY' values are not zero, its 'visible' property is enabled, and
+     *  if it is not currently used as a mask for another display object. */
     public var hasVisibleArea(get, never):Bool;
     private function get_hasVisibleArea():Bool
     {
-        return mAlpha != 0.0 && mVisible && mScaleX != 0.0 && mScaleY != 0.0;
+        return mAlpha != 0.0 && mVisible && !mIsMask && mScaleX != 0.0 && mScaleY != 0.0;
     }
     
     /** Moves the pivot point to a certain position within the local coordinate system
      *  of the object. If you pass no arguments, it will be centered. */ 
     public function alignPivot(hAlign:String="center", vAlign:String="center"):Void
     {
-        var bounds:Rectangle = getBounds(this);
+        var bounds:Rectangle = getBounds(this, sHelperRect);
         mOrientationChanged = true;
         
         if (hAlign == HAlign.LEFT)        mPivotX = bounds.x;
@@ -499,6 +529,13 @@ class DisplayObject extends EventDispatcher
     private function setIs3D(value:Bool):Void
     {
         mIs3D = value;
+    }
+
+    /** @private */
+    private var isMask(get, never):Bool;
+    private function get_isMask():Bool
+    {
+        return mIsMask;
     }
 
     // helpers
@@ -658,7 +695,7 @@ class DisplayObject extends EventDispatcher
         
         return mTransformationMatrix; 
     }
-    
+
     private function set_transformationMatrix(matrix:Matrix):Matrix
     {
         var PI_Q:Float = Math.PI / 4.0;
@@ -828,7 +865,8 @@ class DisplayObject extends EventDispatcher
         return mPivotY;
     }
     
-    /** The horizontal scale factor. '1' means no scale, negative values flip the object. */
+    /** The horizontal scale factor. '1' means no scale, negative values flip the object.
+     *  @default 1 */
     public var scaleX(get, set):Float;
     private function get_scaleX():Float { return mScaleX; }
     private function set_scaleX(value:Float):Float 
@@ -841,7 +879,8 @@ class DisplayObject extends EventDispatcher
         return mScaleX;
     }
     
-    /** The vertical scale factor. '1' means no scale, negative values flip the object. */
+    /** The vertical scale factor. '1' means no scale, negative values flip the object.
+     *  @default 1 */
     public var scaleY(get, set):Float;
     private function get_scaleY():Float { return mScaleY; }
     private function set_scaleY(value:Float):Float 
@@ -853,6 +892,12 @@ class DisplayObject extends EventDispatcher
         }
         return mScaleY;
     }
+
+    /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
+     *  value of 'scaleX' (even if the scaling values are different). @default 1 */
+    public var scale(get, set):Float;
+    public function get_scale():Float { return scaleX; }
+    public function set_scale(value:Float):Float { return scaleX = scaleY = value; }
     
     /** The horizontal skew angle in radians. */
     public var skewX(get, set):Float;
@@ -900,7 +945,7 @@ class DisplayObject extends EventDispatcher
         return mRotation;
     }
     
-    /** The opacity of the object. 0 = transparent, 1 = opaque. */
+    /** The opacity of the object. 0 = transparent, 1 = opaque. @default 1 */
     public var alpha(get, set):Float;
     private function get_alpha():Float { return mAlpha; }
     private function set_alpha(value:Float):Float 
@@ -941,7 +986,41 @@ class DisplayObject extends EventDispatcher
     public var filter(get, set):FragmentFilter;
     private function get_filter():FragmentFilter { return mFilter; }
     private function set_filter(value:FragmentFilter):FragmentFilter { return mFilter = value; }
-    
+
+    /** The display object that acts as a mask for the current object.
+     *  Assign <code>null</code> to remove it.
+     *
+     *  <p>A pixel of the masked display object will only be drawn if it is within one of the
+     *  mask's polygons. Texture pixels and alpha values of the mask are not taken into
+     *  account. The mask object itself is never visible.</p>
+     *
+     *  <p>If the mask is part of the display list, masking will occur at exactly the
+     *  location it occupies on the stage. If it is not, the mask will be placed in the local
+     *  coordinate system of the target object (as if it was one of its children).</p>
+     *
+     *  <p>For rectangular masks, you can use simple quads; for other forms (like circles
+     *  or arbitrary shapes) it is recommended to use a 'Canvas' instance.</p>
+     *
+     *  <p>Beware that a mask will cause at least two additional draw calls: one to draw the
+     *  mask to the stencil buffer and one to erase it.</p>
+     *
+     *  @see Canvas
+     *  @default null
+     */
+    public var mask(get, set):DisplayObject;
+    public function get_mask():DisplayObject { return mMask; }
+    public function set_mask(value:DisplayObject):DisplayObject
+    {
+        if (mMask != value)
+        {
+            if (mMask != null) mMask.mIsMask = false;
+            if (value != null) value.mIsMask = true;
+
+            mMask = value;
+        }
+        return mMask;
+    }
+
     /** The display object container that contains this display object. */
     public var parent(get, never):DisplayObjectContainer;
     private function get_parent():DisplayObjectContainer { return mParent; }

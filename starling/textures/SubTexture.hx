@@ -76,7 +76,13 @@ class SubTexture extends Texture
             mTransformationMatrix.translate(0, -1);
             mTransformationMatrix.rotate(Math.PI / 2.0);
         }
-        
+
+        if (mFrame != null && (mFrame.x > 0 || mFrame.y > 0 ||
+            mFrame.right < mWidth || mFrame.bottom < mHeight))
+        {
+            trace("[Starling] Warning: frames inside the texture's region are unsupported.");
+        }
+
         mTransformationMatrix.scale(mRegion.width  / mParent.width,
                                     mRegion.height / mParent.height);
         mTransformationMatrix.translate(mRegion.x  / mParent.width,

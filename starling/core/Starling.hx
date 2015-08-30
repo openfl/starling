@@ -67,6 +67,10 @@ import starling.utils.VAlign;
 /** Dispatched when a fatal error is encountered. The 'data' property contains an error string. */
 //[Event(name="fatalError", type="starling.events.Event")]
 
+/** Dispatched when the display list is about to be rendered. This event provides the last
+ *  opportunity to make changes before the display list is rendered. */
+//[Event(name="render", type="starling.events.Event")]
+
 /** The Starling class represents the core of the Starling framework.
  *
  *  <p>The Starling framework makes it possible to create 2D applications and games that make
@@ -187,7 +191,7 @@ import starling.utils.VAlign;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    inline public static var VERSION:String = "1.6";
+    inline public static var VERSION:String = "1.7.1";
     
     /** The key for the shader programs stored in 'contextData' */
     inline private static var PROGRAM_DATA_NAME:String = "Starling.programs"; 
@@ -224,7 +228,7 @@ class Starling extends EventDispatcher
     private var mNativeStageContentScaleFactor:Float;
 
     private static var sCurrent:Starling;
-    private static var sHandleLostContext:Bool;
+    private static var sHandleLostContext:Bool = true;
     private static var sContextData:Map<Stage3D, Map<String, Dynamic>> = new Map<Stage3D, Map<String, Dynamic>>();
     #if (cpp || neko || nodejs)
     private static var sTextRenderers:Map<Stage3D, Map<String, TextRenderer>> = new Map();
@@ -235,9 +239,11 @@ class Starling extends EventDispatcher
     // construction
     
     /** Creates a new Starling instance. 
-     *  @param rootClass  A subclass of a Starling display object. It will be created as soon as
-     *                    initialization is finished and will become the first child of the
-     *                    Starling stage.
+     *  @param rootClass  A subclass of 'starling.display.DisplayObject'. It will be created
+     *                    as soon as initialization is finished and will become the first child
+     *                    of the Starling stage. Pass <code>null</code> if you don't want to
+     *                    create a root object right away. (You can use the
+     *                    <code>rootClass</code> property later to make that happen.)
      *  @param stage      The Flash (2D) stage.
      *  @param viewPort   A rectangle describing the area into which the content will be 
      *                    rendered. Default: stage size
@@ -264,7 +270,6 @@ class Starling extends EventDispatcher
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");
-        if (rootClass == null) throw new ArgumentError("Root class must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (stage3D == null) stage3D = stage.stage3Ds[0];
@@ -273,7 +278,7 @@ class Starling extends EventDispatcher
         SystemUtil.initialize();
         sAll.push(this);
         makeCurrent();
-        
+
         mRootClass = rootClass;
         mViewPort = viewPort;
         mPreviousViewPort = new Rectangle();
@@ -328,6 +333,10 @@ class Starling extends EventDispatcher
         }
         else
         {
+            if (!SystemUtil.supportsDepthAndStencil)
+                trace("[Starling] Mask support requires 'depthAndStencil' to be enabled" +
+                      " in the application descriptor.");
+
             mShareContext = false;
             requestContext3D(stage3D, renderMode, profile);
         }
@@ -375,7 +384,7 @@ class Starling extends EventDispatcher
         var currentProfile:Context3DProfile;
         
         if (profile == "auto")
-            profiles = [/*Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
+            profiles = [/*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
         else if (Std.is(profile, Context3DProfile))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
@@ -457,25 +466,25 @@ class Starling extends EventDispatcher
         
         trace("[Starling] Initialization complete.");
         trace("[Starling] Display Driver:", mContext.driverInfo);
-        
+
         updateViewPort(true);
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, mContext);
     }
     
     private function initializeRoot():Void
     {
-        if (mRoot == null)
+        if (mRoot == null && mRootClass != null)
         {
             mRoot = Type.createInstance(mRootClass, []);
             if (mRoot == null) throw new Error("Invalid root class: " + mRootClass);
             mStage.addChildAt(mRoot, 0);
-        
+
             dispatchEventWith(starling.events.Event.ROOT_CREATED, false, mRoot);
         }
     }
     
     /** Calls <code>advanceTime()</code> (with the time that has passed since the last frame)
-     *  and <code>render()</code>. */ 
+     *  and <code>render()</code>. */
     public function nextFrame():Void
     {
         var now:Float = Lib.getTimer() / 1000.0;
@@ -484,6 +493,9 @@ class Starling extends EventDispatcher
         
         // to avoid overloading time-based animations, the maximum delta is truncated.
         if (passedTime > 1.0) passedTime = 1.0;
+
+        // after about 25 days, 'getTimer()' will roll over. A rare event, but still ...
+        if (passedTime < 0.0) passedTime = 1.0 / mNativeStage.frameRate;
 
         advanceTime(passedTime);
         render();
@@ -504,7 +516,11 @@ class Starling extends EventDispatcher
     }
     
     /** Renders the complete display list. Before rendering, the context is cleared; afterwards,
-     *  it is presented. This can be avoided by enabling <code>shareContext</code>.*/ 
+     *  it is presented (to avoid this, enable <code>shareContext</code>).
+     *
+     *  <p>This method also dispatches an <code>Event.RENDER</code>-event on the Starling
+     *  instance. That's the last opportunity to make changes before the display list is
+     *  rendered.</p> */
     public function render():Void
     {
         if (!contextValid)
@@ -512,14 +528,16 @@ class Starling extends EventDispatcher
         
         makeCurrent();
         updateViewPort();
-        mSupport.nextFrame();
-        
+        dispatchEventWith(starling.events.Event.RENDER);
+
         var scaleX:Float = mViewPort.width  / mStage.stageWidth;
         var scaleY:Float = mViewPort.height / mStage.stageHeight;
         
         mContext.setDepthTest(false, Context3DCompareMode.ALWAYS);
         mContext.setCulling(Context3DTriangleFace.NONE);
-        
+
+        mSupport.nextFrame();
+        mSupport.stencilReferenceValue = 0;
         mSupport.renderTarget = null; // back buffer
         mSupport.setProjectionMatrix(
             mViewPort.x < 0 ? -mViewPort.x / scaleX : 0.0,
@@ -567,7 +585,7 @@ class Starling extends EventDispatcher
                 
                 #if flash
                 if (mProfile == Context3DProfile.BASELINE_CONSTRAINED)
-                    configureBackBuffer(32, 32, mAntiAliasing, false);
+                    configureBackBuffer(32, 32, mAntiAliasing, true);
                 #end
                 
                 #if flash
@@ -576,7 +594,7 @@ class Starling extends EventDispatcher
                 #end
                 
                 configureBackBuffer(Std.int(mClippedViewPort.width), Std.int(mClippedViewPort.height),
-                    mAntiAliasing, false, mSupportHighResolutions);
+                    mAntiAliasing, true, mSupportHighResolutions);
                 
                 #if flash
                 if (mSupportHighResolutions && "contentsScaleFactor" in mNativeStage)
@@ -594,12 +612,14 @@ class Starling extends EventDispatcher
                                          enableDepthAndStencil:Bool,
                                          wantsBestResolution:Bool=false):Void
     {
-        /*
+        #if 0
+        enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
+
         var configureBackBuffer:Function = mContext.configureBackBuffer;
         var methodArgs:Array = [width, height, antiAlias, enableDepthAndStencil];
         if (configureBackBuffer.length > 4) methodArgs.push(wantsBestResolution);
         configureBackBuffer.apply(mContext, methodArgs);
-        */
+        #end
         mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil);
     }
 
@@ -845,7 +865,7 @@ class Starling extends EventDispatcher
         mTouchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
         
         // allow objects that depend on mouse-over state to be updated immediately
-        if (event.type == MouseEvent.MOUSE_UP)
+        if (event.type == MouseEvent.MOUSE_UP #if flash && Mouse.supportsCursor #end)
             mTouchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
     
@@ -1065,7 +1085,14 @@ class Starling extends EventDispatcher
     public var nativeOverlay(get, never):Sprite;
     private function get_nativeOverlay():Sprite { return mNativeOverlay; }
     
-    /** Indicates if a small statistics box (with FPS, memory usage and draw count) is displayed. */
+    /** Indicates if a small statistics box (with FPS, memory usage and draw count) is
+     *  displayed.
+     *
+     *  <p>Beware that the memory usage should be taken with a grain of salt. The value is
+     *  determined via <code>System.totalMemory</code> and does not take texture memory
+     *  into account. It is recommended to use Adobe Scout for reliable and comprehensive
+     *  memory analysis.</p>
+     */
     public var showStats(get, set):Bool;
     private function get_showStats():Bool { return mStatsDisplay != null && mStatsDisplay.parent != null; }
     private function set_showStats(value:Bool):Bool
@@ -1092,6 +1119,9 @@ class Starling extends EventDispatcher
         }
         else
         {
+            var stageWidth:Int  = mStage.stageWidth;
+            var stageHeight:Int = mStage.stageHeight;
+
             if (mStatsDisplay == null)
             {
                 mStatsDisplay = new StatsDisplay();
@@ -1099,12 +1129,10 @@ class Starling extends EventDispatcher
                 mStatsDisplay.fontName = mStatsDisplayFontName;
                 mStage.addChild(mStatsDisplay);
             }
-            
-            var stageWidth:Int  = mStage.stageWidth;
-            var stageHeight:Int = mStage.stageHeight;
-            
+
+            mStage.addChild(mStatsDisplay);
             mStatsDisplay.scaleX = mStatsDisplay.scaleY = scale;
-            
+
             if (hAlign == HAlign.LEFT) mStatsDisplay.x = 0;
             else if (hAlign == HAlign.RIGHT) mStatsDisplay.x = stageWidth - mStatsDisplay.width; 
             else mStatsDisplay.x = Std.int((stageWidth - mStatsDisplay.width) / 2);
@@ -1147,7 +1175,31 @@ class Starling extends EventDispatcher
      *  the event 'ROOT_CREATED' has been dispatched. */
     public var root(get, never):DisplayObject;
     private function get_root():DisplayObject { return mRoot; }
-    
+
+    /** The class that will be instantiated by Starling as the 'root' display object.
+     *  Must be a subclass of 'starling.display.DisplayObject'.
+     *
+     *  <p>If you passed <code>null</code> as first parameter to the Starling constructor,
+     *  you can use this property to set the root class at a later time. As soon as the class
+     *  is instantiated, Starling will dispatch a <code>ROOT_CREATED</code> event.</p>
+     *
+     *  <p>Beware: you cannot change the root class once the root object has been
+     *  instantiated.</p>
+     */
+    public var rootClass(get, set):Class<Dynamic>;
+    private function get_rootClass():Class<Dynamic> { return mRootClass; }
+    private function set_rootClass(value:Class<Dynamic>):Class<Dynamic>
+    {
+        if (mRootClass != null && mRoot != null)
+            throw new Error("Root class may not change after root has been instantiated");
+        else if (mRootClass == null)
+        {
+            mRootClass = value;
+            if (mContext != null) initializeRoot();
+        }
+        return mRootClass;
+    }
+
     /** Indicates if the Context3D render calls are managed externally to Starling, 
      *  to allow other frameworks to share the Stage3D instance. @default false */
     public var shareContext(get, set):Bool;
@@ -1192,12 +1244,16 @@ class Starling extends EventDispatcher
     }
     
     /** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
-     *  disposed). Beware that each call to this method causes a String allocation (due to
-     *  internal code Starling can't avoid), so do not call this method too often. */
+     *  disposed). */
     public var contextValid(get, never):Bool;
     private function get_contextValid():Bool
     {
-        return mContext != null && mContext.driverInfo != "Disposed";
+        if (mContext != null)
+        {
+            var driverInfo:String = mContext.driverInfo;
+            return driverInfo != null && driverInfo != "" && driverInfo != "Disposed";
+        }
+        else return false;
     }
 
     // static properties
@@ -1266,7 +1322,7 @@ class Starling extends EventDispatcher
      *  roll). It's recommended to always enable this property, while using the AssetManager
      *  for texture loading.</p>
      *  
-     *  @default false
+     *  @default true
      *  @see starling.utils.AssetManager
      */
     public static var handleLostContext(get, set):Bool;

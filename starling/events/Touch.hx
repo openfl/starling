@@ -47,10 +47,10 @@ class Touch
     private var mPressure:Float;
     private var mWidth:Float;
     private var mHeight:Float;
+    private var mCancelled:Bool;
     private var mBubbleChain:Array<EventDispatcher>;
     
     /** Helper object. */
-    private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new Touch object. */
@@ -122,6 +122,7 @@ class Touch
         clone.mPressure = mPressure;
         clone.mWidth = mWidth;
         clone.mHeight = mHeight;
+        clone.mCancelled = mCancelled;
         clone.target = mTarget;
         return clone;
     }
@@ -226,6 +227,12 @@ class Touch
     public var height(get, set):Float;
     private function get_height():Float { return mHeight; }
     private function set_height(value:Float):Float { return mHeight = value; }
+
+    /** Indicates if the touch has been cancelled, which may happen when the app moves into
+     *  the background ('Event.DEACTIVATE'). @default false */
+    public var cancelled(get, set):Bool;
+    private function get_cancelled():Bool { return mCancelled; }
+    private function set_cancelled(value:Bool):Bool { return mCancelled = value; }
 
     // internal methods
     

@@ -1,3 +1,13 @@
+// =================================================================================================
+//
+//	Starling Framework
+//	Copyright 2011-2015 Gamua. All Rights Reserved.
+//
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
+//
+// =================================================================================================
+
 package starling.utils;
 import flash.display.Bitmap;
 import flash.display.Loader;
@@ -44,6 +54,8 @@ import starling.textures.AtfData;
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 import starling.textures.TextureOptions;
+
+import starling.utils.SafeCast.safe_cast;
 
 /** Dispatched when all textures have been restored after a context loss. */
 //[Event(name="texturesRestored", type="starling.events.Event")]
@@ -170,7 +182,12 @@ class AssetManager extends EventDispatcher
         mQueue = [];
     }
     
-    /** Disposes all contained textures. */
+    /** Disposes all contained textures, XMLs and ByteArrays.
+     *
+     *  <p>Beware that all references to the assets will remain intact, even though the assets
+     *  are no longer valid. Call 'purge' if you want to remove all resources and reuse
+     *  the AssetManager later.</p>
+     */
     public function dispose():Void
     {
         for (texture in mTextures)
@@ -236,6 +253,13 @@ class AssetManager extends EventDispatcher
     public function getTextureAtlas(name:String):TextureAtlas
     {
         return mAtlases[name];
+    }
+
+    /** Returns all texture atlas names that start with a certain string, sorted alphabetically.
+     *  If you pass a result vector, the names will be added to that vector. */
+    public function getTextureAtlasNames(prefix:String="", result:Array<String>=null):Array<String>
+    {
+        return getDictionaryKeys(mAtlases, prefix, result);
     }
     
     /** Returns a sound with a certain name, or null if it's not found. */
@@ -463,7 +487,8 @@ class AssetManager extends EventDispatcher
         dispatchEventWith(Event.CANCEL);
     }
     
-    /** Removes assets of all types, empties the queue and aborts any pending load operations.*/
+    /** Removes assets of all types (disposing them along the way), empties the queue and
+     *  aborts any pending load operations. */
     public function purge():Void
     {
         log("Purging all assets, emptying queue");
@@ -485,8 +510,8 @@ class AssetManager extends EventDispatcher
      *  executing the "loadQueue" method. This method accepts a variety of different objects:
      *  
      *  <ul>
-     *    <li>Strings containing an URL to a local or remote resource. Supported types:
-     *        <code>png, jpg, gif, atf, mp3, xml, fnt, json, binary</code>.</li>
+     *    <li>Strings or URLRequests containing an URL to a local or remote resource. Supported
+     *        types: <code>png, jpg, gif, atf, mp3, xml, fnt, json, binary</code>.</li>
      *    <li>Instances of the File class (AIR only) pointing to a directory or a file.
      *        Directories will be scanned recursively for all supported types.</li>
      *    <li>Classes that contain <code>static</code> embedded assets.</li>
@@ -546,7 +571,7 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
-            else if (Std.is(rawAsset, String))
+            else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
             {
                 enqueueWithName(rawAsset);
             }
@@ -572,7 +597,7 @@ class AssetManager extends EventDispatcher
     {
         #if 0
         if (getQualifiedClassName(asset) == "flash.filesystem::File")
-            asset = unescape(asset["url"]);
+            asset = decodeURI(asset["url"]);
         #end
         
         if (name == null)    name = getName(asset);
@@ -675,7 +700,7 @@ class AssetManager extends EventDispatcher
                 if (assetCount > 0) loadNextQueueElement();
                 else                processXmls();
             };
-            
+
             processRawAsset(assetInfo.name, assetInfo.asset, assetInfo.options,
                 xmls, onElementProgress, onElementLoaded);
         }
@@ -730,6 +755,7 @@ class AssetManager extends EventDispatcher
                 if (texture != null)
                 {
                     addTextureAtlas(name, new TextureAtlas(texture, xml));
+                    removeTexture(name, false);
 
                     if (mKeepAtlasXmls) addXml(name, xml);
                     #if 0
@@ -748,6 +774,7 @@ class AssetManager extends EventDispatcher
                 {
                     log("Adding bitmap font '" + name + "'");
                     TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
+                    removeTexture(name, false);
 
                     if (mKeepFontXmls) addXml(name, xml);
                     #if 0
@@ -772,12 +799,6 @@ class AssetManager extends EventDispatcher
 
         function finish():Void
         {
-            // now would be a good time for a clean-up
-            #if flash
-            System.pauseForGCIfCollectionImminent(0);
-            #end
-            System.gc();
-
             // We dance around the final "onProgress" call with some "setTimeout" calls here
             // to make sure the progress bar gets the chance to be rendered. Otherwise, all
             // would happen in one frame.
@@ -808,7 +829,7 @@ class AssetManager extends EventDispatcher
         
         function process(asset:Dynamic):Void
         {
-            var texture:Texture;
+            var texture:Texture = null;
             var bytes:ByteArray;
             var object:Dynamic = null;
             var xml:Xml = null;
@@ -855,10 +876,17 @@ class AssetManager extends EventDispatcher
                     mNumLostTextures++;
                     loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                     {
-                        try { texture.root.uploadBitmap(cast asset); }
-                        catch (e:Error) { log("Texture restoration failed: " + e.message); }
-                        
-                        asset.bitmapData.dispose();
+                        try
+                        {
+                            if (asset == null) throw new Error("Reload failed");
+                            texture.root.uploadBitmap(safe_cast(asset, Bitmap));
+                            asset.bitmapData.dispose();
+                        }
+                        catch (e:Error)
+                        {
+                            log("Texture restoration failed for '" + name + "': " + e.message);
+                        }
+
                         mNumRestoredTextures++;
                         
                         if (mNumLostTextures == mNumRestoredTextures)
@@ -876,17 +904,29 @@ class AssetManager extends EventDispatcher
                 
                 if (AtfData.isAtfData(bytes))
                 {
-                    options.onReady = prependCallback(options.onReady, onComplete);
+                    options.onReady = prependCallback(options.onReady, function():Void
+                    {
+                        addTexture(name, texture);
+                        onComplete();
+                    });
+
                     texture = Texture.fromData(bytes, options);
                     texture.root.onRestore = function():Void
                     {
                         mNumLostTextures++;
                         loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
                         {
-                            try { texture.root.uploadAtfData(cast asset, 0, true); }
-                            catch (e:Error) { log("Texture restoration failed: " + e.message); }
+                            try
+                            {
+                                if (asset == null) throw new Error("Reload failed");
+                                texture.root.uploadAtfData(safe_cast(asset, ByteArray), 0, true);
+                                asset.clear();
+                            }
+                            catch (e:Error)
+                            {
+                                log("Texture restoration failed for '" + name + "': " + e.message);
+                            }
                             
-                            asset.clear();
                             mNumRestoredTextures++;
                             
                             if (mNumLostTextures == mNumRestoredTextures)
@@ -895,7 +935,6 @@ class AssetManager extends EventDispatcher
                     };
                     
                     bytes.clear();
-                    addTexture(name, texture);
                 }
                 else if (byteArrayStartsWith(bytes, "{") || byteArrayStartsWith(bytes, "["))
                 {
@@ -973,8 +1012,9 @@ class AssetManager extends EventDispatcher
         var extension:String = null;
         var loaderInfo:LoaderInfo = null;
         var urlLoader:URLLoader = null;
+        var urlRequest:URLRequest = null;
         var url:String = null;
-        
+
         var complete:Dynamic->Void = null;
         var onIoError:IOErrorEvent->Void = null;
         var onSecurityError:SecurityErrorEvent->Void = null;
@@ -987,11 +1027,14 @@ class AssetManager extends EventDispatcher
         {
             Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
         }
-        else if (Std.is(rawAsset, String))
+        else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
         {
-            url = cast rawAsset;
+            urlRequest = safe_cast(rawAsset, URLRequest);
+            if (urlRequest == null)
+                urlRequest = new URLRequest(safe_cast(rawAsset, String));
+            url = urlRequest.url;
             extension = getExtensionFromUrl(url);
-            
+
             urlLoader = new URLLoader();
             urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
             urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
@@ -999,9 +1042,9 @@ class AssetManager extends EventDispatcher
             urlLoader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
             urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
             urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
-            urlLoader.load(new URLRequest(url));
+            urlLoader.load(urlRequest);
         }
-        
+
         function onIoError(event:IOErrorEvent):Void
         {
             log("IO error: " + event.text);
@@ -1038,6 +1081,12 @@ class AssetManager extends EventDispatcher
         {
             var bytes:ByteArray = transformData(cast(urlLoader.data, ByteArray), url);
             var sound:Sound;
+
+            if (bytes == null)
+            {
+                complete(null);
+                return;
+            }
             
             if (extension != null)
                 extension = extension.toLowerCase();
@@ -1102,24 +1151,28 @@ class AssetManager extends EventDispatcher
     }
     
     // helpers
-    
+
     /** This method is called by 'enqueue' to determine the name under which an asset will be
-     *  accessible; override it if you need a custom naming scheme. Typically, 'rawAsset' is 
-     *  either a String or a FileReference. Note that this method won't be called for embedded
-     *  assets. */
+     *  accessible; override it if you need a custom naming scheme. Note that this method won't
+     *  be called for embedded assets.
+     *
+     *  @param rawAsset   either a String, an URLRequest or a FileReference.
+     */
     private function getName(rawAsset:Dynamic):String
     {
-        var name:String;
-        
-        if (Std.is(rawAsset, String)#if 0 || Std.is(rawAsset, FileReference)#end)
+        var name:String = null;
+
+        if      (Std.is(rawAsset, String))        name =  safe_cast(rawAsset, String);
+        else if (Std.is(rawAsset, URLRequest))    name = safe_cast(rawAsset, URLRequest).url;
+        #if flash
+        else if (Std.is(rawAsset, FileReference)) name = safe_cast(rawAsset, FileReference).name;
+        #end
+
+        if (name != null)
         {
-            #if 0
-            name = Std.is(rawAsset, String) ? cast(rawAsset, String) : cast(rawAsset, FileReference).name;
-            #end
-            name = cast rawAsset;
-            name = (~/%20/g).replace(name, " "); // URLs use '%20' for spaces
+            name = ~/%20/g.replace(name, " "); // URLs use '%20' for spaces
             name = getBasenameFromUrl(name);
-            
+
             if (name != null) return name;
             else throw new ArgumentError("Could not extract name from String '" + rawAsset + "'");
         }
@@ -1132,7 +1185,11 @@ class AssetManager extends EventDispatcher
 
     /** This method is called when raw byte data has been loaded from an URL or a file.
      *  Override it to process the downloaded data in some way (e.g. decompression) or
-     *  to cache it on disk. */
+     *  to cache it on disk.
+     *
+     *  <p>It's okay to call one (or more) of the 'add...' methods from here. If the binary
+     *  data contains multiple objects, this allows you to process all of them at once.
+     *  Return 'null' to abort processing of the current item.</p> */
     private function transformData(data:ByteArray, url:String):ByteArray
     {
         return data;

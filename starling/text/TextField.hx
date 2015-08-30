@@ -49,7 +49,7 @@ import starling.utils.Deg2Rad;
  *  
  *  <p>You can set all properties you are used to, like the font name and size, a color, the 
  *  horizontal and vertical alignment, etc. The border property is helpful during development, 
- *  because it lets you see the bounds of the textfield.</p>
+ *  because it lets you see the bounds of the TextField.</p>
  *  
  *  <p>There are two types of fonts that can be displayed:</p>
  *  
@@ -68,13 +68,20 @@ import starling.utils.Deg2Rad;
  * 
  *  <ul>
  *    <li>Windows: <a href="http://www.angelcode.com/products/bmfont">Bitmap Font Generator</a>
- *       from Angel Code (free). Export the font data as an XML file and the texture as a png 
- *       with white characters on a transparent background (32 bit).</li>
+ *        from Angel Code (free). Export the font data as an XML file and the texture as a png
+ *        with white characters on a transparent background (32 bit).</li>
  *    <li>Mac OS: <a href="http://glyphdesigner.71squared.com">Glyph Designer</a> from 
  *        71squared or <a href="http://http://www.bmglyph.com">bmGlyph</a> (both commercial). 
  *        They support Starling natively.</li>
  *  </ul>
- * 
+ *
+ *  <p>When using a bitmap font, the 'color' property is used to tint the font texture. This
+ *  works by multiplying the RGB values of that property with those of the texture's pixel.
+ *  If your font contains just a single color, export it in plain white and change the 'color'
+ *  property to any value you like (it defaults to zero, which means black). If your font
+ *  contains multiple colors, change the 'color' property to <code>Color.WHITE</code> to get
+ *  the intended result.</p>
+ *
  *  <strong>Batching of TextFields</strong>
  *  
  *  <p>Normally, TextFields will require exactly one draw call. For TrueType fonts, you cannot
@@ -92,7 +99,7 @@ class TextField extends DisplayObjectContainer
 {
     // the name container with the registered bitmap fonts
     inline private static var BITMAP_FONT_DATA_NAME:String = "starling.display.TextField.BitmapFonts";
-    
+
     // the texture format that is used for TTF rendering
     private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA;
     //    "BGRA_PACKED" in Context3DTextureFormat ? "bgraPacked4444" : "bgra";
@@ -109,9 +116,9 @@ class TextField extends DisplayObjectContainer
     private var mAutoScale:Bool;
     private var mAutoSize:String;
     private var mKerning:Bool;
+    private var mLeading:Float;
     private var mNativeFilters:Array<BitmapFilter>;
     private var mRequiresRedraw:Bool;
-    private var mIsRenderedText:Bool;
     private var mIsHtmlText:Bool;
     private var mTextBounds:Rectangle;
     private var mBatchable:Bool;
@@ -138,6 +145,7 @@ class TextField extends DisplayObjectContainer
         mVAlign = VAlign.CENTER;
         mBorder = null;
         mKerning = true;
+        mLeading = 0.0;
         mBold = bold;
         mAutoSize = TextFieldAutoSize.NONE;
         mHitArea = new Rectangle(0, 0, width, height);
@@ -173,9 +181,9 @@ class TextField extends DisplayObjectContainer
     {
         if (mRequiresRedraw)
         {
-            if (mIsRenderedText) createRenderedContents();
-            else                 createComposedContents();
-            
+            if (getBitmapFont(mFontName) != null) createComposedContents();
+            else                          createRenderedContents();
+
             updateBorder();
             mRequiresRedraw = false;
         }
@@ -196,17 +204,46 @@ class TextField extends DisplayObjectContainer
         
         var texture:Texture;
         var scale:Float = Starling.current.contentScaleFactor;
+        #if 0
+        var bitmapData:BitmapData = renderText(scale, mTextBounds);
+        var format:Context3DTextureFormat = sDefaultTextureFormat;
+        var maxTextureSize:Int = Texture.maxSize;
+        var shrinkHelper:Float = 0;
+        
+        // re-render when size of rendered bitmap overflows 'maxTextureSize'
+        while (bitmapData.width > maxTextureSize || bitmapData.height > maxTextureSize)
+        {
+            scale *= Math.min(
+                (maxTextureSize - shrinkHelper) / bitmapData.width,
+                (maxTextureSize - shrinkHelper) / bitmapData.height
+            );
+            bitmapData.dispose();
+            bitmapData = renderText(scale, mTextBounds);
+            shrinkHelper += 1;
+        }
+
+        mHitArea.width  = bitmapData.width  / scale;
+        mHitArea.height = bitmapData.height / scale;
+        #else
         var texture:Texture = renderText(scale, mTextBounds);
         
         mHitArea.width  = texture.width  / scale;
         mHitArea.height = texture.height / scale;
+        #end
         
         texture.root.onRestore = function():Void
         {
             if (mTextBounds == null)
                 mTextBounds = new Rectangle();
 
+            #if 0
+            bitmapData = renderText(scale, mTextBounds);
+            texture.root.uploadBitmapData(bitmapData);
+            bitmapData.dispose();
+            bitmapData = null;
+            #else
             texture = renderText(scale, mTextBounds);
+            #end
         };
         
         if (mImage == null) 
@@ -225,7 +262,7 @@ class TextField extends DisplayObjectContainer
 
     /** This method is called immediately before the text is rendered. The intent of
      *  'formatText' is to be overridden in a subclass, so that you can provide custom
-     *  formatting for the TextField. In the overriden method, call 'setFormat' (either
+     *  formatting for the TextField. In the overridden method, call 'setFormat' (either
      *  over a range of characters or the complete TextField) to modify the format to
      *  your needs.
      *  
@@ -233,6 +270,13 @@ class TextField extends DisplayObjectContainer
      *  @param textFormat the default text format that's currently set on the text field.
      */
     private function formatText(textField:flash.text.TextField, textFormat:TextFormat):Void {}
+
+    /** Forces a redraw of the current contents right before the display object is rendered.
+     *  Useful especially in combination with the "formatText" method. */
+    @:final private function requireRedraw():Void
+    {
+        mRequiresRedraw = true;
+    }
 
     private function renderText(scale:Float, resultTextBounds:Rectangle):Texture
     {
@@ -264,7 +308,10 @@ class TextField extends DisplayObjectContainer
         var textFormat:TextFormat = new TextFormat(mFontName, 
             Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
         textFormat.kerning = mKerning;
-        
+        #if flash
+        textFormat.leading = mLeading;
+        #end
+
         sNativeTextField.defaultTextFormat = textFormat;
         sNativeTextField.width = width;
         sNativeTextField.height = height;
@@ -369,7 +416,10 @@ class TextField extends DisplayObjectContainer
             
             var format:TextFormat = textField.defaultTextFormat;
             format.size = size--;
-            textField.setTextFormat(format);
+            textField.defaultTextFormat = format;
+
+            if (mIsHtmlText) textField.htmlText = mText;
+            else             textField.text     = mText;
         }
     }
     
@@ -467,8 +517,8 @@ class TextField extends DisplayObjectContainer
             vAlign = VAlign.TOP;
         }
         
-        bitmapFont.fillQuadBatch(mQuadBatch,
-            width, height, mText, mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning);
+        bitmapFont.fillQuadBatch(mQuadBatch, width, height, mText,
+                mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning, mLeading);
         
         mQuadBatch.batchable = mBatchable;
         
@@ -548,7 +598,7 @@ class TextField extends DisplayObjectContainer
     public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
         if (forTouch && (!visible || !touchable)) return null;
-        else if (mHitArea.containsPoint(localPoint)) return this;
+        else if (mHitArea.containsPoint(localPoint) && hitTestMask(localPoint)) return this;
         else return null;
     }
 
@@ -598,7 +648,6 @@ class TextField extends DisplayObjectContainer
             
             mFontName = value;
             mRequiresRedraw = true;
-            mIsRenderedText = getBitmapFont(value) == null;
         }
         return mFontName;
     }
@@ -617,8 +666,9 @@ class TextField extends DisplayObjectContainer
         return mFontSize;
     }
     
-    /** The color of the text. For bitmap fonts, use <code>Color.WHITE</code> to use the
-     *  original, untinted color. @default black */
+    /** The color of the text. Note that bitmap fonts should be exported in plain white so
+     *  that tinting works correctly. If your bitmap font contains colors, set this property
+     *  to <code>Color.WHITE</code> to get the desired result. @default black */
     public var color(get, set):UInt;
     private function get_color():UInt { return mColor; }
     private function set_color(value:UInt):UInt
@@ -810,6 +860,19 @@ class TextField extends DisplayObjectContainer
         }
         return mIsHtmlText;
     }
+
+    /** The amount of vertical space (called 'leading') between lines. @default 0 */
+    public var leading(get, set):Float;
+    private function get_leading():Float { return mLeading; }
+    private function set_leading(value:Float):Float
+    {
+        if (mLeading != value)
+        {
+            mLeading = value;
+            mRequiresRedraw = true;
+        }
+        return mLeading;
+    }
     
     /** The Context3D texture format that is used for rendering of all TrueType texts.
      *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
@@ -829,14 +892,14 @@ class TextField extends DisplayObjectContainer
     public static function registerBitmapFont(bitmapFont:BitmapFont, name:String=null):String
     {
         if (name == null) name = bitmapFont.name;
-        bitmapFonts[name.toLowerCase()] = bitmapFont;
+        bitmapFonts[convertToLowerCase(name)] = bitmapFont;
         return name;
     }
     
     /** Unregisters the bitmap font and, optionally, disposes it. */
     public static function unregisterBitmapFont(name:String, dispose:Bool=true):Void
     {
-        name = name.toLowerCase();
+        name = convertToLowerCase(name);
         
         if (dispose && bitmapFonts[name] != null)
             bitmapFonts[name].dispose();
@@ -848,7 +911,7 @@ class TextField extends DisplayObjectContainer
      *  The name is not case sensitive. */
     public static function getBitmapFont(name:String):BitmapFont
     {
-        return bitmapFonts[name.toLowerCase()];
+        return bitmapFonts[convertToLowerCase(name)];
     }
     
     /** Stores the currently available bitmap fonts. Since a bitmap font will only work
@@ -879,5 +942,20 @@ class TextField extends DisplayObjectContainer
         }
         
         return renderers;
+    }
+
+    // optimization for 'toLowerCase' calls
+
+    private static var sStringCache:Map<String, String> = new Map();
+
+    private static function convertToLowerCase(string:String):String
+    {
+        var result:String = sStringCache[string];
+        if (result == null)
+        {
+            result = string.toLowerCase();
+            sStringCache[string] = result;
+        }
+        return result;
     }
 }

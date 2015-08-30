@@ -20,7 +20,7 @@ import starling.errors.AbstractClassError;
  *  represents a particular four-value vector that is multiplied with the source or destination
  *  color in the blending formula. The blending formula is:</p>
  * 
- *  <pre>result = source √ó sourceFactor + destination √ó destinationFactor</pre>
+ *  <pre>result = source Å~ sourceFactor + destination Å~ destinationFactor</pre>
  * 
  *  <p>In the formula, the source color is the output color of the pixel shader program. The 
  *  destination color is the color that currently exists in the color buffer, as set by 
@@ -36,25 +36,27 @@ import starling.errors.AbstractClassError;
  */
 class BlendMode
 {
-    private static var sBlendFactors:Array<Map<String, Array<Context3DBlendFactor>>> = [ 
+    private static var sBlendFactors:Array<Map<String, Array<Context3DBlendFactor>>> = [
         // no premultiplied alpha
-        [ 
+        [
             "none"     => [ Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO ],
             "normal"   => [ Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
             "add"      => [ Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.DESTINATION_ALPHA ],
             "multiply" => [ Context3DBlendFactor.DESTINATION_COLOR, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
             "screen"   => [ Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE ],
             "erase"    => [ Context3DBlendFactor.ZERO, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
+            "mask"     => [ Context3DBlendFactor.ZERO, Context3DBlendFactor.SOURCE_ALPHA ],
             "below"    => [ Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA, Context3DBlendFactor.DESTINATION_ALPHA ]
         ],
         // premultiplied alpha
-        [ 
+        [
             "none"     => [ Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO ],
             "normal"   => [ Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
             "add"      => [ Context3DBlendFactor.ONE, Context3DBlendFactor.ONE ],
             "multiply" => [ Context3DBlendFactor.DESTINATION_COLOR, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
             "screen"   => [ Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR ],
             "erase"    => [ Context3DBlendFactor.ZERO, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA ],
+            "mask"     => [ Context3DBlendFactor.ZERO, Context3DBlendFactor.SOURCE_ALPHA ],
             "below"    => [ Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA, Context3DBlendFactor.DESTINATION_ALPHA ]
         ]
     ];
@@ -85,10 +87,14 @@ class BlendMode
     
     /** Erases the background when drawn on a RenderTexture. */
     inline public static var ERASE:String = "erase";
-    
+
+    /** When used on a RenderTexture, the drawn object will act as a mask for the current
+     *  content, i.e. the source alpha overwrites the destination alpha. */
+    inline public static var MASK:String = "mask";
+
     /** Draws under/below existing objects; useful especially on RenderTextures. */
     inline public static var BELOW:String = "below";
-    
+
     // accessing modes
     
     /** Returns the blend factors that correspond with a certain mode and premultiplied alpha
