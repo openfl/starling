@@ -198,7 +198,7 @@ class TextRenderer
         sSupport.renderTarget = null;
         sSupport.popClipRect();
         
-        sSupport.renderTarget = previousRenderTarget;
+        prevSupport.renderTarget = previousRenderTarget;
     }
     
     private function addChars(text:String, result:Array<BitmapChar> = null)
