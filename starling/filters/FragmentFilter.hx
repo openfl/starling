@@ -566,6 +566,12 @@ class FragmentFilter
             quadBatch = renderPasses(object, support, 1.0, true);
             support.dispose();
 
+            if (mCacheRequested)
+            {
+                mCacheRequested = false;
+                mCache = quadBatch;
+            }
+
             return quadBatch;
         }
     }

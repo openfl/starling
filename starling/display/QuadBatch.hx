@@ -591,7 +591,8 @@ class QuadBatch extends DisplayObject
                                         transformationMatrix, alpha, blendMode);
 
             // textures of a compiled filter need to be disposed!
-            quadBatches[quadBatchID].ownsTexture = true;
+            if (!filter.isCached)
+                quadBatches[quadBatchID].ownsTexture = true;
 
             if (filter.mode == FragmentFilterMode.BELOW)
             {
