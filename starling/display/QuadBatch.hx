@@ -315,7 +315,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = mForceTinted || quad.tinted || parentAlpha != 1.0;
+            mTinted = texture != null ? (mForceTinted || quad.tinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
@@ -346,7 +346,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quadBatch.blendMode;
             mTexture = quadBatch.mTexture;
-            mTinted = mForceTinted || quadBatch.mTinted || parentAlpha != 1.0;
+            mTinted = (texture != null) ? (mForceTinted || quadBatch.mTinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false;
             mSmoothing = quadBatch.mSmoothing;
             mVertexData.setPremultipliedAlpha(quadBatch.mVertexData.premultipliedAlpha, false);
         }
@@ -376,7 +376,7 @@ class QuadBatch extends DisplayObject
             return mTexture.base != texture.base ||
                    mTexture.repeat != texture.repeat ||
                    mSmoothing != smoothing ||
-                   mTinted != (mForceTinted || tinted || parentAlpha != 1.0) ||
+                   mTinted != (texture.format != null ? (mForceTinted || tinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false) ||
                    this.blendMode != blendMode;
         else return true;
     }
