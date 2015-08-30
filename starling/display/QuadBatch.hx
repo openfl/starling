@@ -114,6 +114,8 @@ class QuadBatch extends DisplayObject
         mForceTinted = false;
         mOwnsTexture = false;
 
+        mDynamicDraw = true;
+
         // Handle lost context. We use the conventional event here (not the one from Starling)
         // so we're able to create a weak event listener; this avoids memory leaks when people 
         // forget to call "dispose" on the QuadBatch.
@@ -566,6 +568,7 @@ class QuadBatch extends DisplayObject
             ignoreCurrentFilter = true;
             if (quadBatches.length == 0) quadBatches[0] = new QuadBatch();
             else { quadBatches[0].reset(); quadBatches[0].ownsTexture = false; }
+            quadBatches[0].dynamicDraw = false;
         }
         else
         {
