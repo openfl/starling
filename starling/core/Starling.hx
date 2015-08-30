@@ -1250,8 +1250,12 @@ class Starling extends EventDispatcher
     {
         if (mContext != null)
         {
+            #if flash
             var driverInfo:String = mContext.driverInfo;
             return driverInfo != null && driverInfo != "" && driverInfo != "Disposed";
+            #else
+            return true;
+            #end
         }
         else return false;
     }
