@@ -15,7 +15,7 @@ import starling.core.starling_internal;
 import starling.events.Event;
 import starling.events.EventDispatcher;
 
-/** A Tween animates numeric properties of objects. It uses different transition functions 
+/** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
  *  
  *  <p>The primary use of this class is to do standard animations like movement, fading, 
@@ -42,6 +42,8 @@ import starling.events.EventDispatcher;
  */ 
 public class Tween extends EventDispatcher implements IAnimatable
 {
+    private static const HINT_MARKER:String = '#';
+
     private var mTarget:Object;
     private var mTransitionFunc:Function;
     private var mTransitionName:String;
@@ -49,6 +51,7 @@ public class Tween extends EventDispatcher implements IAnimatable
     private var mProperties:Vector.<String>;
     private var mStartValues:Vector.<Float>;
     private var mEndValues:Vector.<Float>;
+    private var mUpdateFuncs:Vector.<Function>;
 
     private var mOnStart:Function;
     private var mOnUpdate:Function;
@@ -95,6 +98,7 @@ public class Tween extends EventDispatcher implements IAnimatable
         mRoundToInt = mReverse = false;
         mRepeatCount = 1;
         mCurrentCycle = -1;
+        mNextTween = null;
         
         if (transition is String)
             this.transition = transition as String;
@@ -106,21 +110,39 @@ public class Tween extends EventDispatcher implements IAnimatable
         if (mProperties)  mProperties.length  = 0; else mProperties  = new <String>[];
         if (mStartValues) mStartValues.length = 0; else mStartValues = new <Float>[];
         if (mEndValues)   mEndValues.length   = 0; else mEndValues   = new <Float>[];
+        if (mUpdateFuncs) mUpdateFuncs.length = 0; else mUpdateFuncs = new <Function>[];
         
         return this;
     }
     
-    /** Animates the property of the target to a certain value. You can call this method multiple
-     *  times on one tween. */
+    /** Animates the property of the target to a certain value. You can call this method
+     *  multiple times on one tween.
+     *
+     *  <p>Some property types are handled in a special way:</p>
+     *  <ul>
+     *    <li>If the property contains the string <code>color</code> or <code>Color</code>,
+     *        it will be treated as an unsigned integer with a color value
+     *        (e.g. <code>0xff0000</code> for red). Each color channel will be animated
+     *        individually.</li>
+     *    <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
+     *    <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
+     *        making sure it always uses the shortest possible arc for the rotation.</li>
+     *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
+     *  </ul>
+     */
     public function animate(property:String, endValue:Float):Void
     {
         if (mTarget == null) return; // tweening null just does nothing.
-               
-        mProperties[mProperties.length] = property;
-        mStartValues[mStartValues.length] = Float.NaN;
-        mEndValues[mEndValues.length] = endValue;
+
+        var pos:Int = mProperties.length;
+        var updateFunc:Function = getUpdateFuncFromProperty(property);
+
+        mProperties[pos] = getPropertyName(property);
+        mStartValues[pos] = Float.NaN;
+        mEndValues[pos] = endValue;
+        mUpdateFuncs[pos] = updateFunc;
     }
-    
+
     /** Animates the 'scaleX' and 'scaleY' properties of an object simultaneously. */
     public function scaleTo(factor:Float):Void
     {
@@ -139,6 +161,14 @@ public class Tween extends EventDispatcher implements IAnimatable
     public function fadeTo(alpha:Float):Void
     {
         animate("alpha", alpha);
+    }
+
+    /** Animates the 'rotation' property of an object to a certain target value, using the
+     *  smallest possible arc. 'type' may be either 'rad' or 'deg', depending on the unit of
+     *  measurement. */
+    public function rotateTo(angle:Float, type:String="rad"):Void
+    {
+        animate("rotation#" + type, angle);
     }
     
     /** @inheritDoc */
@@ -173,14 +203,9 @@ public class Tween extends EventDispatcher implements IAnimatable
         {                
             if (mStartValues[i] != mStartValues[i]) // isNaN check - "isNaN" causes allocation! 
                 mStartValues[i] = mTarget[mProperties[i]] as Float;
-            
-            var startValue:Float = mStartValues[i];
-            var endValue:Float = mEndValues[i];
-            var delta:Float = endValue - startValue;
-            var currentValue:Float = startValue + mProgress * delta;
-            
-            if (mRoundToInt) currentValue = Math.round(currentValue);
-            mTarget[mProperties[i]] = currentValue;
+
+            var updateFunc:Function = mUpdateFuncs[i] as Function;
+            updateFunc(mProperties[i], mStartValues[i], mEndValues[i]);
         }
 
         if (mOnUpdate != null) 
@@ -211,6 +236,98 @@ public class Tween extends EventDispatcher implements IAnimatable
         
         if (carryOverTime) 
             advanceTime(carryOverTime);
+    }
+
+    // animation hints
+
+    private function getUpdateFuncFromProperty(property:String):Function
+    {
+        var updateFunc:Function;
+        var hint:String = getPropertyHint(property);
+
+        switch (hint)
+        {
+            case null:  updateFunc = updateStandard; break;
+            case "rgb": updateFunc = updateRgb; break;
+            case "rad": updateFunc = updateRad; break;
+            case "deg": updateFunc = updateDeg; break;
+            default:
+                trace("[Starling] Ignoring unknown property hint:", hint);
+                updateFunc = updateStandard;
+        }
+
+        return updateFunc;
+    }
+
+    /** @private */
+    internal static function getPropertyHint(property:String):String
+    {
+        // colorization is special; it does not require a hint marker, just the word 'color'.
+        if (property.indexOf("color") != -1 || property.indexOf("Color") != -1)
+            return "rgb";
+
+        var hintMarkerIndex:Int = property.indexOf(HINT_MARKER);
+        if (hintMarkerIndex != -1) return property.substr(hintMarkerIndex+1);
+        else return null;
+    }
+
+    /** @private */
+    internal static function getPropertyName(property:String):String
+    {
+        var hintMarkerIndex:Int = property.indexOf(HINT_MARKER);
+        if (hintMarkerIndex != -1) return property.substring(0, hintMarkerIndex);
+        else return property;
+    }
+
+    private function updateStandard(property:String, startValue:Float, endValue:Float):Void
+    {
+        var newValue:Float = startValue + mProgress * (endValue - startValue);
+        if (mRoundToInt) newValue = Math.round(newValue);
+        mTarget[property] = newValue;
+    }
+
+    private function updateRgb(property:String, startValue:Float, endValue:Float):Void
+    {
+        var startColor:UInt = UInt(startValue);
+        var endColor:UInt   = UInt(endValue);
+
+        var startA:UInt = (startColor >> 24) & 0xff;
+        var startR:UInt = (startColor >> 16) & 0xff;
+        var startG:UInt = (startColor >>  8) & 0xff;
+        var startB:UInt = (startColor      ) & 0xff;
+
+        var endA:UInt = (endColor >> 24) & 0xff;
+        var endR:UInt = (endColor >> 16) & 0xff;
+        var endG:UInt = (endColor >>  8) & 0xff;
+        var endB:UInt = (endColor      ) & 0xff;
+
+        var newA:UInt = startA + (endA - startA) * mProgress;
+        var newR:UInt = startR + (endR - startR) * mProgress;
+        var newG:UInt = startG + (endG - startG) * mProgress;
+        var newB:UInt = startB + (endB - startB) * mProgress;
+
+        mTarget[property] = (newA << 24) | (newR << 16) | (newG << 8) | newB;
+    }
+
+    private function updateRad(property:String, startValue:Float, endValue:Float):Void
+    {
+        updateAngle(Math.PI, property, startValue, endValue);
+    }
+
+    private function updateDeg(property:String, startValue:Float, endValue:Float):Void
+    {
+        updateAngle(180, property, startValue, endValue);
+    }
+
+    private function updateAngle(pi:Float, property:String, startValue:Float, endValue:Float):Void
+    {
+        while (Math.abs(endValue - startValue) > pi)
+        {
+            if (startValue < endValue) endValue -= 2.0 * pi;
+            else                       endValue += 2.0 * pi;
+        }
+
+        updateStandard(property, startValue, endValue);
     }
     
     /** The end value a certain property is animated to. Throws an ArgumentError if the 

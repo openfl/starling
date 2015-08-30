@@ -55,6 +55,7 @@ public class MovieClip extends Image implements IAnimatable
     private var mLoop:Bool;
     private var mPlaying:Bool;
     private var mMuted:Bool;
+    private var mWasStopped:Bool;
     private var mSoundTransform:SoundTransform = null;
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
@@ -82,6 +83,7 @@ public class MovieClip extends Image implements IAnimatable
         mPlaying = true;
         mCurrentTime = 0.0;
         mCurrentFrame = 0;
+        mWasStopped = true;
         mTextures = textures.concat();
         mSounds = new Vector.<Sound>(numFrames);
         mDurations = new Vector.<Float>(numFrames);
@@ -176,6 +178,20 @@ public class MovieClip extends Image implements IAnimatable
         mDurations[frameID] = duration;
         updateStartTimes();
     }
+
+    /** Reverses the order of all frames, making the clip run from end to start.
+     *  Makes sure that the currently visible frame stays the same. */
+    public function reverseFrames():Void
+    {
+        mTextures.reverse();
+        mSounds.reverse();
+        mDurations.reverse();
+
+        updateStartTimes();
+
+        mCurrentTime = totalTime - mCurrentTime;
+        mCurrentFrame = numFrames - mCurrentFrame - 1;
+    }
     
     // playback methods
     
@@ -195,9 +211,10 @@ public class MovieClip extends Image implements IAnimatable
     public function stop():Void
     {
         mPlaying = false;
+        mWasStopped = true;
         currentFrame = 0;
     }
-    
+
     // helpers
     
     private function updateStartTimes():Void
@@ -210,6 +227,12 @@ public class MovieClip extends Image implements IAnimatable
         for (var i:Int=1; i<numFrames; ++i)
             mStartTimes[i] = mStartTimes[Int(i-1)] + mDurations[Int(i-1)];
     }
+
+    private function playSound(frame:Int):Void
+    {
+        if (!mMuted && mSounds[frame])
+            mSounds[frame].play(0, 0, mSoundTransform);
+    }
     
     // IAnimatable
     
@@ -217,14 +240,22 @@ public class MovieClip extends Image implements IAnimatable
     public function advanceTime(passedTime:Float):Void
     {
         if (!mPlaying || passedTime <= 0.0) return;
-        
+
         var finalFrame:Int;
         var previousFrame:Int = mCurrentFrame;
         var restTime:Float = 0.0;
-        var breakAfterFrame:Bool = false;
         var dispatchCompleteEvent:Bool = false;
         var totalTime:Float = this.totalTime;
-        
+
+        if (mWasStopped)
+        {
+            // if the clip was stopped and started again,
+            // we need to play the frame's sound manually.
+
+            mWasStopped = false;
+            playSound(mCurrentFrame);
+        }
+
         if (mLoop && mCurrentTime >= totalTime)
         { 
             mCurrentTime = 0.0; 
@@ -247,21 +278,19 @@ public class MovieClip extends Image implements IAnimatable
                     }
                     else
                     {
-                        breakAfterFrame = true;
                         restTime = mCurrentTime - totalTime;
                         dispatchCompleteEvent = true;
                         mCurrentFrame = finalFrame;
                         mCurrentTime = totalTime;
+                        break;
                     }
                 }
                 else
                 {
                     mCurrentFrame++;
                 }
-                
-                var sound:Sound = mSounds[mCurrentFrame];
-                if (sound && !mMuted) sound.play(0, 0, mSoundTransform);
-                if (breakAfterFrame) break;
+
+                if (mSounds[mCurrentFrame]) playSound(mCurrentFrame);
             }
             
             // special case when we reach *exactly* the total time.
@@ -318,7 +347,7 @@ public class MovieClip extends Image implements IAnimatable
             mCurrentTime += getFrameDuration(i);
         
         texture = mTextures[mCurrentFrame];
-        if (!mMuted && mSounds[mCurrentFrame]) mSounds[mCurrentFrame].play();
+        if (mPlaying && !mWasStopped) playSound(mCurrentFrame);
     }
     
     /** The default number of frames per second. Individual frames can have different 

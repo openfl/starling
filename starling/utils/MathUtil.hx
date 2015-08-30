@@ -53,5 +53,11 @@ public class MathUtil
 
         return angle;
     }
+
+    /** Moves 'value' into the range between 'min' and 'max'. */
+    public static function clamp(value:Float, min:Float, max:Float):Float
+    {
+        return value < min ? min : (value > max ? max : value);
+    }
 }
 }

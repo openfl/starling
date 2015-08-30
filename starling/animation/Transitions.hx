@@ -17,7 +17,7 @@ package starling.animation
 import flash.utils.Dictionary;
 
 import starling.errors.AbstractClassError;
-
+    
 /** The Transitions class contains static methods that define easing functions. 
  *  Those functions are used by the Tween class to execute animations.
  * 

@@ -54,7 +54,10 @@ public class DelayedCall extends EventDispatcher implements IAnimatable
     public function advanceTime(time:Float):Void
     {
         var previousTime:Float = mCurrentTime;
-        mCurrentTime = Math.min(mTotalTime, mCurrentTime + time);
+        mCurrentTime += time;
+
+        if (mCurrentTime > mTotalTime)
+            mCurrentTime = mTotalTime;
         
         if (previousTime < mTotalTime && mCurrentTime >= mTotalTime)
         {                
@@ -78,6 +81,14 @@ public class DelayedCall extends EventDispatcher implements IAnimatable
                 call.apply(null, args);
             }
         }
+    }
+
+    /** Advances the delayed call so that it is executed right away. If 'repeatCount' is
+      * anything else than '1', this method will complete only the current iteration. */
+    public function complete():Void
+    {
+        var restTime:Float = mTotalTime - mCurrentTime;
+        if (restTime > 0) advanceTime(restTime);
     }
     
     /** Indicates if enough time has passed, and the call has already been executed. */

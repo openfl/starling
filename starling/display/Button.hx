@@ -55,11 +55,14 @@ public class Button extends DisplayObjectContainer
     private var mOverlay:Sprite;
     
     private var mScaleWhenDown:Float;
+    private var mScaleWhenOver:Float;
+    private var mAlphaWhenDown:Float;
     private var mAlphaWhenDisabled:Float;
     private var mUseHandCursor:Bool;
     private var mEnabled:Bool;
     private var mState:String;
-    
+    private var mTriggerBounds:Rectangle;
+
     /** Creates a button with a set of state-textures and (optionally) some text.
      *  Any state that is left 'null' will display the up-state texture. Beware that all
      *  state textures should have the same dimensions. */
@@ -76,10 +79,12 @@ public class Button extends DisplayObjectContainer
         mState = ButtonState.UP;
         mBody = new Image(upState);
         mScaleWhenDown = downState ? 1.0 : 0.9;
+        mScaleWhenOver = mAlphaWhenDown = 1.0;
         mAlphaWhenDisabled = disabledState ? 1.0: 0.5;
         mEnabled = true;
         mUseHandCursor = true;
-        mTextBounds = new Rectangle(0, 0, upState.width, upState.height);            
+        mTextBounds = new Rectangle(0, 0, mBody.width, mBody.height);
+        mTriggerBounds = new Rectangle();
         
         mContents = new Sprite();
         mContents.addChild(mBody);
@@ -136,7 +141,8 @@ public class Button extends DisplayObjectContainer
             MouseCursor.BUTTON : MouseCursor.AUTO;
         
         var touch:Touch = event.getTouch(this);
-        
+        var isWithinBounds:Bool;
+
         if (!mEnabled)
         {
             return;
@@ -151,24 +157,30 @@ public class Button extends DisplayObjectContainer
         }
         else if (touch.phase == TouchPhase.BEGAN && mState != ButtonState.DOWN)
         {
+            mTriggerBounds = getBounds(stage, mTriggerBounds);
+            mTriggerBounds.inflate(MAX_DRAG_DIST, MAX_DRAG_DIST);
+
             state = ButtonState.DOWN;
         }
-        else if (touch.phase == TouchPhase.MOVED && mState == ButtonState.DOWN)
+        else if (touch.phase == TouchPhase.MOVED)
         {
-            // reset button when user dragged too far away after pushing
-            var buttonRect:Rectangle = getBounds(stage);
-            if (touch.globalX < buttonRect.x - MAX_DRAG_DIST ||
-                touch.globalY < buttonRect.y - MAX_DRAG_DIST ||
-                touch.globalX > buttonRect.x + buttonRect.width + MAX_DRAG_DIST ||
-                touch.globalY > buttonRect.y + buttonRect.height + MAX_DRAG_DIST)
+            isWithinBounds = mTriggerBounds.contains(touch.globalX, touch.globalY);
+
+            if (mState == ButtonState.DOWN && !isWithinBounds)
             {
+                // reset button when finger is moved too far away ...
                 state = ButtonState.UP;
+            }
+            else if (mState == ButtonState.UP && isWithinBounds)
+            {
+                // ... and reactivate when the finger moves back into the bounds.
+                state = ButtonState.DOWN;
             }
         }
         else if (touch.phase == TouchPhase.ENDED && mState == ButtonState.DOWN)
         {
             state = ButtonState.UP;
-            dispatchEventWith(Event.TRIGGERED, true);
+            if (!touch.cancelled) dispatchEventWith(Event.TRIGGERED, true);
         }
     }
     
@@ -178,27 +190,35 @@ public class Button extends DisplayObjectContainer
     public function set state(value:String):Void
     {
         mState = value;
-        mContents.scaleX = mContents.scaleY = 1.0;
+        refreshState();
+    }
+
+    private function refreshState():Void
+    {
+        mContents.x = mContents.y = 0;
+        mContents.scaleX = mContents.scaleY = mContents.alpha = 1.0;
 
         switch (mState)
         {
             case ButtonState.DOWN:
                 setStateTexture(mDownState);
-                mContents.scaleX = mContents.scaleY = scaleWhenDown;
-                mContents.x = (1.0 - scaleWhenDown) / 2.0 * mBody.width;
-                mContents.y = (1.0 - scaleWhenDown) / 2.0 * mBody.height;
+                mContents.alpha = mAlphaWhenDown;
+                mContents.scaleX = mContents.scaleY = mScaleWhenDown;
+                mContents.x = (1.0 - mScaleWhenDown) / 2.0 * mBody.width;
+                mContents.y = (1.0 - mScaleWhenDown) / 2.0 * mBody.height;
                 break;
             case ButtonState.UP:
                 setStateTexture(mUpState);
-                mContents.x = mContents.y = 0;
                 break;
             case ButtonState.OVER:
                 setStateTexture(mOverState);
-                mContents.x = mContents.y = 0;
+                mContents.scaleX = mContents.scaleY = mScaleWhenOver;
+                mContents.x = (1.0 - mScaleWhenOver) / 2.0 * mBody.width;
+                mContents.y = (1.0 - mScaleWhenOver) / 2.0 * mBody.height;
                 break;
             case ButtonState.DISABLED:
                 setStateTexture(mDisabledState);
-                mContents.x = mContents.y = 0;
+                mContents.alpha = mAlphaWhenDisabled;
                 break;
             default:
                 throw new ArgumentError("Invalid button state: " + mState);
@@ -214,11 +234,35 @@ public class Button extends DisplayObjectContainer
      *  texture will be made slightly smaller, while a button with a down state texture
      *  remains unscaled. */
     public function get scaleWhenDown():Float { return mScaleWhenDown; }
-    public function set scaleWhenDown(value:Float):Void { mScaleWhenDown = value; }
-    
+    public function set scaleWhenDown(value:Float):Void
+    {
+        mScaleWhenDown = value;
+        if (mState == ButtonState.DOWN) refreshState();
+    }
+
+    /** The scale factor of the button while the mouse cursor hovers over it. @default 1.0 */
+    public function get scaleWhenOver():Float { return mScaleWhenOver; }
+    public function set scaleWhenOver(value:Float):Void
+    {
+        mScaleWhenOver = value;
+        if (mState == ButtonState.OVER) refreshState();
+    }
+
+    /** The alpha value of the button on touch. @default 1.0 */
+    public function get alphaWhenDown():Float { return mAlphaWhenDown; }
+    public function set alphaWhenDown(value:Float):Void
+    {
+        mAlphaWhenDown = value;
+        if (mState == ButtonState.DOWN) refreshState();
+    }
+
     /** The alpha value of the button when it is disabled. @default 0.5 */
     public function get alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
-    public function set alphaWhenDisabled(value:Float):Void { mAlphaWhenDisabled = value; }
+    public function set alphaWhenDisabled(value:Float):Void
+    {
+        mAlphaWhenDisabled = value;
+        if (mState == ButtonState.DISABLED) refreshState();
+    }
     
     /** Indicates if the button can be triggered. */
     public function get enabled():Bool { return mEnabled; }
@@ -227,7 +271,6 @@ public class Button extends DisplayObjectContainer
         if (mEnabled != value)
         {
             mEnabled = value;
-            mContents.alpha = value ? 1.0 : mAlphaWhenDisabled;
             state = value ? ButtonState.UP : ButtonState.DISABLED;
         }
     }

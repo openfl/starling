@@ -73,6 +73,8 @@ public class QuadBatch extends DisplayObject
     private var mNumQuads:Int;
     private var mSyncRequired:Bool;
     private var mBatchable:Bool;
+    private var mForceTinted:Bool;
+    private var mOwnsTexture:Bool;
 
     private var mTinted:Bool;
     private var mTexture:Texture;
@@ -90,7 +92,6 @@ public class QuadBatch extends DisplayObject
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
     private static var sRenderAlpha:Vector.<Float> = new <Float>[1.0, 1.0, 1.0, 1.0];
-    private static var sRenderMatrix:Matrix3D = new Matrix3D();
     private static var sProgramNameCache:Dictionary = new Dictionary();
     
     /** Creates a new QuadBatch instance with empty batch data. */
@@ -102,7 +103,9 @@ public class QuadBatch extends DisplayObject
         mTinted = false;
         mSyncRequired = false;
         mBatchable = false;
-        
+        mForceTinted = false;
+        mOwnsTexture = false;
+
         // Handle lost context. We use the conventional event here (not the one from Starling)
         // so we're able to create a weak event listener; this avoids memory leaks when people 
         // forget to call "dispose" on the QuadBatch.
@@ -119,6 +122,9 @@ public class QuadBatch extends DisplayObject
         mVertexData.numVertices = 0;
         mIndexData.length = 0;
         mNumQuads = 0;
+
+        if (mTexture && mOwnsTexture)
+            mTexture.dispose();
         
         super.dispose();
     }
@@ -259,9 +265,12 @@ public class QuadBatch extends DisplayObject
     }
     
     /** Resets the batch. The vertex- and index-buffers remain their size, so that they
-     *  can be reused quickly. */  
+     *  can be reused quickly. */
     public function reset():Void
     {
+        if (mTexture && mOwnsTexture)
+            mTexture.dispose();
+
         mNumQuads = 0;
         mTexture = null;
         mSmoothing = null;
@@ -295,7 +304,7 @@ public class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = texture ? (quad.tinted || parentAlpha != 1.0) : false;
+            mTinted = mForceTinted || quad.tinted || parentAlpha != 1.0;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
@@ -317,7 +326,6 @@ public class QuadBatch extends DisplayObject
         if (modelViewMatrix == null)
             modelViewMatrix = quadBatch.transformationMatrix;
         
-        var tinted:Bool = quadBatch.mTinted || parentAlpha != 1.0;
         var alpha:Float = parentAlpha * quadBatch.alpha;
         var vertexID:Int = mNumQuads * 4;
         var numQuads:Int = quadBatch.numQuads;
@@ -327,7 +335,7 @@ public class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode ? blendMode : quadBatch.blendMode;
             mTexture = quadBatch.mTexture;
-            mTinted = tinted;
+            mTinted = mForceTinted || quadBatch.mTinted || parentAlpha != 1.0;
             mSmoothing = quadBatch.mSmoothing;
             mVertexData.setPremultipliedAlpha(quadBatch.mVertexData.premultipliedAlpha, false);
         }
@@ -345,7 +353,7 @@ public class QuadBatch extends DisplayObject
     /** Indicates if specific quads can be added to the batch without causing a state change. 
      *  A state change occurs if the quad uses a different base texture, has a different 
      *  'tinted', 'smoothing', 'repeat' or 'blendMode' setting, or if the batch is full
-     *  (one batch can contain up to 8192 quads). */
+     *  (one batch can contain up to 16383 quads). */
     public function isStateChange(tinted:Bool, parentAlpha:Float, texture:Texture, 
                                   smoothing:String, blendMode:String, numQuads:Int=1):Bool
     {
@@ -357,7 +365,7 @@ public class QuadBatch extends DisplayObject
             return mTexture.base != texture.base ||
                    mTexture.repeat != texture.repeat ||
                    mSmoothing != smoothing ||
-                   mTinted != (tinted || parentAlpha != 1.0) ||
+                   mTinted != (mForceTinted || tinted || parentAlpha != 1.0) ||
                    this.blendMode != blendMode;
         else return true;
     }
@@ -502,8 +510,8 @@ public class QuadBatch extends DisplayObject
             for (var j:Int=i+1; j<quadBatches.length; )
             {
                 batch2 = quadBatches[j];
-                if (!batch1.isStateChange(batch2.tinted, 1.0, batch2.texture,
-                                          batch2.smoothing, batch2.blendMode))
+                if (!batch1.isStateChange(batch2.tinted, 1.0, batch2.texture, batch2.smoothing,
+                                          batch2.blendMode, batch2.numQuads))
                 {
                     batch1.addQuadBatch(batch2);
                     batch2.dispose();
@@ -534,7 +542,7 @@ public class QuadBatch extends DisplayObject
         var quad:Quad = object as Quad;
         var batch:QuadBatch = object as QuadBatch;
         var filter:FragmentFilter = object.filter;
-        
+
         if (quadBatchID == -1)
         {
             isRootObject = true;
@@ -542,8 +550,16 @@ public class QuadBatch extends DisplayObject
             objectAlpha = 1.0;
             blendMode = object.blendMode;
             ignoreCurrentFilter = true;
-            if (quadBatches.length == 0) quadBatches.push(new QuadBatch());
-            else quadBatches[0].reset();
+            if (quadBatches.length == 0) quadBatches[0] = new QuadBatch();
+            else { quadBatches[0].reset(); quadBatches[0].ownsTexture = false; }
+        }
+        else
+        {
+            if (object.mask)
+                trace("[Starling] Masks are ignored on children of a flattened sprite.");
+
+            if ((object is Sprite) && (object as Sprite).clipRect)
+                trace("[Starling] ClipRects are ignored on children of a flattened sprite.");
         }
         
         if (filter && !ignoreCurrentFilter)
@@ -553,10 +569,13 @@ public class QuadBatch extends DisplayObject
                 quadBatchID = compileObject(object, quadBatches, quadBatchID,
                                             transformationMatrix, alpha, blendMode, true);
             }
-            
+
             quadBatchID = compileObject(filter.compile(object), quadBatches, quadBatchID,
                                         transformationMatrix, alpha, blendMode);
-            
+
+            // textures of a compiled filter need to be disposed!
+            quadBatches[quadBatchID].ownsTexture = true;
+
             if (filter.mode == FragmentFilterMode.BELOW)
             {
                 quadBatchID = compileObject(object, quadBatches, quadBatchID,
@@ -606,7 +625,7 @@ public class QuadBatch extends DisplayObject
             }
             
             quadBatch = quadBatches[quadBatchID];
-            
+
             if (quadBatch.isStateChange(tinted, alpha*objectAlpha, texture, 
                                         smoothing, blendMode, numQuads))
             {
@@ -614,8 +633,9 @@ public class QuadBatch extends DisplayObject
                 if (quadBatches.length <= quadBatchID) quadBatches.push(new QuadBatch());
                 quadBatch = quadBatches[quadBatchID];
                 quadBatch.reset();
+                quadBatch.ownsTexture = false;
             }
-            
+
             if (quad)
                 quadBatch.addQuad(quad, alpha, texture, smoothing, transformationMatrix, blendMode);
             else
@@ -642,7 +662,7 @@ public class QuadBatch extends DisplayObject
     public function get numQuads():Int { return mNumQuads; }
     
     /** Indicates if any vertices have a non-white color or are not fully opaque. */
-    public function get tinted():Bool { return mTinted; }
+    public function get tinted():Bool { return mTinted || mForceTinted; }
     
     /** The texture that is used for rendering, or null for pure quads. Note that this is the
      *  texture instance of the first added quad; subsequently added quads may use a different
@@ -660,8 +680,25 @@ public class QuadBatch extends DisplayObject
      *  the CPU costs will exceed any gains you get from avoiding the additional draw call.
      *  @default false */
     public function get batchable():Bool { return mBatchable; }
-    public function set batchable(value:Bool):Void { mBatchable = value; } 
-    
+    public function set batchable(value:Bool):Void { mBatchable = value; }
+
+    /** If enabled, the QuadBatch will always be rendered with a tinting-enabled fragment
+     *  shader and the method 'isStateChange' won't take tinting into account. This means
+     *  fewer state changes, but also a slightly more complex fragment shader for non-tinted
+     *  quads. On modern hardware, that's not a problem, and you'll avoid unnecessary state
+     *  changes. However, on old devices like the iPad 1, you should be careful with this
+     *  setting. @default false
+     */
+    public function get forceTinted():Bool { return mForceTinted; }
+    public function set forceTinted(value:Bool):Void
+    {
+        mForceTinted = value;
+    }
+
+    /** If enabled, the texture (if there is one) will be disposed when the QuadBatch is. */
+    public function get ownsTexture():Bool { return mOwnsTexture; }
+    public function set ownsTexture(value:Bool):Void { mOwnsTexture = value; }
+
     /** Indicates the number of quads for which space is allocated (vertex- and index-buffers).
      *  If you add more quads than what fits into the current capacity, the QuadBatch is
      *  expanded automatically. However, if you know beforehand how many vertices you need,

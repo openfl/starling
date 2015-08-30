@@ -51,10 +51,10 @@ public class Touch
     private var mPressure:Float;
     private var mWidth:Float;
     private var mHeight:Float;
+    private var mCancelled:Bool;
     private var mBubbleChain:Vector.<EventDispatcher>;
     
     /** Helper object. */
-    private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new Touch object. */
@@ -126,6 +126,7 @@ public class Touch
         clone.mPressure = mPressure;
         clone.mWidth = mWidth;
         clone.mHeight = mHeight;
+        clone.mCancelled = mCancelled;
         clone.target = mTarget;
         return clone;
     }
@@ -218,6 +219,11 @@ public class Touch
      *  If the device does not support detecting the pressure, the value is 1.0. */
     public function get height():Float { return mHeight; }
     public function set height(value:Float):Void { mHeight = value; }
+
+    /** Indicates if the touch has been cancelled, which may happen when the app moves into
+     *  the background ('Event.DEACTIVATE'). @default false */
+    public function get cancelled():Bool { return mCancelled; }
+    public function set cancelled(value:Bool):Void { mCancelled = value; }
 
     // internal methods
     
