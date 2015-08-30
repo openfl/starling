@@ -1,0 +1,9 @@
+/samples/demo_web/bin
+/samples/demo/assets/fonts/*.eot
+/samples/demo/assets/fonts/*.svg
+/samples/demo/assets/fonts/*.woff
+/hxclasses/
+imports.js
+starling.js
+starling.js.map
+starling-export.hxml
