@@ -101,9 +101,9 @@ class TextRenderer
             var align:TextFormatAlign = format.align != null ? format.align : TextFormatAlign.LEFT;
             x += switch (align)
             {
-                case LEFT, JUSTIFY: 2;
+                case LEFT, JUSTIFY, START: 2;
                 case CENTER: ((textEngine.width) - tlm.width) / 2;
-                case RIGHT:  ((textEngine.width) - tlm.width) - 2;
+                case RIGHT, END:  ((textEngine.width) - tlm.width) - 2;
             }
             
             textLayout.text = null;
