@@ -193,7 +193,7 @@ class ConcreteTexture extends Texture
     }
 
     #if flash
-    public function attachCamera(camera:Camera, onComplete:Function=null):Void
+    public function attachCamera(camera:Camera, onComplete:Dynamic=null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }

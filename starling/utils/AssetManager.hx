@@ -33,7 +33,7 @@ import flash.system.LoaderContext;
 import flash.system.System;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
-#if flash
+#if 0
 import flash.utils.describeType;
 import flash.utils.getQualifiedClassName;
 #end
@@ -1211,17 +1211,17 @@ class AssetManager extends EventDispatcher
         // recognize BOMs
         
         if (length >= 4 &&
-            (bytes.__get(0) == 0x00 && bytes.__get(1) == 0x00 && bytes.__get(2) == 0xfe && bytes.__get(3) == 0xff) ||
-            (bytes.__get(0) == 0xff && bytes.__get(1) == 0xfe && bytes.__get(2) == 0x00 && bytes.__get(3) == 0x00))
+            (ByteArrayUtil.getFromByteArray(bytes, 0) == 0x00 && ByteArrayUtil.getFromByteArray(bytes, 1) == 0x00 && ByteArrayUtil.getFromByteArray(bytes, 2) == 0xfe && ByteArrayUtil.getFromByteArray(bytes, 3) == 0xff) ||
+            (ByteArrayUtil.getFromByteArray(bytes, 0) == 0xff && ByteArrayUtil.getFromByteArray(bytes, 1) == 0xfe && ByteArrayUtil.getFromByteArray(bytes, 2) == 0x00 && ByteArrayUtil.getFromByteArray(bytes, 3) == 0x00))
         {
             start = 4; // UTF-32
         }
-        else if (length >= 3 && bytes.__get(0) == 0xef && bytes.__get(1) == 0xbb && bytes.__get(2) == 0xbf)
+        else if (length >= 3 && ByteArrayUtil.getFromByteArray(bytes, 0) == 0xef && ByteArrayUtil.getFromByteArray(bytes, 1) == 0xbb && ByteArrayUtil.getFromByteArray(bytes, 2) == 0xbf)
         {
             start = 3; // UTF-8
         }
         else if (length >= 2 &&
-            (bytes.__get(0) == 0xfe && bytes.__get(1) == 0xff) || (bytes.__get(0) == 0xff && bytes.__get(1) == 0xfe))
+            (ByteArrayUtil.getFromByteArray(bytes, 0) == 0xfe && ByteArrayUtil.getFromByteArray(bytes, 1) == 0xff) || (ByteArrayUtil.getFromByteArray(bytes, 0) == 0xff && ByteArrayUtil.getFromByteArray(bytes, 1) == 0xfe))
         {
             start = 2; // UTF-16
         }
@@ -1230,7 +1230,7 @@ class AssetManager extends EventDispatcher
         
         for (i in start ... length)
         {
-            var byte:Int = bytes.__get(i);
+            var byte:Int = ByteArrayUtil.getFromByteArray(bytes, i);
             if (byte == 0 || byte == 10 || byte == 13 || byte == 32) continue; // null, \n, \r, space
             else return byte == wanted;
         }

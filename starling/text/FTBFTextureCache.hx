@@ -1,4 +1,6 @@
 package starling.text;
+
+#if !flash
 import lime.text.Glyph;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.textures.RectangleTexture;
@@ -73,3 +75,4 @@ class FTBFTextureCache
         return subTexture;
     }
 }
+#end

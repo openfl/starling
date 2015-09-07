@@ -374,7 +374,7 @@ class Texture
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
-                                      onComplete:Function=null):Texture
+                                      onComplete:Dynamic=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }

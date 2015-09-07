@@ -9,6 +9,9 @@
 // =================================================================================================
 
 package starling.text;
+
+#if !flash
+
 import lime.text.GlyphPosition;
 import lime.text.TextLayout;
 import openfl._internal.text.TextEngine;
@@ -20,7 +23,6 @@ import starling.textures.RenderTexture;
 import openfl._internal.renderer.TextFieldGraphics;
 import starling.core.RenderSupport;
 import openfl.geom.Matrix;
-#if (cpp || neko || nodejs)
 import lime.text.Glyph;
 import openfl.geom.Rectangle;
 import openfl.utils.UInt8Array;

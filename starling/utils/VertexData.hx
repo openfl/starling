@@ -68,7 +68,6 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = new Float32Array(0);
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -528,15 +527,21 @@ class VertexData
     {
         //mRawData.fixed = false;
 
-        var newArray:Float32Array = null;
-        if (value * ELEMENTS_PER_VERTEX > mRawData.length)
+        var totalSize:Int = value * ELEMENTS_PER_VERTEX;
+        if (totalSize < 0)
+            totalSize = 1;
+        if (mRawData == null)
         {
-            var new_rawData:Float32Array = new Float32Array(value * ELEMENTS_PER_VERTEX);
+            mRawData = new Float32Array(totalSize);
+        }
+        else if (value * ELEMENTS_PER_VERTEX > mRawData.length)
+        {
+            var new_rawData:Float32Array = new Float32Array(totalSize);
             new_rawData.set(mRawData);
             mRawData = new_rawData;
         }
-        else
-            mRawData = mRawData.subarray(value * ELEMENTS_PER_VERTEX, mRawData.length);
+        else if(totalSize != mRawData.length)
+            mRawData = mRawData.subarray(0, totalSize);
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;

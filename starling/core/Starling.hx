@@ -22,7 +22,7 @@ import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
-import flash.display3D._shaders.Shader;
+import openfl.display3D._shaders.Shader;
 import flash.errors.IllegalOperationError;
 import flash.events.ErrorEvent;
 import flash.events.Event;
@@ -385,7 +385,7 @@ class Starling extends EventDispatcher
         
         if (profile == "auto")
             profiles = [/*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
-        else if (Std.is(profile, Context3DProfile))
+        else if (Std.is(profile, #if flash String #else Context3DProfile #end))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
             profiles = cast profile;
@@ -597,8 +597,8 @@ class Starling extends EventDispatcher
                     mAntiAliasing, true, mSupportHighResolutions);
                 
                 #if flash
-                if (mSupportHighResolutions && "contentsScaleFactor" in mNativeStage)
-                    mNativeStageContentScaleFactor = mNativeStage["contentsScaleFactor"];
+                if (mSupportHighResolutions && Reflect.getProperty(mNativeStage, "contentsScaleFactor") != null)
+                    mNativeStageContentScaleFactor = Reflect.getProperty(mNativeStage, "contentsScaleFactor");
                 else
                 #end
                     mNativeStageContentScaleFactor = 1.0;
@@ -991,6 +991,7 @@ class Starling extends EventDispatcher
     }
     
     /** Returns the font caches associated with the context. */
+    #if !flash
     public var fontCaches(get, set):Array<FTBFTextureCache>;
     @:noCompletion private function get_fontCaches():Array<FTBFTextureCache>
     {
@@ -1008,6 +1009,7 @@ class Starling extends EventDispatcher
         #end
         return fontCaches;
     }
+    #end
     
     /** Returns the current width of the back buffer. In most cases, this value is in pixels;
      *  however, if the app is running on an HiDPI display with an activated

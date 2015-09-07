@@ -10,7 +10,7 @@
 
 package starling.utils;
 import starling.errors.AbstractClassError;
-import haxe.ds.Vector;
+import openfl.Vector;
 
 /** A utility class containing methods related to the Array class.
  *
@@ -41,7 +41,7 @@ class ArrayUtil
     public static function insertAt<T>(array:Array<T>, index:Int, object:T):Void
     {
         var i:Int;
-        var length:UInt = array.length;
+        var length:Int = array.length;
 
         if (index < 0) index += length + 1;
         if (index < 0) index = 0;
@@ -71,7 +71,7 @@ class ArrayUtil
     public static function removeAt<T>(array:Array<T>, index:Int):T
     {
         var i:Int;
-        var length:UInt = array.length;
+        var length:Int = array.length;
 
         if (index < 0) index += length;
         if (index < 0) index = 0; else if (index >= length) index = length - 1;

@@ -11,6 +11,7 @@
 package starling.display;
 import openfl.utils.Int16Array;
 import starling.utils.SafeCast.safe_cast;
+import starling.utils.VertexBufferUtil;
 
 import flash.errors.Error;
 import flash.display3D.Context3D;
@@ -42,6 +43,9 @@ import starling.textures.TextureSmoothing;
 import starling.utils.VertexData;
 
 import starling.utils.SafeCast.safe_cast;
+#if flash
+import openfl.Vector;
+#end
 
 /** Optimizes rendering of a number of quads with an identical state.
  * 
@@ -98,7 +102,7 @@ class QuadBatch extends DisplayObject
 
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:Array<Float> = [1.0, 1.0, 1.0, 1.0];
+    private static var sRenderAlpha:#if flash Vector<Float> #else Array<Float> #end = [1.0, 1.0, 1.0, 1.0];
     private static var sProgramNameCache:Map<UInt, String> = new Map<UInt, String>();
     
     /** Creates a new QuadBatch instance with empty batch data. */
@@ -189,10 +193,10 @@ class QuadBatch extends DisplayObject
         if (context == null)  throw new MissingContextError();
         
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX, mDynamicDraw ? Context3DBufferUsage.DYNAMIC_DRAW : Context3DBufferUsage.STATIC_DRAW);
-        mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
+        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
-        mIndexBuffer.uploadFromInt16Array(mIndexData);
+        VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData);
         
         mSyncRequired = false;
     }
@@ -223,7 +227,7 @@ class QuadBatch extends DisplayObject
         {
             // as last parameter, we could also use 'mNumQuads * 4', but on some
             // GPU hardware (iOS!), this is slower than updating the complete buffer.
-            mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, mNumQuads * 4);
+            VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, mNumQuads * 4);
             mSyncRequired = false;
         }
     }
@@ -317,7 +321,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = texture != null ? (mForceTinted || quad.tinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false;
+            mTinted = texture != null ? (mForceTinted || quad.tinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
@@ -348,7 +352,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quadBatch.blendMode;
             mTexture = quadBatch.mTexture;
-            mTinted = (texture != null) ? (mForceTinted || quadBatch.mTinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false;
+            mTinted = (texture != null) ? (mForceTinted || quadBatch.mTinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false;
             mSmoothing = quadBatch.mSmoothing;
             mVertexData.setPremultipliedAlpha(quadBatch.mVertexData.premultipliedAlpha, false);
         }
@@ -378,7 +382,7 @@ class QuadBatch extends DisplayObject
             return mTexture.base != texture.base ||
                    mTexture.repeat != texture.repeat ||
                    mSmoothing != smoothing ||
-                   mTinted != (texture.format != null ? (mForceTinted || tinted || parentAlpha != 1.0 || texture.format == Context3DTextureFormat.ALPHA) : false) ||
+                   mTinted != (texture.format != null ? (mForceTinted || tinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false) ||
                    this.blendMode != blendMode;
         else return true;
     }
@@ -830,7 +834,7 @@ class QuadBatch extends DisplayObject
                 
                 if (tinted)
                 {
-                    fragmentShader = (mTexture.format != Context3DTextureFormat.ALPHA) ?
+                    fragmentShader = !isAlphaOnlyTextureFormat(mTexture.format) ?
                         "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
                         "mul  oc, ft1,  v0       \n"   // multiply color with texel color
                         :
@@ -873,7 +877,7 @@ class QuadBatch extends DisplayObject
             bitField |= 1 << 5;
         else if (format == Context3DTextureFormat.COMPRESSED_ALPHA)
             bitField |= 1 << 6;
-        else if (format == Context3DTextureFormat.ALPHA)
+        else if (isAlphaOnlyTextureFormat(format))
             bitField |= 1 << 7;
         
         var name:String = sProgramNameCache[bitField];
@@ -885,5 +889,14 @@ class QuadBatch extends DisplayObject
         }
         
         return name;
+    }
+    
+    inline private static function isAlphaOnlyTextureFormat(format:Context3DTextureFormat)
+    {
+        #if flash
+        return false;
+        #else
+        return format == Context3DTextureFormat.ALPHA;
+        #end
     }
 }

@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.text;
+#if !flash
 import openfl._internal.text.TextEngine;
+#end
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.StageQuality;
@@ -308,9 +310,7 @@ class TextField extends DisplayObjectContainer
         var textFormat:TextFormat = new TextFormat(mFontName, 
             Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
         textFormat.kerning = mKerning;
-        #if flash
-        textFormat.leading = mLeading;
-        #end
+        textFormat.leading = Std.int(mLeading);
 
         sNativeTextField.defaultTextFormat = textFormat;
         sNativeTextField.width = width;
@@ -406,7 +406,7 @@ class TextField extends DisplayObjectContainer
     
     private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
     {
-        var size:Int   = textField.defaultTextFormat.size;
+        var size:Int   = Std.int(textField.defaultTextFormat.size);
         var maxHeight:Int = Std.int(textField.height - 4);
         var maxWidth:Int  = Std.int(textField.width - 4);
         

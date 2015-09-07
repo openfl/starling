@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
-    
-	<set name="openfl-next" value="1" />
 	
 	<meta title="demo_web" package="com.demoweb" version="1.0.0" company="vroad" />
 	<app main="Demo_Web" file="Demo_Web" path="bin" />
@@ -17,7 +15,8 @@
 	<haxelib name="starling" />
     <haxelib name="openfl" />
 
-    <assets path="../demo/assets/audio/wing_flap.ogg" rename="assets/audio/wing_flap.ogg" />
+    <assets path="../demo/assets/audio/wing_flap.mp3" rename="assets/audio/wing_flap.mp3" if="flash" />
+    <assets path="../demo/assets/audio/wing_flap.ogg" rename="assets/audio/wing_flap.ogg" unless="flash" />
     <assets path="../demo/assets/textures/1x" rename="assets/textures/1x" />
     <assets path="../demo/assets/fonts/1x" rename="assets/fonts/1x" />
     <assets path="../demo/assets/fonts/Ubuntu-R.ttf" rename="assets/fonts/Ubuntu-R.ttf" />
@@ -29,5 +28,6 @@
 	<haxedef name="disable_gl_renderer" />
 
 	<android minimum-sdk-version="10" />
+	<haxeflag name="-swf-version" value="11.8" />
 	
 </project>

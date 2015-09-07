@@ -16,6 +16,9 @@ import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
 import openfl.errors.ArgumentError;
+#if flash
+import openfl.Vector;
+#end
 
 import starling.core.Starling;
 import starling.textures.Texture;
@@ -45,10 +48,10 @@ class ColorMatrixFilter extends FragmentFilter
 {
     private var mShaderProgram:Program3D;
     private var mUserMatrix:Array<Float>;   // offset in range 0-255
-    private var mShaderMatrix:Array<Float>; // offset in range 0-1, changed order
+    private var mShaderMatrix:#if flash Vector<Float> #else Array<Float> #end; // offset in range 0-1, changed order
     
     inline private static var PROGRAM_NAME:String = "CMF";
-    private static var MIN_COLOR:Array<Float> = [0, 0, 0, 0.0001];
+    private static var MIN_COLOR:#if flash Vector<Float> #else Array<Float> #end = [0, 0, 0, 0.0001];
     private static var IDENTITY:Array<Float> = [1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
     inline private static var LUMA_R:Float = 0.299;
     inline private static var LUMA_G:Float = 0.587;
@@ -65,7 +68,7 @@ class ColorMatrixFilter extends FragmentFilter
     {
         super();
         mUserMatrix   = new Array<Float>();
-        mShaderMatrix = new Array<Float>();
+        mShaderMatrix = new #if flash Vector<Float> #else Array<Float> #end ();
         
         this.matrix = matrix;
         //sTmpMatrix1.length = 20;

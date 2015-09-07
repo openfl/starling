@@ -12,6 +12,7 @@ package starling.filters;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
+import openfl.Vector;
 
 import starling.core.Starling;
 import starling.textures.Texture;
@@ -31,9 +32,9 @@ class BlurFilter extends FragmentFilter
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Array<Float> = [0, 0, 0, 0];
-    private var mWeights:Array<Float> = [0, 0, 0, 0];
-    private var mColor:Array<Float>   = [1, 1, 1, 1];
+    private var mOffsets:#if flash Vector<Float> #else Array<Float> #end = [0.0, 0, 0, 0];
+    private var mWeights:#if flash Vector<Float> #else Array<Float> #end = [0.0, 0, 0, 0];
+    private var mColor:#if flash Vector<Float> #else Array<Float> #end   = [1.0, 1, 1, 1];
     
     private var mBlurX:Float;
     private var mBlurY:Float;

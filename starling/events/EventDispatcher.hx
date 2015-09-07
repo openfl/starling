@@ -142,12 +142,14 @@ class EventDispatcher
             for (i in 0 ... numListeners)
             {
                 var listener:Dynamic = listeners[i];
+                #if flash
+                var numArgs:Int = untyped listener.length;
+                if (numArgs == 0) listener();
+                else if (numArgs == 1) listener(event);
+                else listener(event, event.data);
+                #else
                 listener(event, event.data);
-                //var numArgs:Int = listener.length;
-                
-                //if (numArgs == 0) listener();
-                //else if (numArgs == 1) listener(event);
-                //else listener(event, event.data);
+                #end
                 
                 if (event.stopsImmediatePropagation)
                     return true;

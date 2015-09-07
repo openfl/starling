@@ -26,6 +26,7 @@ import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import openfl.utils.Int16Array;
+import starling.utils.VertexBufferUtil;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -378,10 +379,10 @@ class FragmentFilter
         {
             mVertexBuffer = context.createVertexBuffer(4, VertexData.ELEMENTS_PER_VERTEX);
             mIndexBuffer  = context.createIndexBuffer(6);
-            mIndexBuffer.uploadFromInt16Array(mIndexData);
+            VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData);
         }
         
-        mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, 4);
+        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, 4);
     }
     
     private function updatePassTextures(width:Float, height:Float, scale:Float):Void

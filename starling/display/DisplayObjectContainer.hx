@@ -484,11 +484,11 @@ class DisplayObjectContainer extends DisplayObject
     /** Custom implementation of 'Vector.splice'. The native method always create temporary
      *  objects that have to be garbage collected. This implementation does not cause such
      *  issues. */
-    private function spliceChildren(startIndex:Int, deleteCount:UInt=Max.UINT_MAX_VALUE,
+    private function spliceChildren(startIndex:Int, deleteCount:Int=Max.INT_MAX_VALUE,
                                     insertee:DisplayObject=null):Void
     {
         var vector:Array<DisplayObject> = mChildren;
-        var oldLength:UInt  = vector.length;
+        var oldLength:Int  = vector.length;
 
         if (startIndex < 0) startIndex += oldLength;
         if (startIndex < 0) startIndex = 0; else if (startIndex > oldLength) startIndex = oldLength;

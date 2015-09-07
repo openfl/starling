@@ -22,7 +22,11 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.utils.Float32Array;
+#if flash
+import openfl.Vector;
+#end
 import starling.utils.ArrayUtil;
+import starling.utils.VertexBufferUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -56,7 +60,7 @@ class DisplacementMapFilter extends FragmentFilter
     private var mMapTexCoordBuffer:VertexBuffer3D;
     
     /** Helper objects */
-    private static var sOneHalf:Array<Float> = [0.5, 0.5, 0.5, 0.5];
+    private static var sOneHalf:#if flash Vector<Float> #else Array<Float> #end = [0.5, 0.5, 0.5, 0.5];
     private static var sMapTexCoords:Float32Array = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
 
     private static var sMatrix:Matrix3D = new Matrix3D();
@@ -206,7 +210,7 @@ class DisplacementMapFilter extends FragmentFilter
         sMapTexCoords[6] = -mapX + maxU; sMapTexCoords[7] = -mapY + maxV;
         
         mMapTexture.adjustTexCoords(sMapTexCoords);
-        mMapTexCoordBuffer.uploadFromFloat32Array(sMapTexCoords, 0, 4);
+		VertexBufferUtil.uploadVertexBufferFromFloat32Array(mMapTexCoordBuffer, sMapTexCoords, 0, 4);
     }
     
     // properties

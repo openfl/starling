@@ -53,8 +53,7 @@ class Demo_Web extends Sprite
         mStarling.simulateMultitouch = true;
         //mStarling.enableErrorChecking = Capabilities.isDebugger;
         mStarling.enableErrorChecking = false;
-        mStarling.start();
-        onRootCreated(new Event("rootCreated", false, mStarling.root));
+        mStarling.addEventListener(Event.ROOT_CREATED, onRootCreated);
         
         #if nodejs
         // check if gc is enabled
@@ -62,6 +61,7 @@ class Demo_Web extends Sprite
             trace("--expose-gc is not enabled.");
         #end
         
+        mStarling.start();
         this.stage.addEventListener(Event.RESIZE, onResize, false, Max.INT_MAX_VALUE, true);
     }
     

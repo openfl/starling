@@ -22,10 +22,17 @@ import starling.errors.AbstractClassError;
 class MatrixUtil
 {
     /** Helper object. */
+    #if flash
+    private static var sRawData:Vector<Float> = Vector.ofArray(
+        [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
+    private static var sRawData2:Vector<Float> = Vector.ofArray(
+        [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
+    #else
     private static var sRawData:Array<Float> = 
         [1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1];
     private static var sRawData2:Array<Float> =
         [0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0];
+    #end
     
     /** @private */
     public function new() { throw new AbstractClassError(); }
@@ -53,8 +60,11 @@ class MatrixUtil
     {
         if (resultMatrix == null) resultMatrix = new Matrix();
 
-        //matrix3D.copyRawDataTo(sRawData2);
+        #if flash
+        matrix3D.copyRawDataTo(sRawData2);
+        #else
         ArrayUtil.copyVectorToArray(matrix3D.rawData, sRawData2);
+        #end
         resultMatrix.a  = sRawData2[ 0];
         resultMatrix.b  = sRawData2[ 1];
         resultMatrix.c  = sRawData2[ 4];
@@ -99,8 +109,11 @@ class MatrixUtil
     {
         if (resultPoint == null) resultPoint = new Vector3D();
 
-        //matrix.copyRawDataTo(sRawData2);
+        #if flash
+        matrix.copyRawDataTo(sRawData2);
+        #else
         ArrayUtil.copyVectorToArray(matrix.rawData, sRawData2);
+        #end
         resultPoint.x = x * sRawData2[0] + y * sRawData2[4] + z * sRawData2[ 8] + sRawData2[12];
         resultPoint.y = x * sRawData2[1] + y * sRawData2[5] + z * sRawData2[ 9] + sRawData2[13];
         resultPoint.z = x * sRawData2[2] + y * sRawData2[6] + z * sRawData2[10] + sRawData2[14];
