@@ -8,10 +8,14 @@
 //
 // =================================================================================================
 
-package starling.geom
-{
+package starling.geom;
 import flash.geom.Point;
+#if 0
 import flash.utils.getQualifiedClassName;
+#end
+import openfl.errors.ArgumentError;
+import openfl.errors.RangeError;
+import openfl.utils.Float32Array;
 
 import starling.utils.VectorUtil;
 import starling.utils.VertexData;
@@ -24,21 +28,21 @@ import starling.utils.VertexData;
  *  Self-intersecting paths are not supported and will give wrong results on triangulation,
  *  area calculation, etc.</p>
  */
-public class Polygon
+class Polygon
 {
-    private var mCoords:Vector.<Float>;
+    private var mCoords:Array<Float>;
 
     // Helper object
-    private static var sRestIndices:Vector.<UInt> = new <UInt>[];
+    private static var sRestIndices:Array<UInt> = new Array<UInt>();
 
     /** Creates a Polygon with the given coordinates.
      *  @param vertices an array that contains either 'Point' instances or
      *                  alternating 'x' and 'y' coordinates.
      */
-    public function Polygon(vertices:Array=null)
+    public function new(vertices:Array<Dynamic>=null)
     {
-        mCoords = new <Float>[];
-        addVertices.apply(this, vertices);
+        mCoords = new Array<Float>();
+        addVertices(vertices);
     }
 
     /** Creates a clone of this polygon. */
@@ -47,7 +51,8 @@ public class Polygon
         var clone:Polygon = new Polygon();
         var numCoords:Int = mCoords.length;
 
-        for (var i:Int=0; i<numCoords; ++i)
+        //for (var i:Int=0; i<numCoords; ++i)
+        for(i in 0 ... numCoords)
             clone.mCoords[i] = mCoords[i];
 
         return clone;
@@ -58,10 +63,12 @@ public class Polygon
     public function reverse():Void
     {
         var numCoords:Int = mCoords.length;
-        var numVertices:Int = numCoords / 2;
+        var numVertices:Int = Std.int(numCoords / 2);
         var tmp:Float;
 
-        for (var i:Int=0; i<numVertices; i += 2)
+        //for (var i:Int=0; i<numVertices; i += 2)
+        var i:Int = 0;
+        while(i < numVertices)
         {
             tmp = mCoords[i];
             mCoords[i] = mCoords[numCoords - i - 2];
@@ -70,12 +77,14 @@ public class Polygon
             tmp = mCoords[i + 1];
             mCoords[i + 1] = mCoords[numCoords - i - 1];
             mCoords[numCoords - i - 1] = tmp;
+
+            i += 2;
         }
     }
 
     /** Adds vertices to the polygon. Pass either a list of 'Point' instances or alternating
      *  'x' and 'y' coordinates. */
-    public function addVertices(...args):Void
+    public function addVertices(args:Array<Dynamic>):Void
     {
         var i:Int;
         var numArgs:Int = args.length;
@@ -83,20 +92,22 @@ public class Polygon
 
         if (numArgs > 0)
         {
-            if (args[0] is Point)
+            if (Std.is(args[0], Point))
             {
-                for (i=0; i<numArgs; i++)
+                //for (i=0; i<numArgs; i++)
+                for(i in 0 ... numArgs)
                 {
-                    mCoords[numCoords + i * 2    ] = (args[i] as Point).x;
-                    mCoords[numCoords + i * 2 + 1] = (args[i] as Point).y;
+                    mCoords[numCoords + i * 2    ] = cast(args[i], Point).x;
+                    mCoords[numCoords + i * 2 + 1] = cast(args[i], Point).y;
                 }
             }
-            else if (args[0] is Float)
+            else if (Std.is(args[0], Float))
             {
-                for (i=0; i<numArgs; ++i)
+                //for (i=0; i<numArgs; ++i)
+                for(i in 0 ... numArgs)
                     mCoords[numCoords + i] = args[i];
             }
-            else throw new ArgumentError("Invalid type: " + getQualifiedClassName(args[0]));
+            else throw new ArgumentError("Invalid type: " + Type.getClassName(Type.getClass(args[0])));
         }
     }
 
@@ -116,7 +127,7 @@ public class Polygon
     {
         if (index >= 0 && index < numVertices)
         {
-            result ||= new Point();
+            result = (result == null) ? new Point() : result;
             result.setTo(mCoords[index * 2], mCoords[index * 2 + 1]);
             return result;
         }
@@ -132,7 +143,8 @@ public class Polygon
         var i:Int, j:Int = numVertices - 1;
         var oddNodes:UInt = 0;
 
-        for (i=0; i<numVertices; ++i)
+        //for (i=0; i<numVertices; ++i)
+        for(i in 0 ... numVertices)
         {
             var ix:Float = mCoords[i * 2];
             var iy:Float = mCoords[i * 2 + 1];
@@ -140,7 +152,7 @@ public class Polygon
             var jy:Float = mCoords[j * 2 + 1];
 
             if ((iy < y && jy >= y || jy < y && iy >= y) && (ix <= x || jx <= x))
-                oddNodes ^= UInt(ix + (y - iy) / (jy - iy) * (jx - ix) < x);
+                oddNodes ^= (ix + (y - iy) / (jy - iy) * (jx - ix) < x) ? 1 : 0;
 
             j = i;
         }
@@ -157,7 +169,7 @@ public class Polygon
     /** Calculates a possible representation of the polygon via triangles. The resulting
      *  vector contains a list of vertex indices, where every three indices describe a triangle
      *  referencing the vertices of the polygon. */
-    public function triangulate(result:Vector.<UInt>=null):Vector.<UInt>
+    public function triangulate(result:Array<UInt>=null):Array<UInt>
     {
         // Algorithm "Ear clipping method" described here:
         // -> https://en.wikipedia.org/wiki/Polygon_triangulation
@@ -165,15 +177,16 @@ public class Polygon
         // Implementation inspired by:
         // -> http://polyk.ivank.net
 
-        if (result == null) result = new <UInt>[];
+        if (result == null) result = new Array<UInt>();
 
         var numVertices:Int = this.numVertices;
         var i:Int, restIndexPos:Int, numRestIndices:Int, resultPos:Int;
 
         if (numVertices < 3) return result;
 
-        sRestIndices.length = numVertices;
-        for (i=0; i<numVertices; ++i) sRestIndices[i] = i;
+        sRestIndices.splice(numVertices, sRestIndices.length - numVertices);
+        //for (i=0; i<numVertices; ++i)
+        for(i in 0 ... numVertices) sRestIndices[i] = i;
 
         restIndexPos = 0;
         resultPos = result.length;
@@ -201,7 +214,8 @@ public class Polygon
             if (isConvexTriangle(ax, ay, bx, by, cx, cy))
             {
                 earFound = true;
-                for (i = 3; i < numRestIndices; ++i)
+                //for (i = 3; i < numRestIndices; ++i)
+                for(i in 3 ... numRestIndices)
                 {
                     var otherIndex:UInt = sRestIndices[(restIndexPos + i) % numRestIndices];
                     if (isPointInTriangle(mCoords[2 * otherIndex], mCoords[2 * otherIndex + 1],
@@ -251,12 +265,13 @@ public class Polygon
 
     /** Copies all vertices to a 'Vector', beginning at a certain target index and skipping
      *  'stride' coordinates between each 'x, y' pair. */
-    public function copyToVector(target:Vector.<Float>, targetIndex:Int=0,
+    public function copyToVector(target:Float32Array, targetIndex:Int=0,
                                  stride:Int=0):Void
     {
         var numVertices:Int = this.numVertices;
 
-        for (var i:Int=0; i<numVertices; ++i)
+        //for (var i:Int=0; i<numVertices; ++i)
+        for(i in 0 ... numVertices)
         {
             target[targetIndex++] = mCoords[i * 2];
             target[targetIndex++] = mCoords[i * 2 + 1];
@@ -270,11 +285,12 @@ public class Polygon
         var result:String = "[Polygon \n";
         var numPoints:Int = this.numVertices;
 
-        for (var i:Int=0; i<numPoints; ++i)
+        //for (var i:Int=0; i<numPoints; ++i)
+        for(i in 0 ... numPoints)
         {
             result += "  [Vertex " + i + ": " +
-                "x=" + mCoords[i * 2    ].toFixed(1) + ", " +
-                "y=" + mCoords[i * 2 + 1].toFixed(1) + "]"  +
+                "x=" + mCoords[i * 2    ] + ", " +
+                "y=" + mCoords[i * 2 + 1] + "]"  +
                 (i == numPoints - 1 ? "\n" : ",\n");
         }
 
@@ -305,8 +321,10 @@ public class Polygon
     // helpers
 
     /** Calculates if the area of the triangle a->b->c is to on the right-hand side of a->b. */
+    #if 0
     [Inline]
-    private static function isConvexTriangle(ax:Float, ay:Float,
+    #end
+    inline private static function isConvexTriangle(ax:Float, ay:Float,
                                              bx:Float, by:Float,
                                              cx:Float, cy:Float):Bool
     {
@@ -361,7 +379,7 @@ public class Polygon
 
         if (t < 0 || t > 1) return false; // outside c->d
 
-        var s:Float = aby ? (cy - ay + t * cdy) / aby :
+        var s:Float = aby != 0.0 ? (cy - ay + t * cdy) / aby :
                              (cx - ax + t * cdx) / abx;
 
         return s >= 0.0 && s <= 1.0; // inside a->b
@@ -371,12 +389,15 @@ public class Polygon
 
     /** Indicates if the polygon's line segments are not self-intersecting.
      *  Beware: this is a brute-force implementation with <code>O(n^2)</code>. */
-    public function get isSimple():Bool
+    public var isSimple(get, never):Bool;
+    public function get_isSimple():Bool
     {
         var numCoords:Int = mCoords.length;
         if (numCoords <= 6) return true;
 
-        for (var i:Int=0; i<numCoords; i += 2)
+        //for (var i:Int=0; i<numCoords; i += 2)
+        var i:Int = 0;
+        while(i<numCoords)
         {
             var ax:Float = mCoords[ i ];
             var ay:Float = mCoords[ i + 1 ];
@@ -384,7 +405,9 @@ public class Polygon
             var by:Float = mCoords[(i + 3) % numCoords];
             var endJ:Float = i + numCoords - 2;
 
-            for (var j:Int = i + 4; j<endJ; j += 2)
+            //for (var j:Int = i + 4; j<endJ; j += 2)
+            var j:Int = i + 4;
+            while(j<endJ)
             {
                 var cx:Float = mCoords[ j      % numCoords];
                 var cy:Float = mCoords[(j + 1) % numCoords];
@@ -393,7 +416,11 @@ public class Polygon
 
                 if (areVectorsIntersecting(ax, ay, bx, by, cx, cy, dx, dy))
                     return false;
+
+                j += 2;
             }
+
+            i += 2;
         }
 
         return true;
@@ -401,14 +428,17 @@ public class Polygon
 
     /** Indicates if the polygon is convex. In a convex polygon, the vector between any two
      *  points inside the polygon lies inside it, as well. */
-    public function get isConvex():Bool
+    public var isConvex(get, never):Bool;
+    public function get_isConvex():Bool
     {
         var numCoords:Int = mCoords.length;
 
         if (numCoords < 6) return true;
         else
         {
-            for (var i:Int = 0; i < numCoords; i += 2)
+            //for (var i:Int = 0; i < numCoords; i += 2)
+            var i:Int = 0;
+            while(i < numCoords)
             {
                 if (!isConvexTriangle(mCoords[i], mCoords[i+1],
                                       mCoords[(i+2) % numCoords], mCoords[(i+3) % numCoords],
@@ -416,6 +446,8 @@ public class Polygon
                 {
                     return false;
                 }
+
+                i += 2;
             }
         }
 
@@ -423,17 +455,22 @@ public class Polygon
     }
 
     /** Calculates the total area of the polygon. */
-    public function get area():Float
+    public var area(get, never):Float;
+    public function get_area():Float
     {
         var area:Float = 0;
         var numCoords:Int = mCoords.length;
 
         if (numCoords >= 6)
         {
-            for (var i:Int = 0; i < numCoords; i += 2)
+            //for (var i:Int = 0; i < numCoords; i += 2)
+            var i:Int = 0;
+            while(i < numCoords)
             {
                 area += mCoords[i  ] * mCoords[(i+3) % numCoords];
                 area -= mCoords[i+1] * mCoords[(i+2) % numCoords];
+
+                i += 2;
             }
         }
 
@@ -443,195 +480,25 @@ public class Polygon
     /** Returns the total number of vertices spawning up the polygon. Assigning a value
      *  that's smaller than the current number of vertices will crop the path; a bigger
      *  value will fill up the path with zeros. */
-    public function get numVertices():Int
+    public var numVertices(get, set):Int;
+    public function get_numVertices():Int
     {
-        return mCoords.length / 2;
+        return Std.int(mCoords.length / 2);
     }
 
-    public function set numVertices(value:Int):Void
+    public function set_numVertices(value:Int):Int
     {
         var oldLength:Int = numVertices;
+        #if 0
         mCoords.length = value * 2;
+        #end
 
         if (oldLength < value)
         {
-            for (var i:Int=oldLength; i < value; ++i)
+            //for (var i:Int=oldLength; i < value; ++i)
+            for(i in oldLength ... value)
                 mCoords[i * 2] = mCoords[i * 2 + 1] = 0.0;
         }
+        return Std.int(mCoords.length / 2);
     }
-}
-}
-
-import flash.errors.IllegalOperationError;
-import flash.utils.getQualifiedClassName;
-
-import starling.geom.Polygon;
-
-class ImmutablePolygon extends Polygon
-{
-private var mFrozen:Bool;
-
-public function ImmutablePolygon(vertices:Array)
-{
-    super(vertices);
-    mFrozen = true;
-}
-
-override public function addVertices(...args):Void
-{
-    if (mFrozen) throw getImmutableError();
-    else super.addVertices.apply(this, args);
-}
-
-override public function setVertex(index:Int, x:Float, y:Float):Void
-{
-    if (mFrozen) throw getImmutableError();
-    else super.setVertex(index, x, y);
-}
-
-override public function reverse():Void
-{
-    if (mFrozen) throw getImmutableError();
-    else super.reverse();
-}
-
-override public function set numVertices(value:Int):Void
-{
-    if (mFrozen) throw getImmutableError();
-    else super.reverse();
-}
-
-private function getImmutableError():Error
-{
-    var className:String = getQualifiedClassName(this).split("::").pop();
-    var msg:String = className + " cannot be modified. Call 'clone' to create a mutable copy.";
-    return new IllegalOperationError(msg);
-}
-}
-
-class Ellipse extends ImmutablePolygon
-{
-private var mX:Float;
-private var mY:Float;
-private var mRadiusX:Float;
-private var mRadiusY:Float;
-
-public function Ellipse(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1)
-{
-    mX = x;
-    mY = y;
-    mRadiusX = radiusX;
-    mRadiusY = radiusY;
-
-    super(getVertices(numSides));
-}
-
-private function getVertices(numSides:Int):Array
-{
-    if (numSides < 0) numSides = Math.PI * (mRadiusX + mRadiusY) / 4.0;
-    if (numSides < 6) numSides = 6;
-
-    var vertices:Array = [];
-    var angleDelta:Float = 2 * Math.PI / numSides;
-    var angle:Float = 0;
-
-    for (var i:Int=0; i<numSides; ++i)
-    {
-        vertices[i * 2    ] = Math.cos(angle) * mRadiusX + mX;
-        vertices[i * 2 + 1] = Math.sin(angle) * mRadiusY + mY;
-        angle += angleDelta;
-    }
-
-    return vertices;
-}
-
-override public function triangulate(result:Vector.<UInt> = null):Vector.<UInt>
-{
-    if (result == null) result = new <UInt>[];
-
-    var from:UInt = 1;
-    var to:UInt = numVertices - 1;
-    var pos:UInt = result.length;
-
-    for (var i:Int=from; i<to; ++i)
-    {
-        result[pos++] = 0;
-        result[pos++] = i;
-        result[pos++] = i + 1;
-    }
-
-    return result;
-}
-
-override public function contains(x:Float, y:Float):Bool
-{
-    var vx:Float = x - mX;
-    var vy:Float = y - mY;
-
-    var a:Float = vx / mRadiusX;
-    var b:Float = vy / mRadiusY;
-
-    return a * a + b * b <= 1;
-}
-
-override public function get area():Float
-{
-    return Math.PI * mRadiusX * mRadiusY;
-}
-
-override public function get isSimple():Bool
-{
-    return true;
-}
-
-override public function get isConvex():Bool
-{
-    return true;
-}
-}
-
-class Rectangle extends ImmutablePolygon
-{
-private var mX:Float;
-private var mY:Float;
-private var mWidth:Float;
-private var mHeight:Float;
-
-public function Rectangle(x:Float, y:Float, width:Float, height:Float)
-{
-    mX = x;
-    mY = y;
-    mWidth = width;
-    mHeight = height;
-
-    super([x, y, x + width, y, x + width, y + height, x, y + height]);
-}
-
-override public function triangulate(result:Vector.<UInt> = null):Vector.<UInt>
-{
-    if (result == null) result = new <UInt>[];
-    result.push(0, 1, 3, 1, 2, 3);
-    return result;
-}
-
-override public function contains(x:Float, y:Float):Bool
-{
-    return x >= mX && x <= mX + mWidth &&
-           y >= mY && y <= mY + mHeight;
-}
-
-override public function get area():Float
-{
-    return mWidth * mHeight;
-}
-
-override public function get isSimple():Bool
-{
-    return true;
-}
-
-override public function get isConvex():Bool
-{
-    return true;
-}
 }

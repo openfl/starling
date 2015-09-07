@@ -262,11 +262,13 @@ class Sprite3D extends DisplayObjectContainer
     /** The z coordinate of the object relative to the local coordinates of the parent.
      *  The z-axis points away from the camera, i.e. positive z-values will move the object further
      *  away from the viewer. */
+    public var z(get, set):Float;
     public function get_z():Float { return mZ; }
-    public function set_z(value:Float):Void
+    public function set_z(value:Float):Float
     {
         mZ = value;
         mTransformationChanged = true;
+        return mZ;
     }
 
     /** @inheritDoc */
@@ -286,11 +288,13 @@ class Sprite3D extends DisplayObjectContainer
     }
 
     /** The z coordinate of the object's origin in its own coordinate space (default: 0). */
+    public var pivotZ(get, set):Float;
     public function get_pivotZ():Float { return mPivotZ; }
-    public function set_pivotZ(value:Float):Void
+    public function set_pivotZ(value:Float):Float
     {
         mPivotZ = value;
         mTransformationChanged = true;
+        return mPivotZ;
     }
 
     /** @inheritDoc */
@@ -310,11 +314,13 @@ class Sprite3D extends DisplayObjectContainer
     }
 
     /** The depth scale factor. '1' means no scale, negative values flip the object. */
+	public var scaleZ(get, set):Float;
     public function get_scaleZ():Float { return mScaleZ; }
-    public function set_scaleZ(value:Float):Void
+    public function set_scaleZ(value:Float):Float
     {
         mScaleZ = value;
         mTransformationChanged = true;
+		return mScaleZ;
     }
 
     /** @private */
@@ -348,6 +354,7 @@ class Sprite3D extends DisplayObjectContainer
 
     /** The rotation of the object about the x axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
+    public var rotationX(get, set):Float;
     public function get_rotationX():Float { return mRotationX; }
     public function set_rotationX(value:Float):Float
     {
@@ -358,6 +365,7 @@ class Sprite3D extends DisplayObjectContainer
 
     /** The rotation of the object about the y axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
+    public var rotationY(get, set):Float;
     public function get_rotationY():Float { return mRotationY; }
     public function set_rotationY(value:Float):Float
     {
@@ -368,6 +376,7 @@ class Sprite3D extends DisplayObjectContainer
 
     /** The rotation of the object about the z axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
+    public var rotationZ(get, set):Float;
     public function get_rotationZ():Float { return rotation; }
-    public function set_rotationZ(value:Float):Void { rotation = value; }
+    public function set_rotationZ(value:Float):Float { return rotation = value; }
 }

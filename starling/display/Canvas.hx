@@ -8,8 +8,7 @@
 //
 // =================================================================================================
 
-package starling.display
-{
+package starling.display;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DVertexBufferFormat;
@@ -29,16 +28,16 @@ import starling.utils.VertexData;
 /** A display object supporting basic vector drawing functionality. In its current state,
  *  the main use of this class is to provide a range of forms that can be used as masks.
  */
-public class Canvas extends DisplayObject
+class Canvas extends DisplayObject
 {
-    private static const PROGRAM_NAME:String = "Shape";
+    inline private static var PROGRAM_NAME:String = "Shape";
 
     private var mSyncRequired:Bool;
-    private var mPolygons:Vector.<Polygon>;
+    private var mPolygons:Array<Polygon>;
 
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Vector.<UInt>;
+    private var mIndexData:Array<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
 
     private var mFillColor:UInt;
@@ -46,14 +45,14 @@ public class Canvas extends DisplayObject
 
     // helper objects (to avoid temporary objects)
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:Vector.<Float> = new <Float>[1.0, 1.0, 1.0, 1.0];
+    private static var sRenderAlpha:Array<Float> = [1.0, 1.0, 1.0, 1.0];
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function Canvas()
     {
-        mPolygons   = new <Polygon>[];
+        mPolygons   = new Array<Polygon>();
         mVertexData = new VertexData(0);
-        mIndexData  = new <UInt>[];
+        mIndexData  = new Array<UInt>();
         mSyncRequired = false;
 
         mFillColor = 0xffffff;
@@ -65,7 +64,7 @@ public class Canvas extends DisplayObject
         Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
     }
 
-    private function onContextCreated(event:Object):Void
+    private function onContextCreated(event:Dynamic):Void
     {
         registerPrograms();
         syncBuffers();
@@ -124,8 +123,8 @@ public class Canvas extends DisplayObject
     public function clear():Void
     {
         mVertexData.numVertices = 0;
-        mIndexData.length = 0;
-        mPolygons.length = 0;
+        mIndexData.splice(0, mIndexData.length);
+        mPolygons.splice(0, mPolygons.length);
         destroyBuffers();
     }
 
@@ -141,7 +140,7 @@ public class Canvas extends DisplayObject
         sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = 1.0;
         sRenderAlpha[3] = parentAlpha * this.alpha;
 
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
 
         // apply the current blend mode
@@ -153,7 +152,7 @@ public class Canvas extends DisplayObject
         context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, support.mvpMatrix3D, true);
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, sRenderAlpha, 1);
 
-        context.drawTriangles(mIndexBuffer, 0, mIndexData.length / 3);
+        context.drawTriangles(mIndexBuffer, 0, Std.int(mIndexData.length / 3));
 
         context.setVertexBufferAt(0, null);
         context.setVertexBufferAt(1, null);
@@ -176,7 +175,9 @@ public class Canvas extends DisplayObject
         if (forTouch && (!visible || !touchable)) return null;
         if (!hitTestMask(localPoint)) return null;
 
-        for (var i:Int = 0, len:Int = mPolygons.length; i < len; ++i)
+        //for (var i:Int = 0, len:Int = mPolygons.length; i < len; ++i)
+        var len:Int = mPolygons.length;
+        for(i in 0 ... len)
             if (mPolygons[i].containsPoint(localPoint)) return this;
 
         return null;
@@ -193,7 +194,8 @@ public class Canvas extends DisplayObject
         var newNumIndices:Int = mIndexData.length;
 
         // triangulation was done with vertex-indices of polygon only; now add correct offset.
-        for (var i:Int=oldNumIndices; i<newNumIndices; ++i)
+        //for (var i:Int=oldNumIndices; i<newNumIndices; ++i)
+        for(i in oldNumIndices ... newNumIndices)
             mIndexData[i] += oldNumVertices;
 
         applyFillColor(oldNumVertices, polygon.numVertices);
@@ -220,7 +222,8 @@ public class Canvas extends DisplayObject
     private function applyFillColor(vertexIndex:Int, numVertices:Int):Void
     {
         var endIndex:Int = vertexIndex + numVertices;
-        for (var i:Int=vertexIndex; i<endIndex; ++i)
+        //for (var i:Int=vertexIndex; i<endIndex; ++i)
+        for(i in vertexIndex ... endIndex)
             mVertexData.setColorAndAlpha(i, mFillColor, mFillAlpha);
     }
 
@@ -228,14 +231,14 @@ public class Canvas extends DisplayObject
     {
         destroyBuffers();
 
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
 
-        var numVertices:Float = mVertexData.numVertices;
-        var numIndices:Float  = mIndexData.length;
+        var numVertices:Int = mVertexData.numVertices;
+        var numIndices:Int  = mIndexData.length;
 
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
+        mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
 
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
@@ -245,12 +248,11 @@ public class Canvas extends DisplayObject
 
     private function destroyBuffers():Void
     {
-        if (mVertexBuffer) mVertexBuffer.dispose();
-        if (mIndexBuffer)  mIndexBuffer.dispose();
+        if (mVertexBuffer != null) mVertexBuffer.dispose();
+        if (mIndexBuffer != null)  mIndexBuffer.dispose();
 
         mVertexBuffer = null;
         mIndexBuffer  = null;
         mSyncRequired = true;
     }
-}
 }
