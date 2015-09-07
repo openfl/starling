@@ -74,7 +74,6 @@ class TextRenderer
         
         // based on OpenFL's TextFieldGraphics
         
-        var bounds:Rectangle = textField.getBounds(null);
         //TextFieldGraphics.update(textField, bounds);
         
         var tlm:TextLineMetrics = textField.getLineMetrics(0);
