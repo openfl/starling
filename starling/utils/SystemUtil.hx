@@ -152,9 +152,13 @@ class SystemUtil
     public static var supportsRelaxedTargetClearRequirement(get, never):Bool;
     public static function get_supportsRelaxedTargetClearRequirement():Bool
     {
+        #if flash
         var reg = ~/\d+/;
         reg.match(sVersion);
         return Std.parseInt(reg.matched(0)) >= 15;
+        #else
+        return true;
+        #end
     }
 
     /** Returns the value of the 'initialWindow.depthAndStencil' node of the application
