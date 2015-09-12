@@ -382,15 +382,9 @@ class TextField extends DisplayObjectContainer
         texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         bitmapData.dispose();
         #else
-        texture = Texture.empty(Std.int(width), Std.int(height), false, false, true);
-        var renderers:Map<String, TextRenderer> = TextField.textRenderers;
-        var formatStr:String = textFormat.font + "@" + textFormat.size;
-        var textRenderer:TextRenderer = renderers.get(formatStr);
-        if (textRenderer == null)
-        {
-            textRenderer = new TextRenderer(@:privateAccess TextEngine.getFontInstance(textFormat), Std.int(textFormat.size));
-            renderers.set(formatStr, textRenderer);
-        }
+        if (texture == null || (texture != null && (texture.nativeWidth != width || texture.nativeHeight != height)))
+            texture = Texture.empty(Std.int(width), Std.int(height), false, false, true);
+        var textRenderer:TextRenderer = getTextRenderer(textFormat);
         textRenderer.renderText(sNativeTextField, texture, mText, textFormat, filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
         #end
         
@@ -930,6 +924,7 @@ class TextField extends DisplayObjectContainer
         return fonts;
     }
     
+    #if (!flash && !html5)
     private static var textRenderers(get, never):Map<String, TextRenderer>;
     private static function get_textRenderers():Map<String, TextRenderer>
     {
@@ -943,6 +938,20 @@ class TextField extends DisplayObjectContainer
         
         return renderers;
     }
+    
+    private static function getTextRenderer(textFormat:TextFormat):TextRenderer
+    {
+        var renderers:Map<String, TextRenderer> = TextField.textRenderers;
+        var formatStr:String = textFormat.font + "@" + textFormat.size;
+        var textRenderer:TextRenderer = renderers.get(formatStr);
+        if (textRenderer == null)
+        {
+            textRenderer = new TextRenderer(@:privateAccess TextEngine.getFontInstance(textFormat), textFormat.size);
+            renderers.set(formatStr, textRenderer);
+        }
+        return textRenderer;
+    }
+    #end
 
     // optimization for 'toLowerCase' calls
 
