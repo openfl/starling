@@ -12,6 +12,10 @@ package starling.text;
 #if !flash
 import openfl._internal.text.TextEngine;
 #end
+#if flash
+import flash.display.IBitmapDrawable;
+import flash.geom.ColorTransform;
+#end
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.StageQuality;
@@ -363,29 +367,31 @@ class TextField extends DisplayObjectContainer
         
         // finally: draw text field to bitmap data
         var format:Context3DTextureFormat = sDefaultTextureFormat;
-        #if (flash || html5)
-        var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
         var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
             filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
+        #if (flash || html5)
+        var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
         
-        //var drawWithQualityFunc:Function = 
-        //    "drawWithQuality" in bitmapData ? bitmapData["drawWithQuality"] : null;
+        #if flash
+        var drawWithQualityFunc:Dynamic =
+            Reflect.getProperty(bitmapData, "drawWithQuality");
         
         // Beginning with AIR 3.3, we can force a drawing quality. Since "LOW" produces
         // wrong output oftentimes, we force "MEDIUM" if possible.
         
-        //if (Std.is(drawWithQualityFunc, Function))
-        //    drawWithQualityFunc.call(bitmapData, sNativeTextField, drawMatrix, 
-        //                             null, null, null, false, StageQuality.MEDIUM);
-        //else
-        bitmapData.draw(sNativeTextField, drawMatrix);
+        if (Reflect.isFunction(drawWithQualityFunc))
+            Reflect.callMethod(bitmapData, drawWithQualityFunc, [sNativeTextField, drawMatrix, 
+                                     null, null, null, false, StageQuality.MEDIUM]);
+        else
+        #end
+            bitmapData.draw(sNativeTextField, drawMatrix);
         texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         bitmapData.dispose();
         #else
         if (texture == null || (texture != null && (texture.nativeWidth != width || texture.nativeHeight != height)))
-            texture = Texture.empty(Std.int(width), Std.int(height), false, false, true);
+            texture = Texture.empty(Std.int(width), Std.int(height), true, false, true);
         var textRenderer:TextRenderer = getTextRenderer(textFormat);
-        textRenderer.renderText(sNativeTextField, texture, mText, textFormat, filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
+        textRenderer.renderText(sNativeTextField, texture, drawMatrix);
         #end
         
         sNativeTextField.text = "";

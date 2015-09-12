@@ -838,9 +838,9 @@ class QuadBatch extends DisplayObject
                         "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
                         "mul  oc, ft1,  v0       \n"   // multiply color with texel color
                         :
-                        "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
-                        "mov oc.xyz, v0.xyz\n" +       // replace output color with vertex color
-                        "mov oc.w, ft1.w\n";           // write alpha
+                        "tex ft1,  v1, fs0 <???>     \n" + // sample texture 0
+                        "mul oc.xyz, v0.xyz, ft1.www \n" + // replace output color with vertex color
+                        "mov oc.w, ft1.w             \n";  // write alpha
                 }
                 else
                     fragmentShader = "tex  oc,  v1, fs0 <???> \n";  // sample texture 0

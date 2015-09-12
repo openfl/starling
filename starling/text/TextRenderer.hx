@@ -56,7 +56,7 @@ class TextRenderer
     private static var fontCaches(get, never):Array<FTBFTextureCache>;
     private static var sClipRect:Rectangle = new Rectangle();
     private static var sSupport:RenderSupport = null;
-    private static var sQuadBatches:Map<QuadBatch, Bool>;
+    private static var sQuadBatches:Map<QuadBatch, Bool> = new Map();
     
     public function new(font:Font, size:Int)
     {
@@ -66,7 +66,7 @@ class TextRenderer
         mTextLayout = new TextLayout();
     }
     
-    public function renderText(textField:openfl.text.TextField, texture:Texture, text:String, format:TextFormat, offsetX:Float, offsetY:Float)
+    public function renderText(textField:openfl.text.TextField, texture:Texture, modelViewMatrix:Matrix)
     {
         var prevSupport:RenderSupport = @:privateAccess Starling.current.mSupport;
         prevSupport.finishQuadBatch();
@@ -81,10 +81,10 @@ class TextRenderer
         var tlm:TextLineMetrics = textField.getLineMetrics(0);
         
         var info:GlyphTextureInfo;
-        var x:Float = offsetX;
-        var y:Float = 2 + tlm.ascent + offsetY;
+        var x:Float = 0;
+        var y:Float = 2 + tlm.ascent;
         
-        var lines:Array<String> = text.split("\n");
+        var lines:Array<String> = textField.text.split("\n");
         
         var textEngine:TextEngine = textField.__textEngine;
         var textLayout:TextLayout = mTextLayout;
@@ -92,7 +92,7 @@ class TextRenderer
         var line_i:Int = 0;
         var oldX:Float = x;
         
-        sQuadBatches = new Map();
+        var format:TextFormat = textField.defaultTextFormat;
         for (line in lines)
         {
             tlm = textField.getLineMetrics(line_i);
@@ -178,15 +178,15 @@ class TextRenderer
             
         }
         
-        var rootWidth:Float = texture.root.width;
-        var rootHeight:Float = texture.root.height;
-        sSupport.setProjectionMatrix(0, 0, rootWidth, rootHeight);
-        sClipRect.setTo(0, 0, texture.width, texture.height);
-        sSupport.pushClipRect(sClipRect);
-        
         sSupport.setRenderTarget(texture);
         sSupport.clear();
-        sSupport.blendMode = BlendMode.NONE;
+        
+        var rootWidth:Float = texture.root.nativeWidth;
+        var rootHeight:Float = texture.root.nativeHeight;
+        sSupport.setProjectionMatrix(0, 0, rootWidth, rootHeight);
+        sSupport.prependMatrix(modelViewMatrix);
+        sClipRect.setTo(0, 0, rootWidth, rootHeight);
+        sSupport.pushClipRect(sClipRect);
         
         for (quadBatch in sQuadBatches.keys())
         {
@@ -196,8 +196,9 @@ class TextRenderer
         
         sSupport.finishQuadBatch();
         sSupport.nextFrame();
-        sSupport.renderTarget = null;
         sSupport.popClipRect();
+        sSupport.renderTarget = null;
+        sQuadBatches = new Map();
         
         prevSupport.renderTarget = previousRenderTarget;
     }
