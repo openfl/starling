@@ -163,7 +163,7 @@ class TouchEvent extends Event
         {
             var chainLength:Int = bubbles ? chain.length : 1;
             var previousTarget:EventDispatcher = target;
-            setTarget(cast(chain[0], EventDispatcher));
+            setTarget(chain[0]);
             
             for (i in 0 ... chainLength)
             {
