@@ -227,7 +227,7 @@ class TextField extends DisplayObjectContainer
         mHitArea.width  = bitmapData.width  / scale;
         mHitArea.height = bitmapData.height / scale;
         #else
-        var texture:Texture = renderText(scale, mTextBounds);
+        var texture:Texture = renderText(scale, mTextBounds, mImage != null ? mImage.texture : null);
         
         mHitArea.width  = texture.width  / scale;
         mHitArea.height = texture.height / scale;
@@ -244,7 +244,7 @@ class TextField extends DisplayObjectContainer
             bitmapData.dispose();
             bitmapData = null;
             #else
-            texture = renderText(scale, mTextBounds);
+            texture = renderText(scale, mTextBounds, null);
             #end
         };
         
@@ -256,7 +256,8 @@ class TextField extends DisplayObjectContainer
         }
         else 
         { 
-            mImage.texture.dispose();
+            if (mImage.texture != texture)
+                mImage.texture.dispose();
             mImage.texture = texture; 
             mImage.readjustSize(); 
         }
@@ -280,7 +281,7 @@ class TextField extends DisplayObjectContainer
         mRequiresRedraw = true;
     }
 
-    private function renderText(scale:Float, resultTextBounds:Rectangle):Texture
+    private function renderText(scale:Float, resultTextBounds:Rectangle, texture:Texture):Texture
     {
         var width:Float  = mHitArea.width  * scale;
         var height:Float = mHitArea.height * scale;
@@ -361,7 +362,6 @@ class TextField extends DisplayObjectContainer
         var filterOffset:Point = calculateFilterOffset(sNativeTextField, hAlign, vAlign);
         
         // finally: draw text field to bitmap data
-        var texture:Texture;
         var format:Context3DTextureFormat = sDefaultTextureFormat;
         #if (flash || html5)
         var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
