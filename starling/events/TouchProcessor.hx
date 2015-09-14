@@ -12,6 +12,7 @@ package starling.events;
 import openfl.errors.Error;
 import openfl.geom.Point;
 import openfl.Lib;
+import starling.utils.ArrayUtil;
 import starling.utils.MathUtil;
 
 import starling.display.DisplayObject;
@@ -104,7 +105,7 @@ class TouchProcessor
         var touch:Touch;
         
         mElapsedTime += passedTime;
-        sUpdatedTouches.splice(0, sUpdatedTouches.length);
+        ArrayUtil.clear(sUpdatedTouches);
         
         // remove old taps
         if (mLastTaps.length > 0)
@@ -270,8 +271,8 @@ class TouchProcessor
         }
 
         // purge touches
-        mCurrentTouches.splice(0, mCurrentTouches.length);
-        mQueue.splice(0, mQueue.length);
+        ArrayUtil.clear(mCurrentTouches);
+        ArrayUtil.clear(mQueue);
     }
     
     private function createOrUpdateTouch(touchID:Int, phase:String,

@@ -10,6 +10,7 @@
 
 package starling.textures;
 import flash.geom.Rectangle;
+import starling.utils.ArrayUtil;
 
 //import starling.utils.cleanMasterString;
 
@@ -139,7 +140,7 @@ class TextureAtlas
         for (name in getNames(prefix, sNames)) 
             result[result.length] = getTexture(name); // avoid 'push'
 
-        sNames.splice(0, sNames.length);
+        ArrayUtil.clear(sNames);
         return result;
     }
     

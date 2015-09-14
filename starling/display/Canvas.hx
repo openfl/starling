@@ -17,6 +17,7 @@ import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import starling.utils.ArrayUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -123,8 +124,8 @@ class Canvas extends DisplayObject
     public function clear():Void
     {
         mVertexData.numVertices = 0;
-        mIndexData.splice(0, mIndexData.length);
-        mPolygons.splice(0, mPolygons.length);
+        ArrayUtil.clear(mIndexData);
+        ArrayUtil.clear(mPolygons);
         destroyBuffers();
     }
 

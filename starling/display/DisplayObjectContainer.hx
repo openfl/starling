@@ -17,6 +17,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.system.Capabilities;
+import starling.utils.ArrayUtil;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -270,9 +271,9 @@ class DisplayObjectContainer extends DisplayObject
      *  of the Vector class). */
     public function sortChildren(compareFunction:Dynamic):Void
     {
-        sSortBuffer = sSortBuffer.splice(mChildren.length, sSortBuffer.length - mChildren.length);
+        ArrayUtil.resize(sSortBuffer, mChildren.length);
         mergeSort(mChildren, compareFunction, 0, mChildren.length, sSortBuffer);
-        sSortBuffer.splice(0, sSortBuffer.length);
+        ArrayUtil.clear(sSortBuffer);
     }
     
     /** Determines if a certain object is a child of the container (recursively). */
@@ -409,7 +410,7 @@ class DisplayObjectContainer extends DisplayObject
         for(i in fromIndex ... toIndex)
             sBroadcastListeners[i].dispatchEvent(event);
         
-        sBroadcastListeners.splice(fromIndex, sBroadcastListeners.length - fromIndex);
+        ArrayUtil.resize(sBroadcastListeners, fromIndex);
     }
     
     /** Dispatches an event with the given parameters on all children (recursively). 
@@ -508,7 +509,7 @@ class DisplayObjectContainer extends DisplayObject
                 vector[i] = vector[i - deltaLength];
                 --shiftCount; ++i;
             }
-            vector.splice(-1, vector.length - newLength);
+            ArrayUtil.resize(vector, newLength);
         }
         else if (deltaLength > 0)
         {
@@ -518,7 +519,7 @@ class DisplayObjectContainer extends DisplayObject
                 vector[newLength - i] = vector[oldLength - i];
                 --shiftCount; ++i;
             }
-            vector.splice(-1, vector.length - newLength);
+            ArrayUtil.resize(vector, newLength);
         }
 
         if (insertee != null)

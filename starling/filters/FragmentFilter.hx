@@ -26,6 +26,7 @@ import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import openfl.utils.Int16Array;
+import starling.utils.ArrayUtil;
 import starling.utils.VertexBufferUtil;
 //import flash.utils.getQualifiedClassName;
 
@@ -468,7 +469,7 @@ class FragmentFilter
         for(texture in mPassTextures)
             texture.dispose();
         
-        mPassTextures.splice(0, mPassTextures.length);
+        ArrayUtil.clear(mPassTextures);
     }
     
     private function disposeCache():Void

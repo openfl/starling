@@ -12,6 +12,7 @@ package starling.text;
 import flash.geom.Rectangle;
 import openfl.errors.ArgumentError;
 import starling.textures.ConcreteTexture;
+import starling.utils.ArrayUtil;
 
 import starling.display.Image;
 import starling.display.QuadBatch;
@@ -289,7 +290,7 @@ class BitmapFont
         
         while (!finished)
         {
-            sLines.splice(0, sLines.length);
+            ArrayUtil.clear(sLines);
             scale = fontSize / mSize;
             containerWidth  = width / scale;
             containerHeight = height / scale;
@@ -507,7 +508,7 @@ public static function vectorFromPool():Array<CharLocation>
     var vector:Array<CharLocation> = sVectorPool.length > 0 ?
         sVectorPool.pop() : new Array<CharLocation>();
 
-    vector.splice(0, vector.length);
+    ArrayUtil.clear(vector);
     sVectorLoan[sVectorLoan.length] = vector;
 
     return vector;
@@ -528,7 +529,7 @@ public static function rechargePool():Void
     while (sVectorLoan.length > 0)
     {
         vector = sVectorLoan.pop();
-        vector.splice(0, vector.length);
+        ArrayUtil.clear(vector);
         sVectorPool[sVectorPool.length] = vector;
     }
 }

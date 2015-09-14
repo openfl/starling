@@ -14,6 +14,7 @@ import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
 import flash.media.SoundTransform;
+import starling.utils.ArrayUtil;
 
 import starling.animation.IAnimatable;
 import starling.events.Event;
@@ -222,7 +223,7 @@ class MovieClip extends Image implements IAnimatable
     {
         var numFrames:Int = this.numFrames;
         
-        mStartTimes.splice(0, mStartTimes.length);
+        ArrayUtil.clear(mStartTimes);
         mStartTimes[0] = 0;
         
         for (i in 1 ... numFrames)

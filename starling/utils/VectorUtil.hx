@@ -66,7 +66,7 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        vector.splice(vector.length - 1, 1);
+        ArrayUtil.resize(vector, vector.length - 1, 0);
         return value;
     }
 
@@ -115,7 +115,7 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        vector.splice(vector.length - 1, 1);
+        ArrayUtil.resize(vector, vector.length - 1, 0);
         return value;
     }
 
@@ -164,7 +164,7 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        vector.splice(vector.length - 1, 1);
+        ArrayUtil.resize(vector, vector.length - 1, 0);
         return value;
     }
 }

@@ -21,6 +21,7 @@ import flash.ui.Mouse;
 #if flash
 import flash.ui.MouseCursor;
 #end
+import starling.utils.ArrayUtil;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -560,7 +561,7 @@ class DisplayObject extends EventDispatcher
         while (currentObject != null && sAncestors.indexOf(currentObject) == -1)
             currentObject = currentObject.mParent;
 
-        sAncestors.splice(0, sAncestors.length);
+        ArrayUtil.clear(sAncestors);
 
         if (currentObject != null) return currentObject;
         else throw new ArgumentError("Object not connected to target");

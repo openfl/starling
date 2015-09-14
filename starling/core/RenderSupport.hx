@@ -636,7 +636,7 @@ class RenderSupport
         resetMatrix();
         trimQuadBatches();
 
-        mMasks.splice(0, mMasks.length);
+        ArrayUtil.clear(mMasks);
         mCurrentQuadBatchID = 0;
         mBlendMode = BlendMode.NORMAL;
         mDrawCount = 0;

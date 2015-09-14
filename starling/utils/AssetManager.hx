@@ -233,7 +233,7 @@ class AssetManager extends EventDispatcher
         for (name in getTextureNames(prefix, sNames))
             result[result.length] = getTexture(name); // avoid 'push'
 
-        sNames.splice(0, sNames.length);
+        ArrayUtil.clear(sNames);
         return result;
     }
     
@@ -483,7 +483,7 @@ class AssetManager extends EventDispatcher
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
-        mQueue.splice(0, mQueue.length);
+        ArrayUtil.clear(mQueue);
         dispatchEventWith(Event.CANCEL);
     }
     
@@ -669,7 +669,7 @@ class AssetManager extends EventDispatcher
         for (i in 0 ... mNumConnections)
             loadNextQueueElement();
 
-        mQueue.splice(0, mQueue.length);
+        ArrayUtil.clear(mQueue);
         mNumLoadingQueues++;
         addEventListener(Event.CANCEL, cancel);
 

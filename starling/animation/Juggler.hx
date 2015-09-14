@@ -12,6 +12,7 @@ package starling.animation;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
+import starling.utils.ArrayUtil;
 import starling.utils.SafeCast.safe_cast;
 
 /** The Juggler takes objects that implement IAnimatable (like Tweens) and executes them.
@@ -280,7 +281,7 @@ class Juggler implements IAnimatable
             while (i < numObjects)
                 mObjects[currentIndex++] = mObjects[i++];
 
-            mObjects.splice(currentIndex, mObjects.length - currentIndex);
+            ArrayUtil.resize(mObjects, currentIndex);
         }
     }
     

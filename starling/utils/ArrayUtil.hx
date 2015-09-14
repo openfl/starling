@@ -33,6 +33,23 @@ class ArrayUtil
         for (i in 0 ... from.length)
             to[i] = from[i];
     }
+    
+    public static function resize<T>(arr:Array<T>, newLength:Int, defaultValue:T = null):Void
+    {
+        var length:Int = arr.length;
+        if (newLength < length)
+            arr.splice(newLength, length - newLength);
+        else if (newLength > length)
+        {
+            for (i in length ... newLength)
+                arr[i] = defaultValue;
+        }
+    }
+    
+    public static function clear<T>(arr:Array<T>)
+    {
+        arr.splice(0, arr.length);
+    }
 
     /** Inserts an element into the array at the specified index.
      *  You can use a negative integer to specify a position relative to the end of the
@@ -86,7 +103,7 @@ class ArrayUtil
             ++i;
         }
 
-        array.splice(array.length - 1, 1);
+        ArrayUtil.resize(array, array.length - 1);
         return object;
     }
 }

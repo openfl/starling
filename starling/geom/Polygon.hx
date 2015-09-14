@@ -16,6 +16,7 @@ import flash.utils.getQualifiedClassName;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.utils.Float32Array;
+import starling.utils.ArrayUtil;
 
 import starling.utils.VectorUtil;
 import starling.utils.VertexData;
@@ -184,7 +185,7 @@ class Polygon
 
         if (numVertices < 3) return result;
 
-        sRestIndices.splice(numVertices, sRestIndices.length - numVertices);
+        ArrayUtil.resize(sRestIndices, numVertices);
         //for (i=0; i<numVertices; ++i)
         for(i in 0 ... numVertices) sRestIndices[i] = i;
 

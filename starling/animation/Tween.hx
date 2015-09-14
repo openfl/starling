@@ -13,6 +13,7 @@ package starling.animation;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
+import starling.utils.ArrayUtil;
 
 /** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
@@ -107,10 +108,10 @@ class Tween extends EventDispatcher implements IAnimatable
         else 
             throw new ArgumentError("Transition must be either a string or a function");
         
-        if (mProperties != null)  mProperties.splice(0, mProperties.length); else mProperties  = new Array<String>();
-        if (mStartValues != null) mStartValues.splice(0, mStartValues.length); else mStartValues = new Array<Float>();
-        if (mEndValues != null)   mEndValues.splice(0, mEndValues.length); else mEndValues   = new Array<Float>();
-        if (mUpdateFuncs != null)  mUpdateFuncs.splice(0, mUpdateFuncs.length); else mUpdateFuncs = new Array<String->Float->Float->Void>();
+        if (mProperties != null)  ArrayUtil.clear(mProperties); else mProperties  = new Array<String>();
+        if (mStartValues != null) ArrayUtil.clear(mStartValues); else mStartValues = new Array<Float>();
+        if (mEndValues != null)   ArrayUtil.clear(mEndValues); else mEndValues   = new Array<Float>();
+        if (mUpdateFuncs != null) ArrayUtil.clear(mUpdateFuncs); else mUpdateFuncs = new Array<String->Float->Float->Void>();
         
         return this;
     }
