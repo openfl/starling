@@ -84,8 +84,9 @@ class Sprite3D extends DisplayObjectContainer
     private static var sHelperMatrix:Matrix3D   = new Matrix3D();
 
     /** Creates an empty Sprite3D. */
-    public function Sprite3D()
+    public function new()
     {
+        super();
         mScaleZ = 1.0;
         mRotationX = mRotationY = mPivotZ = mZ = 0.0;
         mTransformationMatrix = new Matrix();
