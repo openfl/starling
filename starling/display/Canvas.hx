@@ -49,8 +49,9 @@ class Canvas extends DisplayObject
     private static var sRenderAlpha:Array<Float> = [1.0, 1.0, 1.0, 1.0];
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
-    public function Canvas()
+    public function new()
     {
+        super();
         mPolygons   = new Array<Polygon>();
         mVertexData = new VertexData(0);
         mIndexData  = new Array<UInt>();
