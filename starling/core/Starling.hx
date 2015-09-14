@@ -620,7 +620,7 @@ class Starling extends EventDispatcher
         if (configureBackBuffer.length > 4) methodArgs.push(wantsBestResolution);
         configureBackBuffer.apply(mContext, methodArgs);
         #end
-        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil);
+        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil && SystemUtil.supportsDepthAndStencil);
     }
 
     private function updateNativeOverlay():Void

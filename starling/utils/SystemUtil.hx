@@ -30,7 +30,7 @@ class SystemUtil
     private static var sPlatform:String;
     private static var sVersion:String;
     private static var sAIR:Bool;
-    private static var sSupportsDepthAndStencil:Bool = false/*true*/;
+    private static var sSupportsDepthAndStencil:Bool = true;
     
     /** @private */
     public function SystemUtil() { throw new AbstractClassError(); }
