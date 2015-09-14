@@ -14,7 +14,7 @@ import utils.RoundButton;
             "Pushing the bird only works when the touch occurs within a circle." + 
             "This can be accomplished by overriding the method 'hitTest'.";
         
-        var infoText:TextField = new TextField(300, 100, description, Constants.DefaultFont);
+        var infoText:TextField = new TextField(300, 100, description);
         infoText.x = infoText.y = 10;
         infoText.vAlign = VAlign.TOP;
         infoText.hAlign = HAlign.CENTER;

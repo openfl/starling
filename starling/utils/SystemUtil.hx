@@ -21,6 +21,11 @@ import openfl.errors.Error;
 
 import starling.errors.AbstractClassError;
 
+#if !flash
+import lime.app.Application;
+import lime.app.Config.WindowConfig;
+#end
+
 /** A utility class with methods related to the current platform and runtime. */
 class SystemUtil
 {
@@ -57,6 +62,9 @@ class SystemUtil
             var ds:String = appDescriptor.ns::initialWindow.ns::depthAndStencil.toString().toLowerCase();
 
             sSupportsDepthAndStencil = (ds == "true");
+            #else
+            var windowConfig:WindowConfig = Application.current.window.config;
+            sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
             #end
             sAIR = true;
         }

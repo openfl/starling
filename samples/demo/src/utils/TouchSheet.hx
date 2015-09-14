@@ -23,7 +23,7 @@ class TouchSheet extends Sprite
         }
     }
     
-    private override function onTouch(event:TouchEvent):Void
+    override private function onTouch(event:TouchEvent):Void
     {
         var touches:Array<Touch> = event.getTouches(this, TouchPhase.MOVED);
         

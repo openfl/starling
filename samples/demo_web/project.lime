@@ -7,7 +7,7 @@
     <window width="320" height="480" if="native" />
     <window width="320" height="480" if="html5" />
     <window orientation="landscape" vsync="true" if="native" />
-	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" />
+	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="false" stencil-buffer="true" />
 	
 	<source path="src" />
     <source path="../demo/src" />

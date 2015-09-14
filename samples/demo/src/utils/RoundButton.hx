@@ -30,7 +30,7 @@ class RoundButton extends Button
         var centerY:Float = bounds.height / 2;
         
         // calculate distance of localPoint to center. 
-        // we keep it squared, since we want to aVoid the 'sqrt()'-call.
+        // we keep it squared, since we want to avoid the 'sqrt()'-call.
         var sqDist:Float = Math.pow(localPoint.x - centerX, 2) + 
                             Math.pow(localPoint.y - centerY, 2);
         

@@ -29,7 +29,6 @@ import starling.utils.MathUtil.deg2rad;
         
         // create a button that starts the tween
         mStartButton = new Button(buttonTexture, "Start animation");
-        mStartButton.fontName = Constants.DefaultFont;
         mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
         mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
         mStartButton.y = 20;
@@ -37,7 +36,6 @@ import starling.utils.MathUtil.deg2rad;
         
         // this button will show you how to call a method with a delay
         mDelayButton = new Button(buttonTexture, "Delayed call");
-        mDelayButton.fontName = Constants.DefaultFont;
         mDelayButton.addEventListener(Event.TRIGGERED, onDelayButtonTriggered);
         mDelayButton.x = mStartButton.x;
         mDelayButton.y = mStartButton.y + 40;
@@ -48,7 +46,7 @@ import starling.utils.MathUtil.deg2rad;
         addChild(mEgg);
         resetEgg();
         
-        mTransitionLabel = new TextField(320, 30, "", Constants.DefaultFont, 20, 0, true);
+        mTransitionLabel = new TextField(320, 30, "", "Verdana", 20, 0, true);
         mTransitionLabel.y = mDelayButton.y + 40;
         mTransitionLabel.alpha = 0.0; // invisible, will be shown later
         addChild(mTransitionLabel);
@@ -62,7 +60,7 @@ import starling.utils.MathUtil.deg2rad;
         mEgg.rotation = 0.0;
     }
     
-    private function onStartButtonTriggered(e:Event):Void
+    private function onStartButtonTriggered():Void
     {
         mStartButton.enabled = false;
         resetEgg();
@@ -76,7 +74,7 @@ import starling.utils.MathUtil.deg2rad;
         // a with certain transition function.
         var tween:Tween = new Tween(mEgg, 2.0, transition);
         
-        // you can animate any property as long as it's numeric (Int, UInt, Float). 
+        // you can animate any property as long as it's numeric (int, uint, Number). 
         // it is animated from it's current value to a target value.  
         tween.animate("rotation", deg2rad(90)); // conventional 'animate' call
         tween.moveTo(300, 360);                 // convenience method for animating 'x' and 'y'
@@ -99,7 +97,7 @@ import starling.utils.MathUtil.deg2rad;
         Starling.current.juggler.add(hideTween);
     }
     
-    private function onDelayButtonTriggered(unused:Dynamic):Void
+    private function onDelayButtonTriggered():Void
     {
         mDelayButton.enabled = false;
         
@@ -109,7 +107,7 @@ import starling.utils.MathUtil.deg2rad;
         
         Starling.current.juggler.delayCall(colorizeEgg, 1.0, [true]);
         Starling.current.juggler.delayCall(colorizeEgg, 2.0, [false]);
-        Starling.current.juggler.delayCall(function(unused:Array<Dynamic>):Void { mDelayButton.enabled = true; }, 2.0, []);
+        Starling.current.juggler.delayCall(function(unused):Void { mDelayButton.enabled = true; }, 2.0);
     }
     
     private function colorizeEgg(args:Array<Dynamic>):Void

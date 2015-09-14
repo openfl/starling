@@ -533,8 +533,16 @@ class RenderSupport
         drawMask(mask);
 
         context.setStencilReferenceValue(mStencilReferenceValue);
-        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+        if (mMasks.length != 0)
+        {
+            context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
                 Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+        }
+        else
+        {
+            context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK, 
+                Context3DCompareMode.ALWAYS, Context3DStencilAction.KEEP);
+        }
     }
 
     private function drawMask(mask:DisplayObject):Void

@@ -24,7 +24,6 @@ import starling.text.TextField;
     {
         super();
         mButton = new Button(Game.assets.getTexture("button_normal"), "Switch Mode");
-        mButton.fontName = Constants.DefaultFont;
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
@@ -35,17 +34,17 @@ import starling.text.TextField;
         mImage.y = 170;
         addChild(mImage);
         
-        mInfoText = new TextField(300, 32, "", Constants.DefaultFont, 19);
+        mInfoText = new TextField(300, 32, "", "Verdana", 19);
         mInfoText.x = 10;
         mInfoText.y = 330;
         addChild(mInfoText);
         
-        onButtonTriggered(null);
+        onButtonTriggered();
     }
     
-    private function onButtonTriggered(unused:Dynamic):Void
+    private function onButtonTriggered():Void
     {
-        var blendMode:String = cast(mBlendModes.shift(), String);
+        var blendMode:String = mBlendModes.shift();
         mBlendModes.push(blendMode);
         
         mInfoText.text = blendMode;

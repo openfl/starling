@@ -26,12 +26,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling&#xA;openfl=2.2.8&#xA;lime=2.1.3&#xA;nodejs=2.2.7&#xA;openfl-next&#xA;tools=2.1.3&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;source-map-content&#xA;disable_gl_renderer&#xA;windows&#xA;desktop&#xA;nodejs&#xA;js-flatten" />
+    <option directives="starling=0.0.0&#xA;openfl=3.3.2&#xA;lime=2.6.1&#xA;nodejs=2.2.7&#xA;openfl-next&#xA;tools=2.6.1&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;source-map-content&#xA;disable_gl_renderer&#xA;windows&#xA;desktop&#xA;nodejs&#xA;js-flatten" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--macro allowPackage(&quot;sys&quot;)&#xA;--remap flash:openfl&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;--macro define(&quot;sys&quot;)" />
+    <option additional="--macro allowPackage(&quot;sys&quot;)&#xA;--remap flash:openfl&#xA;-swf-version 11.8&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;--macro define(&quot;sys&quot;)&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

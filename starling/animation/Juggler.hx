@@ -146,9 +146,10 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>):IAnimatable
+    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic> = null):IAnimatable
     {
         if (call == null) return null;
+        if (args == null) args = [];
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, delay, args);
         delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
@@ -212,19 +213,19 @@ class Juggler implements IAnimatable
      *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
      *  </ul>
      */
-    public function tween(target:Dynamic, time:Float, properties:Array<Dynamic>):IAnimatable
+    public function tween(target:Dynamic, time:Float, properties:Dynamic):IAnimatable
     {
         if (target == null) throw new ArgumentError("target must not be null");
 
         var tween:Tween = Tween.fromPool(target, time);
         
-        for (property in properties)
+        for (property in Reflect.fields(properties))
         {
-            var value:Dynamic = properties[property];
+            var value:Dynamic = Reflect.field(properties, property);
             
-            if (Reflect.hasField(tween, property))
+            if (Reflect.getProperty(tween, property) != null)
                 Reflect.setProperty(tween, property, value);
-            else if (Reflect.hasField(target, property))
+            else if (Reflect.getProperty(target, property) != null)
                 tween.animate(property, cast(value, Float));
             else
                 throw new ArgumentError("Invalid property: " + property);

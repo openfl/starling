@@ -18,7 +18,7 @@ import starling.utils.VAlign;
         // TrueType fonts
         
         var offset:Int = 10;
-        var ttFont:String = Constants.DefaultFont;
+        var ttFont:String = "Ubuntu";
         var ttFontSize:Int = 19; 
         
         var colorTF:TextField = new TextField(300, 80, 
@@ -45,18 +45,23 @@ import starling.utils.VAlign;
         rightTF.y = leftTF.y;
         rightTF.hAlign = HAlign.RIGHT;
         rightTF.vAlign = VAlign.BOTTOM;
-        rightTF.color = 0x228822;
+        rightTF.color = 0x208020;
         rightTF.border = true;
         addChild(rightTF);
         
         var fontTF:TextField = new TextField(300, 80,
-            "... or centered. Embedded fonts are detected automatically.",
+            "... or centered. Embedded fonts are detected automatically and " +
+            "<font color='#208080'>support</font> " +
+            "<font color='#993333'>basic</font> " +
+            "<font color='#333399'>HTML</font> " +
+            "<font color='#208020'>formatting</font>.",
             ttFont, ttFontSize, 0x0, true);
         fontTF.x = offset;
         fontTF.y = leftTF.y + leftTF.height + offset;
         fontTF.border = true;
+        fontTF.isHtmlText = true;
         addChild(fontTF);
-        
+
         // Bitmap fonts!
         
         // First, you will need to create a bitmap font texture.
@@ -79,6 +84,6 @@ import starling.utils.VAlign;
         addChild(bmpFontTF);
         
         // A tip: you can add the font-texture to your standard texture atlas and reference 
-        // it from there. That way, you save texture space and aVoid another texture-switch.
+        // it from there. That way, you save texture space and avoid another texture-switch.
     }
 }

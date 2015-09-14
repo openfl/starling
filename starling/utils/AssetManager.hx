@@ -660,20 +660,8 @@ class AssetManager extends EventDispatcher
         var processXml:Int->Void = null;
         var finish:Void->Void = null;
         var resume:Void->Void = null;
-        
-        //for (i=0; i<assetCount; ++i)
-        for (i in 0 ... assetCount)
-            assetProgress[i] = 0.0;
 
-        //for (i=0; i<mNumConnections; ++i)
-        for (i in 0 ... mNumConnections)
-            loadNextQueueElement();
-
-        ArrayUtil.clear(mQueue);
-        mNumLoadingQueues++;
-        addEventListener(Event.CANCEL, cancel);
-
-        function loadNextQueueElement():Void
+        loadNextQueueElement = function():Void
         {
             if (assetIndex < assetInfos.length)
             {
@@ -684,7 +672,7 @@ class AssetManager extends EventDispatcher
             }
         }
 
-        function loadQueueElement(index:Int, assetInfo:QueuedAsset):Void
+        loadQueueElement = function(index:Int, assetInfo:QueuedAsset):Void
         {
             if (canceled) return;
             
@@ -705,7 +693,7 @@ class AssetManager extends EventDispatcher
                 xmls, onElementProgress, onElementLoaded);
         }
         
-        function updateAssetProgress(index:Int, progress:Float):Void
+        updateAssetProgress = function(index:Int, progress:Float):Void
         {
             assetProgress[index] = progress;
 
@@ -719,7 +707,7 @@ class AssetManager extends EventDispatcher
             onProgress(sum / len * PROGRESS_PART_ASSETS);
         }
         
-        function processXmls():Void
+        processXmls = function():Void
         {
             // xmls are processed separately at the end, because the textures they reference
             // have to be available for other XMLs. Texture atlases are processed first:
@@ -732,7 +720,7 @@ class AssetManager extends EventDispatcher
             Timer.delay(function() { processXml(0); }, 1);
         }
 
-        function processXml(index:Int):Void
+        processXml = function(index:Int):Void
         {
             if (canceled) return;
             else if (index == xmls.length)
@@ -790,14 +778,14 @@ class AssetManager extends EventDispatcher
             Timer.delay(function() { processXml(index + 1); }, 1);
         }
         
-        function cancel():Void
+        cancel = function():Void
         {
             removeEventListener(Event.CANCEL, cancel);
             mNumLoadingQueues--;
             canceled = true;
         }
 
-        function finish():Void
+        finish = function():Void
         {
             // We dance around the final "onProgress" call with some "setTimeout" calls here
             // to make sure the progress bar gets the chance to be rendered. Otherwise, all
@@ -812,6 +800,18 @@ class AssetManager extends EventDispatcher
                 }
             }, 1);
         }
+        
+        //for (i=0; i<assetCount; ++i)
+        for (i in 0 ... assetCount)
+            assetProgress[i] = 0.0;
+
+        //for (i=0; i<mNumConnections; ++i)
+        for (i in 0 ... mNumConnections)
+            loadNextQueueElement();
+
+        ArrayUtil.clear(mQueue);
+        mNumLoadingQueues++;
+        addEventListener(Event.CANCEL, cancel);
     }
     
     private function processRawAsset(name:String, rawAsset:Dynamic, options:TextureOptions,
@@ -823,9 +823,6 @@ class AssetManager extends EventDispatcher
         var cancel:Void->Void = null;
         var progress:Float->Void = null;
         var process:Dynamic->Void = null;
-        
-        addEventListener(Event.CANCEL, cancel);
-        loadRawAsset(rawAsset, progress, process);
         
         function process(asset:Dynamic):Void
         {
@@ -854,6 +851,7 @@ class AssetManager extends EventDispatcher
             else if (Std.is(asset, Xml))
             {
                 xml = cast asset;
+                xml = xml.firstElement();
                 
                 if (xml.nodeName == "TextureAtlas" || xml.nodeName == "font")
                     xmls.push(xml);
@@ -981,15 +979,18 @@ class AssetManager extends EventDispatcher
             removeEventListener(Event.CANCEL, cancel);
         }
         
-        function progress(ratio:Float):Void
+        progress = function(ratio:Float):Void
         {
             if (!canceled) onProgress(ratio);
         }
         
-        function cancel():Void
+        cancel = function():Void
         {
             canceled = true;
         }
+        
+        addEventListener(Event.CANCEL, cancel);
+        loadRawAsset(rawAsset, progress, process);
     }
     
     /** This method is called internally for each element of the queue when it is loaded.
@@ -1022,44 +1023,22 @@ class AssetManager extends EventDispatcher
         var onLoadProgress:ProgressEvent->Void = null;
         var onUrlLoaderComplete:Dynamic->Void = null;
         var onLoaderComplete:Dynamic->Void = null;
-        
-        if (Std.is(rawAsset, Class))
-        {
-            Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
-        }
-        else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
-        {
-            urlRequest = safe_cast(rawAsset, URLRequest);
-            if (urlRequest == null)
-                urlRequest = new URLRequest(safe_cast(rawAsset, String));
-            url = urlRequest.url;
-            extension = getExtensionFromUrl(url);
 
-            urlLoader = new URLLoader();
-            urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-            urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
-            urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
-            urlLoader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-            urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-            urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
-            urlLoader.load(urlRequest);
-        }
-
-        function onIoError(event:IOErrorEvent):Void
+        onIoError = function(event:IOErrorEvent):Void
         {
             log("IO error: " + event.text);
             dispatchEventWith(Event.IO_ERROR, false, url);
             complete(null);
         }
 
-        function onSecurityError(event:SecurityErrorEvent):Void
+        onSecurityError = function(event:SecurityErrorEvent):Void
         {
             log("security error: " + event.text);
             dispatchEventWith(Event.SECURITY_ERROR, false, url);
             complete(null);
         }
 
-        function onHttpResponseStatus(event:HTTPStatusEvent):Void
+        onHttpResponseStatus = function(event:HTTPStatusEvent):Void
         {
             if (extension == null)
             {
@@ -1071,13 +1050,13 @@ class AssetManager extends EventDispatcher
             }
         }
 
-        function onLoadProgress(event:ProgressEvent):Void
+        onLoadProgress = function(event:ProgressEvent):Void
         {
             if (onProgress != null && event.bytesTotal > 0)
                 onProgress(event.bytesLoaded / event.bytesTotal);
         }
         
-        function onUrlLoaderComplete(event:Dynamic):Void
+        onUrlLoaderComplete = function(event:Dynamic):Void
         {
             var bytes:ByteArray = transformData(cast(urlLoader.data, ByteArray), url);
             var sound:Sound;
@@ -1115,13 +1094,13 @@ class AssetManager extends EventDispatcher
             }
         }
         
-        function onLoaderComplete(event:Dynamic):Void
+        onLoaderComplete = function(event:Dynamic):Void
         {
             urlLoader.data.clear();
             complete(event.target.content);
         }
         
-        function complete(asset:Dynamic):Void
+        complete = function(asset:Dynamic):Void
         {
             // clean up event listeners
 
@@ -1147,6 +1126,28 @@ class AssetManager extends EventDispatcher
                 onComplete(asset);
             else
                 SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+        }
+        
+        if (Std.is(rawAsset, Class))
+        {
+            Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
+        }
+        else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
+        {
+            urlRequest = safe_cast(rawAsset, URLRequest);
+            if (urlRequest == null)
+                urlRequest = new URLRequest(safe_cast(rawAsset, String));
+            url = urlRequest.url;
+            extension = getExtensionFromUrl(url);
+
+            urlLoader = new URLLoader();
+            urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
+            urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
+            urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
+            urlLoader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+            urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+            urlLoader.addEventListener(Event.COMPLETE, onUrlLoaderComplete);
+            urlLoader.load(urlRequest);
         }
     }
     

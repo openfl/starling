@@ -7,6 +7,8 @@ class ByteArrayUtil
 	{
 		#if flash
 		return ba[index];
+		#elseif js
+		return @:privateAccess ba.data.getUint8(index);
 		#else
 		return ba.__get(index);
 		#end

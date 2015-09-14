@@ -1,6 +1,5 @@
 package scenes;
 import flash.media.Sound;
-import openfl.Assets;
 
 import starling.core.Starling;
 import starling.display.MovieClip;
@@ -18,7 +17,7 @@ import starling.textures.Texture;
         mMovie = new MovieClip(frames, 15);
         
         // add sounds
-        var stepSound:Sound = Assets.getSound("assets/audio/wing_flap.ogg");
+        var stepSound:Sound = Game.assets.getSound("wing_flap");
         mMovie.setFrameSound(2, stepSound);
         
         // move the clip to the center and add it to the stage
@@ -32,12 +31,12 @@ import starling.textures.Texture;
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
     
-    private function onAddedToStage(unused:Dynamic):Void
+    private function onAddedToStage():Void
     {
         Starling.current.juggler.add(mMovie);
     }
     
-    private function onRemovedFromStage(unused:Dynamic):Void
+    private function onRemovedFromStage():Void
     {
         Starling.current.juggler.remove(mMovie);
     }

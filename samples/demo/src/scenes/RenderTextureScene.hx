@@ -1,6 +1,7 @@
 package scenes;
-import flash.geom.Point;
 import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.utils.Dictionary;
 import starling.display.DisplayObject;
 import starling.utils.Max;
 
@@ -44,27 +45,26 @@ import starling.textures.RenderTexture;
         mRenderTexture.draw(infoText);
         
         mButton = new Button(Game.assets.getTexture("button_normal"), "Mode: Draw");
-        mButton.fontName = Constants.DefaultFont;
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
         addChild(mButton);
     }
     
-    private override function onTouch(event:TouchEvent):Void
+    override private function onTouch(event:TouchEvent):Void
     {
         // touching the canvas will draw a brush texture. The 'drawBundled' method is not
         // strictly necessary, but it's faster when you are drawing with several fingers
         // simultaneously.
         
-        mRenderTexture.drawBundled(function(unused0:DisplayObject, unused1:Matrix, unused2:Float):Void
+        mRenderTexture.drawBundled(function(unused0:DisplayObject, unused1:flash.geom.Matrix, unused2:Float):Void
         {
             var touches:Array<Touch> = event.getTouches(mCanvas);
         
             for (touch in touches)
             {
                 if (touch.phase == TouchPhase.BEGAN)
-                    mColors[touch.id] = Std.int(Math.random() * Max.INT_MAX_VALUE);
+                    mColors[touch.id] = Std.int(Math.random() * Max.UINT_MAX_VALUE);
                 
                 if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                     continue;
@@ -80,7 +80,7 @@ import starling.textures.RenderTexture;
         });
     }
     
-    private function onButtonTriggered(unused:Dynamic):Void
+    private function onButtonTriggered():Void
     {
         if (mBrush.blendMode == BlendMode.NORMAL)
         {

@@ -415,7 +415,7 @@ class Starling extends EventDispatcher
             var context:Context3D = stage3D.context3D;
 
             if (renderMode == Context3DRenderMode.AUTO && profiles.length != 0 &&
-                context.driverInfo.indexOf("Software") != -1)
+                (context.driverInfo != null && context.driverInfo.indexOf("Software") != -1))
             {
                 onError(event);
             }

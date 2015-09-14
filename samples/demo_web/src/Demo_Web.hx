@@ -1,109 +1,147 @@
 package;
+import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.system.Capabilities;
-import openfl.Assets;
-import openfl.display3D.Context3DProfile;
+#if 0
+import flash.utils.setTimeout;
+#end
+import haxe.Timer;
 import openfl.display3D.Context3DRenderMode;
-import openfl.errors.Error;
-import openfl.events.TouchEvent;
-import openfl.geom.Rectangle;
-import starling.utils.Max;
-import starling.utils.RectangleUtil;
 
 import starling.core.Starling;
-import starling.textures.Texture;
-import starling.utils.AssetManager;
 import starling.events.Event;
+import starling.textures.RenderTexture;
+import starling.utils.AssetManager;
 
-import flash.display.StageScaleMode;
-import flash.display.StageAlign;
-import flash.events.MouseEvent;
-
-import Game;
+import utils.ProgressBar;
 
 // If you set this class as your 'default application', it will run without a preloader.
 // To use a preloader, see 'Demo_Web_Preloader.as'.
 
-//[SWF(width="320", height="480", frameRate="60", backgroundColor="#222222")]
+// This project requires the sources of the "demo" project. Add them either by
+// referencing the "demo/src" directory as a "source path", or by copying the files.
+// The "media" folder of this project has to be added to its "source paths" as well,
+// to make sure the icon and startup images are added to the compiled mobile app.
+
+#if 0
+[SWF(width="320", height="480", frameRate="60", backgroundColor="#222222")]
+#end
 class Demo_Web extends Sprite
 {
-    //[Embed(source = "/startup.jpg")]
-    //private var Background:Class<Dynamic>;
-    
     private var mStarling:Starling;
-    
+    private var mBackground:Bitmap;
+    private var mProgressBar:ProgressBar;
+
     public function new()
     {
         super();
-
         if (stage != null) start();
         else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
     }
-    
-    private function start():Void
-    {
-        var profile:Context3DProfile = Context3DProfile.BASELINE_CONSTRAINED;
-        
-        Starling.multitouchEnabled = true; // for Multitouch Scene
-        //Starling.handleLostContext = true; // required on Windows, needs more memory
-        
-        mStarling = new Starling(Game, stage, new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), null, Context3DRenderMode.AUTO, profile);
-        
-        mStarling.statsDisplayFontName = Constants.DefaultFont;
-        mStarling.simulateMultitouch = true;
-        //mStarling.enableErrorChecking = Capabilities.isDebugger;
-        mStarling.enableErrorChecking = false;
-        mStarling.addEventListener(Event.ROOT_CREATED, onRootCreated);
-        
-        #if nodejs
-        // check if gc is enabled
-        if (untyped global.gc == null)
-            trace("--expose-gc is not enabled.");
-        #end
-        
-        mStarling.start();
-        this.stage.addEventListener(Event.RESIZE, onResize, false, Max.INT_MAX_VALUE, true);
-    }
-    
-    private function onAddedToStage(event:Event):Void
+
+    private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         start();
     }
-    
-    private function onRootCreated(event:Event):Void
+
+    private function start():Void
     {
-        // set framerate to 30 in software mode
-        //if (mStarling.context.driverInfo.toLowerCase().indexOf("software") != -1)
-        //    mStarling.nativeStage.frameRate = 30;
-        
-        // define which resources to load
-        var assets:AssetManager = new AssetManager();
-        //assets.verbose = Capabilities.isDebugger;
-        assets.verbose = true;
-        //assets.enqueue();
-        
-        // background texture is embedded, because we need it right away!
-        var bgTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("startup.jpg"), false);
-        
-        // load font
-        Assets.getFont("assets/fonts/Ubuntu-R.ttf");
-        
-        // game will first load resources, then start menu
-        var game = cast(event.data, Game);
-        game.start(bgTexture, assets);
+        // We develop the game in a *fixed* coordinate system of 320x480. The game might
+        // then run on a device with a different resolution; for that case, we zoom the
+        // viewPort to the optimal size for any display and load the optimal textures.
+
+        Starling.multitouchEnabled = true; // for Multitouch Scene
+        Starling.handleLostContext = true; // recommended everywhere when using AssetManager
+        RenderTexture.optimizePersistentBuffers = true; // should be safe on Desktop
+
+        mStarling = new Starling(Game, stage, null, null, Context3DRenderMode.AUTO, "auto");
+        mStarling.simulateMultitouch = true;
+        mStarling.enableErrorChecking = Capabilities.isDebugger;
+        mStarling.addEventListener(Event.ROOT_CREATED, function():Void
+        {
+            loadAssets(startGame);
+        });
+
+        mStarling.start();
+        initElements();
     }
 
-    private function onResize(e:openfl.events.Event):Void
+    private function loadAssets(onComplete:AssetManager->Void):Void
     {
-        //this.mStarling.stage.stageWidth = this.stage.stageWidth;
-        //this.mStarling.stage.stageHeight = this.stage.stageHeight;
+        // Our assets are loaded and managed by the 'AssetManager'. To use that class,
+        // we first have to enqueue pointers to all assets we want it to load.
 
-        var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, stage.stageWidth, stage.stageHeight));
-        try
+        var assets:AssetManager = new AssetManager();
+
+        assets.verbose = Capabilities.isDebugger;
+        #if 0
+        assets.enqueue(EmbeddedAssets);
+        #else
+        assets.enqueue(
+        [
+            "assets/textures/1x/atlas.xml",
+            "assets/textures/1x/atlas.png",
+            "assets/textures/1x/background.jpg",
+            #if 0
+            "assets/textures/1x/compressed_texture.atf",
+            #end
+            "assets/fonts/1x/desyrel.fnt",
+            "assets/fonts/1x/desyrel.png",
+            "assets/audio/wing_flap.ogg"
+        ]);
+        #end
+
+        // Now, while the AssetManager now contains pointers to all the assets, it actually
+        // has not loaded them yet. This happens in the "loadQueue" method; and since this
+        // will take a while, we'll update the progress bar accordingly.
+
+        assets.loadQueue(function(ratio:Float):Void
         {
-            this.mStarling.viewPort = viewPort;
+            #if 0
+            mProgressBar.ratio = ratio;
+            #end
+            if (ratio == 1) onComplete(assets);
+        });
+    }
+
+    private function startGame(assets:AssetManager):Void
+    {
+        var game:Game = cast(mStarling.root, Game);
+        game.start(assets);
+        Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
+    }
+
+    private function initElements():Void
+    {
+        // Add background image.
+
+        #if 0
+        mBackground = Type.createInstance(EmbeddedAssets.background, []);
+        mBackground.smoothing = true;
+        addChild(mBackground);
+
+        // While the assets are loaded, we will display a progress bar.
+
+        mProgressBar = new ProgressBar(175, 20);
+        mProgressBar.x = (mBackground.width - mProgressBar.width) / 2;
+        mProgressBar.y =  mBackground.height * 0.7;
+        addChild(mProgressBar);
+        #end
+    }
+
+    private function removeElements():Void
+    {
+        if (mBackground != null)
+        {
+            removeChild(mBackground);
+            mBackground = null;
         }
-        catch(error:Error) {}
+
+        if (mProgressBar != null)
+        {
+            removeChild(mProgressBar);
+            mProgressBar = null;
+        }
     }
 }

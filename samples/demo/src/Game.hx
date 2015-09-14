@@ -1,10 +1,9 @@
 package;
 import flash.system.System;
 import flash.ui.Keyboard;
-import openfl.Assets;
-import starling.text.BitmapFont;
-import starling.text.TextField;
-import starling.textures.TextureAtlas;
+#if 0
+import flash.utils.getDefinitionByName;
+#end
 
 import scenes.Scene;
 
@@ -14,21 +13,18 @@ import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.events.KeyboardEvent;
-import starling.textures.Texture;
 import starling.utils.AssetManager;
 
-import utils.ProgressBar;
-
-@:keep class Game extends Sprite
+class Game extends Sprite
 {
     // Embed the Ubuntu Font. Beware: the 'embedAsCFF'-part IS REQUIRED!!!
-    //[Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]
-    //private static var UbuntuRegular:Class<Dynamic>;
+    #if 0
+    [Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]
+    private static const UbuntuRegular:Class;
+    #end
     
-    private var mLoadingProgress:ProgressBar;
     private var mMainMenu:MainMenu;
     private var mCurrentScene:Scene;
-    private var _container:Sprite;
     
     private static var sAssets:AssetManager;
     
@@ -38,71 +34,23 @@ import utils.ProgressBar;
         // nothing to do here -- Startup will call "start" immediately.
     }
     
-    public function start(background:Texture, assets:AssetManager):Void
+    public function start(assets:AssetManager):Void
     {
         sAssets = assets;
-        
-        // The background is passed into this method for two reasons:
-        // 
-        // 1) we need it right away, otherwise we have an empty frame
-        // 2) the Startup class can decide on the right image, depending on the device.
-        
-        addChild(new Image(background));
-        
-        // The AssetManager contains all the raw asset data, but has not created the textures
-        // yet. This takes some time (the assets might be loaded from disk or even via the
-        // network), during which we display a progress indicator. 
-        
-        //mLoadingProgress = new ProgressBar(175, 20);
-        //mLoadingProgress.x = (background.width  - mLoadingProgress.width) / 2;
-        //mLoadingProgress.y = background.height * 0.7;
-        //addChild(mLoadingProgress);
-        //
-        //assets.loadQueue(function(ratio:Float):Void
-        //{
-            //mLoadingProgress.ratio = ratio;
-//
-            //// a progress bar should always show the 100% for a while,
-            //// so we show the main menu only after a short delay. 
-            //
-            //if (ratio == 1)
-                //Starling.current.juggler.delayCall(function(unused:Dynamic):Void
-                //{
-                    //mLoadingProgress.removeFromParent(true);
-                    //mLoadingProgress = null;
-                    //showMainMenu();
-                //}, 0.15, []);
-        //});
-        var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-        var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml"));
-        var atlas:Xml = null;
-        for (a in atlasXml.elementsNamed("TextureAtlas"))
-            if (a.get("imagePath") == "atlas.png")
-            {
-                atlas = a;
-                break;
-            }
-        assets.addTexture("atlas", atlasTexture);
-        assets.addTextureAtlas("atlas_xml", new TextureAtlas(atlasTexture, atlas));
+        addChild(new Image(assets.getTexture("background")));
+        showMainMenu();
 
-        var fontTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-        var fontXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-        TextField.registerBitmapFont(new BitmapFont(fontTexture, fontXml), "Desyrel");
-        
         addEventListener(Event.TRIGGERED, onButtonTriggered);
         stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
-        showMainMenu();
     }
     
     private function showMainMenu():Void
     {
-        // now would be a good time for a clean-up 
-        //System.pauseForGCIfCollectionImminent(0);
-        #if nodejs
-        if (untyped global.gc != null) untyped global.gc();
-        #else
-        System.gc();
+        // now would be a good time for a clean-up
+        #if 0
+        System.pauseForGCIfCollectionImminent(0);
         #end
+        System.gc();
         
         if (mMainMenu == null)
             mMainMenu = new MainMenu();
@@ -140,11 +88,11 @@ import utils.ProgressBar;
         if (mCurrentScene != null) return;
         
         var sceneClass:Class<Dynamic> = Type.resolveClass(name);
-        mCurrentScene = Type.createInstance(sceneClass, []);
+        mCurrentScene = cast(Type.createInstance(sceneClass, []), Scene);
         mMainMenu.removeFromParent();
         addChild(mCurrentScene);
     }
     
     public static var assets(get, never):AssetManager;
-    public static function get_assets():AssetManager { return sAssets; }
+    @:noCompletion private static function get_assets():AssetManager { return sAssets; }
 }

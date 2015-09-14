@@ -23,7 +23,6 @@ import starling.textures.Texture;
     {
         super();
         mButton = new Button(Game.assets.getTexture("button_normal"), "Switch Filter");
-        mButton.fontName = Constants.DefaultFont;
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
@@ -34,18 +33,18 @@ import starling.textures.Texture;
         mImage.y = 170;
         addChild(mImage);
         
-        mInfoText = new TextField(300, 32, "", Constants.DefaultFont, 19);
+        mInfoText = new TextField(300, 32, "", "Verdana", 19);
         mInfoText.x = 10;
         mInfoText.y = 330;
         addChild(mInfoText);
         
         initFilters();
-        onButtonTriggered(null);
+        onButtonTriggered();
     }
     
-    private function onButtonTriggered(unused:Dynamic):Void
+    private function onButtonTriggered():Void
     {
-        var filterInfo:Array<Dynamic> = cast(mFilterInfos.shift(), Array<Dynamic>);
+        var filterInfo:Array<Dynamic> = mFilterInfos.shift();
         mFilterInfos.push(filterInfo);
         
         mInfoText.text = filterInfo[0];

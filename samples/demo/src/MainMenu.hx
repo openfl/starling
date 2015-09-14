@@ -1,4 +1,7 @@
 package;
+#if 0
+import flash.utils.getQualifiedClassName;
+#end
 
 import scenes.AnimationScene;
 import scenes.BenchmarkScene;
@@ -8,6 +11,7 @@ import scenes.FilterScene;
 import scenes.MaskScene;
 import scenes.MovieScene;
 import scenes.RenderTextureScene;
+import scenes.Sprite3DScene;
 import scenes.TextScene;
 import scenes.TextureScene;
 import scenes.TouchScene;
@@ -46,7 +50,8 @@ class MainMenu extends Sprite
             ["Blend Modes", BlendModeScene],
             ["Render Texture", RenderTextureScene],
             ["Benchmark", BenchmarkScene],
-            ["Clipping", MaskScene]
+            ["Masks", MaskScene],
+            ["Sprite 3D", Sprite3DScene]
         ];
         
         var buttonTexture:Texture = Game.assets.getTexture("button_medium");
@@ -58,7 +63,6 @@ class MainMenu extends Sprite
             var sceneClass:Class<Dynamic>  = sceneToCreate[1];
             
             var button:Button = new Button(buttonTexture, sceneTitle);
-            button.fontName = Constants.DefaultFont;
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = 155 + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);
@@ -72,9 +76,8 @@ class MainMenu extends Sprite
         
         // show information about rendering method (hardware/software)
         
-        //var driverInfo:String = Starling.current.context.driverInfo;
-        var driverInfo:String = "No driver info available";
-        var infoText:TextField = new TextField(310, 64, driverInfo, Constants.DefaultFont, 10);
+        var driverInfo:String = "No driverInfo available" /*Starling.current.context.driverInfo*/;
+        var infoText:TextField = new TextField(310, 64, driverInfo, "Verdana", 10);
         infoText.x = 5;
         infoText.y = 475 - infoText.height;
         infoText.vAlign = VAlign.BOTTOM;
