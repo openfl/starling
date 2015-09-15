@@ -1,6 +1,6 @@
 starling-openfl
 ===============
-An unofficial port of Starling framework.
+An unofficial port of Starling framework. Currently based on Starling 1.7.
 
 [HTML5 version of the demo](http://vroad.github.io/starling-samples) (Last Update:2015/10/14)
 
@@ -25,15 +25,12 @@ Current Limitations
 
 starling-openfl limitations:
 
-* Needs "next" version of OpenFL.
-  * Add this line to your project xml to enable it: ```<set value="openfl-next" value="1" />```
+* Does not work with openfl-legacy compile option.
 * Only works on html5, cpp, and unofficial Node.js target.
   * Except for html5, only windows platform is tested. 
 * DisplacementMapFilter don't work correctly. The filter just moves a object a little bit.
   * Noises that are used in DisplacementMapFilter example cannot be generated on OpenFL for now.
 * Mini-Bitmap Font is not supported.
-* On native targets, only loaded fonts can be specified with their name.
-* BitmapData is uploaded as non-premultiplied RGBA data.
 
 OpenFL Limitations(As of 2.2.4):
 
