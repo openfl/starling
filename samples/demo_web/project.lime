@@ -20,7 +20,6 @@
     <assets path="../demo/assets/textures/1x" rename="assets/textures/1x" />
     <assets path="../demo/assets/fonts/1x" rename="assets/fonts/1x" />
     <assets path="../demo/assets/fonts/Ubuntu-R.ttf" rename="assets/fonts/Ubuntu-R.ttf" />
-    <assets path="../demo/system/startup.jpg" rename="startup.jpg" />
 
 	<haxedef name="source-map-content" if="html5 || nodejs" />
 	<haxedef name="dom" if="html5" />
