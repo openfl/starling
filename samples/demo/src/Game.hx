@@ -15,7 +15,7 @@ import starling.events.Event;
 import starling.events.KeyboardEvent;
 import starling.utils.AssetManager;
 
-class Game extends Sprite
+@:keep class Game extends Sprite
 {
     // Embed the Ubuntu Font. Beware: the 'embedAsCFF'-part IS REQUIRED!!!
     #if 0
