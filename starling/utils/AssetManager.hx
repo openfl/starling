@@ -1122,10 +1122,14 @@ class AssetManager extends EventDispatcher
             // On mobile, it is not allowed / endorsed to make stage3D calls while the app
             // is in the background. Thus, we pause queue processing if that's the case.
             
+            #if flash
             if (SystemUtil.isDesktop)
                 onComplete(asset);
             else
                 SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+            #else
+            onComplete(asset);
+            #end
         }
         
         if (Std.is(rawAsset, Class))
