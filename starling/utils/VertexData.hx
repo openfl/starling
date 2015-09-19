@@ -68,6 +68,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
+        mRawData = new Float32Array(0);
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -530,14 +531,15 @@ class VertexData
         var totalSize:Int = value * ELEMENTS_PER_VERTEX;
         if (totalSize < 0)
             totalSize = 1;
-        if (mRawData == null)
-        {
-            mRawData = new Float32Array(totalSize);
-        }
-        else if (value * ELEMENTS_PER_VERTEX > mRawData.length)
+        if (value * ELEMENTS_PER_VERTEX > mRawData.length)
         {
             var new_rawData:Float32Array = new Float32Array(totalSize);
+            #if !cpp
             new_rawData.set(mRawData);
+            #else
+            for (i in 0 ... mRawData.length)
+                new_rawData[i] = mRawData[i];
+            #end
             mRawData = new_rawData;
         }
         else if(totalSize != mRawData.length)

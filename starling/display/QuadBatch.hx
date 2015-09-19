@@ -765,7 +765,12 @@ class QuadBatch extends DisplayObject
         if (newLength > mIndexData.length)
         {
             var new_IndexData:Int16Array = new Int16Array(newLength);
+            #if !cpp
             new_IndexData.set(mIndexData);
+            #else
+            for (i in 0 ... mIndexData.length)
+                new_IndexData[i] = mIndexData[i];
+            #end
             mIndexData = new_IndexData;
         }
         else
