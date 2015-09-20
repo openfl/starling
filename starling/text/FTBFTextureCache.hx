@@ -25,13 +25,15 @@ class FTBFTextureCache
 
     public function new(width:Int, height:Int)
     {
-        texture = Texture.empty(width, height, true, false, false, -1, Context3DTextureFormat.ALPHA, false);
-        var tmpImage:UInt8Array = new UInt8Array(width * height);
+        texture = Texture.empty(width, height, true, false, false, 1, Context3DTextureFormat.ALPHA, false);
         var stdTexture:openfl.display3D.textures.Texture = Std.instance(texture.base, openfl.display3D.textures.Texture);
         if (stdTexture != null)
-            stdTexture.uploadFromUInt8Array(tmpImage);
+            stdTexture.uploadFromUInt8Array(new UInt8Array(stdTexture.width * stdTexture.height));
         else
-            cast(texture.base, RectangleTexture).uploadFromUInt8Array(tmpImage);
+        {
+            var rectTexture:RectangleTexture = cast(texture.base, RectangleTexture);
+            rectTexture.uploadFromUInt8Array(new UInt8Array(rectTexture.width * rectTexture.height));
+        }
         binPack = new MaxRectsBinPack(width, height);
         textRenderers = new Map();
         quadBatch = new QuadBatch();
