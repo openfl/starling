@@ -297,6 +297,8 @@ class Starling extends EventDispatcher
         mLastFrameTimestamp = Lib.getTimer() / 1000.0;
         mSupport  = new RenderSupport();
         
+        mStatsDisplayFontName = "Verdana";
+        
         // for context data, we actually reference by stage3D, since it survives a context loss
         sContextData[stage3D] = new Map<String, Dynamic>();
         sContextData[stage3D][PROGRAM_DATA_NAME] = new Map<String, Program3D>();
