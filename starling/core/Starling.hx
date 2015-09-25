@@ -590,10 +590,8 @@ class Starling extends EventDispatcher
                     configureBackBuffer(32, 32, mAntiAliasing, true);
                 #end
                 
-                #if flash
                 mStage3D.x = mClippedViewPort.x;
                 mStage3D.y = mClippedViewPort.y;
-                #end
                 
                 configureBackBuffer(Std.int(mClippedViewPort.width), Std.int(mClippedViewPort.height),
                     mAntiAliasing, true, mSupportHighResolutions);
