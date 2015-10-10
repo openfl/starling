@@ -32,8 +32,8 @@ import flash.system.ImageDecodingPolicy;
 import flash.system.LoaderContext;
 import flash.system.System;
 import flash.utils.ByteArray;
-import flash.utils.Dictionary;
 #if 0
+import flash.utils.Dictionary;
 import flash.utils.describeType;
 import flash.utils.getQualifiedClassName;
 #end

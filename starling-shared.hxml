@@ -1,13 +1,11 @@
 -cp .
 -cp docs
--main ImportAll 
--cp C:/HaxeToolkit/haxe/lib/lime/git
+-main ImportAll
 -cp C:/HaxeToolkit/haxe/lib/lime/git/hxclasses
 -D lime=2.4.3
 --macro allowPackage("sys")
 -lib nodejs
 -D nodejs=2.2.7
--cp C:/HaxeToolkit/haxe/lib/openfl/git
 -cp C:/HaxeToolkit/haxe/lib/openfl/git/hxclasses
 -D openfl=3.0.8
 -D lime-openal

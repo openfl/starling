@@ -40,7 +40,9 @@ import flash.ui.Mouse;
 import flash.ui.Multitouch;
 import flash.ui.MultitouchInputMode;
 import flash.utils.ByteArray;
+#if 0
 import flash.utils.Dictionary;
+#end
 import flash.Lib;
 import haxe.Timer;
 import starling.text.FTBFTextureCache;
