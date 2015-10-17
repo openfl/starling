@@ -20,6 +20,7 @@ import starling.utils.RectangleUtil;
 
 import starling.core.Starling;
 import starling.events.Event;
+import starling.textures.RenderTexture;
 import starling.utils.AssetManager;
 
 import utils.ProgressBar;
@@ -104,15 +105,20 @@ class Demo_Web extends Sprite
             "assets/audio/wing_flap.ogg"
         ]);
         #else
-        var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-        var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
-        var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-        var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-        TextField.registerBitmapFont(new BitmapFont(desyrelTexture, desyrelXml));
-        assets.addTexture("atlas", atlasTexture);
-        assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
-        assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
-        assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+        Timer.delay(function()
+        {
+            var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
+            var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
+            var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
+            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
+            TextField.registerBitmapFont(new BitmapFont(desyrelTexture, desyrelXml));
+            assets.addTexture("atlas", atlasTexture);
+            assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
+            assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
+            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            
+            onComplete(assets);
+        }, 0);
         #end
 
         // Now, while the AssetManager now contains pointers to all the assets, it actually
@@ -127,8 +133,6 @@ class Demo_Web extends Sprite
             #end
             if (ratio == 1) onComplete(assets);
         });
-        #else
-        Timer.delay(function() { onComplete(assets); }, 1);
         #end
     }
 
