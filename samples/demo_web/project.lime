@@ -4,31 +4,32 @@
 	<meta title="demo_web" package="com.demoweb" version="1.0.0" company="vroad" />
 	<app main="Demo_Web" file="Demo_Web" path="bin" />
 
-    <window width="320" height="480" if="native" />
-    <window width="320" height="480" if="html5" />
-    <window orientation="landscape" vsync="true" if="native" />
-	<window fps="60" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="false" stencil-buffer="true" />
+	<window width="320" height="480" orientation="portrait" vsync="true" fps="60" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="false" stencil-buffer="true" background="0xffffff" />
+	<window stencil-buffer="false" if="android" />
 	
 	<source path="src" />
-    <source path="../demo/src" />
+	<source path="../demo/src" />
 
 	<haxelib name="starling" />
-    <haxelib name="openfl" />
+	<haxelib name="openfl" />
 
-    <assets path="../demo/assets/audio/wing_flap.mp3" rename="assets/audio/wing_flap.mp3" if="flash" />
-    <assets path="../demo/assets/audio/wing_flap.ogg" rename="assets/audio/wing_flap.ogg" unless="flash" />
-    <assets path="../demo/assets/textures/1x" rename="assets/textures/1x" />
-    <assets path="../demo/assets/fonts/1x" rename="assets/fonts/1x" />
-    <assets path="../demo/assets/fonts/Ubuntu-R.ttf" rename="assets/fonts/Ubuntu-R.ttf" />
+	<assets path="../demo/assets/audio/wing_flap.mp3" rename="assets/audio/wing_flap.mp3" if="flash" />
+	<assets path="../demo/assets/audio/wing_flap.ogg" rename="assets/audio/wing_flap.ogg" unless="flash" />
+	<assets path="../demo/assets/textures/1x" rename="assets/textures/1x" />
+	<assets path="../demo/assets/fonts/1x" rename="assets/fonts/1x" />
+	<assets path="../demo/assets/fonts/Ubuntu-R.ttf" rename="assets/fonts/Ubuntu-R.ttf" />
 
 	<haxedef name="source-map-content" if="html5 || nodejs" />
 	<haxedef name="dom" if="html5" />
-	
+
 	<haxedef name="disable_gl_renderer" />
 
-	<android minimum-sdk-version="10" />
 	<haxeflag name="-swf-version" value="11.8" />
 	<haxeflag name="--macro" value="keep('starling.display.Sprite3D')" />
 	<haxeflag name="--macro" value="keep('starling.animation.Tween')" />
+	<haxeflag name="--macro" value="keep('Xml')" />
+	<haxeflag name="-dce" value="full" />
+	
+	<android minimum-sdk-version="9" target-sdk-version="19" /> 
 	
 </project>
