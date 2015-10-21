@@ -2,9 +2,9 @@ starling-openfl
 ===============
 An unofficial port of Starling framework. Currently based on Starling 1.7.
 
-[HTML5 version of the demo](http://vroad.github.io/starling-samples) (Last Update:2015/10/14)
+[HTML5 version of the demo](http://vroad.github.io/starling-samples)
 
-[io.js version of the demo for Windows x86](https://www.dropbox.com/s/2rt488tjxqzdqvi/Starling_demo_iojs_20150215.zip?dl=0) (Last Update:2015/02/15)
+[io.js version of the demo for Windows x86](https://www.dropbox.com/s/2rt488tjxqzdqvi/Starling_demo_iojs_20150215.zip?dl=0)
 
 Install
 -------
