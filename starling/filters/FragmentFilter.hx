@@ -380,7 +380,7 @@ class FragmentFilter
         {
             mVertexBuffer = context.createVertexBuffer(4, VertexData.ELEMENTS_PER_VERTEX);
             mIndexBuffer  = context.createIndexBuffer(6);
-            VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData);
+            VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData, 0, 6);
         }
         
         VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, 4);

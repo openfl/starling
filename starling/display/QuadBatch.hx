@@ -196,7 +196,7 @@ class QuadBatch extends DisplayObject
         VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
-        VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData);
+        VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData, 0, numIndices);
         
         mSyncRequired = false;
     }
