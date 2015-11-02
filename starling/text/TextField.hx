@@ -210,7 +210,6 @@ class TextField extends DisplayObjectContainer
         
         var texture:Texture;
         var scale:Float = Starling.current.contentScaleFactor;
-        #if 0
         var bitmapData:BitmapData = renderText(scale, mTextBounds);
         var format:Context3DTextureFormat = sDefaultTextureFormat;
         var maxTextureSize:Int = Texture.maxSize;
@@ -230,27 +229,21 @@ class TextField extends DisplayObjectContainer
 
         mHitArea.width  = bitmapData.width  / scale;
         mHitArea.height = bitmapData.height / scale;
-        #else
-        var texture:Texture = renderText(scale, mTextBounds, mImage != null ? mImage.texture : null);
         
-        mHitArea.width  = texture.width  / scale;
-        mHitArea.height = texture.height / scale;
-        #end
-        
+        texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         texture.root.onRestore = function():Void
         {
             if (mTextBounds == null)
                 mTextBounds = new Rectangle();
 
-            #if 0
             bitmapData = renderText(scale, mTextBounds);
             texture.root.uploadBitmapData(bitmapData);
             bitmapData.dispose();
             bitmapData = null;
-            #else
-            texture = renderText(scale, mTextBounds, null);
-            #end
         };
+        
+        bitmapData.dispose();
+        bitmapData = null;
         
         if (mImage == null) 
         {
@@ -260,8 +253,7 @@ class TextField extends DisplayObjectContainer
         }
         else 
         { 
-            if (mImage.texture != texture)
-                mImage.texture.dispose();
+            mImage.texture.dispose();
             mImage.texture = texture; 
             mImage.readjustSize(); 
         }
@@ -285,7 +277,7 @@ class TextField extends DisplayObjectContainer
         mRequiresRedraw = true;
     }
 
-    private function renderText(scale:Float, resultTextBounds:Rectangle, texture:Texture):Texture
+    private function renderText(scale:Float, resultTextBounds:Rectangle):BitmapData
     {
         var width:Float  = mHitArea.width  * scale;
         var height:Float = mHitArea.height * scale;
@@ -366,11 +358,9 @@ class TextField extends DisplayObjectContainer
         var filterOffset:Point = calculateFilterOffset(sNativeTextField, hAlign, vAlign);
         
         // finally: draw text field to bitmap data
-        var format:Context3DTextureFormat = sDefaultTextureFormat;
-        var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
-            filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
-        #if (flash || html5)
         var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
+        var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
+            filterOffset.x, filterOffset.y + Std.int(textOffsetY)-2);
         
         #if flash
         var drawWithQualityFunc:Dynamic =
@@ -385,14 +375,6 @@ class TextField extends DisplayObjectContainer
         else
         #end
             bitmapData.draw(sNativeTextField, drawMatrix);
-        texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
-        bitmapData.dispose();
-        #else
-        if (texture == null || (texture != null && (texture.nativeWidth != width || texture.nativeHeight != height)))
-            texture = Texture.empty(Std.int(width), Std.int(height), true, false, true);
-        var textRenderer:TextRenderer = getTextRenderer(textFormat);
-        textRenderer.renderText(sNativeTextField, texture, drawMatrix);
-        #end
         
         sNativeTextField.text = "";
         
@@ -401,7 +383,7 @@ class TextField extends DisplayObjectContainer
                                (textOffsetY + filterOffset.y) / scale,
                                textWidth / scale, textHeight / scale);
         
-        return texture;
+        return bitmapData;
     }
     
     private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
@@ -929,35 +911,6 @@ class TextField extends DisplayObjectContainer
         
         return fonts;
     }
-    
-    #if (!flash && !html5)
-    private static var textRenderers(get, never):Map<String, TextRenderer>;
-    private static function get_textRenderers():Map<String, TextRenderer>
-    {
-        var renderers:Map<String, TextRenderer> = Starling.current.textRenderers;
-        
-        if (renderers == null)
-        {
-            renderers = new Map<String, TextRenderer>();
-            Starling.current.textRenderers = renderers;
-        }
-        
-        return renderers;
-    }
-    
-    private static function getTextRenderer(textFormat:TextFormat):TextRenderer
-    {
-        var renderers:Map<String, TextRenderer> = TextField.textRenderers;
-        var formatStr:String = textFormat.font + "@" + textFormat.size;
-        var textRenderer:TextRenderer = renderers.get(formatStr);
-        if (textRenderer == null)
-        {
-            textRenderer = new TextRenderer(@:privateAccess TextEngine.getFontInstance(textFormat), textFormat.size);
-            renderers.set(formatStr, textRenderer);
-        }
-        return textRenderer;
-    }
-    #end
 
     // optimization for 'toLowerCase' calls
 
