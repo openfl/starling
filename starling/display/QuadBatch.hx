@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+import openfl.display3D.Context3DProfile;
 import openfl.utils.Int16Array;
 import starling.utils.SafeCast.safe_cast;
 import starling.utils.VertexBufferUtil;
@@ -105,8 +106,11 @@ class QuadBatch extends DisplayObject
     private static var sRenderAlpha:#if flash Vector<Float> #else Array<Float> #end = [1.0, 1.0, 1.0, 1.0];
     private static var sProgramNameCache:Map<UInt, String> = new Map<UInt, String>();
     
-    /** Creates a new QuadBatch instance with empty batch data. */
-    public function new()
+    /** Creates a new QuadBatch instance with empty batch data.
+     *
+     *  @param optimizeForProfile  if enabled, the 'forceTinted' property will be automatically
+     *                             activated in 'baselineExtended' and better profiles. */
+    public function new(optimizeForProfile:Bool=false)
     {
         super();
         mVertexData = new VertexData(0, true);
@@ -115,8 +119,13 @@ class QuadBatch extends DisplayObject
         mTinted = false;
         mSyncRequired = false;
         mBatchable = false;
-        mForceTinted = false;
         mOwnsTexture = false;
+        
+        if (optimizeForProfile)
+        {
+            var profile:Context3DProfile = Starling.current.profile;
+            mForceTinted = profile != Context3DProfile.BASELINE_CONSTRAINED && profile != Context3DProfile.BASELINE;
+        }
 
         mDynamicDraw = true;
 
@@ -126,7 +135,7 @@ class QuadBatch extends DisplayObject
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE, 
                                                   onContextCreated, false, 0, true);
     }
-    
+
     /** Disposes vertex- and index-buffer. */
     public override function dispose():Void
     {
@@ -165,6 +174,7 @@ class QuadBatch extends DisplayObject
         clone.mTexture = mTexture;
         clone.mSmoothing = mSmoothing;
         clone.mSyncRequired = true;
+        clone.mForceTinted = mForceTinted;
         clone.blendMode = blendMode;
         clone.alpha = alpha;
         clone.dynamicDraw = mDynamicDraw;
@@ -570,7 +580,7 @@ class QuadBatch extends DisplayObject
             objectAlpha = 1.0;
             blendMode = object.blendMode;
             ignoreCurrentFilter = true;
-            if (quadBatches.length == 0) quadBatches[0] = new QuadBatch();
+            if (quadBatches.length == 0) quadBatches[0] = new QuadBatch(true);
             else { quadBatches[0].reset(); quadBatches[0].ownsTexture = false; }
             quadBatches[0].dynamicDraw = false;
         }
@@ -654,7 +664,7 @@ class QuadBatch extends DisplayObject
                 quadBatchID++;
                 if (quadBatches.length <= quadBatchID)
                 {
-                    var qb:QuadBatch = new QuadBatch();
+                    var qb:QuadBatch = new QuadBatch(true);
                     qb.dynamicDraw = false;
                     quadBatches.push(qb);
                 }

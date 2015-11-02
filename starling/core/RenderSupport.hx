@@ -108,7 +108,7 @@ class RenderSupport
         mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = [createQuadBatch()];
+        mQuadBatches = [new QuadBatch(true)];
 
         loadIdentity();
         setProjectionMatrix(0, 0, 400, 300);
@@ -634,7 +634,7 @@ class RenderSupport
             ++mDrawCount;
             
             if (mQuadBatches.length <= mCurrentQuadBatchID)
-                mQuadBatches.push(createQuadBatch());
+                mQuadBatches.push(new QuadBatch(true));
         }
     }
     
@@ -663,15 +663,6 @@ class RenderSupport
             for (i in 0 ... numToRemove)
                 mQuadBatches.pop().dispose();
         }
-    }
-
-    private function createQuadBatch():QuadBatch
-    {
-        var profile:Context3DProfile = Starling.current.profile;
-        var forceTinted:Bool = (profile != Context3DProfile.BASELINE_CONSTRAINED && profile != Context3DProfile.BASELINE);
-        var quadBatch:QuadBatch = new QuadBatch();
-        quadBatch.forceTinted = forceTinted;
-        return quadBatch;
     }
     
     // other helper methods
