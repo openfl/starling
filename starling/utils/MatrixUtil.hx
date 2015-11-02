@@ -60,11 +60,7 @@ class MatrixUtil
     {
         if (resultMatrix == null) resultMatrix = new Matrix();
 
-        #if flash
         matrix3D.copyRawDataTo(sRawData2);
-        #else
-        ArrayUtil.copyVectorToArray(matrix3D.rawData, sRawData2);
-        #end
         resultMatrix.a  = sRawData2[ 0];
         resultMatrix.b  = sRawData2[ 1];
         resultMatrix.c  = sRawData2[ 4];
