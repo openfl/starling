@@ -62,6 +62,7 @@ class SystemUtil
             var ds:String = appDescriptor.ns::initialWindow.ns::depthAndStencil.toString().toLowerCase();
 
             sSupportsDepthAndStencil = (ds == "true");
+            #elseif flash
             #else
             var windowConfig:WindowConfig = Application.current.window.config;
             sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
