@@ -192,8 +192,7 @@ class DisplacementMapFilter extends FragmentFilter
         sMatrixData[columnX * 4] = mScaleX * scale / textureWidth;
         sMatrixData[columnY * 4] = mScaleY * scale / textureHeight;
         
-        //sMatrix.copyRawDataFrom(sMatrixData);
-        ArrayUtil.copyArrayToVector(sMatrixData, sMatrix.rawData);
+        sMatrix.copyRawDataFrom(sMatrixData);
         
         // vertex buffer: (containing map texture coordinates)
         // The size of input texture and map texture may be different. We need to calculate

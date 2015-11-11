@@ -172,8 +172,7 @@ class RenderSupport
         sMatrixData[8]  =  scaleX - 1 - 2 * scaleX * (x - offsetX) / stageWidth;
         sMatrixData[9]  = -scaleY + 1 + 2 * scaleY * (y - offsetY) / stageHeight;
 
-        //mProjectionMatrix3D.copyRawDataFrom(sMatrixData);
-        ArrayUtil.copyArrayToVector(sMatrixData, mProjectionMatrix3D.rawData);
+        mProjectionMatrix3D.copyRawDataFrom(sMatrixData);
         mProjectionMatrix3D.prependTranslation(
             -stageWidth /2.0 - offsetX,
             -stageHeight/2.0 - offsetY,

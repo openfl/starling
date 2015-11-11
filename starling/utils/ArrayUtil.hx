@@ -21,18 +21,6 @@ class ArrayUtil
 {
     /** @private */
     public function new() { throw new AbstractClassError(); }
-
-    public static function copyVectorToArray<T>(from:Vector<T>, to:Array<T>)
-    {
-        for (i in 0 ... from.length)
-            to[i] = from[i];
-    }
-
-    public static function copyArrayToVector<T>(from:Array<T>, to:Vector<T>)
-    {
-        for (i in 0 ... from.length)
-            to[i] = from[i];
-    }
     
     public static function resize<T>(arr:Array<T>, newLength:Int, defaultValue:T = null):Void
     {
