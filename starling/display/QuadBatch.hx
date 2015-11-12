@@ -331,7 +331,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quad.blendMode;
             mTexture = texture;
-            mTinted = texture != null ? (mForceTinted || quad.tinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false;
+            mTinted = mForceTinted || quad.tinted || parentAlpha != 1.0;
             mSmoothing = smoothing;
             mVertexData.setPremultipliedAlpha(quad.premultipliedAlpha);
         }
@@ -362,7 +362,7 @@ class QuadBatch extends DisplayObject
         {
             this.blendMode = blendMode != null ? blendMode : quadBatch.blendMode;
             mTexture = quadBatch.mTexture;
-            mTinted = (texture != null) ? (mForceTinted || quadBatch.mTinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false;
+            mTinted = mForceTinted || quadBatch.mTinted || parentAlpha != 1.0;
             mSmoothing = quadBatch.mSmoothing;
             mVertexData.setPremultipliedAlpha(quadBatch.mVertexData.premultipliedAlpha, false);
         }
@@ -392,7 +392,7 @@ class QuadBatch extends DisplayObject
             return mTexture.base != texture.base ||
                    mTexture.repeat != texture.repeat ||
                    mSmoothing != smoothing ||
-                   mTinted != (texture.format != null ? (mForceTinted || tinted || parentAlpha != 1.0 || isAlphaOnlyTextureFormat(texture.format)) : false) ||
+                   mTinted != (mForceTinted || tinted || parentAlpha != 1.0) ||
                    this.blendMode != blendMode;
         else return true;
     }
@@ -847,18 +847,11 @@ class QuadBatch extends DisplayObject
                     "m44 op, va0, vc1 \n" + // 4x4 matrix transform to output clipspace
                     "mov v1, va2      \n";  // pass texture coordinates to fragment program
                 
-                if (tinted)
-                {
-                    fragmentShader = !isAlphaOnlyTextureFormat(mTexture.format) ?
-                        "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
-                        "mul  oc, ft1,  v0       \n"   // multiply color with texel color
-                        :
-                        "tex ft1,  v1, fs0 <???>     \n" + // sample texture 0
-                        "mul oc.xyz, v0.xyz, ft1.www \n" + // replace output color with vertex color
-                        "mov oc.w, ft1.w             \n";  // write alpha
-                }
-                else
-                    fragmentShader = "tex  oc,  v1, fs0 <???> \n";  // sample texture 0
+                fragmentShader = tinted ?
+                    "tex ft1,  v1, fs0 <???> \n" + // sample texture 0
+                    "mul  oc, ft1,  v0       \n"   // multiply color with texel color
+                    :
+                    "tex  oc,  v1, fs0 <???> \n";  // sample texture 0
                 
                 fragmentShader = StringTools.replace(fragmentShader, "<???>",
                     RenderSupport.getTextureLookupFlags(
@@ -892,8 +885,6 @@ class QuadBatch extends DisplayObject
             bitField |= 1 << 5;
         else if (format == Context3DTextureFormat.COMPRESSED_ALPHA)
             bitField |= 1 << 6;
-        else if (isAlphaOnlyTextureFormat(format))
-            bitField |= 1 << 7;
         
         var name:String = sProgramNameCache[bitField];
         
@@ -904,14 +895,5 @@ class QuadBatch extends DisplayObject
         }
         
         return name;
-    }
-    
-    inline private static function isAlphaOnlyTextureFormat(format:Context3DTextureFormat)
-    {
-        #if flash
-        return false;
-        #else
-        return format == Context3DTextureFormat.ALPHA;
-        #end
     }
 }
