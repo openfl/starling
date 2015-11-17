@@ -404,7 +404,7 @@ class Starling extends EventDispatcher
                 else throw error;
             }
             #else
-            mStage3D.requestContext3D(renderMode);
+            mStage3D.requestContext3D();
             #end
         }
         
