@@ -16,12 +16,12 @@ class VertexBufferUtil
 		#end
 	}
 	
-	inline public static function uploadIndexBufferFromInt16Array(indexBuffer:IndexBuffer3D, data:Int16Array, startVertex:Int, numVertices:Int)
+	inline public static function uploadIndexBufferFromInt16Array(indexBuffer:IndexBuffer3D, data:Int16Array, startOffset:Int, count:Int)
 	{
 		#if flash
-		indexBuffer.uploadFromByteArray(data.buffer.getData(), data.byteOffset, startVertex, numVertices);
+		indexBuffer.uploadFromByteArray(data.buffer.getData(), data.byteOffset, startOffset, count);
 		#else
-		indexBuffer.uploadFromInt16Array(data, startVertex, numVertices);
+		indexBuffer.uploadFromInt16Array(data.subarray(startOffset, startOffset + count));
 		#end
 	}
 }
