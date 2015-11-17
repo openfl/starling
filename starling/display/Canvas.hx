@@ -18,6 +18,7 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import starling.utils.ArrayUtil;
+import starling.utils.VertexBufferUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -240,7 +241,7 @@ class Canvas extends DisplayObject
         var numIndices:Int  = mIndexData.length;
 
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
-        mVertexBuffer.uploadFromFloat32Array(mVertexData.rawData, 0, numVertices);
+        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, numVertices);
 
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
