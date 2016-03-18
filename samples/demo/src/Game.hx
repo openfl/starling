@@ -20,8 +20,8 @@ public class Game extends Sprite
     [Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]
     private static const UbuntuRegular:Class;
     
-    private var mMainMenu:MainMenu;
-    private var mCurrentScene:Scene;
+    private var _mainMenu:MainMenu;
+    private var _currentScene:Scene;
     
     private static var sAssets:AssetManager;
     
@@ -46,10 +46,10 @@ public class Game extends Sprite
         System.pauseForGCIfCollectionImminent(0);
         System.gc();
         
-        if (mMainMenu == null)
-            mMainMenu = new MainMenu();
+        if (_mainMenu == null)
+            _mainMenu = new MainMenu();
         
-        addChild(mMainMenu);
+        addChild(_mainMenu);
     }
     
     private function onKey(event:KeyboardEvent):Void
@@ -72,19 +72,19 @@ public class Game extends Sprite
     
     private function closeScene():Void
     {
-        mCurrentScene.removeFromParent(true);
-        mCurrentScene = null;
+        _currentScene.removeFromParent(true);
+        _currentScene = null;
         showMainMenu();
     }
     
     private function showScene(name:String):Void
     {
-        if (mCurrentScene) return;
+        if (_currentScene) return;
         
         var sceneClass:Class = getDefinitionByName(name) as Class;
-        mCurrentScene = new sceneClass() as Scene;
-        mMainMenu.removeFromParent();
-        addChild(mCurrentScene);
+        _currentScene = new sceneClass() as Scene;
+        _mainMenu.removeFromParent();
+        addChild(_currentScene);
     }
     
     public static function get assets():AssetManager { return sAssets; }

@@ -2,27 +2,27 @@ package scenes
 {
 import flash.display3D.Context3DTriangleFace;
 
-import starling.core.RenderSupport;
 import starling.core.Starling;
 import starling.display.Image;
 import starling.display.Sprite3D;
 import starling.events.Event;
+import starling.rendering.Painter;
 import starling.textures.Texture;
 
 public class Sprite3DScene extends Scene
 {
-    private var mCube:Sprite3D;
+    private var _cube:Sprite3D;
     
     public function Sprite3DScene()
     {
         var texture:Texture = Game.assets.getTexture("gamua-logo");
         
-        mCube = createCube(texture);
-        mCube.x = Constants.CenterX;
-        mCube.y = Constants.CenterY;
-        mCube.z = 100;
+        _cube = createCube(texture);
+        _cube.x = Constants.CenterX;
+        _cube.y = Constants.CenterY;
+        _cube.z = 100;
         
-        addChild(mCube);
+        addChild(_cube);
         
         addEventListener(Event.ADDED_TO_STAGE, start);
         addEventListener(Event.REMOVED_FROM_STAGE, stop);
@@ -30,14 +30,14 @@ public class Sprite3DScene extends Scene
 
     private function start():Void
     {
-        Starling.juggler.tween(mCube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
-        Starling.juggler.tween(mCube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
-        Starling.juggler.tween(mCube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
+        Starling.juggler.tween(_cube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
+        Starling.juggler.tween(_cube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
+        Starling.juggler.tween(_cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
     }
 
     private function stop():Void
     {
-        Starling.juggler.removeTweens(mCube);
+        Starling.juggler.removeTweens(_cube);
     }
 
     private function createCube(texture:Texture):Sprite3D
@@ -86,19 +86,20 @@ public class Sprite3DScene extends Scene
         
         var sprite:Sprite3D = new Sprite3D();
         sprite.addChild(image);
-        
+
         return sprite;
     }
     
-    public override function render(support:RenderSupport, parentAlpha:Float):Void
+    public override function render(painter:Painter):Void
     {
         // Starling does not make any depth-tests, so we use a trick in order to only show
         // the front quads: we're activating backface culling, i.e. we hide triangles at which
         // we look from behind. 
-        
-        Starling.current.context.setCulling(Context3DTriangleFace.BACK);
-        super.render(support, parentAlpha);
-        Starling.current.context.setCulling(Context3DTriangleFace.NONE);
+
+        painter.pushState();
+        painter.state.culling = Context3DTriangleFace.BACK;
+        super.render(painter);
+        painter.popState();
     }
 }
 }

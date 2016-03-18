@@ -58,6 +58,36 @@ public class Color
     {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
+
+    /** Converts a color to a vector containing the RGBA components (in this order) scaled
+     *  between 0 and 1. */
+    public static function toVector(color:UInt, out:Vector.<Float>=null):Vector.<Float>
+    {
+        if (out == null) out = new Vector.<Float>(4, true);
+
+        out[0] = ((color >> 16) & 0xff) / 255.0;
+        out[1] = ((color >>  8) & 0xff) / 255.0;
+        out[2] = ( color        & 0xff) / 255.0;
+        out[3] = ((color >> 24) & 0xff) / 255.0;
+
+        return out;
+    }
+
+    /** Multiplies all channels of an (A)RGB color with a certain factor. */
+    public static function multiply(color:UInt, factor:Float):UInt
+    {
+        var alpha:UInt = ((color >> 24) & 0xff) * factor;
+        var red:UInt   = ((color >> 16) & 0xff) * factor;
+        var green:UInt = ((color >>  8) & 0xff) * factor;
+        var blue:UInt  = ( color        & 0xff) * factor;
+
+        if (alpha > 255) alpha = 255;
+        if (red   > 255) red   = 255;
+        if (green > 255) green = 255;
+        if (blue  > 255) blue  = 255;
+
+        return argb(alpha, red, green, blue);
+    }
     
     /** @private */
     public function Color() { throw new AbstractClassError(); }

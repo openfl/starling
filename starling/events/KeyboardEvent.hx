@@ -28,13 +28,13 @@ public class KeyboardEvent extends Event
     /** Event type for a key that was pressed. */
     public static const KEY_DOWN:String = "keyDown";
     
-    private var mCharCode:UInt;
-    private var mKeyCode:UInt;
-    private var mKeyLocation:UInt;
-    private var mAltKey:Bool;
-    private var mCtrlKey:Bool;
-    private var mShiftKey:Bool;
-    private var mIsDefaultPrevented:Bool;
+    private var _charCode:UInt;
+    private var _keyCode:UInt;
+    private var _keyLocation:UInt;
+    private var _altKey:Bool;
+    private var _ctrlKey:Bool;
+    private var _shiftKey:Bool;
+    private var _isDefaultPrevented:Bool;
     
     /** Creates a new KeyboardEvent. */
     public function KeyboardEvent(type:String, charCode:UInt=0, keyCode:UInt=0, 
@@ -42,12 +42,12 @@ public class KeyboardEvent extends Event
                                   altKey:Bool=false, shiftKey:Bool=false)
     {
         super(type, false, keyCode);
-        mCharCode = charCode;
-        mKeyCode = keyCode;
-        mKeyLocation = keyLocation;
-        mCtrlKey = ctrlKey;
-        mAltKey = altKey;
-        mShiftKey = shiftKey;
+        _charCode = charCode;
+        _keyCode = keyCode;
+        _keyLocation = keyLocation;
+        _ctrlKey = ctrlKey;
+        _altKey = altKey;
+        _shiftKey = shiftKey;
     }
     
     // prevent default
@@ -56,33 +56,33 @@ public class KeyboardEvent extends Event
      *  flash KeyboardEvent. */
     public function preventDefault():Void
     {
-        mIsDefaultPrevented = true;
+        _isDefaultPrevented = true;
     }
     
     /** Checks whether the preventDefault() method has been called on the event. */
-    public function isDefaultPrevented():Bool { return mIsDefaultPrevented; }
+    public function isDefaultPrevented():Bool { return _isDefaultPrevented; }
     
     // properties
     
     /** Contains the character code of the key. */
-    public function get charCode():UInt { return mCharCode; }
+    public function get charCode():UInt { return _charCode; }
     
     /** The key code of the key. */
-    public function get keyCode():UInt { return mKeyCode; }
+    public function get keyCode():UInt { return _keyCode; }
     
     /** Indicates the location of the key on the keyboard. This is useful for differentiating 
      *  keys that appear more than once on a keyboard. @see Keylocation */ 
-    public function get keyLocation():UInt { return mKeyLocation; }
+    public function get keyLocation():UInt { return _keyLocation; }
     
     /** Indicates whether the Alt key is active on Windows or Linux; 
      *  indicates whether the Option key is active on Mac OS. */
-    public function get altKey():Bool { return mAltKey; }
+    public function get altKey():Bool { return _altKey; }
     
     /** Indicates whether the Ctrl key is active on Windows or Linux; 
      *  indicates whether either the Ctrl or the Command key is active on Mac OS. */
-    public function get ctrlKey():Bool { return mCtrlKey; }
+    public function get ctrlKey():Bool { return _ctrlKey; }
     
     /** Indicates whether the Shift key modifier is active (true) or inactive (false). */
-    public function get shiftKey():Bool { return mShiftKey; }
+    public function get shiftKey():Bool { return _shiftKey; }
 }
 }
