@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -23,7 +23,7 @@ class MathUtil
     public function new() { throw new AbstractClassError(); }
 
     /** Calculates the intersection point between the xy-plane and an infinite line
-     *  that is defined by two 3D points. */
+     *  that is defined by two 3D points in the same coordinate system. */
     public static function intersectLineWithXYPlane(pointA:Vector3D, pointB:Vector3D,
                                                     resultPoint:Point=null):Point
     {

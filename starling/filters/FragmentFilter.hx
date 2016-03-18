@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -556,26 +556,16 @@ class FragmentFilter
     /** @private */
     public function compile(object:DisplayObject):QuadBatch
     {
-        if (mCache != null) return mCache;
-        else
-        {
-            var support:RenderSupport;
-            var stage:Stage = object.stage;
-            var quadBatch:QuadBatch;
+        var support:RenderSupport;
+        var stage:Stage = object.stage;
+        var quadBatch:QuadBatch;
 
-            support = new RenderSupport();
-            object.getTransformationMatrix(stage, support.modelViewMatrix);
-            quadBatch = renderPasses(object, support, 1.0, true);
-            support.dispose();
+        support = new RenderSupport();
+        object.getTransformationMatrix(stage, support.modelViewMatrix);
+        quadBatch = renderPasses(object, support, 1.0, true);
+        support.dispose();
 
-            if (mCacheRequested)
-            {
-                mCacheRequested = false;
-                mCache = quadBatch;
-            }
-
-            return quadBatch;
-        }
+        return quadBatch;
     }
     
     // properties

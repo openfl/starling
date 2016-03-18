@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -460,6 +460,10 @@ class Button extends DisplayObjectContainer
     public var color(get, set):UInt;
     public function get_color():UInt { return mBody.color; }
     public function set_color(value:UInt):UInt { return mBody.color = value; }
+
+    /** The smoothing type used for the button's state image. */
+    public function get_smoothing():String { return mBody.smoothing; }
+    public function set_smoothing(value:String):String { return mBody.smoothing = value; }
 
     /** The overlay sprite is displayed on top of the button contents. It scales with the
      *  button when pressed. Use it to add additional objects to the button (e.g. an icon). */

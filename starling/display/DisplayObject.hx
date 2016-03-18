@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -162,6 +162,7 @@ class DisplayObject extends EventDispatcher
     private static var sAncestors:Array<DisplayObject> = new Array<DisplayObject>();
     private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
+    private static var sHelperPointAlt3D:Vector3D = new Vector3D();
     private static var sHelperRect:Rectangle = new Rectangle();
     private static var sHelperMatrix:Matrix  = new Matrix();
     private static var sHelperMatrixAlt:Matrix  = new Matrix();
@@ -352,8 +353,8 @@ class DisplayObject extends EventDispatcher
         if (is3D)
         {
             globalToLocal3D(globalPoint, sHelperPoint3D);
-            return MathUtil.intersectLineWithXYPlane(
-                stage.cameraPosition, sHelperPoint3D, resultPoint);
+            stage.getCameraPosition(this, sHelperPointAlt3D);
+            return MathUtil.intersectLineWithXYPlane(sHelperPointAlt3D, sHelperPoint3D, resultPoint);
         }
         else
         {

@@ -3,6 +3,7 @@ import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.system.Capabilities;
 #if 0
+import flash.system.System;
 import flash.utils.setTimeout;
 #end
 import haxe.Timer;
@@ -131,7 +132,14 @@ class Demo_Web extends Sprite
             #if 0
             mProgressBar.ratio = ratio;
             #end
-            if (ratio == 1) onComplete(assets);
+            if (ratio == 1)
+            {
+                // now would be a good time for a clean-up
+                System.pauseForGCIfCollectionImminent(0);
+                System.gc();
+
+                onComplete(assets);
+            }
         });
         #end
     }

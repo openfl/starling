@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -75,16 +75,18 @@ class EventDispatcher
                 // we must not modify the original vector, but work on a copy.
                 // (see comment in 'invokeEvent')
 
-                var index:Int = 0;
-                var restListeners:Array<Dynamic> = new Array<Dynamic>();
+                var index:Int = listeners.indexOf(listener);
 
-                for (i in 0 ... numListeners)
+                if (index != -1)
                 {
-                    var otherListener:Dynamic = listeners[i];
-                    if (otherListener != listener) restListeners[index++] = otherListener;
-                }
+                    var restListeners:Array<Dynamic> = listeners.slice(0, index);
 
-                mEventListeners[type] = restListeners;
+                    //for (var i:Int=index+1; i<numListeners; ++i)
+                    for (i in index + 1 ... numListeners)
+                        restListeners[i-1] = listeners[i];
+
+                    mEventListeners[type] = restListeners;
+                }
             }
         }
     }
