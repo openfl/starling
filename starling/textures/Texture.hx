@@ -168,7 +168,7 @@ class Texture
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
-        else if (Std.is(data, ByteArray))
+        else if (Std.is(data, ByteArrayData))
         {
             texture = fromAtfData(cast data,
                 options.scale, options.mipMapping, options.onReady, options.repeat);
@@ -210,7 +210,7 @@ class Texture
                 texture.root.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
-        else if (Std.is(asset, ByteArray))
+        else if (Std.is(asset, ByteArrayData))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null, repeat);
             texture.root.onRestore = function():Void

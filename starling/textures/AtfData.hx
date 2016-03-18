@@ -14,8 +14,6 @@ import flash.utils.ByteArray;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 
-import starling.utils.ByteArrayUtil;
-
 /** A parser for the ATF data format. */
 class AtfData
 {
@@ -31,7 +29,7 @@ class AtfData
     {
         if (!isAtfData(data)) throw new ArgumentError("Invalid ATF data");
         
-        if (ByteArrayUtil.getFromByteArray(data, 6) == 255) data.position = 12; // new file version
+        if (data[6] == 255) data.position = 12; // new file version
         else                data.position =  6; // old file version
 
         var format:UInt = data.readUnsignedByte();
@@ -52,10 +50,10 @@ class AtfData
         // version 2 of the new file format contains information about
         // the "-e" and "-n" parameters of png2atf
         
-        if (ByteArrayUtil.getFromByteArray(data, 5) != 0 && ByteArrayUtil.getFromByteArray(data, 6) == 255)
+        if (data[5] != 0 && data[6] == 255)
         {
-            var emptyMipmaps:Bool = (ByteArrayUtil.getFromByteArray(data, 5) & 0x01) == 1;
-            var numTextures:Int  = ByteArrayUtil.getFromByteArray(data, 5) >> 1 & 0x7f;
+            var emptyMipmaps:Bool = (data[5] & 0x01) == 1;
+            var numTextures:Int  = data[5] >> 1 & 0x7f;
             mNumTextures = emptyMipmaps ? 1 : numTextures;
         }
     }
@@ -68,7 +66,7 @@ class AtfData
         {
             var signature:String = "";
             for(i in 0 ... 3)
-                signature += String.fromCharCode(ByteArrayUtil.getFromByteArray(data, i));
+                signature += String.fromCharCode(data[i]);
             return signature == "ATF";
         }
     }

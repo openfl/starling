@@ -62,7 +62,7 @@ import starling.textures.Texture;
         
         var displacementFilter:DisplacementMapFilter = new DisplacementMapFilter(
             createDisplacementMap(mImage.width, mImage.height), null,
-            BitmapDataChannel.RED, BitmapDataChannel.GREEN, 25, 25);
+            cast BitmapDataChannel.RED, cast BitmapDataChannel.GREEN, 25, 25);
         mFilterInfos.push(["Displacement Map", displacementFilter]);
         
         var invertFilter:ColorMatrixFilter = new ColorMatrixFilter();
