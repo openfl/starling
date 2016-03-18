@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -106,7 +106,7 @@ public class RenderSupport
         mClipRectStack = new <Rectangle>[];
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = new <QuadBatch>[createQuadBatch()];
+        mQuadBatches = new <QuadBatch>[new QuadBatch(true)];
 
         loadIdentity();
         setProjectionMatrix(0, 0, 400, 300);
@@ -609,7 +609,7 @@ public class RenderSupport
             ++mDrawCount;
             
             if (mQuadBatches.length <= mCurrentQuadBatchID)
-                mQuadBatches.push(createQuadBatch());
+                mQuadBatches.push(new QuadBatch(true));
         }
     }
     
@@ -640,15 +640,6 @@ public class RenderSupport
         }
     }
 
-    private function createQuadBatch():QuadBatch
-    {
-        var profile:String = Starling.current.profile;
-        var forceTinted:Bool = (profile != "baselineConstrained" && profile != "baseline");
-        var quadBatch:QuadBatch = new QuadBatch();
-        quadBatch.forceTinted = forceTinted;
-        return quadBatch;
-    }
-    
     // other helper methods
     
     /** Deprecated. Call 'setBlendFactors' instead. */

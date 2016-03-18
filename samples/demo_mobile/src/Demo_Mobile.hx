@@ -10,6 +10,7 @@ import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
+import flash.system.System;
 import flash.utils.ByteArray;
 import flash.utils.setTimeout;
 
@@ -102,7 +103,14 @@ public class Demo_Mobile extends Sprite
         assets.loadQueue(function(ratio:Float):Void
         {
             mProgressBar.ratio = ratio;
-            if (ratio == 1) onComplete(assets);
+            if (ratio == 1)
+            {
+                // now would be a good time for a clean-up
+                System.pauseForGCIfCollectionImminent(0);
+                System.gc();
+
+                onComplete(assets);
+            }
         });
     }
 
@@ -132,7 +140,7 @@ public class Demo_Mobile extends Sprite
         mStarling.nativeOverlay.addChild(mBackground);
 
         mBackground.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
-            function(e:Dynamic):Void
+            function(e:Object):Void
             {
                 (mBackground.content as Bitmap).smoothing = true;
             });

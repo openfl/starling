@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -68,8 +68,14 @@ public class SystemUtil
         sApplicationActive = true;
         
         for each (var call:Array in sWaitingCalls)
-            call[0].apply(null, call[1]);
-        
+        {
+            try { call[0].apply(null, call[1]); }
+            catch (e:Error)
+            {
+                trace("[Starling] Error in 'executeWhenApplicationIsActive' call:", e.message);
+            }
+        }
+
         sWaitingCalls = [];
     }
     

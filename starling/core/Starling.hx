@@ -1,7 +1,7 @@
 // =================================================================================================
 //
 //	Starling Framework
-//	Copyright 2011-2014 Gamua. All Rights Reserved.
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
@@ -185,7 +185,7 @@ import starling.utils.execute;
 public class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    public static const VERSION:String = "1.7.1";
+    public static const VERSION:String = "1.8";
     
     /** The key for the shader programs stored in 'contextData' */
     private static const PROGRAM_DATA_NAME:String = "Starling.programs"; 
@@ -211,6 +211,7 @@ public class Starling extends EventDispatcher
     private var mStarted:Bool;
     private var mRendering:Bool;
     private var mSupportHighResolutions:Bool;
+    private var mBroadcastKeyboardEvents:Bool;
     
     private var mViewPort:Rectangle;
     private var mPreviousViewPort:Rectangle;
@@ -278,6 +279,7 @@ public class Starling extends EventDispatcher
         mSimulateMultitouch = false;
         mEnableErrorChecking = false;
         mSupportHighResolutions = false;
+        mBroadcastKeyboardEvents = true;
         mLastFrameTimestamp = getTimer() / 1000.0;
         mSupport  = new RenderSupport();
         
@@ -587,7 +589,8 @@ public class Starling extends EventDispatcher
                                          wantsBestResolution:Bool=false):Void
     {
         enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
-
+        width = (width < 32) ? 32 : width;
+        height = (height < 32) ? 32 : height;
         var configureBackBuffer:Function = mContext.configureBackBuffer;
         var methodArgs:Array = [width, height, antiAlias, enableDepthAndStencil];
         if (configureBackBuffer.length > 4) methodArgs.push(wantsBestResolution);
@@ -715,7 +718,9 @@ public class Starling extends EventDispatcher
             event.ctrlKey, event.altKey, event.shiftKey);
         
         makeCurrent();
-        mStage.broadcastEvent(keyEvent);
+
+        if (mBroadcastKeyboardEvents) mStage.broadcastEvent(keyEvent);
+        else mStage.dispatchEvent(keyEvent);
         
         if (keyEvent.isDefaultPrevented())
             event.preventDefault();
@@ -933,9 +938,13 @@ public class Starling extends EventDispatcher
         mSimulateMultitouch = value;
         if (mContext) mTouchProcessor.simulateMultitouch = value;
     }
-    
-    /** Indicates if Stage3D render methods will report errors. Activate only when needed,
-     *  as this has a negative impact on performance. @default false */
+
+    /** Indicates if Stage3D render methods will report errors. It's recommended to activate
+     *  this when writing custom rendering code (shaders, etc.), since you'll get more detailed
+     *  error messages. However, it has a very negative impact on performance, and it prevents
+     *  ATF textures from being restored on a context loss. Never activate for release builds!
+     *
+     *  @default false */
     public function get enableErrorChecking():Bool { return mEnableErrorChecking; }
     public function set enableErrorChecking(value:Bool):Void 
     { 
@@ -1085,6 +1094,15 @@ public class Starling extends EventDispatcher
             mSupportHighResolutions = value;
             if (contextValid) updateViewPort(true);
         }
+    }
+
+    /** Indicates if keyboard events are broadcast to all display objects, or dispatched
+     *  to the stage only. In some situations, it makes sense to deactivate this setting
+     *  for performance reasons. @default true */
+    public function get broadcastKeyboardEvents():Bool { return mBroadcastKeyboardEvents; }
+    public function set broadcastKeyboardEvents(value:Bool):Void
+    {
+        mBroadcastKeyboardEvents = value;
     }
     
     /** The TouchProcessor is passed all mouse and touch input and is responsible for

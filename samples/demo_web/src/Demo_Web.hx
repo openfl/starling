@@ -3,6 +3,7 @@ package
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.system.Capabilities;
+import flash.system.System;
 import flash.utils.setTimeout;
 
 import starling.core.Starling;
@@ -33,7 +34,7 @@ public class Demo_Web extends Sprite
         else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
     }
 
-    private function onAddedToStage(event:Dynamic):Void
+    private function onAddedToStage(event:Object):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         start();
@@ -78,7 +79,14 @@ public class Demo_Web extends Sprite
         assets.loadQueue(function(ratio:Float):Void
         {
             mProgressBar.ratio = ratio;
-            if (ratio == 1) onComplete(assets);
+            if (ratio == 1)
+            {
+                // now would be a good time for a clean-up
+                System.pauseForGCIfCollectionImminent(0);
+                System.gc();
+
+                onComplete(assets);
+            }
         });
     }
 
