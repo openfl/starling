@@ -5,13 +5,15 @@ import starling.display.Image;
 import starling.events.Event;
 import starling.text.TextField;
 
+import utils.MenuButton;
+
 @:keep class BlendModeScene extends Scene
 {
-    private var mButton:Button;
-    private var mImage:Image;
-    private var mInfoText:TextField;
+    private var _button:Button;
+    private var _image:Image;
+    private var _infoText:TextField;
     
-    private var mBlendModes:Array<String> = [
+    private var _blendModes:Array<String> = [
         BlendMode.NORMAL,
         BlendMode.MULTIPLY,
         BlendMode.SCREEN,
@@ -23,31 +25,32 @@ import starling.text.TextField;
     public function new()
     {
         super();
-        mButton = new Button(Game.assets.getTexture("button_normal"), "Switch Mode");
-        mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
-        mButton.y = 15;
-        mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
-        addChild(mButton);
+        _button = new MenuButton("Switch Mode");
+        _button.x = Std.int(Constants.CenterX - _button.width / 2);
+        _button.y = 15;
+        _button.addEventListener(Event.TRIGGERED, onButtonTriggered);
+        addChild(_button);
         
-        mImage = new Image(Game.assets.getTexture("starling_rocket"));
-        mImage.x = Std.int(Constants.CenterX - mImage.width / 2);
-        mImage.y = 170;
-        addChild(mImage);
+        _image = new Image(Game.assets.getTexture("starling_rocket"));
+        _image.x = Std.int(Constants.CenterX - _image.width / 2);
+        _image.y = 170;
+        addChild(_image);
         
-        mInfoText = new TextField(300, 32, "", "Verdana", 19);
-        mInfoText.x = 10;
-        mInfoText.y = 330;
-        addChild(mInfoText);
+        _infoText = new TextField(300, 32);
+        _infoText.format.size = 19;
+        _infoText.x = 10;
+        _infoText.y = 330;
+        addChild(_infoText);
         
         onButtonTriggered();
     }
     
     private function onButtonTriggered():Void
     {
-        var blendMode:String = mBlendModes.shift();
-        mBlendModes.push(blendMode);
+        var blendMode:String = _blendModes.shift();
+        _blendModes.push(blendMode);
         
-        mInfoText.text = blendMode;
-        mImage.blendMode = blendMode;
+        _infoText.text = blendMode;
+        _image.blendMode = blendMode;
     }
 }

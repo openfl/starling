@@ -21,20 +21,20 @@ import starling.textures.Texture;
 /** The TouchMarker is used internally to mark touches created through "simulateMultitouch". */
 class TouchMarker extends Sprite
 {
-    private var mCenter:Point;
-    private var mTexture:Texture;
+    private var _center:Point;
+    private var _texture:Texture;
     
     public function new()
     {
         super();
-        mCenter = new Point();
-        mTexture = createTexture();
+        _center = new Point();
+        _texture = createTexture();
         
         for (i in 0 ... 2)
         {
-            var marker:Image = new Image(mTexture);
-            marker.pivotX = mTexture.width / 2;
-            marker.pivotY = mTexture.height / 2;
+            var marker:Image = new Image(_texture);
+            marker.pivotX = _texture.width / 2;
+            marker.pivotY = _texture.height / 2;
             marker.touchable = false;
             addChild(marker);
         }
@@ -42,7 +42,7 @@ class TouchMarker extends Sprite
     
     public override function dispose():Void
     {
-        mTexture.dispose();
+        _texture.dispose();
         super.dispose();
     }
     
@@ -50,20 +50,20 @@ class TouchMarker extends Sprite
     {
         if (withCenter)
         {
-            mCenter.x += x - realMarker.x;
-            mCenter.y += y - realMarker.y;
+            _center.x += x - realMarker.x;
+            _center.y += y - realMarker.y;
         }
         
         realMarker.x = x;
         realMarker.y = y;
-        mockMarker.x = 2*mCenter.x - x;
-        mockMarker.y = 2*mCenter.y - y;
+        mockMarker.x = 2*_center.x - x;
+        mockMarker.y = 2*_center.y - y;
     }
     
     public function moveCenter(x:Float, y:Float):Void
     {
-        mCenter.x = x;
-        mCenter.y = y;
+        _center.x = x;
+        _center.y = y;
         moveMarker(realX, realY); // reset mock position
     }
     

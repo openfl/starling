@@ -8,58 +8,61 @@ import starling.events.EnterFrameEvent;
 import starling.events.Event;
 import starling.text.BitmapFont;
 import starling.text.TextField;
+import starling.text.TextFormat;
 import starling.textures.Texture;
 import starling.utils.ArrayUtil;
-import starling.utils.StringUtil.formatString;
+import starling.utils.StringUtil;
+import starling.utils.StringUtil.format;
+
+import utils.MenuButton;
 
 @:keep class BenchmarkScene extends Scene
 {
     inline private static var FRAME_TIME_WINDOW_SIZE:Int = 10;
     inline private static var MAX_FAIL_COUNT:Int = 100;
 
-    private var mStartButton:Button;
-    private var mResultText:TextField;
-    private var mStatusText:TextField;
-    private var mContainer:Sprite;
-    private var mObjectPool:Array<DisplayObject>;
-    private var mObjectTexture:Texture;
+    private var _startButton:Button;
+    private var _resultText:TextField;
+    private var _statusText:TextField;
+    private var _container:Sprite;
+    private var _objectPool:Array<DisplayObject>;
+    private var _objectTexture:Texture;
 
-    private var mFrameCount:Int;
-    private var mFailCount:Int;
-    private var mStarted:Bool;
-    private var mFrameTimes:Array<Float>;
-    private var mTargetFps:Int;
-
-    private var mPhase:Int;
+    private var _frameCount:Int;
+    private var _failCount:Int;
+    private var _started:Bool;
+    private var _frameTimes:Array<Float>;
+    private var _targetFps:Int;
+    private var _phase:Int;
 
     public function new()
     {
         super();
 
         // the container will hold all test objects
-        mContainer = new Sprite();
-        mContainer.x = Constants.CenterX;
-        mContainer.y = Constants.CenterY;
-        mContainer.touchable = false; // we do not need touch events on the test objects --
+        _container = new Sprite();
+        _container.x = Constants.CenterX;
+        _container.y = Constants.CenterY;
+        _container.touchable = false; // we do not need touch events on the test objects --
                                       // thus, it is more efficient to disable them.
-        addChildAt(mContainer, 0);
+        addChildAt(_container, 0);
 
-        mStatusText = new TextField(Constants.GameWidth - 40, 30, "",
-                "Verdana", BitmapFont.NATIVE_SIZE * 2);
-        mStatusText.x = 20;
-        mStatusText.y = 10;
-        addChild(mStatusText);
+        _statusText = new TextField(Constants.GameWidth - 40, 30);
+        _statusText.format = new TextFormat(BitmapFont.MINI, BitmapFont.NATIVE_SIZE * 2);
+        _statusText.x = 20;
+        _statusText.y = 10;
+        addChild(_statusText);
 
-        mStartButton = new Button(Game.assets.getTexture("button_normal"), "Start benchmark");
-        mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
-        mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
-        mStartButton.y = 20;
-        addChild(mStartButton);
+        _startButton = new MenuButton("Start benchmark", 140);
+        _startButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
+        _startButton.x = Constants.CenterX - Std.int(_startButton.width / 2);
+        _startButton.y = 20;
+        addChild(_startButton);
         
-        mStarted = false;
-        mFrameTimes = new Array<Float>();
-        mObjectPool = new Array<DisplayObject>();
-        mObjectTexture = Game.assets.getTexture("benchmark_object");
+        _started = false;
+        _frameTimes = new Array<Float>();
+        _objectPool = new Array<DisplayObject>();
+        _objectTexture = Game.assets.getTexture("benchmark_object");
 
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
@@ -67,9 +70,9 @@ import starling.utils.StringUtil.formatString;
     public override function dispose():Void
     {
         removeEventListener(Event.ENTER_FRAME, onEnterFrame);
-        mStartButton.removeEventListener(Event.TRIGGERED, onStartButtonTriggered);
+        _startButton.removeEventListener(Event.TRIGGERED, onStartButtonTriggered);
 
-        for (object in mObjectPool)
+        for (object in _objectPool)
             object.dispose();
 
         super.dispose();
@@ -79,75 +82,75 @@ import starling.utils.StringUtil.formatString;
     {
         trace("Starting benchmark");
 
-        mStartButton.visible = false;
-        mStarted = true;
-        mTargetFps = Std.int(Starling.current.nativeStage.frameRate);
-        mFrameCount = 0;
-        mFailCount = 0;
-        mPhase = 0;
+        _startButton.visible = false;
+        _started = true;
+        _targetFps = Std.int(Starling.current.nativeStage.frameRate);
+        _frameCount = 0;
+        _failCount = 0;
+        _phase = 0;
 
         for (i in 0 ... FRAME_TIME_WINDOW_SIZE)
-            mFrameTimes[i] = 1.0 / mTargetFps;
+            _frameTimes[i] = 1.0 / _targetFps;
 
-        if (mResultText != null)
+        if (_resultText != null)
         {
-            mResultText.removeFromParent(true);
-            mResultText = null;
+            _resultText.removeFromParent(true);
+            _resultText = null;
         }
     }
 
     private function onEnterFrame(event:EnterFrameEvent, passedTime:Float):Void
     {
-        if (!mStarted) return;
+        if (!_started) return;
 
-        mFrameCount++;
-        mContainer.rotation += event.passedTime * 0.5;
-        mFrameTimes[FRAME_TIME_WINDOW_SIZE] = 0.0;
+        _frameCount++;
+        _container.rotation += event.passedTime * 0.5;
+        _frameTimes[FRAME_TIME_WINDOW_SIZE] = 0.0;
 
         for (i in 0 ... FRAME_TIME_WINDOW_SIZE)
-            mFrameTimes[i] += passedTime;
+            _frameTimes[i] += passedTime;
 
-        var measuredFps:Float = FRAME_TIME_WINDOW_SIZE / mFrameTimes.shift();
+        var measuredFps:Float = FRAME_TIME_WINDOW_SIZE / _frameTimes.shift();
 
-        if (mPhase == 0)
+        if (_phase == 0)
         {
-            if (measuredFps < 0.985 * mTargetFps)
+            if (measuredFps < 0.985 * _targetFps)
             {
-                mFailCount++;
+                _failCount++;
 
-                if (mFailCount == MAX_FAIL_COUNT)
-                    mPhase = 1;
+                if (_failCount == MAX_FAIL_COUNT)
+                    _phase = 1;
             }
             else
             {
                 addTestObjects(16);
-                mContainer.scale *= 0.99;
-                mFailCount = 0;
+                _container.scale *= 0.99;
+                _failCount = 0;
             }
         }
-        if (mPhase == 1)
+        if (_phase == 1)
         {
-            if (measuredFps > 0.99 * mTargetFps)
+            if (measuredFps > 0.99 * _targetFps)
             {
-                mFailCount--;
+                _failCount--;
 
-                if (mFailCount == 0)
+                if (_failCount == 0)
                     benchmarkComplete();
             }
             else
             {
                 removeTestObjects(1);
-                mContainer.scale /= 0.9993720513; // 0.99 ^ (1/16)
+                _container.scale /= 0.9993720513; // 0.99 ^ (1/16)
             }
         }
 
-        if (mFrameCount % Std.int(mTargetFps / 4) == 0)
-            mStatusText.text = mContainer.numChildren + " objects";
+        if (_frameCount % Std.int(_targetFps / 4) == 0)
+            _statusText.text = _container.numChildren + " objects";
     }
 
     private function addTestObjects(count:Int):Void
     {
-        var scale:Float = 1.0 / mContainer.scale;
+        var scale:Float = 1.0 / _container.scale;
 
         for (i in 0 ... count)
         {
@@ -160,66 +163,67 @@ import starling.utils.StringUtil.formatString;
             egg.rotation = angle + Math.PI / 2.0;
             egg.scale = scale;
 
-            mContainer.addChild(egg);
+            _container.addChild(egg);
         }
     }
 
     private function removeTestObjects(count:Int):Void
     {
-        var numChildren:Int = mContainer.numChildren;
+        var numChildren:Int = _container.numChildren;
 
         if (count >= numChildren)
             count  = numChildren;
 
         for (i in 0 ... count)
-            putObjectToPool(mContainer.removeChildAt(mContainer.numChildren-1));
+            putObjectToPool(_container.removeChildAt(_container.numChildren-1));
     }
 
     private function getObjectFromPool():DisplayObject
     {
         // we pool mainly to avoid any garbage collection while the benchmark is running
 
-        if (mObjectPool.length == 0)
+        if (_objectPool.length == 0)
         {
-            var image:Image = new Image(mObjectTexture);
+            var image:Image = new Image(_objectTexture);
             image.alignPivot();
+            image.pixelSnapping = false; // slightly faster (and doesn't work here, anyway)
             return image;
         }
         else
-            return mObjectPool.pop();
+            return _objectPool.pop();
     }
 
     private function putObjectToPool(object:DisplayObject):Void
     {
-        mObjectPool[mObjectPool.length] = object;
+        _objectPool[_objectPool.length] = object;
     }
 
     private function benchmarkComplete():Void
     {
-        mStarted = false;
-        mStartButton.visible = true;
+        _started = false;
+        _startButton.visible = true;
         
         var fps:Int = Std.int(Starling.current.nativeStage.frameRate);
-        var numChildren:Int = mContainer.numChildren;
-        var resultString:String = formatString("Result:\n{0} objects\nwith {1} fps",
-                                               [numChildren, fps]);
-        trace(~/\n/g.replace(resultString, " "));
+        var numChildren:Int = _container.numChildren;
+        var resultString:String = StringUtil.format("Result:\n{0} objects\nwith {1} fps",
+                                                    [numChildren, fps]);
+        (~/\n/g).replace(resultString, " ");
 
-        mResultText = new TextField(240, 200, resultString);
-        mResultText.fontSize = 30;
-        mResultText.x = Constants.CenterX - mResultText.width / 2;
-        mResultText.y = Constants.CenterY - mResultText.height / 2;
+        _resultText = new TextField(240, 200, resultString);
+        _resultText.format.size = 30;
+        _resultText.x = Constants.CenterX - _resultText.width / 2;
+        _resultText.y = Constants.CenterY - _resultText.height / 2;
         
-        addChild(mResultText);
+        addChild(_resultText);
 
-        mContainer.scale = 1.0;
-        ArrayUtil.clear(mFrameTimes);
-        mStatusText.text = "";
+        _container.scale = 1.0;
+        ArrayUtil.clear(_frameTimes);
+        _statusText.text = "";
 
         var i:Int = numChildren - 1;
         while ( i >= 0 )
         {
-            putObjectToPool(mContainer.removeChildAt(i));
+            putObjectToPool(_container.removeChildAt(i));
             --i;
         }
     }

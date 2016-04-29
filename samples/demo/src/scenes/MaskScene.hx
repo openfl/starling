@@ -14,15 +14,17 @@ import starling.text.TextField;
 
 @:keep class MaskScene extends Scene
 {
-    private var mContents:Sprite;
-    private var mMask2:Canvas;
-    private var mMaskDisplay:Canvas;
+    private var _contents:Sprite;
+    #if 0
+    private var _mask:Canvas;
+    #end
+    private var _maskDisplay:Canvas;
     
     public function new()
     {
         super();
-        mContents = new Sprite();
-        addChild(mContents);
+        _contents = new Sprite();
+        addChild(_contents);
         
         var stageWidth:Float  = Starling.current.stage.stageWidth;
         var stageHeight:Float = Starling.current.stage.stageHeight;
@@ -34,7 +36,7 @@ import starling.text.TextField;
         var image:Image = new Image(Game.assets.getTexture("flight_00"));
         image.x = (stageWidth - image.width) / 2;
         image.y = 80;
-        mContents.addChild(image);
+        _contents.addChild(image);
 
         // just to prove it works, use a filter on the image.
         var cm:ColorMatrixFilter = new ColorMatrixFilter();
@@ -45,16 +47,16 @@ import starling.text.TextField;
             "Move the mouse (or a finger) over the screen to move the mask.");
         maskText.x = (stageWidth - maskText.width) / 2;
         maskText.y = 260;
-        maskText.fontSize = 20;
-        mContents.addChild(maskText);
+        maskText.format.size = 20;
+        _contents.addChild(maskText);
         
-        mMaskDisplay = createCircle();
-        mMaskDisplay.alpha = 0.1;
-        mMaskDisplay.touchable = false;
-        addChild(mMaskDisplay);
+        _maskDisplay = createCircle();
+        _maskDisplay.alpha = 0.1;
+        _maskDisplay.touchable = false;
+        addChild(_maskDisplay);
 
-        mMask2 = createCircle();
-        mContents.mask = mMask2;
+        _mask = createCircle();
+        _contents.mask = _mask;
         
         addEventListener(TouchEvent.TOUCH, onTouch);
     }
@@ -68,8 +70,8 @@ import starling.text.TextField;
         if (touch != null)
         {
             var localPos:Point = touch.getLocation(this);
-            mMask2.x = mMaskDisplay.x = localPos.x;
-            mMask2.y = mMaskDisplay.y = localPos.y;
+            _mask.x = _maskDisplay.x = localPos.x;
+            _mask.y = _maskDisplay.y = localPos.y;
         }
     }
 

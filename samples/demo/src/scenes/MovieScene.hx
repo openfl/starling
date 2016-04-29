@@ -8,22 +8,22 @@ import starling.textures.Texture;
 
 @:keep class MovieScene extends Scene
 {
-    private var mMovie:MovieClip;
+    private var _movie:MovieClip;
     
     public function new()
     {
         super();
         var frames:Array<Texture> = Game.assets.getTextures("flight");
-        mMovie = new MovieClip(frames, 15);
+        _movie = new MovieClip(frames, 15);
         
         // add sounds
         var stepSound:Sound = Game.assets.getSound("wing_flap");
-        mMovie.setFrameSound(2, stepSound);
+        _movie.setFrameSound(2, stepSound);
         
         // move the clip to the center and add it to the stage
-        mMovie.x = Constants.CenterX - Std.int(mMovie.width / 2);
-        mMovie.y = Constants.CenterY - Std.int(mMovie.height / 2);
-        addChild(mMovie);
+        _movie.x = Constants.CenterX - Std.int(_movie.width / 2);
+        _movie.y = Constants.CenterY - Std.int(_movie.height / 2);
+        addChild(_movie);
         
         // like any animation, the movie needs to be added to the juggler!
         // this is the recommended way to do that.
@@ -33,12 +33,12 @@ import starling.textures.Texture;
     
     private function onAddedToStage():Void
     {
-        Starling.current.juggler.add(mMovie);
+        Starling.current.juggler.add(_movie);
     }
     
     private function onRemovedFromStage():Void
     {
-        Starling.current.juggler.remove(mMovie);
+        Starling.current.juggler.remove(_movie);
     }
     
     public override function dispose():Void

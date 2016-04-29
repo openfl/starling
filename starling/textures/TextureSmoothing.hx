@@ -15,7 +15,7 @@ import starling.errors.AbstractClassError;
 class TextureSmoothing
 {
     /** @private */
-    public function TextureSmoothing() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** No smoothing, also called "Nearest Neighbor". Pixels will scale up as big rectangles. */
     inline public static var NONE:String      = "none";

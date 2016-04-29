@@ -20,8 +20,8 @@ import starling.textures.RenderTexture;
 import starling.utils.AssetManager;
 import starling.utils.RectangleUtil;
 import starling.utils.ScaleMode;
+import starling.utils.StringUtil;
 import starling.utils.SystemUtil;
-import starling.utils.formatString;
 
 import utils.ProgressBar;
 
@@ -36,9 +36,9 @@ public class Demo_Mobile extends Sprite
     private const StageWidth:Int  = 320;
     private const StageHeight:Int = 480;
 
-    private var mStarling:Starling;
-    private var mBackground:Loader;
-    private var mProgressBar:ProgressBar;
+    private var _starling:Starling;
+    private var _background:Loader;
+    private var _progressBar:ProgressBar;
 
     public function Demo_Mobile()
     {
@@ -53,20 +53,18 @@ public class Demo_Mobile extends Sprite
         var scaleFactor:Int = viewPort.width < 480 ? 1 : 2; // midway between 320 and 640
 
         Starling.multitouchEnabled = true; // useful on mobile devices
-        Starling.handleLostContext = true; // recommended everywhere when using AssetManager
-        RenderTexture.optimizePersistentBuffers = iOS; // safe on iOS, dangerous on Android
 
-        mStarling = new Starling(Game, stage, viewPort, null, "auto", "auto");
-        mStarling.stage.stageWidth    = StageWidth;  // <- same size on all devices!
-        mStarling.stage.stageHeight   = StageHeight; // <- same size on all devices!
-        mStarling.enableErrorChecking = Capabilities.isDebugger;
-        mStarling.simulateMultitouch  = false;
-        mStarling.addEventListener(starling.events.Event.ROOT_CREATED, function():Void
+        _starling = new Starling(Game, stage, viewPort, null, "auto", "auto");
+        _starling.stage.stageWidth    = StageWidth;  // <- same size on all devices!
+        _starling.stage.stageHeight   = StageHeight; // <- same size on all devices!
+        _starling.enableErrorChecking = Capabilities.isDebugger;
+        _starling.simulateMultitouch  = false;
+        _starling.addEventListener(starling.events.Event.ROOT_CREATED, function():Void
         {
             loadAssets(scaleFactor, startGame);
         });
 
-        mStarling.start();
+        _starling.start();
         initElements(scaleFactor);
 
         // When the game becomes inactive, we pause Starling; otherwise, the enter frame event
@@ -75,9 +73,9 @@ public class Demo_Mobile extends Sprite
         if (!SystemUtil.isDesktop)
         {
             NativeApplication.nativeApplication.addEventListener(
-                    flash.events.Event.ACTIVATE, function (e:*):Void { mStarling.start(); });
+                    flash.events.Event.ACTIVATE, function (e:*):Void { _starling.start(); });
             NativeApplication.nativeApplication.addEventListener(
-                    flash.events.Event.DEACTIVATE, function (e:*):Void { mStarling.stop(true); });
+                    flash.events.Event.DEACTIVATE, function (e:*):Void { _starling.stop(true); });
         }
     }
 
@@ -92,8 +90,8 @@ public class Demo_Mobile extends Sprite
         assets.verbose = Capabilities.isDebugger;
         assets.enqueue(
                 appDir.resolvePath("audio"),
-                appDir.resolvePath(formatString("fonts/{0}x",    scaleFactor)),
-                appDir.resolvePath(formatString("textures/{0}x", scaleFactor))
+                appDir.resolvePath(StringUtil.format("fonts/{0}x",    scaleFactor)),
+                appDir.resolvePath(StringUtil.format("textures/{0}x", scaleFactor))
         );
 
         // Now, while the AssetManager now contains pointers to all the assets, it actually
@@ -102,7 +100,7 @@ public class Demo_Mobile extends Sprite
 
         assets.loadQueue(function(ratio:Float):Void
         {
-            mProgressBar.ratio = ratio;
+            _progressBar.ratio = ratio;
             if (ratio == 1)
             {
                 // now would be a good time for a clean-up
@@ -116,7 +114,7 @@ public class Demo_Mobile extends Sprite
 
     private function startGame(assets:AssetManager):Void
     {
-        var game:Game = mStarling.root as Game;
+        var game:Game = _starling.root as Game;
         game.start(assets);
         setTimeout(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
@@ -125,7 +123,7 @@ public class Demo_Mobile extends Sprite
     {
         // Add background image. By using "loadBytes", we can avoid any flickering.
 
-        var bgPath:String = formatString("textures/{0}x/background.jpg", scaleFactor);
+        var bgPath:String = StringUtil.format("textures/{0}x/background.jpg", scaleFactor);
         var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
         var bytes:ByteArray = new ByteArray();
         var stream:FileStream = new FileStream();
@@ -133,38 +131,38 @@ public class Demo_Mobile extends Sprite
         stream.readBytes(bytes, 0, stream.bytesAvailable);
         stream.close();
 
-        mBackground = new Loader();
-        mBackground.loadBytes(bytes);
-        mBackground.scaleX = 1.0 / scaleFactor;
-        mBackground.scaleY = 1.0 / scaleFactor;
-        mStarling.nativeOverlay.addChild(mBackground);
+        _background = new Loader();
+        _background.loadBytes(bytes);
+        _background.scaleX = 1.0 / scaleFactor;
+        _background.scaleY = 1.0 / scaleFactor;
+        _starling.nativeOverlay.addChild(_background);
 
-        mBackground.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
+        _background.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
             function(e:Dynamic):Void
             {
-                (mBackground.content as Bitmap).smoothing = true;
+                (_background.content as Bitmap).smoothing = true;
             });
 
         // While the assets are loaded, we will display a progress bar.
 
-        mProgressBar = new ProgressBar(175, 20);
-        mProgressBar.x = (StageWidth - mProgressBar.width) / 2;
-        mProgressBar.y =  StageHeight * 0.7;
-        mStarling.nativeOverlay.addChild(mProgressBar);
+        _progressBar = new ProgressBar(175, 20);
+        _progressBar.x = (StageWidth - _progressBar.width) / 2;
+        _progressBar.y =  StageHeight * 0.7;
+        _starling.nativeOverlay.addChild(_progressBar);
     }
 
     private function removeElements():Void
     {
-        if (mBackground)
+        if (_background)
         {
-            mStarling.nativeOverlay.removeChild(mBackground);
-            mBackground = null;
+            _starling.nativeOverlay.removeChild(_background);
+            _background = null;
         }
 
-        if (mProgressBar)
+        if (_progressBar)
         {
-            mStarling.nativeOverlay.removeChild(mProgressBar);
-            mProgressBar = null;
+            _starling.nativeOverlay.removeChild(_progressBar);
+            _progressBar = null;
         }
     }
 }

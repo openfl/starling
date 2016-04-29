@@ -54,10 +54,10 @@ class TouchEvent extends Event
     /** Event type for touch or mouse input. */
     inline public static var TOUCH:String = "touch";
     
-    private var mShiftKey:Bool;
-    private var mCtrlKey:Bool;
-    private var mTimestamp:Float;
-    private var mVisitedObjects:Array<EventDispatcher>;
+    private var _shiftKey:Bool;
+    private var _ctrlKey:Bool;
+    private var _timestamp:Float;
+    private var _visitedObjects:Array<EventDispatcher>;
     
     /** Helper object. */
     private static var sTouches:Array<Touch> = new Array<Touch>();
@@ -68,24 +68,24 @@ class TouchEvent extends Event
     {
         super(type, bubbles, touches);
         
-        mShiftKey = shiftKey;
-        mCtrlKey = ctrlKey;
-        mTimestamp = -1.0;
-        mVisitedObjects = new Array<EventDispatcher>();
+        _shiftKey = shiftKey;
+        _ctrlKey = ctrlKey;
+        _timestamp = -1.0;
+        _visitedObjects = new Array<EventDispatcher>();
         
         var numTouches:Int=touches.length;
         for (i in 0 ... numTouches)
-            if (touches[i].timestamp > mTimestamp)
-                mTimestamp = touches[i].timestamp;
+            if (touches[i].timestamp > _timestamp)
+                _timestamp = touches[i].timestamp;
     }
     
-    /** Returns a list of touches that originated over a certain target. If you pass a
-     *  'result' vector, the touches will be added to this vector instead of creating a new 
-     *  object. */
+    /** Returns a list of touches that originated over a certain target. If you pass an
+     *  <code>out</code>-vector, the touches will be added to this vector instead of creating
+     *  a new object. */
     public function getTouches(target:DisplayObject, phase:String=null,
-                               result:Array<Touch>=null):Array<Touch>
+                               out:Array<Touch>=null):Array<Touch>
     {
-        if (result == null) result = new Array<Touch>();
+        if (out == null) out = new Array<Touch>();
         var allTouches:Array<Dynamic> = cast(data, Array<Dynamic>);
         var numTouches:Int = allTouches.length;
         
@@ -96,9 +96,9 @@ class TouchEvent extends Event
             var correctPhase:Bool = (phase == null || phase == touch.phase);
                 
             if (correctTarget && correctPhase)
-                result[result.length] = touch; // avoiding 'push'
+                out[out.length] = touch; // avoiding 'push'
         }
-        return result;
+        return out;
     }
     
     /** Returns a touch that originated over a certain target. 
@@ -168,10 +168,10 @@ class TouchEvent extends Event
             for (i in 0 ... chainLength)
             {
                 var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
-                if (mVisitedObjects.indexOf(chainElement) == -1)
+                if (_visitedObjects.indexOf(chainElement) == -1)
                 {
                     var stopPropagation:Bool = chainElement.invokeEvent(this);
-                    mVisitedObjects[mVisitedObjects.length] = chainElement;
+                    _visitedObjects[_visitedObjects.length] = chainElement;
                     if (stopPropagation) break;
                 }
             }
@@ -184,7 +184,7 @@ class TouchEvent extends Event
     
     /** The time the event occurred (in seconds since application launch). */
     public var timestamp(get, never):Float;
-    private function get_timestamp():Float { return mTimestamp; }
+    private function get_timestamp():Float { return _timestamp; }
     
     /** All touches that are currently available. */
     public var touches(get, never):Array<Touch>;
@@ -199,9 +199,9 @@ class TouchEvent extends Event
     
     /** Indicates if the shift key was pressed when the event occurred. */
     public var shiftKey(get, never):Bool;
-    private function get_shiftKey():Bool { return mShiftKey; }
+    private function get_shiftKey():Bool { return _shiftKey; }
     
     /** Indicates if the ctrl key was pressed when the event occurred. (Mac OS: Cmd or Ctrl) */
     public var ctrlKey(get, never):Bool;
-    private function get_ctrlKey():Bool { return mCtrlKey; }
+    private function get_ctrlKey():Bool { return _ctrlKey; }
 }

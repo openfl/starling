@@ -14,7 +14,7 @@ public class Root extends Sprite
 {
     private static var sAssets:AssetManager;
     
-    private var mActiveScene:Sprite;
+    private var _activeScene:Sprite;
     
     public function Root()
     {
@@ -48,9 +48,9 @@ public class Root extends Sprite
     
     private function showScene(screen:Class):Void
     {
-        if (mActiveScene) mActiveScene.removeFromParent(true);
-        mActiveScene = new screen();
-        addChild(mActiveScene);
+        if (_activeScene) _activeScene.removeFromParent(true);
+        _activeScene = new screen();
+        addChild(_activeScene);
     }
     
     public static function get assets():AssetManager { return sAssets; }
