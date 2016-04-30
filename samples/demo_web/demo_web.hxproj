@@ -31,7 +31,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep('starling.display.Sprite3D')&#xA;#--macro keep('starling.animation.Tween')&#xA;#--macro keep('starling.rendering.MeshStyle')&#xA;#--macro keep('Xml')&#xA;-dce full&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;-debug " />
+    <option additional="--remap flash:openfl&#xA;#--macro keep('starling.display.Sprite3D')&#xA;#--macro keep('starling.animation.Tween')&#xA;#--macro keep('starling.rendering.MeshStyle')&#xA;-dce full&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
