@@ -28,7 +28,6 @@
 	<haxeflag name="--macro" value="keep('starling.display.Sprite3D')" />
 	<haxeflag name="--macro" value="keep('starling.animation.Tween')" />
     <haxeflag name="--macro" value="keep('starling.rendering.MeshStyle')" />
-	<haxeflag name="--macro" value="keep('Xml')" />
 	<haxeflag name="-dce" value="full" />
 	
 	<android minimum-sdk-version="9" target-sdk-version="19" /> 
