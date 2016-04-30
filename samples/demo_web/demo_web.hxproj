@@ -5,13 +5,13 @@
     <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="project.lime" />
-    <movie fps="0" />
-    <movie width="0" />
-    <movie height="0" />
+    <movie fps="60" />
+    <movie width="320" />
+    <movie height="480" />
     <movie version="1" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
-    <movie background="#FFFFFF" />
+    <movie background="FFFFFF" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -31,7 +31,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;-swf-version 11.8&#xA;#--macro keep('starling.display.Sprite3D')&#xA;#--macro keep('starling.animation.Tween')&#xA;#--macro keep('Xml')&#xA;-dce full&#xA;--macro allowPackage(&quot;flash&quot;)" />
+    <option additional="--remap flash:openfl&#xA;#--macro keep('starling.display.Sprite3D')&#xA;#--macro keep('starling.animation.Tween')&#xA;#--macro keep('starling.rendering.MeshStyle')&#xA;#--macro keep('Xml')&#xA;-dce full&#xA;--macro allowPackage(&quot;flash&quot;)&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

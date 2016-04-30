@@ -279,7 +279,7 @@ class IndexData
     {
         if (_useQuadLayout)
         {
-            if (a == getBasicQuadIndexAt(_numIndices))
+            if (Std.int(a) == getBasicQuadIndexAt(_numIndices))
             {
                 var oddTriangleID:Bool = (_numIndices & 1) != 0;
                 var evenTriangleID:Bool = !oddTriangleID;
@@ -319,7 +319,7 @@ class IndexData
     {
         if (_useQuadLayout)
         {
-            if (a == getBasicQuadIndexAt(_numIndices) &&
+            if (Std.int(a) == getBasicQuadIndexAt(_numIndices) &&
                 b == a + 1 && c == b + 1 && d == c + 1)
             {
                 _numIndices += 6;
@@ -392,7 +392,7 @@ class IndexData
      *  made smaller. */
     private function ensureQuadDataCapacity(numIndices:Int):Void
     {
-        if (sQuadData.length >= numIndices * INDEX_SIZE) return;
+        if (Std.int(sQuadData.length) >= numIndices * INDEX_SIZE) return;
 
         var i:Int;
         var oldNumQuads:Int = Std.int(sQuadData.length / 12);
@@ -436,7 +436,7 @@ class IndexData
     {
         if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
         
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
         if (_numIndices == 0) return null;
 
@@ -529,9 +529,9 @@ class IndexData
      *
      *  @default true
      */
-    public var useQuadLayout(get, never):Bool;
+    public var useQuadLayout(get, set):Bool;
     @:noCompletion private function get_useQuadLayout():Bool { return _useQuadLayout; }
-    @:noCompletion private function set_useQuadLayout(value:Bool):Void
+    @:noCompletion private function set_useQuadLayout(value:Bool):Bool
     {
         if (value != _useQuadLayout)
         {
@@ -543,6 +543,7 @@ class IndexData
             }
             else switchToGenericData();
         }
+        return value;
     }
 
     /** The raw index data; not a copy! Beware: the referenced ByteArray may change any time.

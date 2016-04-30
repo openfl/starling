@@ -119,8 +119,9 @@ class BitmapFont implements ITextCompositor
         var frameX:Float = frame != null ? frame.x : 0;
         var frameY:Float = frame != null ? frame.y : 0;
 
-        var info:Xml = fontXml.elementsNamed("info").next();
-        var common:Xml = fontXml.elementsNamed("common").next();
+        var font:Xml = fontXml.elementsNamed("font").next();
+        var info:Xml = font.elementsNamed("info").next();
+        var common:Xml = font.elementsNamed("common").next();
         _name = info.get("face");
         _size = Std.parseFloat(info.get("size")) / scale;
         _lineHeight = Std.parseFloat(common.get("lineHeight")) / scale;
@@ -135,7 +136,7 @@ class BitmapFont implements ITextCompositor
             _size = (_size == 0.0 ? 16.0 : _size * -1.0);
         }
         
-        var chars:Xml = fontXml.elementsNamed("chars").next();
+        var chars:Xml = font.elementsNamed("chars").next();
         for(charElement in chars.elementsNamed("char"))
         {
             var id:Int = Std.parseInt(charElement.get("id"));
@@ -153,14 +154,15 @@ class BitmapFont implements ITextCompositor
             var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
             addChar(id, bitmapChar);
         }
-        var kernings:Xml = fontXml.elementsNamed("kernings").next();
-        for(kerningElement in kernings.elementsNamed("kerning"))
-        {
-            var first:Int = Std.parseInt(kerningElement.get("first"));
-            var second:Int = Std.parseInt(kerningElement.get("second"));
-            var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
-            if (_chars.exists(second)) getChar(second).addKerning(first, amount);
-        }
+        var kernings:Xml = font.elementsNamed("kernings").next();
+        if (kernings != null)
+            for(kerningElement in kernings.elementsNamed("kerning"))
+            {
+                var first:Int = Std.parseInt(kerningElement.get("first"));
+                var second:Int = Std.parseInt(kerningElement.get("second"));
+                var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
+                if (_chars.exists(second)) getChar(second).addKerning(first, amount);
+            }
     }
     
     /** Returns a single bitmap char with a certain character ID. */

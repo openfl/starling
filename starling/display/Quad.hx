@@ -199,6 +199,6 @@ class Quad extends Mesh
             super.texture = value;
             setupVertices();
         }
-        return get_texture ();
+        return value;
     }
 }

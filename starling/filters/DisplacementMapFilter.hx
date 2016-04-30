@@ -88,7 +88,7 @@ class DisplacementMapFilter extends FragmentFilter
         // The size of input texture and map texture may be different. We need to calculate
         // the right values for the texture coordinates at the filter vertices.
 
-        var scale:Float = Starling.current.contentScaleFactor;
+        var scale:Float = Starling.sContentScaleFactor;
         var mapX:Float = (dispEffect.mapPoint.x + padding.left) / mapTexture.width;
         var mapY:Float = (dispEffect.mapPoint.y + padding.top)  / mapTexture.height;
         var maxU:Float = inputTexture.root.nativeWidth  / (mapTexture.width  * scale);
@@ -216,13 +216,13 @@ class DisplacementMapEffect extends FilterEffect
     private var _mapTexture:Texture;
     private var _mapPoint:Point;
     private var _mapRepeat:Bool;
-    private var _componentX:UInt;
-    private var _componentY:UInt;
+    private var _componentX:Int;
+    private var _componentY:Int;
     private var _scaleX:Float;
     private var _scaleY:Float;
 
     // helper objects
-    private static var sOneHalf:Array<Float> = [0.5, 0.5, 0.5, 0.5];
+    private static var sOneHalf:Vector<Float> = [0.5, 0.5, 0.5, 0.5];
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> =
         Vector.ofArray([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
@@ -313,7 +313,7 @@ class DisplacementMapEffect extends FilterEffect
         if (out == null) out = new Matrix3D();
 
         var columnX:Int, columnY:Int;
-        var scale:Float = Starling.current.contentScaleFactor;
+        var scale:Float = Starling.sContentScaleFactor;
         var textureWidth:Float  = texture.root.nativeWidth;
         var textureHeight:Float = texture.root.nativeHeight;
 

@@ -58,7 +58,7 @@ class TexturePool implements ITexturePool
      *  them. */
     public function setSize(width:Float, height:Float, scale:Float=-1):Void
     {
-        if (scale <= 0) scale = Starling.current.contentScaleFactor;
+        if (scale <= 0) scale = Starling.sContentScaleFactor;
 
         var factor:Float;
         var maxNativeSize:Int   = Texture.maxSize;

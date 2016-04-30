@@ -38,7 +38,7 @@ import flash.utils.setTimeout;
 #end
 import haxe.Timer;
 import openfl.Lib.getTimer;
-import openfl.display3D.Context3DProfile;
+import flash.display3D.Context3DProfile;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 
@@ -54,7 +54,7 @@ import starling.utils.Align;
 import starling.utils.SystemUtil;
 
 #if flash
-typedef WeakMap<K, V> = haxe.ds.WeakMap<K, V>;
+import haxe.ds.WeakMap;
 #else
 typedef WeakMap<K, V> = Map<K, V>;
 #end
@@ -325,6 +325,9 @@ class Starling extends EventDispatcher
 
             _painter.requestContext3D(renderMode, profile);
         }
+        
+        // initialize frameID for dynamic targets
+        _frameID = 0;
     }
 
     /** Disposes all children of the stage and the render context; removes all registered
@@ -395,13 +398,13 @@ class Starling extends EventDispatcher
 
     private function createPainter(stage3D:Stage3D):Painter
     {
-        var painter:Painter = sPainters[stage3D];
+        var painter:Painter = sPainters.get(stage3D);
         if (painter != null)
             return painter;
         else
         {
             painter = new Painter(stage3D);
-            sPainters[stage3D] = painter;
+            sPainters.set(stage3D, painter);
             return painter;
         }
     }
@@ -752,7 +755,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        if (!multitouchEnabled #if flash || Mouse.supportsCursor #end)
+        //if (!multitouchEnabled #if flash || Mouse.supportsCursor #end)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
@@ -1007,25 +1010,23 @@ class Starling extends EventDispatcher
     @:noCompletion private static function get_all():Array<Starling> { return sAll; }
     
     /** The render context of the currently active Starling instance. */
-    #if 0
-    public static var context(get, never):Context3D;
-    @:noCompletion private static function get_context():Context3D { return sCurrent ? sCurrent.context : null; }
+    public static var sContext(get, never):Context3D;
+    @:noCompletion private static function get_sContext():Context3D { return sCurrent != null ? sCurrent.context : null; }
     
     /** The default juggler of the currently active Starling instance. */
-    public static var juggler(get, never):Juggler;
-    @:noCompletion private static function get_juggler():Juggler { return sCurrent ? sCurrent._juggler : null; }
+    public static var sJuggler(get, never):Juggler;
+    @:noCompletion private static function get_sJuggler():Juggler { return sCurrent != null ? sCurrent._juggler : null; }
 
     /** The painter used for all rendering of the currently active Starling instance. */
-    public static var painter(get, never):Painter;
-    @:noCompletion private static function get_painter():Painter { return sCurrent ? sCurrent._painter : null; }
+    public static var sPainter(get, never):Painter;
+    @:noCompletion private static function get_sPainter():Painter { return sCurrent != null ? sCurrent._painter : null; }
     
     /** The contentScaleFactor of the currently active Starling instance. */
-    public static var contentScaleFactor(get, never):Float;
-    @:noCompletion private static function get_contentScaleFactor():Float 
+    public static var sContentScaleFactor(get, never):Float;
+    @:noCompletion private static function get_sContentScaleFactor():Float 
     {
-        return sCurrent ? sCurrent.contentScaleFactor : 1.0;
+        return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
     }
-    #end
     
     /** Indicates if multitouch input should be supported. */
     public static var multitouchEnabled(get, set):Bool ;
@@ -1045,11 +1046,9 @@ class Starling extends EventDispatcher
     }
 
     /** The number of frames that have been rendered since the current instance was created. */
-    #if 0
-    public static var frameID(get, set):UInt;
-    @:noCompletion private static function get_frameID():UInt
+    public static var sFrameID(get, never):UInt;
+    @:noCompletion private static function get_sFrameID():UInt
     {
-        return sCurrent ? sCurrent._frameID : 0;
+        return sCurrent != null ? sCurrent._frameID : 0;
     }
-    #end
 }

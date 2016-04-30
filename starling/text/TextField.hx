@@ -176,7 +176,7 @@ class TextField extends DisplayObjectContainer
         if (isHorizontalAutoSize) width = 100000;
         if (isVerticalAutoSize)  height = 100000;
 
-        _options.textureScale = Starling.current.contentScaleFactor;
+        _options.textureScale = Starling.sContentScaleFactor;
         _options.textureFormat = sDefaultTextureFormat;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
 
@@ -471,12 +471,12 @@ class TextField extends DisplayObjectContainer
     private static var bitmapFonts(get, never):Map<String, BitmapFont>;
     @:noCompletion private static function get_bitmapFonts():Map<String, BitmapFont>
     {
-        var fonts:Map<String, BitmapFont> = Starling.current.painter.sharedData[BITMAP_FONT_DATA_NAME];
+        var fonts:Map<String, BitmapFont> = Starling.sPainter.sharedData[BITMAP_FONT_DATA_NAME];
         
         if (fonts == null)
         {
             fonts = new Map();
-            Starling.current.painter.sharedData[BITMAP_FONT_DATA_NAME] = fonts;
+            Starling.sPainter.sharedData[BITMAP_FONT_DATA_NAME] = fonts;
         }
         
         return fonts;

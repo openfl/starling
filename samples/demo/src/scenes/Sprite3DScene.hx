@@ -30,14 +30,14 @@ import starling.textures.Texture;
 
     private function start():Void
     {
-        Starling.current.juggler.tween(_cube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
-        Starling.current.juggler.tween(_cube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
-        Starling.current.juggler.tween(_cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
+        Starling.sJuggler.tween(_cube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
+        Starling.sJuggler.tween(_cube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
+        Starling.sJuggler.tween(_cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
     }
 
     private function stop():Void
     {
-        Starling.current.juggler.removeTweens(_cube);
+        Starling.sJuggler.removeTweens(_cube);
     }
 
     private function createCube(texture:Texture):Sprite3D

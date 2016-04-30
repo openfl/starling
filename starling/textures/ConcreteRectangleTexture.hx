@@ -42,7 +42,7 @@ class ConcreteRectangleTexture extends ConcreteTexture
     /** @inheritDoc */
     override private function createBase():TextureBase
     {
-        return Starling.current.context.createRectangleTexture(
+        return Starling.sContext.createRectangleTexture(
                 Std.int(nativeWidth), Std.int(nativeHeight), format, optimizedForRenderTexture);
     }
 

@@ -24,7 +24,7 @@ import starling.utils.ArrayUtil;
 import starling.utils.SafeCast.safe_cast;
 
 #if flash
-typedef WeakMap<K, V> = haxe.ds.WeakMap<K, V>;
+import haxe.ds.WeakMap;
 #else
 typedef WeakMap<K, V> = Map<K, V>;
 #end
@@ -93,7 +93,7 @@ class Juggler implements IAnimatable
             if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 
             _objects[_objects.length] = object;
-            _objectIDs[object] = objectID;
+            _objectIDs.set(object, objectID);
 
             return objectID;
         }
@@ -123,7 +123,7 @@ class Juggler implements IAnimatable
             var index:Int = _objects.indexOf(object);
             _objects[index] = null;
 
-            objectID = _objectIDs[object];
+            objectID = _objectIDs.get(object);
             _objectIDs.remove(object);
         }
 
@@ -148,7 +148,7 @@ class Juggler implements IAnimatable
         {
             var object:IAnimatable = _objects[i];
 
-            if (_objectIDs[object] == objectID)
+            if (_objectIDs.get(object) == objectID)
             {
                 remove(object);
                 return objectID;

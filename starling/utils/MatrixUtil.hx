@@ -28,7 +28,7 @@ class MatrixUtil
             [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
     private static var sPoint3D:Vector3D = new Vector3D();
     private static var sMatrixData:Vector<Float> = Vector.ofArray(
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     /** @private */
     public function new() { throw new AbstractClassError(); }

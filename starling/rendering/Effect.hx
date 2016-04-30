@@ -207,7 +207,7 @@ class Effect
         if (numTriangles < 0) numTriangles = Std.int(indexBufferSize / 3);
         if (numTriangles == 0) return;
 
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
 
         beforeDraw(context);
@@ -320,7 +320,7 @@ class Effect
     @:noCompletion private function get_program():Program
     {
         var name:String = this.programName;
-        var painter:Painter = Starling.current.painter;
+        var painter:Painter = Starling.sPainter;
         var program:Program = painter.getProgram(name);
 
         if (program == null)

@@ -24,7 +24,7 @@ class TextOptions
     {
         _wordWrap = wordWrap;
         _autoScale = autoScale;
-        _textureScale = Starling.current.contentScaleFactor;
+        _textureScale = Starling.sContentScaleFactor;
         #if 0
         _textureFormat = Context3DTextureFormat.BGR_PACKED;
         #else

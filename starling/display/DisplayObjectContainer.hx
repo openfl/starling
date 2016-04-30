@@ -14,12 +14,15 @@ import flash.errors.RangeError;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import starling.utils.ArrayUtil;
 #if 0
+import flash.system.Capabilities;
 import flash.utils.getQualifiedClassName;
 #end
+import starling.utils.ArrayUtil;
 
+#if 0
+import starling.core.starling_internal;
+#end
 import starling.errors.AbstractClassError;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
@@ -203,7 +206,6 @@ class DisplayObjectContainer extends DisplayObject
             endIndex = numChildren - 1;
         
         var i:Int = beginIndex;
-        //for (var i:Int=beginIndex; i<=endIndex; ++i)
         while (i <= endIndex)
         {
             removeChildAt(beginIndex, dispose);
@@ -275,7 +277,7 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Sorts the children according to a given function (that works just like the sort function
      *  of the Vector class). */
-    public function sortChildren(compareFunction:Dynamic):Void
+    public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void
     {
         ArrayUtil.resize(sSortBuffer, _children.length);
         mergeSort(_children, compareFunction, 0, _children.length, sSortBuffer);
@@ -318,7 +320,6 @@ class DisplayObjectContainer extends DisplayObject
             var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
             var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
 
-            var i:Int = 0;
             for (i in 0 ... numChildren)
             {
                 _children[i].getBounds(targetSpace, out);
@@ -345,9 +346,8 @@ class DisplayObjectContainer extends DisplayObject
         var localY:Float = localPoint.y;
         var numChildren:Int = _children.length;
         
-        //for (var i:Int = numChildren - 1; i >= 0; --i) // front to back!
         var i:Int = numChildren - 1;
-        while(i >= 0)
+        while (i >= 0) // front to back!
         {
             var child:DisplayObject = _children[i];
             if (child.isMask) continue;
@@ -358,7 +358,9 @@ class DisplayObjectContainer extends DisplayObject
             MatrixUtil.transformCoords(sHelperMatrix, localX, localY, sHelperPoint);
             target = child.hitTest(sHelperPoint);
 
-            if (target != null) return _touchGroup != null ? this : target;
+            if (target != null) return _touchGroup ? this : target;
+            
+            --i;
         }
 
         return null;

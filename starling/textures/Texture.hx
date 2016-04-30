@@ -30,7 +30,7 @@ import flash.utils.ByteArray;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
-import openfl.display3D.Context3DProfile;
+import flash.display3D.Context3DProfile;
 import openfl.errors.ArgumentError;
 import openfl.utils.Float32Array;
 
@@ -42,6 +42,10 @@ import starling.rendering.VertexData;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
+
+#if flash
+typedef ByteArrayData = ByteArray;
+#end
 
 /** <p>A texture stores the information that represents an image. It cannot be added to the
  *  display list directly; instead it has to be mapped onto a display object. In Starling,
@@ -226,6 +230,8 @@ class Texture
         #end
         else
             throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(Type.getClass(base)));
+        
+        return null;
     }
 
     /** Creates a texture object from an embedded asset class. Textures created with this
@@ -347,7 +353,7 @@ class Texture
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
                                        async:Dynamic=null):Texture
     {
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);
@@ -438,7 +444,7 @@ class Texture
         if (!SystemUtil.supportsVideoTexture)
             throw new NotSupportedError("Video Textures are not supported on this platform");
 
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
         
         var texture:ConcreteVideoTexture = null;
@@ -506,13 +512,13 @@ class Texture
                                  mipMapping:Bool=false, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:Context3DTextureFormat=null):Texture
     {
-        if (scale <= 0) scale = Starling.current.contentScaleFactor;
+        if (scale <= 0) scale = Starling.sContentScaleFactor;
         if (format == null) format = Context3DTextureFormat.BGRA;
 
         var actualWidth:Int, actualHeight:Int;
         var nativeTexture:TextureBase;
         var concreteTexture:ConcreteTexture;
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
 
         if (context == null) throw new MissingContextError();
 

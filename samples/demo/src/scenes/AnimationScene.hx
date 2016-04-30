@@ -86,7 +86,7 @@ import starling.utils.MathUtil.deg2rad;
         // This is done by the 'Juggler'. It receives the tween and will carry it out.
         // We use the default juggler here, but you can create your own jugglers, as well.            
         // That way, you can group animations into logical parts.  
-        Starling.current.juggler.add(tween);
+        Starling.sJuggler.add(tween);
         
         // show which tweening function is used
         _transitionLabel.text = transition;
@@ -94,7 +94,7 @@ import starling.utils.MathUtil.deg2rad;
         
         var hideTween:Tween = new Tween(_transitionLabel, 2.0, Transitions.EASE_IN);
         hideTween.animate("alpha", 0.0);
-        Starling.current.juggler.add(hideTween);
+        Starling.sJuggler.add(hideTween);
     }
     
     private function onDelayButtonTriggered():Void
@@ -105,9 +105,9 @@ import starling.utils.MathUtil.deg2rad;
         // you use your own juggler in a component of your game, because it gives you perfect 
         // control over the flow of time and animations. 
         
-        Starling.current.juggler.delayCall(colorizeEgg, 1.0, [true]);
-        Starling.current.juggler.delayCall(colorizeEgg, 2.0, [false]);
-        Starling.current.juggler.delayCall(function(unused):Void { _delayButton.enabled = true; }, 2.0, []);
+        Starling.sJuggler.delayCall(colorizeEgg, 1.0, [true]);
+        Starling.sJuggler.delayCall(colorizeEgg, 2.0, [false]);
+        Starling.sJuggler.delayCall(function(unused):Void { _delayButton.enabled = true; }, 2.0, []);
     }
     
     private function colorizeEgg(args:Array<Dynamic>):Void

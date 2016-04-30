@@ -86,7 +86,7 @@ class Program
     {
         if (context == null)
         {
-            context = Starling.current.context;
+            context = Starling.sContext;
             if (context == null) throw new MissingContextError();
         }
 

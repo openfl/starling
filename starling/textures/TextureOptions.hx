@@ -50,7 +50,7 @@ class TextureOptions
     private function get_scale():Float { return _scale; }
     private function set_scale(value:Float):Float
     {
-        return _scale = value > 0 ? value : Starling.current.contentScaleFactor;
+        return _scale = value > 0 ? value : Starling.sContentScaleFactor;
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. Only used

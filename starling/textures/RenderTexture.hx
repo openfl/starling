@@ -161,7 +161,7 @@ class RenderTexture extends SubTexture
     
     private function render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
     {
-        var painter:Painter = Starling.current.painter;
+        var painter:Painter = Starling.sPainter;
         var state:RenderState = painter.state;
         var filter:FragmentFilter = object.filter;
         var mask:DisplayObject = object.mask;
@@ -190,7 +190,7 @@ class RenderTexture extends SubTexture
                                    matrix:Matrix=null, alpha:Float=1.0,
                                    antiAliasing:Int=0):Void
     {
-        var painter:Painter = Starling.current.painter;
+        var painter:Painter = Starling.sPainter;
         var state:RenderState = painter.state;
 
         if (!Starling.current.contextValid) return;
@@ -277,7 +277,7 @@ class RenderTexture extends SubTexture
     {
         if (Starling.current != null)
         {
-            var painter:Painter = Starling.current.painter;
+            var painter:Painter = Starling.sPainter;
             var sharedData:Map<String, Dynamic> = painter.sharedData;
 
             var flag:Null<Bool> = sharedData[USE_DOUBLE_BUFFERING_DATA_NAME];
@@ -301,7 +301,7 @@ class RenderTexture extends SubTexture
         if (Starling.current == null)
             throw new IllegalOperationError("Starling not yet initialized");
         else
-            Starling.current.painter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
+            Starling.sPainter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
         return value;
     }
 }

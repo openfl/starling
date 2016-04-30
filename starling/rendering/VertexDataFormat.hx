@@ -97,7 +97,7 @@ import starling.utils.StringUtil;
 
             var normalizedFormat:String = instance._format;
 
-            var value:VertexDataFormat = sFormats[normalizedFormat];
+            value = sFormats[normalizedFormat];
             if (value != null)
                 instance = value;
 
@@ -167,7 +167,7 @@ import starling.utils.StringUtil;
     public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, attrName:String):Void
     {
         var attribute:VertexDataAttribute = getAttribute(attrName);
-        Starling.current.context.setVertexBufferAt(index, buffer, Std.int(attribute.offset / 4), attribute.format);
+        Starling.sContext.setVertexBufferAt(index, buffer, Std.int(attribute.offset / 4), attribute.format);
     }
 
     // parsing
@@ -278,11 +278,11 @@ import starling.utils.StringUtil;
     {
         return switch (format)
         {
-            case "bytes_4": Context3DVertexBufferFormat.BYTES_4;
-            case "float_1": Context3DVertexBufferFormat.FLOAT_1;
-            case "float_2": Context3DVertexBufferFormat.FLOAT_2;
-            case "float_3": Context3DVertexBufferFormat.FLOAT_3;
-            case "float_4": Context3DVertexBufferFormat.FLOAT_4;
+            case "bytes4": Context3DVertexBufferFormat.BYTES_4;
+            case "float1": Context3DVertexBufferFormat.FLOAT_1;
+            case "float2": Context3DVertexBufferFormat.FLOAT_2;
+            case "float3": Context3DVertexBufferFormat.FLOAT_3;
+            case "float4": Context3DVertexBufferFormat.FLOAT_4;
             default: null;
         }
     }

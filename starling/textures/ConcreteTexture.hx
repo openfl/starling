@@ -149,7 +149,7 @@ class ConcreteTexture extends Texture
     #end
 
     /** @private */
-    private function attachVideo(type:String, attachment:Dynamic, onComplete:Dynamic=null):Void
+    public function attachVideo(type:String, attachment:Dynamic, onComplete:Dynamic=null):Void
     {
         throw new NotSupportedError();
     }
@@ -188,7 +188,7 @@ class ConcreteTexture extends Texture
                               Std.int(Color.getGreen(color) * alpha),
                               Std.int(Color.getBlue(color)  * alpha));
 
-        var painter:Painter = Starling.current.painter;
+        var painter:Painter = Starling.sPainter;
         painter.pushState();
         painter.state.renderTarget = this;
 

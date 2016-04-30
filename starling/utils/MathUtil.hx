@@ -82,8 +82,9 @@ class MathUtil
     /** Returns the next power of two that is equal to or bigger than the specified number. */
     public static function getNextPowerOfTwo(number:Float):Int
     {
-        if (number is Int && number > 0 && (number & (number - 1)) == 0) // see: http://goo.gl/D9kPj
-            return number;
+        var integer:Int = Std.int(number);
+        if (/*number is Int &&*/ integer > 0 && (integer & (integer - 1)) == 0) // see: http://goo.gl/D9kPj
+            return integer;
         else
         {
             var result:Int = 1;
@@ -118,18 +119,6 @@ class MathUtil
     public static function clamp(value:Float, min:Float, max:Float):Float
     {
         return value < min ? min : (value > max ? max : value);
-    }
-    
-    /** Returns the smallest value in an array. */
-    public static function min(values:Array<Float>):Float
-    {
-        if (values.length == 0)
-            return 0.0;
-        var min:Float = values[0];
-        for (i in 1 ... values.length)
-            if (values[i] < min)
-                min = values[i];
-        return min;
     }
     
     /** Converts an angle from degrees into radians. */

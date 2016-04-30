@@ -284,6 +284,9 @@ class VertexData
         if (target._numVertices < targetVertexID + numVertices)
             target._numVertices = targetVertexID + numVertices;
 
+		#if 0
+        var i:Int, j:Int, x:Float, y:Float;
+        #end
         var sourceData:ByteArray = _rawData;
         var targetData:ByteArray = target._rawData;
         var sourceDelta:Int = _vertexSize - sourceAttribute.size;
@@ -848,7 +851,7 @@ class VertexData
     {
         if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
         
-        var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
         if (_numVertices == 0) return null;
 

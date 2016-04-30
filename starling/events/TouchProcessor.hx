@@ -9,11 +9,13 @@
 // =================================================================================================
 
 package starling.events;
-import openfl.errors.Error;
-import openfl.geom.Point;
+import flash.errors.Error;
+import flash.geom.Point;
+#if 0
+import flash.utils.getDefinitionByName;
+#end
 import openfl.Lib;
 import starling.utils.ArrayUtil;
-import starling.utils.MathUtil;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;
@@ -155,7 +157,7 @@ class TouchProcessor
                 --i;
             }
 
-            sUpdatedTouches = [];
+            ArrayUtil.clear(sUpdatedTouches);
         }
     }
     
@@ -170,7 +172,7 @@ class TouchProcessor
     private function processTouches(touches:Array<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void
     {
-        sHoveringTouchData = [];
+        ArrayUtil.clear(sHoveringTouchData);
         
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method will make sure each bubble target is visited only once.
@@ -359,7 +361,7 @@ class TouchProcessor
     
     private function containsTouchWithID(touches:Array<Touch>, touchID:Int):Bool
     {
-        for(touch in touches)
+        for (touch in touches)
             if (touch.id == touchID) return true;
         
         return false;
@@ -373,7 +375,7 @@ class TouchProcessor
     @:noCompletion private function get_simulateMultitouch():Bool { return _simulateMultitouch; }
     @:noCompletion private function set_simulateMultitouch(value:Bool):Bool
     {
-        if (simulateMultitouch == value) return _touchMarker != null; // no change
+        if (simulateMultitouch == value) return value; // no change
 
         _simulateMultitouch = value;
         var target:Starling = Starling.current;
@@ -434,9 +436,8 @@ class TouchProcessor
 
     // keyboard handling
     
-    private function onKey(e:Event):Void
+    private function onKey(event:KeyboardEvent):Void
     {
-        var event:KeyboardEvent = cast(e, KeyboardEvent);
         if (event.keyCode == 17 || event.keyCode == 15) // ctrl or cmd key
         {
             var wasCtrlDown:Bool = _ctrlDown;
@@ -483,6 +484,11 @@ class TouchProcessor
         
         try
         {
+        	#if 0
+            var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
+            var nativeApp:Object = nativeAppClass["nativeApplication"];
+            #end
+            
             if (enable)
                 Lib.current.addEventListener("deactivate", onInterruption, false, 0, true);
             else

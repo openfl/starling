@@ -106,7 +106,7 @@ class Demo_Web extends Sprite
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
             var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
+            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt"));
             TextField.registerBitmapFont(new BitmapFont(desyrelTexture, desyrelXml));
             assets.addTexture("atlas", atlasTexture);
             assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));

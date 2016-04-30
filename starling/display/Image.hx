@@ -301,8 +301,8 @@ class Image extends Quad
 
         if (prevNumVertices != vertexData.numVertices)
         {
-            var color:UInt   = prevNumVertices != null ? vertexData.getColor(0) : 0xffffff;
-            var alpha:Float = prevNumVertices != null ? vertexData.getAlpha(0) : 1.0;
+            var color:UInt   = prevNumVertices != 0 ? vertexData.getColor(0) : 0xffffff;
+            var alpha:Float = prevNumVertices != 0 ? vertexData.getAlpha(0) : 1.0;
 
             vertexData.colorize("color", color, alpha);
             vertexData.trim();
@@ -323,8 +323,8 @@ class Image extends Quad
         var indexData:IndexData   = this.indexData;
         var bounds:Rectangle = getBounds(this, sBounds);
         var prevNumVertices:Int = vertexData.numVertices;
-        var color:UInt   = prevNumVertices != null ? vertexData.getColor(0) : 0xffffff;
-        var alpha:Float = prevNumVertices != null ? vertexData.getAlpha(0) : 1.0;
+        var color:UInt   = prevNumVertices != 0 ? vertexData.getColor(0) : 0xffffff;
+        var alpha:Float = prevNumVertices != 0 ? vertexData.getAlpha(0) : 1.0;
         var invScaleX:Float = scaleX > 0 ? 1.0 / scaleX : -1.0 / scaleX;
         var invScaleY:Float = scaleY > 0 ? 1.0 / scaleY : -1.0 / scaleY;
         var frameWidth:Float  = _tileGrid.width  > 0 ? _tileGrid.width  : texture.frameWidth;

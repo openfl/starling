@@ -10,6 +10,7 @@
 
 package starling.events;
 import starling.display.DisplayObject;
+import starling.utils.ArrayUtil;
 
 /** A TouchEvent is triggered either by touch or mouse input.  
  *  
@@ -124,7 +125,7 @@ class TouchEvent extends Event
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
-            sTouches = [];
+            ArrayUtil.clear(sTouches);
             return touch;
         }
         else return null;
@@ -137,8 +138,7 @@ class TouchEvent extends Event
         getTouches(target, null, sTouches);
         
         var i:Int = sTouches.length - 1;
-        //for (var i:Int=sTouches.length-1; i>=0; --i)
-        while(i>=0)
+        while (i>=0)
         {
             if (sTouches[i].phase != TouchPhase.ENDED)
             {
@@ -148,7 +148,7 @@ class TouchEvent extends Event
             --i;
         }
         
-        sTouches = [];
+        ArrayUtil.clear(sTouches);
         return result;
     }
     
@@ -167,7 +167,7 @@ class TouchEvent extends Event
             
             for (i in 0 ... chainLength)
             {
-                var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
+                var chainElement:EventDispatcher = chain[i];
                 if (_visitedObjects.indexOf(chainElement) == -1)
                 {
                     var stopPropagation:Bool = chainElement.invokeEvent(this);

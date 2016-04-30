@@ -22,11 +22,12 @@
 	<haxedef name="source-map-content" if="html5 || nodejs" />
 	<haxedef name="dom" if="html5" />
 
-	<haxedef name="disable_gl_renderer" />
+	<haxedef name="disable_gl_renderer" unless="flash" />
 
-	<haxeflag name="-swf-version" value="11.8" />
+	<haxeflag name="-swf-version" value="15" if="flash" />
 	<haxeflag name="--macro" value="keep('starling.display.Sprite3D')" />
 	<haxeflag name="--macro" value="keep('starling.animation.Tween')" />
+    <haxeflag name="--macro" value="keep('starling.rendering.MeshStyle')" />
 	<haxeflag name="--macro" value="keep('Xml')" />
 	<haxeflag name="-dce" value="full" />
 	

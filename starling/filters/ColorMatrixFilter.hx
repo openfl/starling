@@ -229,9 +229,9 @@ class ColorMatrixFilter extends FragmentFilter
 class ColorMatrixEffect extends FilterEffect
 {
     private var _userMatrix:Array<Float>;   // offset in range 0-255
-    private var _shaderMatrix:Array<Float>; // offset in range 0-1, changed order
+    private var _shaderMatrix:Vector<Float>; // offset in range 0-1, changed order
 
-    private static var MIN_COLOR:Array<Float> = [0, 0, 0, 0.0001];
+    private static var MIN_COLOR:Vector<Float> = [0, 0, 0, 0.0001];
     private static var IDENTITY:Array<Float> = [1.0,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
 
     // helpers

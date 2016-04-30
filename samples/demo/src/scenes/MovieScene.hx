@@ -33,12 +33,12 @@ import starling.textures.Texture;
     
     private function onAddedToStage():Void
     {
-        Starling.current.juggler.add(_movie);
+        Starling.sJuggler.add(_movie);
     }
     
     private function onRemovedFromStage():Void
     {
-        Starling.current.juggler.remove(_movie);
+        Starling.sJuggler.remove(_movie);
     }
     
     public override function dispose():Void

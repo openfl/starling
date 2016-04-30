@@ -22,8 +22,8 @@ import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.utils.Dictionary;
-import openfl.display3D.Context3DProfile;
-import openfl.errors.Error;
+import flash.display3D.Context3DProfile;
+import flash.errors.Error;
 import starling.utils.ArrayUtil;
 import starling.utils.SafeCast.safe_cast;
 
@@ -43,7 +43,7 @@ import starling.utils.RenderUtil;
 import starling.utils.SystemUtil;
 
 #if flash
-typedef WeakMap<K, V> = WeakMap<K, V>;
+import haxe.ds.WeakMap;
 #else
 typedef WeakMap<K, V> = Map<K, V>;
 #end
@@ -98,7 +98,7 @@ class Painter
     private var _batchCache:BatchProcessor;
 
     private var _actualRenderTarget:TextureBase;
-    private var _actualCulling:Context3DTriangleFace;
+    private var _actualCulling:Null<Context3DTriangleFace>;
     private var _actualBlendMode:String;
 
     private var _backBufferWidth:Float;
@@ -210,7 +210,7 @@ class Painter
         // Changing the stage3D position might move the back buffer to invalid bounds
         // temporarily. To avoid problems, we set it to the smallest possible size first.
 
-        #if flash
+        #if 0
         if (_context.profile == Context3DProfile.BASELINE_CONSTRAINED)
             _context.configureBackBuffer(32, 32, antiAlias, enableDepthAndStencil);
         #end
@@ -708,14 +708,15 @@ class Painter
     @:noCompletion private function get_stencilReferenceValue():UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
+        var value:Null<UInt> = _stencilReferenceValues.get(key);
+        if (value != null) return value;
         else return 0;
     }
 
     @:noCompletion private function set_stencilReferenceValue(value:UInt):UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        _stencilReferenceValues[key] = value;
+        _stencilReferenceValues.set(key, value);
 
         if (contextValid)
             _context.setStencilReferenceValue(value);
@@ -803,7 +804,7 @@ class Painter
         }
         else return false;
         #else
-        return true;
+        return _context != null;
         #end
     }
 
@@ -812,7 +813,7 @@ class Painter
     public var profile(get, never):Context3DProfile;
     @:noCompletion private function get_profile():Context3DProfile
     {
-        if (_context != null) return _context.profile;
+        if (_context != null) return #if flash cast #end _context.profile;
         else return null;
     }
 

@@ -125,7 +125,7 @@ class Stage extends DisplayObjectContainer
     public function drawToBitmapData(destination:BitmapData=null,
                                      transparent:Bool=true):BitmapData
     {
-        var painter:Painter = Starling.current.painter;
+        var painter:Painter = Starling.sPainter;
         var state:RenderState = painter.state;
         var context:Context3D = painter.context;
 

@@ -57,6 +57,10 @@ import starling.textures.TextureOptions;
 
 import starling.utils.SafeCast.safe_cast;
 
+#if flash
+typedef ByteArrayData = ByteArray;
+#end
+
 /** Dispatched when all textures have been restored after a context loss. */
 //[Event(name="texturesRestored", type="starling.events.Event")]
 

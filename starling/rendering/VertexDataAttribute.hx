@@ -16,6 +16,7 @@ import openfl.errors.ArgumentError;
  *  for performance reasons. */
 class VertexDataAttribute
 {
+    #if 0
     private static var FORMAT_SIZES:Map<Context3DVertexBufferFormat, Int> = [
         Context3DVertexBufferFormat.BYTES_4=> 4,
         Context3DVertexBufferFormat.FLOAT_1=> 4,
@@ -23,6 +24,7 @@ class VertexDataAttribute
         Context3DVertexBufferFormat.FLOAT_3=> 12,
         Context3DVertexBufferFormat.FLOAT_4=> 16
     ];
+    #end
 
     public var name:String;
     public var format:Context3DVertexBufferFormat;
@@ -33,15 +35,24 @@ class VertexDataAttribute
     /** Creates a new instance with the given properties. */
     public function new(name:String, format:Context3DVertexBufferFormat, offset:Int)
     {
-        if (!(FORMAT_SIZES.exists(format)))
+        #if 0
+        if (!FORMAT_SIZES.exists(format))
             throw new ArgumentError(
                 "Invalid attribute format: " + format + ". " +
                 "Use one of the following: 'float1'-'float4', 'bytes4'");
+        #end
 
         this.name = name;
         this.format = format;
         this.offset = offset;
-        this.size = FORMAT_SIZES[format];
+        this.size = switch(format)
+        {
+            case BYTES_4: 4;
+            case FLOAT_1: 4;
+            case FLOAT_2: 8;
+            case FLOAT_3: 12;
+            case FLOAT_4: 16;
+        }
         this.isColor = name.indexOf("color") != -1 || name.indexOf("Color") != -1;
     }
 }

@@ -15,7 +15,9 @@ import flash.display3D.textures.VideoTexture;
 import flash.events.Event;
 
 import starling.core.Starling;
+#if 0
 import starling.utils.execute;
+#end
 
 /** @private
  *
@@ -44,15 +46,15 @@ class ConcreteVideoTexture extends ConcreteTexture
     /** @inheritDoc */
     override private function createBase():TextureBase
     {
-        return Starling.context.createVideoTexture();
+        return Starling.sContext.createVideoTexture();
     }
 
     /** @private */
-    override private function attachVideo(type:String, attachment:Object,
-                                           onComplete:Function=null):Void
+    override public function attachVideo(type:String, attachment:Dynamic,
+                                           onComplete:Dynamic=null):Void
     {
         _textureReadyCallback = onComplete;
-        base["attach" + type](attachment);
+        Reflect.setProperty(base, "attach" + type, attachment);
         base.addEventListener(Event.TEXTURE_READY, onTextureReady);
 
         setDataUploaded();
@@ -61,7 +63,11 @@ class ConcreteVideoTexture extends ConcreteTexture
     private function onTextureReady(event:Event):Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+        #if 0
         execute(_textureReadyCallback, this);
+        #else
+        _textureReadyCallback(this);
+        #end
         _textureReadyCallback = null;
     }
 

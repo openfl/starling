@@ -65,7 +65,7 @@ class ConcretePotTexture extends ConcreteTexture
     /** @inheritDoc */
     override private function createBase():TextureBase
     {
-        return Starling.current.context.createTexture(
+        return Starling.sContext.createTexture(
                 Std.int(nativeWidth), Std.int(nativeHeight), format, optimizedForRenderTexture);
     }
 

@@ -119,7 +119,7 @@ class BlendMode
     /** Sets the appropriate blend factors for source and destination on the current context. */
     public function activate():Void
     {
-        Starling.current.context.setBlendFactors(_sourceFactor, _destinationFactor);
+        Starling.sContext.setBlendFactors(_sourceFactor, _destinationFactor);
     }
 
     /** Returns the name of the blend mode. */

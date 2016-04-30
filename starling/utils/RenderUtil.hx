@@ -42,7 +42,7 @@ class RenderUtil
     /** Clears the render context with a certain color and alpha value. */
     public static function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        Starling.current.context.clear(
+        Starling.sContext.clear(
                 Color.getRed(rgb)   / 255.0,
                 Color.getGreen(rgb) / 255.0,
                 Color.getBlue(rgb)  / 255.0,
@@ -141,7 +141,7 @@ class RenderUtil
             mipFilter = mipMapping ? Context3DMipFilter.MIPLINEAR : Context3DMipFilter.MIPNONE;
         }
 
-        Starling.current.context.setSamplerStateAt(sampler, wrap, filter, mipFilter);
+        Starling.sContext.setSamplerStateAt(sampler, wrap, filter, mipFilter);
     }
 
     /** Creates an AGAL source string with a <code>tex</code> operation, including an options
@@ -221,13 +221,6 @@ class RenderUtil
             profiles = profile;
         else
             throw new ArgumentError("Profile must be of type 'String' or 'Array'");
-
-        #if 0
-        stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
-        stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
-
-        requestNextProfile();
-        #end
         
         var onError:Event->Void = null;
         var onFinished:Void->Void = null;
@@ -251,9 +244,10 @@ class RenderUtil
         function onCreated(event:Event):Void
         {
             var context:Context3D = stage3D.context3D;
+            var driverInfo:String = context.driverInfo;
 
             if (renderMode == Context3DRenderMode.AUTO && profiles.length != 0 &&
-                    context.driverInfo.indexOf("Software") != -1)
+                    driverInfo != null && driverInfo.indexOf("Software") != -1)
             {
                 onError(event);
             }
@@ -263,7 +257,7 @@ class RenderUtil
             }
         }
 
-        function onError(event:Event):Void
+        onError = function(event:Event):Void
         {
             if (profiles.length != 0)
             {
@@ -273,7 +267,7 @@ class RenderUtil
             else onFinished();
         }
 
-        function onFinished():Void
+        onFinished = function():Void
         {
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             stage3D.removeEventListener(ErrorEvent.ERROR, onError);
