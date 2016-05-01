@@ -132,4 +132,10 @@ class MathUtil
     {
         return rad / Math.PI * 180.0;
     }
+    
+    public static function logicalOr(a:Float, b:Float):Float
+    {
+        // TODO
+        return a;
+    }
 }

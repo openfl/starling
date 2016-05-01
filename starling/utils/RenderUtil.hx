@@ -161,12 +161,14 @@ class RenderUtil
      *  @param sampler    the texture sampler to use.
      *  @param texture    the texture that's active in the given texture sampler.
      *  @param convertToPmaIfRequired  indicates if a non-PMA color should be converted to PMA.
+     *  @param tempReg    if 'resultReg' is the output register and PMA conversion is done,
+     *                    a temporary register is needed.
      *
      *  @return the AGAL source code, line break(s) included.
      */
     public static function createAGALTexOperation(
             resultReg:String, uvReg:String, sampler:Int, texture:Texture,
-            convertToPmaIfRequired:Bool=true):String
+            convertToPmaIfRequired:Bool=true, tempReg:String="ft0"):String
     {
         var format:Context3DTextureFormat = texture.format;
         var formatFlag:String;
@@ -181,11 +183,23 @@ class RenderUtil
                 formatFlag = "rgba";
         }
 
-        var operation:String = "tex " + resultReg + ", " + uvReg + ", fs" + sampler +
+        var needsConversion:Bool = convertToPmaIfRequired && !texture.premultipliedAlpha;
+        var texReg:String = needsConversion && resultReg == "oc" ? tempReg : resultReg;
+        var operation:String = "tex " + texReg + ", " + uvReg + ", fs" + sampler +
                         " <2d, " + formatFlag + ">\n";
 
-        if (convertToPmaIfRequired && !texture.premultipliedAlpha)
-            operation += "mul " + resultReg + ".xyz, " + resultReg + ".xyz, " + resultReg + ".www\n";
+        if (needsConversion)
+        {
+            if (resultReg == "oc") // the output color register cannot use a write mask ...
+            {
+                operation += "mul " + texReg + ".xyz, " + texReg + ".xyz, " + texReg + ".www\n";
+                operation += "mov " + resultReg + ", " + texReg;
+            }
+            else
+            {
+                operation += "mul " + resultReg + ".xyz, " + texReg + ".xyz, " + texReg + ".www\n";
+            }
+        }
 
         return operation;
     }

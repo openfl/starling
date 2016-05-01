@@ -64,15 +64,15 @@ import starling.utils.RectangleUtil;
  */
 class RenderState
 {
-    private var _alpha:Float;
-    private var _blendMode:String;
+    /** @private */ private var _alpha:Float;
+    /** @private */ private var _blendMode:String;
+    /** @private */ private var _modelviewMatrix:Matrix;
+
     private var _renderTarget:Texture;
     private var _renderTargetOptions:UInt;
     private var _culling:Context3DTriangleFace;
     private var _clipRect:Rectangle;
     private var _onDrawRequired:Dynamic;
-
-    private var _modelviewMatrix:Matrix;
     private var _modelviewMatrix3D:Matrix3D;
     private var _projectionMatrix3D:Matrix3D;
     private var _mvpMatrix3D:Matrix3D;

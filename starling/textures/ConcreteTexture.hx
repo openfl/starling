@@ -214,6 +214,11 @@ class ConcreteTexture extends Texture
     /** Indicates if the base texture was optimized for being used in a render texture. */
     public var optimizedForRenderTexture(get, never):Bool;
     @:noCompletion private function get_optimizedForRenderTexture():Bool { return _optimizedForRenderTexture; }
+
+    /** Indicates if the base texture is a standard power-of-two dimensioned texture of type
+     *  <code>flash.display3D.textures.Texture</code>. */
+    public var isPotTexture(get, never):Bool;
+    @:noCompletion private function get_isPotTexture():Bool { return false; }
     
     /** The function that you provide here will be called after a context loss.
      *  On execution, a new base texture will already have been created; however,
@@ -263,7 +268,7 @@ class ConcreteTexture extends Texture
     /** @inheritDoc */
     @:noCompletion private override function get_nativeHeight():Float { return _height; }
     
-    /** The scale factor, which influences width and height properties. */
+    /** @inheritDoc */
     @:noCompletion private override function get_scale():Float { return _scale; }
     
     /** @inheritDoc */

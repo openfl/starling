@@ -178,13 +178,13 @@ class Texture
         {
             return fromEmbeddedAsset(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture,
-                options.scale, options.format);
+                options.scale, options.format, options.forcePotTexture);
         }
         else if (Std.is(data, BitmapData))
         {
             return fromBitmapData(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture,
-                options.scale, options.format);
+                options.scale, options.format, options.forcePotTexture);
         }
         else if (Std.is(data, ByteArrayData))
         {
@@ -242,13 +242,18 @@ class Texture
      *  @param mipMapping  for Bitmaps, indicates if mipMaps will be created;
      *                     for ATF data, indicates if the contained mipMaps will be used.
      *  @param optimizeForRenderToTexture  indicates if this texture will be used as
-     *                     render target
-     *  @param scale    the scale factor of the created texture.
-     *  @param format   the context3D texture format to use. Ignored for ATF data.
+     *                     render target.
+     *  @param scale       the scale factor of the created texture.
+     *  @param format      the context3D texture format to use. Ignored for ATF data.
+     *  @param forcePotTexture  indicates if the underlying Stage3D texture should be created
+     *                     as the power-of-two based "Texture" class instead of the more memory
+     *                     efficient "RectangleTexture". (Only applicable to bitmaps; ATF
+     *                     textures are always POT-textures, anyway.)
      */
     public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool=false,
                                              optimizeForRenderToTexture:Bool=false,
-                                             scale:Float=1, format:Context3DTextureFormat=null):Texture
+                                             scale:Float=1, format:Context3DTextureFormat=null,
+                                             forcePotTexture:Bool=false):Texture
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture;
@@ -257,7 +262,7 @@ class Texture
         if (Std.is(asset, Bitmap))
         {
             texture = Texture.fromBitmap(cast asset, mipMapping,
-                                         optimizeForRenderToTexture, scale, format);
+                                optimizeForRenderToTexture, scale, format, forcePotTexture);
             texture.root.onRestore = function():Void
             {
                 texture.root.uploadBitmap(Type.createInstance(assetClass, []));
@@ -293,21 +298,25 @@ class Texture
      *  @param format   the context3D texture format to use. Pass one of the packed or
      *                  compressed formats to save memory (at the price of reduced image
      *                  quality).
+     *  @param forcePotTexture  indicates if the underlying Stage3D texture should be created
+     *                  as the power-of-two based "Texture" class instead of the more memory
+     *                  efficient "RectangleTexture".
      */
     public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=false,
                                       optimizeForRenderToTexture:Bool=false,
-                                      scale:Float=1, format:Context3DTextureFormat=null):Texture
+                                      scale:Float=1, format:Context3DTextureFormat=null,
+                                      forcePotTexture:Bool=false):Texture
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture,
-                              scale, format);
+                              scale, format, forcePotTexture);
     }
 
     /** Creates a texture object from bitmap data.
      *  Beware: you must not dispose 'data' if Starling should handle a lost device context;
      *  alternatively, you can handle restoration yourself via "texture.root.onRestore".
      *
-     *  @param data   the texture will be created with the bitmap data of this object.
+     *  @param data     the bitmap data to upload to the texture.
      *  @param generateMipMaps  indicates if mipMaps will be created.
      *  @param optimizeForRenderToTexture  indicates if this texture will be used as
      *                  render target
@@ -316,15 +325,19 @@ class Texture
      *  @param format   the context3D texture format to use. Pass one of the packed or
      *                  compressed formats to save memory (at the price of reduced image
      *                  quality).
+     *  @param forcePotTexture  indicates if the underlying Stage3D texture should be created
+     *                  as the power-of-two based "Texture" class instead of the more memory
+     *                  efficient "RectangleTexture".
      */
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=false,
                                           optimizeForRenderToTexture:Bool=false,
-                                          scale:Float=1, format:Context3DTextureFormat=null):Texture
+                                          scale:Float=1, format:Context3DTextureFormat=null,
+                                          forcePotTexture:Bool=false):Texture
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
-                                            format);
+                                            format, forcePotTexture);
 
         texture.root.uploadBitmapData(data);
         texture.root.onRestore = function():Void
@@ -349,9 +362,12 @@ class Texture
      *                    loading process. However, don't use the texture before the callback
      *                    has been executed. This is the expected function definition:
      *                    <code>function(texture:Texture):void;</code>
+     *  @param premultipliedAlpha  Indicates if the ATF data contains pixels in PMA format.
+     *                    This is "false" for most ATF files, but can be customized in some
+     *                    tools.
      */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
-                                       async:Dynamic=null):Texture
+                                       async:Dynamic=null, premultipliedAlpha:Bool=false):Texture
     {
         var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
@@ -361,7 +377,7 @@ class Texture
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcretePotTexture(nativeTexture,
             atfData.format, atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1,
-            false, false, scale);
+            premultipliedAlpha, false, scale);
 
         concreteTexture.uploadAtfData(data, 0, async);
         concreteTexture.onRestore = function():Void
@@ -474,15 +490,19 @@ class Texture
      *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
      *  @param format  the context3D texture format to use. Pass one of the packed or
      *                 compressed formats to save memory.
+     *  @param forcePotTexture  indicates if the underlying Stage3D texture should be created
+     *                 as the power-of-two based "Texture" class instead of the more memory
+     *                 efficient "RectangleTexture".
      */
     public static function fromColor(width:Float, height:Float,
                                      color:UInt=0xffffff, alpha:Float=1.0,
                                      optimizeForRenderToTexture:Bool=false,
-                                     scale:Float=-1, format:Context3DTextureFormat=null):Texture
+                                     scale:Float=-1, format:Context3DTextureFormat=null,
+                                     forcePotTexture:Bool=false):Texture
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(width, height, true, false,
-                                            optimizeForRenderToTexture, scale, format);
+                                    optimizeForRenderToTexture, scale, format, forcePotTexture);
         texture.root.clear(color, alpha);
         texture.root.onRestore = function():Void
         {
@@ -507,10 +527,14 @@ class Texture
      *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
      *  @param format  the context3D texture format to use. Pass one of the packed or
      *                 compressed formats to save memory (at the price of reduced image quality).
+     *  @param forcePotTexture  indicates if the underlying Stage3D texture should be created
+     *                 as the power-of-two based "Texture" class instead of the more memory
+     *                 efficient "RectangleTexture".
      */
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=false, optimizeForRenderToTexture:Bool=false,
-                                 scale:Float=-1, format:Context3DTextureFormat=null):Texture
+                                 scale:Float=-1, format:Context3DTextureFormat=null,
+                                 forcePotTexture:Bool=false):Texture
     {
         if (scale <= 0) scale = Starling.sContentScaleFactor;
         if (format == null) format = Context3DTextureFormat.BGRA;
@@ -524,7 +548,7 @@ class Texture
 
         var origWidth:Float  = width  * scale;
         var origHeight:Float = height * scale;
-        var useRectTexture:Bool = !mipMapping &&
+        var useRectTexture:Bool = !forcePotTexture && !mipMapping &&
             Starling.current.profile != Context3DProfile.BASELINE_CONSTRAINED &&
             format != Context3DTextureFormat.COMPRESSED &&
             format != Context3DTextureFormat.COMPRESSED_ALPHA;
@@ -573,11 +597,14 @@ class Texture
      *                  the trimmed area.
      *  @param rotated  If true, the SubTexture will show the parent region rotated by
      *                  90 degrees (CCW).
+     *  @param scaleModifier  The scale factor of the new texture will be calculated by
+     *                  multiplying the parent texture's scale factor with this value.
      */
     public static function fromTexture(texture:Texture, region:Rectangle=null,
-                                       frame:Rectangle=null, rotated:Bool=false):Texture
+                                       frame:Rectangle=null, rotated:Bool=false,
+                                       scaleModifier:Float=1.0):Texture
     {
-        return new SubTexture(texture, region, false, frame, rotated);
+        return new SubTexture(texture, region, false, frame, rotated, scaleModifier);
     }
 
     /** Sets up a VertexData instance with the correct positions for 4 vertices so that
@@ -614,7 +641,7 @@ class Texture
             var scaleX:Float = bounds.width  / frameWidth;
             var scaleY:Float = bounds.height / frameHeight;
 
-            if (scaleX != 1.0 || scaleY != 1.0)
+            if (scaleX != 1.0 || scaleY != 1.0 || bounds.x != 0 || bounds.y != 0)
             {
                 sMatrix.identity();
                 sMatrix.scale(scaleX, scaleY);

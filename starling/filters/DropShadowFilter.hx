@@ -25,11 +25,12 @@ class DropShadowFilter extends FragmentFilter
 
     /** Creates a new DropShadowFilter instance with the specified parameters. */
     public function new(distance:Float=4.0, angle:Float=0.785,
-                                     color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0)
+                                     color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
+                                     resolution:Float=0.5)
     {
         super();
         _compositeFilter = new CompositeFilter();
-        _blurFilter = new BlurFilter(blur, blur);
+        _blurFilter = new BlurFilter(blur, blur, resolution);
         _distance = distance;
         _angle = angle;
 
@@ -49,14 +50,20 @@ class DropShadowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
-        var shadow:Texture = _blurFilter.process(painter, pool, input0);
-        var result:Texture = _compositeFilter.process(painter, pool, shadow, input0);
-        pool.putTexture(shadow);
+        var shadow:Texture = _blurFilter.process(painter, helper, input0);
+        var result:Texture = _compositeFilter.process(painter, helper, shadow, input0);
+        helper.putTexture(shadow);
         return result;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_numPasses():Int
+    {
+        return _blurFilter.numPasses + _compositeFilter.numPasses;
     }
 
     private function updatePadding():Void
@@ -131,7 +138,7 @@ class DropShadowFilter extends FragmentFilter
     }
 
     /** The amount of blur with which the shadow is created.
-     *  The number of required passes will be <code>Math.ceil(value) √ó 2</code>.
+     *  The number of required passes will be <code>Math.ceil(value) Å~ 2</code>.
      *  @default 1.0 */
     public var blur(get, set):Float;
     @:noCompletion private function get_blur():Float { return _blurFilter.blurX; }
@@ -140,6 +147,18 @@ class DropShadowFilter extends FragmentFilter
         if (blur != value)
         {
             _blurFilter.blurX = _blurFilter.blurY = value;
+            updatePadding();
+        }
+        return value;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_resolution():Float { return _blurFilter.resolution; }
+    @:noCompletion override private function set_resolution(value:Float):Float
+    {
+        if (resolution != value)
+        {
+            _blurFilter.resolution = value;
             updatePadding();
         }
         return value;

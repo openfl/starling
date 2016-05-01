@@ -8,7 +8,8 @@
 //
 // =================================================================================================
 
-package starling.rendering;
+package starling.styles;
+import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Point;
 
@@ -18,6 +19,7 @@ import starling.core.starling_internal;
 import starling.display.Mesh;
 import starling.events.Event;
 import starling.events.EventDispatcher;
+import starling.rendering.*;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 
@@ -65,12 +67,12 @@ import starling.textures.TextureSmoothing;
  *
  *  <ul>
  *    <li>Always provide a constructor that can be called without any arguments.</li>
- *    <li>Override <code>copyFrom</code> â€” that's necessary for batching.</li>
- *    <li>Override <code>createEffect</code> â€” this method must return the
+ *    <li>Override <code>copyFrom</code> â€? that's necessary for batching.</li>
+ *    <li>Override <code>createEffect</code> â€? this method must return the
  *        <code>MeshEffect</code> that will do the actual Stage3D rendering.</li>
- *    <li>Override <code>updateEffect</code> â€” this configures the effect created above
+ *    <li>Override <code>updateEffect</code> â€? this configures the effect created above
  *        right before rendering.</li>
- *    <li>Override <code>canBatchWith</code> if necessary â€” this method figures out if one
+ *    <li>Override <code>canBatchWith</code> if necessary â€? this method figures out if one
  *        instance of the style can be batched with another. If they all can, you can leave
  *        this out.</li>
  *  </ul>
@@ -99,7 +101,9 @@ class MeshStyle extends EventDispatcher
     private var _type:Class<MeshStyle>;
     private var _target:Mesh;
     private var _texture:Texture;
+    private var _textureBase:TextureBase;
     private var _textureSmoothing:String;
+    private var _textureRepeat:Bool;
     private var _vertexData:VertexData;   // just a reference to the target's vertex data
     private var _indexData:IndexData;     // just a reference to the target's index data
 
@@ -121,6 +125,8 @@ class MeshStyle extends EventDispatcher
     public function copyFrom(meshStyle:MeshStyle):Void
     {
         _texture = meshStyle._texture;
+        _textureBase = meshStyle._textureBase;
+        _textureRepeat = meshStyle._textureRepeat;
         _textureSmoothing = meshStyle._textureSmoothing;
     }
 
@@ -150,9 +156,11 @@ class MeshStyle extends EventDispatcher
     public function updateEffect(effect:MeshEffect, state:RenderState):Void
     {
         effect.texture = _texture;
+        effect.textureRepeat = _textureRepeat;
         effect.textureSmoothing = _textureSmoothing;
         effect.mvpMatrix3D = state.mvpMatrix3D;
         effect.alpha = state.alpha;
+        effect.tinted = _vertexData.tinted;
     }
 
     /** Indicates if the current instance can be batched with the given style.
@@ -168,8 +176,9 @@ class MeshStyle extends EventDispatcher
 
             if (_texture == null && newTexture == null) return true;
             else if (_texture != null && newTexture != null)
-                return _texture.base == newTexture.base &&
-                       _textureSmoothing == meshStyle._textureSmoothing;
+                return _textureBase == meshStyle._textureBase &&
+                       _textureSmoothing == meshStyle._textureSmoothing &&
+                       _textureRepeat == meshStyle._textureRepeat;
             else return false;
         }
         else return false;
@@ -264,6 +273,26 @@ class MeshStyle extends EventDispatcher
 
     // vertex manipulation
 
+    /** The position of the vertex at the specified index, in the mesh's local coordinate
+     *  system.
+     *
+     *  <p>Only modify the position of a vertex if you know exactly what you're doing, as
+     *  some classes might not work correctly when their vertices are moved. E.g. the
+     *  <code>Quad</code> class expects its vertices to spawn up a perfectly rectangular
+     *  area; some of its optimized methods won't work correctly if that premise is no longer
+     *  fulfilled or the original bounds change.</p>
+     */
+    public function getVertexPosition(vertexID:Int, out:Point=null):Point
+    {
+        return _vertexData.getPoint(vertexID, "position", out);
+    }
+
+    public function setVertexPosition(vertexID:Int, x:Float, y:Float):Void
+    {
+        _vertexData.setPoint(vertexID, "position", x, y);
+        setRequiresRedraw();
+    }
+
     /** Returns the alpha value of the vertex at the specified index. */
     public function getVertexAlpha(vertexID:Int):Float
     {
@@ -343,6 +372,9 @@ class MeshStyle extends EventDispatcher
         for (i in 0 ... numVertices)
             _vertexData.setColor(i, "color", value);
 
+        if (value == 0xffffff && _vertexData.tinted)
+            _vertexData.updateTinted();
+
         setRequiresRedraw();
         return value;
     }
@@ -374,6 +406,7 @@ class MeshStyle extends EventDispatcher
             }
 
             _texture = value;
+            _textureBase = value != null ? value.base : null;
             setRequiresRedraw();
         }
         return value;
@@ -391,6 +424,12 @@ class MeshStyle extends EventDispatcher
         }
         return value;
     }
+
+    /** Indicates if pixels at the edges will be repeated or clamped.
+     *  Only works for power-of-two textures. @default false */
+    public var textureRepeat(get, set):Bool;
+    @:noCompletion private function get_textureRepeat():Bool { return _textureRepeat; }
+    @:noCompletion private function set_textureRepeat(value:Bool):Bool { return _textureRepeat = value; }
 
     /** The target the style is currently assigned to. */
     public var target(get, never):Mesh;

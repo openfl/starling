@@ -158,13 +158,13 @@ class DisplayObjectContainer extends DisplayObject
         }
     }
     
-    /** Removes a child from the container. If the object is not a child, nothing happens. 
-     *  If requested, the child will be disposed right away. */
+    /** Removes a child from the container. If the object is not a child, the method returns
+     *  <code>null</code>. If requested, the child will be disposed right away. */
     public function removeChild(child:DisplayObject, dispose:Bool=false):DisplayObject
     {
         var childIndex:Int = getChildIndex(child);
-        if (childIndex != -1) removeChildAt(childIndex, dispose);
-        return child;
+        if (childIndex != -1) return removeChildAt(childIndex, dispose);
+        else return null;
     }
     
     /** Removes a child at a certain index. The index positions of any display objects above
@@ -400,7 +400,7 @@ class DisplayObjectContainer extends DisplayObject
                     painter.pushState(child._pushToken);
                     painter.setStateTo(child.transformationMatrix, child.alpha, child.blendMode);
 
-                    if (mask != null) painter.drawMask(mask);
+                    if (mask != null) painter.drawMask(mask, child);
 
                     if (filter != null) filter.render(painter);
                     else        child.render(painter);

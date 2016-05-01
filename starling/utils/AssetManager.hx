@@ -1348,8 +1348,15 @@ class AssetManager extends EventDispatcher
     /** Textures that are created from Bitmaps will be uploaded to the GPU with the
      *  <code>Context3DTextureFormat</code> assigned to this property. @default "bgra" */
     public var textureFormat(get, set):Context3DTextureFormat;
-    public function get_textureFormat():Context3DTextureFormat { return _defaultTextureOptions.format; }
-    public function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return _defaultTextureOptions.format = value; }
+    @:noCompletion private function get_textureFormat():Context3DTextureFormat { return _defaultTextureOptions.format; }
+    @:noCompletion private function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return _defaultTextureOptions.format = value; }
+
+    /** Indicates if the underlying Stage3D textures should be created as the power-of-two based
+     *  <code>Texture</code> class instead of the more memory efficient <code>RectangleTexture</code>.
+     *  @default false */
+    public var forcePotTextures(get, set):Bool;
+    @:noCompletion private function get_forcePotTextures():Bool { return _defaultTextureOptions.forcePotTexture; }
+    @:noCompletion private function set_forcePotTextures(value:Bool):Bool { return _defaultTextureOptions.forcePotTexture = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      *  loading an object from a remote server. More information about this topic can be found 

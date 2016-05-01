@@ -109,9 +109,7 @@ class Canvas extends DisplayObjectContainer
 
     private function appendPolygon(polygon:Polygon):Void
     {
-        var numVertices:Int = polygon.numVertices;
-        var vertexFormat:String = "position:float2, color:bytes4";
-        var vertexData:VertexData = new VertexData(vertexFormat, numVertices);
+        var vertexData:VertexData = new VertexData();
         var indexData:IndexData = new IndexData(polygon.numTriangles * 3);
 
         polygon.triangulate(indexData);

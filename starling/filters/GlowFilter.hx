@@ -21,11 +21,12 @@ class GlowFilter extends FragmentFilter
     private var _compositeFilter:CompositeFilter;
 
     /** Initializes a new GlowFilter instance with the specified parameters. */
-    public function new(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0)
+    public function new(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+                               resolution:Float=0.5)
     {
         super();
         _compositeFilter = new CompositeFilter();
-        _blurFilter = new BlurFilter(blur, blur);
+        _blurFilter = new BlurFilter(blur, blur, resolution);
 
         this.color = color;
         this.alpha = alpha;
@@ -43,14 +44,20 @@ class GlowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
-        var glow:Texture = _blurFilter.process(painter, pool, input0);
-        var result:Texture = _compositeFilter.process(painter, pool, glow, input0);
-        pool.putTexture(glow);
+        var glow:Texture = _blurFilter.process(painter, helper, input0);
+        var result:Texture = _compositeFilter.process(painter, helper, glow, input0);
+        helper.putTexture(glow);
         return result;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_numPasses():Int
+    {
+        return _blurFilter.numPasses + _compositeFilter.numPasses;
     }
 
     private function updatePadding():Void
@@ -85,7 +92,7 @@ class GlowFilter extends FragmentFilter
     }
 
     /** The amount of blur with which the glow is created.
-     *  The number of required passes will be <code>Math.ceil(value) Ã— 2</code>.
+     *  The number of required passes will be <code>Math.ceil(value) Ã? 2</code>.
      *  @default 1.0 */
     public var blur(get, set):Float;
     @:noCompletion private function get_blur():Float { return _blurFilter.blurX; }
@@ -94,6 +101,18 @@ class GlowFilter extends FragmentFilter
         if (blur != value)
         {
             _blurFilter.blurX = _blurFilter.blurY = value;
+            updatePadding();
+        }
+        return value;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_resolution():Float { return _blurFilter.resolution; }
+    @:noCompletion override private function set_resolution(value:Float):Float
+    {
+        if (resolution != value)
+        {
+            _blurFilter.resolution = value;
             updatePadding();
         }
         return value;

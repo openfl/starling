@@ -113,6 +113,9 @@ class ConcretePotTexture extends ConcreteTexture
     }
 
     /** @inheritDoc */
+    @:noCompletion override private function get_isPotTexture():Bool { return true; }
+
+    /** @inheritDoc */
     override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
     {
         #if 0

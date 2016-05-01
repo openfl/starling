@@ -47,6 +47,7 @@ class FilterChain extends FragmentFilter
         #end
 
         updatePadding();
+        addEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
 
     /** Disposes the filter chain itself as well as all contained filters. */
@@ -68,7 +69,7 @@ class FilterChain extends FragmentFilter
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
@@ -79,12 +80,24 @@ class FilterChain extends FragmentFilter
         for (i in 0 ... numFilters)
         {
             inTexture = outTexture;
-            outTexture = _filters[i].process(painter, pool, inTexture);
+            outTexture = _filters[i].process(painter, helper, inTexture);
 
-            if (i != 0) pool.putTexture(inTexture);
+            if (i != 0) helper.putTexture(inTexture);
         }
 
         return outTexture;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_numPasses():Int
+    {
+        var numPasses:Int = 0;
+        var numFilters:Int = _filters.length;
+
+        for (i in 0 ... numFilters)
+            numPasses += _filters[i].numPasses;
+
+        return numPasses;
     }
 
     /** Returns the filter at a certain index. If you pass a negative index,
@@ -149,6 +162,12 @@ class FilterChain extends FragmentFilter
         }
 
         this.padding.copyFrom(sPadding);
+    }
+
+    override private function onEnterFrame(event:Event):Void
+    {
+        var i:Int, numFilters:Int = _filters.length;
+        for (i in 0 ... numFilters) _filters[i].dispatchEvent(event);
     }
 
     /** Indicates the current chain length. */

@@ -26,6 +26,7 @@ import starling.utils.Max;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
+import starling.styles.MeshStyle;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.StringUtil;
@@ -41,10 +42,10 @@ import starling.utils.StringUtil;
  *  efficiently by the GPU.</p>
  *
  *  <p>Before you can move data into the buffers, you have to set it up in conventional
- *  memory â€” that is, in a Vector or a ByteArray. Since it's quite cumbersome to manually
+ *  memory â€? that is, in a Vector or a ByteArray. Since it's quite cumbersome to manually
  *  create and manipulate those data structures, the IndexData and VertexData classes provide
- *  a simple way to do just that. The data is stored in a ByteArray (one index or vertex after
- *  the other) that can easily be uploaded to a buffer.</p>
+ *  a simple way to do just that. The data is stored sequentially (one vertex or index after
+ *  the other) so that it can easily be uploaded to a buffer.</p>
  *
  *  <strong>Vertex Format</strong>
  *
@@ -72,8 +73,8 @@ import starling.utils.StringUtil;
  *  <p>Always use the format <code>bytes4</code> for color data. The color access methods
  *  expect that format, since it's the most efficient way to store color data. Furthermore,
  *  you should always include the string "color" (or "Color") in the name of color data;
- *  that way, it will be recognized as such and will always have its alpha value pre-filled
- *  with the value "1.0".</p>
+ *  that way, it will be recognized as such and will always have its value pre-filled with
+ *  pure white at full opacity.</p>
  *
  *  <strong>Premultiplied Alpha</strong>
  *
@@ -82,9 +83,23 @@ import starling.utils.StringUtil;
  *  before saving them. You can change this behavior with the <code>premultipliedAlpha</code>
  *  property.</p>
  *
- *  <p>Beware: with premultiplied alpha, the alpha value always effects the resolution of
+ *  <p>Beware: with premultiplied alpha, the alpha value always affects the resolution of
  *  the RGB channels. A small alpha value results in a lower accuracy of the other channels,
  *  and if the alpha value reaches zero, the color information is lost altogether.</p>
+ *
+ *  <strong>Tinting</strong>
+ *
+ *  <p>Some low-end hardware is very sensitive when it comes to fragment shader complexity.
+ *  Thus, Starling optimizes shaders for non-tinted meshes. The VertexData class keeps track
+ *  of its <code>tinted</code>-state, at least at a basic level: whenever you change color
+ *  or alpha value of a vertex to something different than white (<code>0xffffff</code>) with
+ *  full alpha (<code>1.0</code>), the <code>tinted</code> property is enabled.</p>
+ *
+ *  <p>However, that value is not entirely accurate: when you restore the color of just a
+ *  range of vertices, or copy just a subset of vertices to another instance, the property
+ *  might wrongfully indicate a tinted mesh. If that's the case, you can either call
+ *  <code>updateTinted()</code> or assign a custom value to the <code>tinted</code>-property.
+ *  </p>
  *
  *  @see VertexDataFormat
  *  @see IndexData
@@ -97,6 +112,7 @@ class VertexData
     private var _attributes:Array<VertexDataAttribute>;
     private var _numAttributes:Int;
     private var _premultipliedAlpha:Bool;
+    private var _tinted:Bool;
 
     private var _posOffset:Int;  // in bytes
     private var _colOffset:Int;  // in bytes
@@ -140,9 +156,9 @@ class VertexData
 
         _attributes = _format.attributes;
         _numAttributes = _attributes.length;
-        _posOffset = _format.hasAttribute("position") ? _format.getOffsetInBytes("position") : 0;
-        _colOffset = _format.hasAttribute("color")    ? _format.getOffsetInBytes("color")    : 0;
-        _vertexSize = _format.vertexSizeInBytes;
+        _posOffset = _format.hasAttribute("position") ? _format.getOffset("position") : 0;
+        _colOffset = _format.hasAttribute("color")    ? _format.getOffset("color")    : 0;
+        _vertexSize = _format.vertexSize;
         _numVertices = 0;
         _premultipliedAlpha = true;
         _rawData = new ByteArray();
@@ -156,6 +172,7 @@ class VertexData
     {
         _rawData.clear();
         _numVertices = 0;
+        _tinted = false;
     }
 
     /** Creates a duplicate of the vertex data object. */
@@ -165,6 +182,7 @@ class VertexData
         clone._rawData.writeBytes(_rawData);
         clone._numVertices = _numVertices;
         clone._premultipliedAlpha = _premultipliedAlpha;
+        clone._tinted = _tinted;
         return clone;
     }
 
@@ -195,6 +213,8 @@ class VertexData
             if (target._numVertices < targetVertexID + numVertices)
                 target._numVertices = targetVertexID + numVertices;
 
+            target._tinted = target._tinted || _tinted;
+
             // In this case, it's fastest to copy the complete range in one call
             // and then overwrite only the transformed positions.
 
@@ -205,20 +225,20 @@ class VertexData
             if (matrix != null)
             {
                 var x:Float, y:Float;
-                var position:Int = targetVertexID * _vertexSize + _posOffset;
-                var endPosition:Int = position + (numVertices * _vertexSize);
+                var pos:Int = targetVertexID * _vertexSize + _posOffset;
+                var endPos:Int = pos + (numVertices * _vertexSize);
 
-                while (position < endPosition)
+                while (pos < endPos)
                 {
-                    targetRawData.position = position;
+                    targetRawData.position = pos;
                     x = targetRawData.readFloat();
                     y = targetRawData.readFloat();
 
-                    targetRawData.position = position;
+                    targetRawData.position = pos;
                     targetRawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
                     targetRawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);
 
-                    position += _vertexSize;
+                    pos += _vertexSize;
                 }
             }
         }
@@ -265,6 +285,9 @@ class VertexData
 
         if (targetAttribute == null)
             throw new ArgumentError("Attribute '" + attrName + "' not found in target data");
+
+        if (sourceAttribute.isColor)
+            target._tinted = target._tinted || _tinted;
 
         copyAttributeTo_internal(target, targetVertexID, matrix,
                 sourceAttribute, targetAttribute, vertexID, numVertices);
@@ -328,12 +351,14 @@ class VertexData
      *  you passed to the constructor, call this method to avoid the 4k memory problem. */
     public function trim():Void
     {
-        sBytes.length = _rawData.length;
+        var numBytes:Int = _numVertices * _vertexSize;
+
+        sBytes.length = numBytes;
         sBytes.position = 0;
-        sBytes.writeBytes(_rawData);
+        sBytes.writeBytes(_rawData, 0, numBytes);
 
         _rawData.clear();
-        _rawData.length = sBytes.length;
+        _rawData.length = numBytes;
         _rawData.writeBytes(sBytes);
 
         sBytes.clear();
@@ -640,20 +665,20 @@ class VertexData
                 var attribute:VertexDataAttribute = _attributes[i];
                 if (attribute.isColor)
                 {
-                    var offset:Int = attribute.offset;
+                    var pos:Int = attribute.offset;
                     var oldColor:UInt;
                     var newColor:UInt;
 
                     for (j in 0 ... numVertices)
                     {
-                        _rawData.position = offset;
+                        _rawData.position = pos;
                         oldColor = switchEndian(_rawData.readUnsignedInt());
                         newColor = value ? premultiplyAlpha(oldColor) : unmultiplyAlpha(oldColor);
 
-                        _rawData.position = offset;
+                        _rawData.position = pos;
                         _rawData.writeUnsignedInt(switchEndian(newColor));
 
-                        offset += _vertexSize;
+                        pos += _vertexSize;
                     }
                 }
             }
@@ -662,22 +687,29 @@ class VertexData
         _premultipliedAlpha = value;
     }
 
-    /** Indicates if any vertices have a non-white color or are not fully opaque. */
-    public function isTinted(attrName:String="color"):Bool
+    /** Updates the <code>tinted</code> property from the actual color data. This might make
+     *  sense after copying part of a tinted VertexData instance to another, since not each
+     *  color value is checked in the process. An instance is tinted if any vertices have a
+     *  non-white color or are not fully opaque. */
+    public function updateTinted(attrName:String="color"):Bool
     {
-        var offset:Int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
+        var pos:Int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
+        _tinted = false;
 
         for (i in 0 ... _numVertices)
         {
-            _rawData.position = offset;
+            _rawData.position = pos;
 
             if (_rawData.readUnsignedInt() != 0xffffffff)
-                return true;
+            {
+                _tinted = true;
+                break;
+            }
 
-            offset += _vertexSize;
+            pos += _vertexSize;
         }
 
-        return false;
+        return _tinted;
     }
 
     // modify multiple attributes
@@ -692,20 +724,20 @@ class VertexData
 
         var x:Float, y:Float;
         var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
-        var position:Int = vertexID * _vertexSize + offset;
-        var endPosition:Int = position + (numVertices * _vertexSize);
+        var pos:Int = vertexID * _vertexSize + offset;
+        var endPos:Int = pos + numVertices * _vertexSize;
 
-        while (position < endPosition)
+        while (pos < endPos)
         {
-            _rawData.position = position;
+            _rawData.position = pos;
             x = _rawData.readFloat();
             y = _rawData.readFloat();
 
-            _rawData.position = position;
+            _rawData.position = pos;
             _rawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
             _rawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);
 
-            position += _vertexSize;
+            pos += _vertexSize;
         }
     }
 
@@ -718,20 +750,20 @@ class VertexData
 
         var x:Float, y:Float;
         var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
-        var position:Int = vertexID * _vertexSize + offset;
-        var endPosition:Int = position + (numVertices * _vertexSize);
+        var pos:Int = vertexID * _vertexSize + offset;
+        var endPos:Int = pos + numVertices * _vertexSize;
 
-        while (position < endPosition)
+        while (pos < endPos)
         {
-            _rawData.position = position;
+            _rawData.position = pos;
             x = _rawData.readFloat();
             y = _rawData.readFloat();
 
-            _rawData.position = position;
+            _rawData.position = pos;
             _rawData.writeFloat(x + deltaX);
             _rawData.writeFloat(y + deltaY);
 
-            position += _vertexSize;
+            pos += _vertexSize;
         }
     }
 
@@ -742,6 +774,8 @@ class VertexData
         if (factor == 1.0) return;
         if (numVertices < 0 || vertexID + numVertices > _numVertices)
             numVertices = _numVertices - vertexID;
+
+        _tinted = true; // factor must be != 1, so there's definitely tinting.
 
         var i:Int;
         var offset:Int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
@@ -776,30 +810,34 @@ class VertexData
     }
 
     /** Writes the given RGB and alpha values to the specified vertices. */
-    public function colorize(attrName:String, color:UInt, alpha:Float=1.0,
+    public function colorize(attrName:String="color", color:UInt=0xffffff, alpha:Float=1.0,
                              vertexID:Int=0, numVertices:Int=-1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices)
             numVertices = _numVertices - vertexID;
 
         var offset:Int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
-        var position:Int = vertexID * _vertexSize + offset;
-        var endPosition:Int = position + (numVertices * _vertexSize);
+        var pos:Int = vertexID * _vertexSize + offset;
+        var endPos:Int = pos + (numVertices * _vertexSize);
 
         if (alpha > 1.0)      alpha = 1.0;
         else if (alpha < 0.0) alpha = 0.0;
 
         var rgba:UInt = ((color << 8) & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
+
+        if (rgba == 0xffffffff && numVertices == _numVertices) _tinted = false;
+        else if (rgba != 0xffffffff) _tinted = true;
+
         if (_premultipliedAlpha && alpha != 1.0) rgba = premultiplyAlpha(rgba);
 
         _rawData.position = vertexID * _vertexSize + offset;
         _rawData.writeUnsignedInt(switchEndian(rgba));
 
-        while (position < endPosition)
+        while (pos < endPos)
         {
-            _rawData.position = position;
+            _rawData.position = pos;
             _rawData.writeUnsignedInt(switchEndian(rgba));
-            position += _vertexSize;
+            pos += _vertexSize;
         }
     }
 
@@ -813,7 +851,7 @@ class VertexData
     }
 
     /** Returns the size of a certain vertex attribute in bytes. */
-    public function getSizeInBytes(attrName:String):Int
+    public function getSize(attrName:String):Int
     {
         return getAttribute(attrName).size;
     }
@@ -825,7 +863,7 @@ class VertexData
     }
 
     /** Returns the offset (in bytes) of an attribute within a vertex. */
-    public function getOffsetInBytes(attrName:String):Int
+    public function getOffset(attrName:String):Int
     {
         return getAttribute(attrName).offset;
     }
@@ -943,23 +981,39 @@ class VertexData
     @:noCompletion private function get_numVertices():Int { return _numVertices; }
     @:noCompletion private function set_numVertices(value:Int):Int
     {
-        if (_numVertices == value) return value;
-
-        _rawData.length = value * _vertexSize;
-
-        for (i in 0 ... _numAttributes)
+        if (value > _numVertices)
         {
-            var attribute:VertexDataAttribute = _attributes[i];
-            if (attribute.isColor)
+            var oldLength:Int = _numVertices * vertexSize;
+            var newLength:Int = value * _vertexSize;
+
+            if (_rawData.length > oldLength)
             {
-                // alpha values of all color-properties must be initialized with "1.0"
-                var offset:Int = attribute.offset + 3;
-                for (j in _numVertices ... value)
-                    _rawData[j * _vertexSize + offset] = 0xff;
+                _rawData.position = oldLength;
+                while (_rawData.bytesAvailable != 0) _rawData.writeUnsignedInt(0);
+            }
+
+            if (_rawData.length < newLength)
+                _rawData.length = newLength;
+
+            for (i in 0 ... _numAttributes)
+            {
+                var attribute:VertexDataAttribute = _attributes[i];
+                if (attribute.isColor) // initialize color values with "white" and full alpha
+                {
+                    var pos:Int = _numVertices * _vertexSize + attribute.offset;
+                    for (j in _numVertices ... value)
+                    {
+                        _rawData.position = pos;
+                        _rawData.writeUnsignedInt(0xffffffff);
+                        pos += _vertexSize;
+                    }
+                }
             }
         }
 
-        return _numVertices = value;
+        if (value == 0) _tinted = false;
+        _numVertices = value;
+        return value;
     }
 
     /** The raw vertex data; not a copy! */
@@ -986,13 +1040,15 @@ class VertexData
         if (_format == value) return value;
 
         #if 0
-        var a:Int, i:Int;
+        var a:Int, i:Int, pos:Int;
+        #else
+        var pos:Int;
         #end
-        var srcVertexSize:Int = _format.vertexSizeInBytes;
-        var tgtVertexSize:Int = value.vertexSizeInBytes;
+        var srcVertexSize:Int = _format.vertexSize;
+        var tgtVertexSize:Int = value.vertexSize;
         var numAttributes:Int = value.numAttributes;
 
-        sBytes.length = value.vertexSizeInBytes * _numVertices;
+        sBytes.length = value.vertexSize * _numVertices;
 
         for (a in 0 ... numAttributes)
         {
@@ -1001,17 +1057,25 @@ class VertexData
 
             if (srcAttr != null) // copy attributes that exist in both targets
             {
+                pos = tgtAttr.offset;
+
                 for (i in 0 ... _numVertices)
                 {
-                    sBytes.position = tgtVertexSize * i + tgtAttr.offset;
+                    sBytes.position = pos;
                     sBytes.writeBytes(_rawData, srcVertexSize * i + srcAttr.offset, srcAttr.size);
+                    pos += tgtVertexSize;
                 }
             }
-            else if (tgtAttr.isColor) // initialize color values with an alpha of "1.0"
+            else if (tgtAttr.isColor) // initialize color values with "white" and full alpha
             {
-                var offset:Int = tgtAttr.offset + 3;
+                pos = tgtAttr.offset;
+
                 for (i in 0 ... _numVertices)
-                    sBytes[tgtVertexSize * i + offset] = 0xff;
+                {
+                    sBytes.position = pos;
+                    sBytes.writeUnsignedInt(0xffffffff);
+                    pos += tgtVertexSize;
+                }
             }
         }
 
@@ -1023,11 +1087,20 @@ class VertexData
         _format = value;
         _attributes = _format.attributes;
         _numAttributes = _attributes.length;
-        _vertexSize = _format.vertexSizeInBytes;
-        _posOffset = _format.hasAttribute("position") ? _format.getOffsetInBytes("position") : 0;
-        _colOffset = _format.hasAttribute("color")    ? _format.getOffsetInBytes("color")    : 0;
+        _vertexSize = _format.vertexSize;
+        _posOffset = _format.hasAttribute("position") ? _format.getOffset("position") : 0;
+        _colOffset = _format.hasAttribute("color")    ? _format.getOffset("color")    : 0;
         return value;
     }
+
+    /** Indicates if the mesh contains any vertices that are not white or not fully opaque.
+     *  If <code>false</code> (and the value wasn't modified manually), the result is 100%
+     *  accurate; <code>true</code> represents just an educated guess. To be entirely sure,
+     *  you may call <code>updateTinted()</code>.
+     */
+    public var tinted(get, set):Bool;
+    @:noCompletion private function get_tinted():Bool { return _tinted; }
+    @:noCompletion private function set_tinted(value:Bool):Bool { return _tinted = value; }
 
     /** The format string that describes the attributes of each vertex. */
     public var formatString(get, never):String;
@@ -1037,8 +1110,8 @@ class VertexData
     }
 
     /** The size (in bytes) of each vertex. */
-    public var vertexSizeInBytes(get, never):Int;
-    @:noCompletion private function get_vertexSizeInBytes():Int
+    public var vertexSize(get, never):Int;
+    @:noCompletion private function get_vertexSize():Int
     {
         return _vertexSize;
     }
@@ -1051,8 +1124,8 @@ class VertexData
     }
 
     /** The size (in bytes) of the raw vertex data. */
-    public var sizeInBytes(get, never):Int;
-    @:noCompletion private function get_sizeInBytes():Int
+    public var size(get, never):Int;
+    @:noCompletion private function get_size():Int
     {
         return _numVertices * _vertexSize;
     }

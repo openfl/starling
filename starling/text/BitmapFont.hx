@@ -320,7 +320,7 @@ class BitmapFont implements ITextCompositor
                     }
                     else if (char == null)
                     {
-                        trace("[Starling] Missing character: " + charID);
+                        trace("[Starling] Font: "+ name + " missing character: " + text.charAt(i) + " id: "+ charID);
                     }
                     else
                     {

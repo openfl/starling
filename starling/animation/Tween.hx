@@ -17,6 +17,7 @@ import starling.core.starling_internal;
 import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.utils.ArrayUtil;
+import starling.utils.Color;
 
 /** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
@@ -235,6 +236,7 @@ class Tween extends EventDispatcher implements IAnimatable
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
                 if (onComplete != null) onComplete(onCompleteArgs);
+                if (_currentTime == 0) carryOverTime = 0; // tween was reset
             }
         }
         
@@ -292,25 +294,7 @@ class Tween extends EventDispatcher implements IAnimatable
 
     private function updateRgb(property:String, startValue:Float, endValue:Float):Void
     {
-        var startColor:UInt = Std.int(startValue);
-        var endColor:UInt   = Std.int(endValue);
-
-        var startA:UInt = (startColor >> 24) & 0xff;
-        var startR:UInt = (startColor >> 16) & 0xff;
-        var startG:UInt = (startColor >>  8) & 0xff;
-        var startB:UInt = (startColor      ) & 0xff;
-
-        var endA:UInt = (endColor >> 24) & 0xff;
-        var endR:UInt = (endColor >> 16) & 0xff;
-        var endG:UInt = (endColor >>  8) & 0xff;
-        var endB:UInt = (endColor      ) & 0xff;
-
-        var newA:UInt = Std.int(startA + (endA - startA) * _progress);
-        var newR:UInt = Std.int(startR + (endR - startR) * _progress);
-        var newG:UInt = Std.int(startG + (endG - startG) * _progress);
-        var newB:UInt = Std.int(startB + (endB - startB) * _progress);
-
-        Reflect.setProperty(_target, property, (newA << 24) | (newR << 16) | (newG << 8) | newB);
+        Reflect.setProperty(_target, property, Color.interpolate(Std.int(startValue), Std.int(endValue), _progress));
     }
 
     private function updateRad(property:String, startValue:Float, endValue:Float):Void

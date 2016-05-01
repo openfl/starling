@@ -10,12 +10,13 @@
 
 package starling.display;
 import flash.geom.Matrix;
+import starling.styles.MeshStyle;
 
 import starling.rendering.IndexData;
 import starling.rendering.MeshEffect;
-import starling.rendering.MeshStyle;
 import starling.rendering.Painter;
 import starling.rendering.VertexData;
+import starling.utils.MatrixUtil;
 import starling.utils.MeshSubset;
 
 /** Combines a number of meshes to one display object and renders them efficiently.
@@ -61,8 +62,6 @@ class MeshBatch extends Mesh
         var indexData:IndexData = new IndexData();
 
         super(vertexData, indexData);
-
-        _batchable = true;
     }
 
     // display object overrides
@@ -72,12 +71,6 @@ class MeshBatch extends Mesh
     {
         if (_effect != null) _effect.dispose();
         super.dispose();
-    }
-
-    /** @inheritDoc */
-    @:noCompletion override private function get_supportsRenderCache():Bool
-    {
-        return _batchable && super.supportsRenderCache;
     }
 
     private function setVertexAndIndexDataChanged():Void
@@ -206,11 +199,11 @@ class MeshBatch extends Mesh
      *  to the painter's current batch. Otherwise, this will actually do the drawing. */
     override public function render(painter:Painter):Void
     {
-        if (_vertexData.numVertices == 0)
-        {
-            // nothing to do =)
-        }
-        else if (_batchable)
+        if (_vertexData.numVertices == 0) return;
+        if (_pixelSnapping) MatrixUtil.snapToPixels(
+            painter.state.modelviewMatrix, painter.pixelSize);
+
+        if (_batchable)
         {
             painter.batchMesh(this);
         }
@@ -219,6 +212,7 @@ class MeshBatch extends Mesh
             painter.finishMeshBatch();
             painter.drawCount += 1;
             painter.prepareToDraw();
+            painter.excludeFromCache(this);
 
             if (_vertexSyncRequired) syncVertexBuffer();
             if (_indexSyncRequired)  syncIndexBuffer();
@@ -265,21 +259,17 @@ class MeshBatch extends Mesh
      *  or if it will draw itself right away.
      *
      *  <p>Only batchable meshes can profit from the render cache; but batching large meshes
-     *  may take up a lot of CPU time. Thus, for meshes that contain a large number of vertices
-     *  or are constantly changing (i.e. can't use the render cache anyway), it makes
-     *  sense to deactivate batching.</p>
+     *  may take up a lot of CPU time. Activate this property only if the batch contains just
+     *  a handful of vertices (say, 20 quads).</p>
      *
-     *  @default true
+     *  @default false
      */
     public var batchable(get, set):Bool;
     @:noCompletion private function get_batchable():Bool { return _batchable; }
     @:noCompletion private function set_batchable(value:Bool):Bool
     {
-        if (value != _batchable) // self-rendering must disrupt the render cache
-        {
-            _batchable = value;
-            updateSupportsRenderCache();
-        }
+        _batchable = value;
+        setRequiresRedraw();
         return value;
     }
 }

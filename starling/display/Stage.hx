@@ -186,7 +186,8 @@ class Stage extends DisplayObjectContainer
     /** @private */
     public function addEnterFrameListener(listener:DisplayObject):Void
     {
-        _enterFrameListeners.push(listener);
+        var index:Int = _enterFrameListeners.indexOf(listener);
+        if (index < 0)  _enterFrameListeners[_enterFrameListeners.length] = listener;
     }
     
     /** @private */

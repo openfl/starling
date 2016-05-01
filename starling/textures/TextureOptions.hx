@@ -21,17 +21,20 @@ class TextureOptions
     private var _mipMapping:Bool;
     private var _optimizeForRenderToTexture:Bool = false;
     private var _premultipliedAlpha:Bool;
+    private var _forcePotTexture:Bool;
     private var _onReady:Dynamic = null;
 
     /** Creates a new instance with the given options. */
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
-                                   format:Context3DTextureFormat=null, premultipliedAlpha:Bool=true)
+                                   format:Context3DTextureFormat=null, premultipliedAlpha:Bool=true,
+                                   forcePotTexture:Bool=false)
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         
         _scale = scale;
         _format = format;
         _mipMapping = mipMapping;
+        _forcePotTexture = forcePotTexture;
         _premultipliedAlpha = premultipliedAlpha;
     }
     
@@ -40,6 +43,8 @@ class TextureOptions
     {
         var clone:TextureOptions = new TextureOptions(_scale, _mipMapping, _format);
         clone._optimizeForRenderToTexture = _optimizeForRenderToTexture;
+        clone._premultipliedAlpha = _premultipliedAlpha;
+        clone._forcePotTexture = _forcePotTexture;
         clone._onReady = _onReady;
         return clone;
     }
@@ -69,7 +74,15 @@ class TextureOptions
     public var optimizeForRenderToTexture(get, set):Bool;
     private function get_optimizeForRenderToTexture():Bool { return _optimizeForRenderToTexture; }
     private function set_optimizeForRenderToTexture(value:Bool):Bool { return _optimizeForRenderToTexture = value; }
- 
+
+    /** Indicates if the underlying Stage3D texture should be created as the power-of-two based
+     *  <code>Texture</code> class instead of the more memory efficient <code>RectangleTexture</code>.
+     *  That might be useful when you need to render the texture with wrap mode <code>repeat</code>.
+     *  @default false */
+    public var forcePotTexture(get, set):Bool;
+    @:noCompletion private function get_forcePotTexture():Bool { return _forcePotTexture; }
+    @:noCompletion private function set_forcePotTexture(value:Bool):Bool { return _forcePotTexture = value; }
+
     /** A callback that is used only for ATF textures; if it is set, the ATF data will be
      *  decoded asynchronously. The texture can only be used when the callback has been
      *  executed. This property is ignored for all other texture types (they are ready

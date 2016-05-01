@@ -23,6 +23,8 @@ import starling.textures.Texture;
 import starling.utils.MathUtil;
 import starling.utils.RenderUtil;
 
+import starling.rendering.FilterEffect.tex;
+
 /** The BlurFilter applies a Gaussian blur to an object. The strength of the blur can be
  *  set for x- and y-axis separately. */
 class BlurFilter extends FragmentFilter
@@ -40,17 +42,16 @@ class BlurFilter extends FragmentFilter
      *      <li>etc.</li>
      *  </ul>
      */
-    public function new(blurX:Float=1.0, blurY:Float=1.0)
+    public function new(blurX:Float=1.0, blurY:Float=1.0, resolution:Float=1.0)
     {
         super();
         _blurX = blurX;
         _blurY = blurY;
-
-        updatePadding();
+        this.resolution = resolution;
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
@@ -59,7 +60,7 @@ class BlurFilter extends FragmentFilter
         if (_blurX == 0 && _blurY == 0)
         {
             effect.strength = 0;
-            return super.process(painter, pool, input0);
+            return super.process(painter, helper, input0);
         }
 
         var blurX:Float = Math.abs(_blurX);
@@ -75,9 +76,9 @@ class BlurFilter extends FragmentFilter
 
             blurX -= effect.strength;
             inTexture = outTexture;
-            outTexture = super.process(painter, pool, inTexture);
+            outTexture = super.process(painter, helper, inTexture);
 
-            if (inTexture != input0) pool.putTexture(inTexture);
+            if (inTexture != input0) helper.putTexture(inTexture);
         }
 
         effect.direction = BlurEffect.VERTICAL;
@@ -88,24 +89,38 @@ class BlurFilter extends FragmentFilter
 
             blurY -= effect.strength;
             inTexture = outTexture;
-            outTexture = super.process(painter, pool, inTexture);
+            outTexture = super.process(painter, helper, inTexture);
 
-            if (inTexture != input0) pool.putTexture(inTexture);
+            if (inTexture != input0) helper.putTexture(inTexture);
         }
 
         return outTexture;
     }
 
     /** @private */
-    override private function createEffect():FilterEffect
+    @:noCompletion override private function createEffect():FilterEffect
     {
         return new BlurEffect();
     }
 
+    /** @private */
+    @:noCompletion override private function set_resolution(value:Float):Float
+    {
+        super.resolution = value;
+        updatePadding();
+        return value;
+    }
+
+    /** @private */
+    @:noCompletion override private function get_numPasses():Int
+    {
+        return Std.int(Math.max((Math.ceil(_blurX) + Math.ceil(_blurY)), 1));
+    }
+
     private function updatePadding():Void
     {
-        var paddingX:Float = _blurX != 0 ? Math.ceil(Math.abs(_blurX)) + 3 : 1;
-        var paddingY:Float = _blurY != 0 ? Math.ceil(Math.abs(_blurY)) + 3 : 1;
+        var paddingX:Float = (_blurX != 0 ? Math.ceil(Math.abs(_blurX)) + 3 : 1) / resolution;
+        var paddingY:Float = (_blurY != 0 ? Math.ceil(Math.abs(_blurY)) + 3 : 1) / resolution;
 
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }
@@ -143,8 +158,8 @@ class BlurEffect extends FilterEffect
     private var _strength:Float;
     private var _direction:String;
 
-    private var _offsets:Vector<Float> = Vector.ofArray([0.0, 0, 0, 0]);
-    private var _weights:Vector<Float> = Vector.ofArray([0.0, 0, 0, 0]);
+    private var _offsets:Vector<Float> = Vector.ofArray([0, 0, 0, 0]);
+    private var _weights:Vector<Float> = Vector.ofArray([0, 0, 0, 0]);
 
     // helpers
     private var sTmpWeights:Vector<Float> = new Vector<Float>(5);
@@ -154,8 +169,9 @@ class BlurEffect extends FilterEffect
      *  @param direction     horizontal or vertical
      *  @param strength      range 0-1
      */
-    public function BlurEffect(direction:String="horizontal", strength:Float=1):Void
+    public function new(direction:String="horizontal", strength:Float=1):Void
     {
+        super();
         this.strength  = strength;
         this.direction = direction;
     }
@@ -286,11 +302,6 @@ class BlurEffect extends FilterEffect
             _offsets[2] = 0;
             _offsets[3] = offset2;
         }
-    }
-
-    private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture):String
-    {
-        return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture);
     }
 
     public var direction(get, set):String;

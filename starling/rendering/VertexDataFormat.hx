@@ -43,7 +43,7 @@ import starling.utils.StringUtil;
  *
  *  @see VertexData
  */
- class VertexDataFormat
+class VertexDataFormat
 {
     private var _format:String;
     private var _vertexSize:Int;
@@ -108,10 +108,17 @@ import starling.utils.StringUtil;
         }
     }
 
+    /** Creates a new VertexDataFormat instance by appending the given format string
+     *  to the current instance's format. */
+    public function extend(format:String):VertexDataFormat
+    {
+        return fromString(_format + ", " + format);
+    }
+
     // query methods
 
     /** Returns the size of a certain vertex attribute in bytes. */
-    public function getSizeInBytes(attrName:String):Int
+    public function getSize(attrName:String):Int
     {
         return getAttribute(attrName).size;
     }
@@ -123,7 +130,7 @@ import starling.utils.StringUtil;
     }
 
     /** Returns the offset (in bytes) of an attribute within a vertex. */
-    public function getOffsetInBytes(attrName:String):Int
+    public function getOffset(attrName:String):Int
     {
         return getAttribute(attrName).offset;
     }
@@ -254,8 +261,8 @@ import starling.utils.StringUtil;
     }
 
     /** The size (in bytes) of each vertex. */
-    public var vertexSizeInBytes(get, never):Int;
-    @:noCompletion private function get_vertexSizeInBytes():Int
+    public var vertexSize(get, never):Int;
+    @:noCompletion private function get_vertexSize():Int
     {
         return _vertexSize;
     }
@@ -278,11 +285,11 @@ import starling.utils.StringUtil;
     {
         return switch (format)
         {
-            case "bytes4": Context3DVertexBufferFormat.BYTES_4;
-            case "float1": Context3DVertexBufferFormat.FLOAT_1;
-            case "float2": Context3DVertexBufferFormat.FLOAT_2;
-            case "float3": Context3DVertexBufferFormat.FLOAT_3;
-            case "float4": Context3DVertexBufferFormat.FLOAT_4;
+            case "bytes4", "BYTES_4": Context3DVertexBufferFormat.BYTES_4;
+            case "float1", "FLOAT_1": Context3DVertexBufferFormat.FLOAT_1;
+            case "float2", "FLOAT_2": Context3DVertexBufferFormat.FLOAT_2;
+            case "float3", "FLOAT_3": Context3DVertexBufferFormat.FLOAT_3;
+            case "float4", "FLOAT_4": Context3DVertexBufferFormat.FLOAT_4;
             default: null;
         }
     }

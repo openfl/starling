@@ -15,6 +15,7 @@ import flash.display.Stage3D;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.errors.IllegalOperationError;
 import flash.events.ErrorEvent;
@@ -52,6 +53,11 @@ import starling.events.TouchProcessor;
 import starling.rendering.Painter;
 import starling.utils.Align;
 import starling.utils.SystemUtil;
+
+#if 0
+import flash.display.DisplayObject;
+#end
+import flash.display.DisplayObjectContainer;
 
 #if flash
 import haxe.ds.WeakMap;
@@ -127,7 +133,7 @@ typedef WeakMap<K, V> = Map<K, V>;
  *  </ul>
  *  
  *  <p>The recommendation is to deploy your app with the profile "auto" (which makes Starling
- *  pick the best available of those), but test it in all available profiles.</p>
+ *  pick the best available of those), but to test it in all available profiles.</p>
  *  
  *  <strong>Accessing the Starling object</strong>
  * 
@@ -151,8 +157,7 @@ typedef WeakMap<K, V> = Map<K, V>;
  *  
  *  <p>Beware, though, that conventional Flash content on top of 3D content can lead to
  *  performance penalties on some (mobile) platforms. For that reason, always remove all child
- *  objects from the overlay when you don't need them any longer. Starling will remove the 
- *  overlay from the display list when it's empty.</p>
+ *  objects from the overlay when you don't need them any longer.</p>
  *  
  *  <strong>Multitouch</strong>
  *  
@@ -160,22 +165,32 @@ typedef WeakMap<K, V> = Map<K, V>;
  *  where most of us are working with a conventional mouse and keyboard, Starling can simulate 
  *  multitouch events with the help of the "Shift" and "Ctrl" (Mac: "Cmd") keys. Activate
  *  this feature by enabling the <code>simulateMultitouch</code> property.</p>
+ *
+ *  <strong>Skipping Unchanged Frames</strong>
+ *
+ *  <p>It happens surprisingly often in an app or game that a scene stays completely static for
+ *  several frames. So why redraw the stage at all in those situations? That's exactly the
+ *  point of the <code>skipUnchangedFrames</code>-property. If enabled, static scenes are
+ *  recognized as such and the back buffer is simply left as it is. On a mobile device, the
+ *  impact of this feature can't be overestimated! There's simply no better way to enhance
+ *  battery life. Make it a habit to always activate it; look at the documentation of the
+ *  corresponding property for details.</p>
  *  
  *  <strong>Handling a lost render context</strong>
  *  
  *  <p>On some operating systems and under certain conditions (e.g. returning from system
  *  sleep), Starling's stage3D render context may be lost. Starling will try to recover
- *  from a lost context automatically. To be able to do this, Starling will cache textures
- *  in RAM to be able to restore them after the context was lost. This will take up quite
- *  a bit of extra memory, though, which might be problematic especially on mobile platforms.
- *  To avoid the higher memory footprint, it's recommend to load your textures with
- *  Starling's "AssetManager"; it is smart enough to recreate a texture directly from its
- *  origin.</p>
+ *  from a lost context automatically; to be able to do this, it will cache textures in
+ *  RAM. This will take up quite a bit of extra memory, though, which might be problematic
+ *  especially on mobile platforms. To avoid the higher memory footprint, it's recommended
+ *  to load your textures with Starling's "AssetManager"; it is smart enough to recreate a
+ *  texture directly from its origin.</p>
  *
- *  <p>In case you want to react to a context loss, Starling dispatches an event with
- *  the type "Event.CONTEXT3D_CREATE" when the context is restored. You can recreate any 
- *  invalid resources in a corresponding event listener.</p>
- * 
+ *  <p>In case you want to react to a context loss manually, Starling dispatches an event with
+ *  the type "Event.CONTEXT3D_CREATE" when the context is restored, and textures will execute
+ *  their <code>root.onRestore</code> callback, to which you can attach your own logic.
+ *  Refer to the "Texture" class for more information.</p>
+ *
  *  <strong>Sharing a 3D Context</strong>
  * 
  *  <p>Per default, Starling handles the Stage3D context itself. If you want to combine
@@ -200,12 +215,13 @@ typedef WeakMap<K, V> = Map<K, V>;
  *  information about this topic.</p>
  *
  *  @see starling.utils.AssetManager
+ *  @see starling.textures.Texture
  *
  */ 
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    inline public static var VERSION:String = "2.0";
+    inline public static var VERSION:String = "2.0.1";
     
     /** The key for the shader programs stored in 'contextData' */
     inline private static var PROGRAM_DATA_NAME:String = "Starling.programs"; 
@@ -226,12 +242,15 @@ class Starling extends EventDispatcher
     private var _started:Bool;
     private var _rendering:Bool;
     private var _supportHighResolutions:Bool;
+    private var _skipUnchangedFrames:Bool;
+    private var _showStats:Bool;
     
     private var _viewPort:Rectangle;
     private var _previousViewPort:Rectangle;
     private var _clippedViewPort:Rectangle;
 
     private var _nativeStage:flash.display.Stage;
+    private var _nativeStageEmpty:Bool;
     private var _nativeOverlay:Sprite;
 
     private static var sCurrent:Starling;
@@ -377,8 +396,8 @@ class Starling extends EventDispatcher
         makeCurrent();
         updateViewPort(true);
 
-        if (!shareContext) // ideal time: after viewPort setup, before root creation
-            dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
+        // ideal time: after viewPort setup, before root creation
+        dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
 
         initializeRoot();
         _frameTimestamp = getTimer() / 1000.0;
@@ -440,7 +459,7 @@ class Starling extends EventDispatcher
         _stage.advanceTime(passedTime);
         _juggler.advanceTime(passedTime);
     }
-    
+
     /** Renders the complete display list. Before rendering, the context is cleared; afterwards,
      *  it is presented (to avoid this, enable <code>shareContext</code>).
      *
@@ -454,33 +473,41 @@ class Starling extends EventDispatcher
         
         makeCurrent();
         updateViewPort();
-        dispatchEventWith(starling.events.Event.RENDER);
 
-        var shareContext:Bool = _painter.shareContext;
-        var scaleX:Float = _viewPort.width  / _stage.stageWidth;
-        var scaleY:Float = _viewPort.height / _stage.stageHeight;
+        var doRedraw:Bool = _stage.requiresRedraw || mustAlwaysRender;
+        if (doRedraw)
+        {
+            dispatchEventWith(starling.events.Event.RENDER);
 
-        _painter.nextFrame();
-        _painter.pixelSize = 1.0 / contentScaleFactor;
-        _painter.state.setProjectionMatrix(
-            _viewPort.x < 0 ? -_viewPort.x / scaleX : 0.0,
-            _viewPort.y < 0 ? -_viewPort.y / scaleY : 0.0,
-            _clippedViewPort.width  / scaleX,
-            _clippedViewPort.height / scaleY,
-            _stage.stageWidth, _stage.stageHeight, _stage.cameraPosition);
-        
-        if (!shareContext)
-            _painter.clear(_stage.color, 1.0);
-        
-        _stage.render(_painter);
-        _painter.finishFrame();
-        _painter.frameID = ++_frameID;
+            var shareContext:Bool = _painter.shareContext;
+            var scaleX:Float = _viewPort.width  / _stage.stageWidth;
+            var scaleY:Float = _viewPort.height / _stage.stageHeight;
+
+            _painter.nextFrame();
+            _painter.pixelSize = 1.0 / contentScaleFactor;
+            _painter.state.setProjectionMatrix(
+                _viewPort.x < 0 ? -_viewPort.x / scaleX : 0.0,
+                _viewPort.y < 0 ? -_viewPort.y / scaleY : 0.0,
+                _clippedViewPort.width  / scaleX,
+                _clippedViewPort.height / scaleY,
+                _stage.stageWidth, _stage.stageHeight, _stage.cameraPosition);
+
+            if (!shareContext)
+                _painter.clear(_stage.color, 1.0);
+
+            _stage.render(_painter);
+            _painter.finishFrame();
+            _painter.frameID = ++_frameID;
+
+            if (!shareContext)
+                _painter.present();
+        }
 
         if (_statsDisplay != null)
+        {
             _statsDisplay.drawCount = _painter.drawCount;
-        
-        if (!shareContext)
-            _painter.present();
+            if (!doRedraw) _statsDisplay.markFrameAsSkipped();
+        }
     }
     
     private function updateViewPort(forceUpdate:Bool=false):Void
@@ -571,6 +598,9 @@ class Starling extends EventDispatcher
     { 
         _started = _rendering = true;
         _frameTimestamp = getTimer() / 1000.0;
+
+        // mainly for Android: force redraw when app moves into foreground
+        Timer.delay(setRequiresRedraw, 1);
     }
     
     /** Stops all logic and input processing, effectively freezing the app in its current state.
@@ -587,7 +617,19 @@ class Starling extends EventDispatcher
         _started = false;
         _rendering = !suspendRendering;
     }
-    
+
+    /** Makes sure that the next frame is actually rendered.
+     *
+     *  <p>When <code>skipUnchangedFrames</code> is enabled, some situations require that you
+     *  manually force a redraw, e.g. when a RenderTexture is changed. This method is the
+     *  easiest way to do so; it's just a shortcut to <code>stage.setRequiresRedraw()</code>.
+     *  </p>
+     */
+    public function setRequiresRedraw():Void
+    {
+        _stage.setRequiresRedraw();
+    }
+
     // event handlers
     
     private function onStage3DError(event:ErrorEvent):Void
@@ -672,11 +714,11 @@ class Starling extends EventDispatcher
     {
         _touchProcessor.enqueueMouseLeftStage();
     }
-    
+
     private function onTouch(event:Event):Void
     {
         if (!_started) return;
-        
+
         var globalX:Float;
         var globalY:Float;
         var touchID:Int;
@@ -684,7 +726,7 @@ class Starling extends EventDispatcher
         var pressure:Float = 1.0;
         var width:Float = 1.0;
         var height:Float = 1.0;
-        
+
         // figure out general touch properties
         if (Std.is(event, MouseEvent))
         {
@@ -692,7 +734,7 @@ class Starling extends EventDispatcher
             globalX = mouseEvent.stageX;
             globalY = mouseEvent.stageY;
             touchID = 0;
-            
+
             // MouseEvent.buttonDown returns true for both left and right button (AIR supports
             // the right mouse button). We only want to react on the left button for now,
             // so we have to save the state for the left button manually.
@@ -702,11 +744,11 @@ class Starling extends EventDispatcher
         else
         {
             var touchEvent:TouchEvent = cast(event, TouchEvent);
-        
+
             // On a system that supports both mouse and touch input, the primary touch point
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
-            
+
             if (#if flash Mouse.supportsCursor && #end touchEvent.isPrimaryTouchPoint) return;
             else
             {
@@ -718,7 +760,7 @@ class Starling extends EventDispatcher
                 height   = touchEvent.sizeY;
             }
         }
-        
+
         // figure out touch phase
         switch (event.type)
         {
@@ -727,44 +769,69 @@ class Starling extends EventDispatcher
             case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED;
             case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN;
             case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED;
-            case MouseEvent.MOUSE_MOVE: 
+            case MouseEvent.MOUSE_MOVE:
                 phase = (_leftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
         }
-        
+
         // move position into viewport bounds
         globalX = _stage.stageWidth  * (globalX - _viewPort.x) / _viewPort.width;
         globalY = _stage.stageHeight * (globalY - _viewPort.y) / _viewPort.height;
-        
+
         // enqueue touch in touch processor
         _touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
-        
+
         // allow objects that depend on mouse-over state to be updated immediately
         if (event.type == MouseEvent.MOUSE_UP #if flash && Mouse.supportsCursor #end)
             _touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
-    
+
     public var touchEventTypes(get, never):Array<String>;
     @:noCompletion private function get_touchEventTypes():Array<String>
     {
         var types:Array<String> = [];
-        
+
         if (multitouchEnabled)
         {
             types.push(TouchEvent.TOUCH_BEGIN);
             types.push(TouchEvent.TOUCH_MOVE);
             types.push(TouchEvent.TOUCH_END);
         }
-        
-        //if (!multitouchEnabled #if flash || Mouse.supportsCursor #end)
+
+        #if flash
+        if (!multitouchEnabled || Mouse.supportsCursor)
+            types.push(MouseEvent.MOUSE_DOWN,  MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_UP);
+        #else
+        #end
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
             types.push(MouseEvent.MOUSE_UP);
         }
-            
         return types;
     }
-    
+
+    private var mustAlwaysRender(get, never):Bool;
+    @:noCompletion private function get_mustAlwaysRender():Bool
+    {
+        // On mobile, and in some browsers with the "baselineConstrained" profile, the
+        // standard display list is only rendered after calling "context.present()".
+        // In such a case, we cannot omit frames if there is any content on the stage.
+
+        if (!_skipUnchangedFrames || _painter.shareContext)
+            return true;
+        else if (SystemUtil.isDesktop && profile != Context3DProfile.BASELINE_CONSTRAINED)
+            return false;
+        else
+        {
+            // Rendering can be skipped when both this and previous frame are empty.
+            var nativeStageEmpty:Bool = isNativeDisplayObjectEmpty(_nativeStage);
+            var mustAlwaysRender:Bool = !nativeStageEmpty || !_nativeStageEmpty;
+            _nativeStageEmpty = nativeStageEmpty;
+
+            return mustAlwaysRender;
+        }
+    }
+
     // properties
     
     /** Indicates if this Starling instance is started. */
@@ -844,23 +911,30 @@ class Starling extends EventDispatcher
     /** Indicates if a small statistics box (with FPS, memory usage and draw count) is
      *  displayed.
      *
+     *  <p>When the box turns dark green, more than 50% of the frames since the box' last
+     *  update could skip rendering altogether. This will only happen if the property
+     *  <code>skipUnchangedFrames</code> is enabled.</p>
+     *
      *  <p>Beware that the memory usage should be taken with a grain of salt. The value is
      *  determined via <code>System.totalMemory</code> and does not take texture memory
      *  into account. It is recommended to use Adobe Scout for reliable and comprehensive
      *  memory analysis.</p>
      */
     public var showStats(get, set):Bool;
-    @:noCompletion private function get_showStats():Bool { return _statsDisplay != null && _statsDisplay.parent != null; }
+    @:noCompletion private function get_showStats():Bool { return _showStats; }
     @:noCompletion private function set_showStats(value:Bool):Bool
     {
-        if (value == showStats) return value;
-        
+        _showStats = value;
+
         if (value)
         {
             if (_statsDisplay != null) _stage.addChild(_statsDisplay);
             else               showStatsAt();
         }
-        else _statsDisplay.removeFromParent();
+        else if (_statsDisplay != null)
+        {
+            _statsDisplay.removeFromParent();
+        }
         return value;
     }
     
@@ -868,12 +942,14 @@ class Starling extends EventDispatcher
     public function showStatsAt(horizontalAlign:String="left",
                                 verticalAlign:String="top", scale:Float=1):Void
     {
+        _showStats = true;
+        
         function onRootCreated():Void
         {
-            showStatsAt(horizontalAlign, verticalAlign, scale);
+            if (_showStats) showStatsAt(horizontalAlign, verticalAlign, scale);
             removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
         }
-        
+
         if (context == null)
         {
             // Starling is not yet ready - we postpone this until it's initialized.
@@ -974,6 +1050,26 @@ class Starling extends EventDispatcher
         }
         return value;
     }
+
+    /** When enabled, Starling will skip rendering the stage if it hasn't changed since the
+     *  last frame. This is great for apps that remain static from time to time, since it will
+     *  greatly reduce power consumption. You should activate this whenever possible!
+     *
+     *  <p>The reason why it's disabled by default is just that it causes problems with Render-
+     *  and VideoTextures. When you use those, you either have to disable this property
+     *  temporarily, or call <code>setRequiresRedraw()</code> (ideally on the stage) whenever
+     *  those textures are changing. Otherwise, the changes won't show up.</p>
+     *
+     *  @default false
+     */
+    public var skipUnchangedFrames(get, set):Bool;
+    @:noCompletion private function get_skipUnchangedFrames():Bool { return _skipUnchangedFrames; }
+    @:noCompletion private function set_skipUnchangedFrames(value:Bool):Bool
+    {
+        _skipUnchangedFrames = value;
+        _nativeStageEmpty = false; // required by 'mustAlwaysRender'
+        return value;
+    }
     
     /** The TouchProcessor is passed all mouse and touch input and is responsible for
      *  dispatching TouchEvents to the Starling display tree. If you want to handle these
@@ -1051,4 +1147,25 @@ class Starling extends EventDispatcher
     {
         return sCurrent != null ? sCurrent._frameID : 0;
     }
+    
+    // put here to avoid naming conflicts
+    private function isNativeDisplayObjectEmpty(object:flash.display.DisplayObject):Bool
+    {
+        if (Std.is(object, DisplayObjectContainer))
+        {
+            var container:DisplayObjectContainer = cast object;
+            var numChildren:Int = container.numChildren;
+
+            for (i in 0 ... numChildren)
+            {
+                if (!isNativeDisplayObjectEmpty(container.getChildAt(i)))
+                    return false;
+            }
+
+            return true;
+        }
+        else return !object.visible;
+    }
+
 }
+

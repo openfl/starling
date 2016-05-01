@@ -10,6 +10,7 @@
 
 package starling.rendering;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DBufferUsage;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.IndexBuffer3D;
 import flash.display3D.VertexBuffer3D;
@@ -72,18 +73,18 @@ import starling.utils.execute;
  *  override the following methods:</p>
  *
  *  <ul>
- *    <li><code>createProgram():Program</code> — must create the actual program containing 
+ *    <li><code>createProgram():Program</code> ? must create the actual program containing 
  *        vertex- and fragment-shaders. A program will be created only once for each render
  *        context; this is taken care of by the base class.</li>
- *    <li><code>get programVariantName():uint</code> (optional) — override this if your
+ *    <li><code>get programVariantName():uint</code> (optional) ? override this if your
  *        effect requires different programs, depending on its settings. The recommended
  *        way to do this is via a bit-mask that uniquely encodes the current settings.</li>
- *    <li><code>get vertexFormat():String</code> (optional) — must return the
+ *    <li><code>get vertexFormat():String</code> (optional) ? must return the
  *        <code>VertexData</code> format that this effect requires for its vertices. If
  *        the effect does not require any special attributes, you can leave this out.</li>
- *    <li><code>beforeDraw(context:Context3D):void</code> — Set up your context by
+ *    <li><code>beforeDraw(context:Context3D):void</code> ? Set up your context by
  *        configuring program constants and buffer attributes.</li>
- *    <li><code>afterDraw(context:Context3D):void</code> — Will be called directly after
+ *    <li><code>afterDraw(context:Context3D):void</code> ? Will be called directly after
  *        <code>context.drawTriangles()</code>. Clean up any context configuration here.</li>
  *  </ul>
  *
@@ -94,7 +95,7 @@ import starling.utils.execute;
  *
  *  @see FilterEffect
  *  @see MeshEffect
- *  @see starling.rendering.MeshStyle
+ *  @see starling.styles.MeshStyle
  *  @see starling.filters.FragmentFilter
  *  @see starling.utils.RenderUtil
  */
@@ -105,10 +106,11 @@ class Effect
     public static var VERTEX_FORMAT:VertexDataFormat =
         VertexDataFormat.fromString("position:float2");
 
+    private var _vertexBuffer:VertexBuffer3D;
+    private var _vertexBufferSize:Int; // in bytes
     private var _indexBuffer:IndexBuffer3D;
     private var _indexBufferSize:Int;  // in number of indices
-    private var _vertexBuffer:VertexBuffer3D;
-    private var _vertexBufferSize:Int; // in blocks of 32 bits
+    private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
     private var _onRestore:Dynamic;
@@ -145,55 +147,82 @@ class Effect
         #end
     }
 
-    /** Purges one or both of the index- and vertex-buffers. */
-    public function purgeBuffers(indexBuffer:Bool=true, vertexBuffer:Bool=true):Void
+    /** Purges one or both of the vertex- and index-buffers. */
+    public function purgeBuffers(vertexBuffer:Bool=true, indexBuffer:Bool=true):Void
     {
-        if (_indexBuffer != null && indexBuffer)
-        {
-            _indexBuffer.dispose();
-            _indexBuffer = null;
-        }
-
         if (_vertexBuffer != null && vertexBuffer)
         {
             _vertexBuffer.dispose();
             _vertexBuffer = null;
         }
+
+        if (_indexBuffer != null && indexBuffer)
+        {
+            _indexBuffer.dispose();
+            _indexBuffer = null;
+        }
     }
 
     /** Uploads the given index data to the internal index buffer. If the buffer is too
-     *  small, a new one is created automatically. */
-    public function uploadIndexData(indexData:IndexData):Void
+     *  small, a new one is created automatically.
+     *
+     *  @param indexData   The IndexData instance to upload.
+     *  @param bufferUsage The expected buffer usage. Use one of the constants defined in
+     *                     <code>Context3DBufferUsage</code>. Only used when the method call
+     *                     causes the creation of a new index buffer.
+     */
+    public function uploadIndexData(indexData:IndexData,
+                                    bufferUsage:Context3DBufferUsage=null):Void
     {
+        if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
+        var numIndices:Int = indexData.numIndices;
+        var isQuadLayout:Bool = indexData.useQuadLayout;
+        var wasQuadLayout:Bool = _indexBufferUsesQuadLayout;
+
         if (_indexBuffer != null)
         {
-            if (indexData.numIndices <= _indexBufferSize)
-                indexData.uploadToIndexBuffer(_indexBuffer);
+            if (numIndices <= _indexBufferSize)
+            {
+                if (!isQuadLayout || !wasQuadLayout)
+                {
+                    indexData.uploadToIndexBuffer(_indexBuffer);
+                    _indexBufferUsesQuadLayout = isQuadLayout && numIndices == _indexBufferSize;
+                }
+            }
             else
-                purgeBuffers(true, false);
+                purgeBuffers(false, true);
         }
         if (_indexBuffer == null)
         {
-            _indexBuffer = indexData.createIndexBuffer(true);
-            _indexBufferSize = indexData.numIndices;
+            _indexBuffer = indexData.createIndexBuffer(true, bufferUsage);
+            _indexBufferSize = numIndices;
+            _indexBufferUsesQuadLayout = isQuadLayout;
         }
     }
 
     /** Uploads the given vertex data to the internal vertex buffer. If the buffer is too
-     *  small, a new one is created automatically. */
-    public function uploadVertexData(vertexData:VertexData):Void
+     *  small, a new one is created automatically.
+     *
+     *  @param vertexData  The VertexData instance to upload.
+     *  @param bufferUsage The expected buffer usage. Use one of the constants defined in
+     *                     <code>Context3DBufferUsage</code>. Only used when the method call
+     *                     causes the creation of a new vertex buffer.
+     */
+    public function uploadVertexData(vertexData:VertexData,
+                                     bufferUsage:Context3DBufferUsage=null):Void
     {
+        if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
         if (_vertexBuffer != null)
         {
-            if (vertexData.sizeIn32Bits <= _vertexBufferSize)
+            if (vertexData.size <= _vertexBufferSize)
                 vertexData.uploadToVertexBuffer(_vertexBuffer);
             else
-                purgeBuffers(false, true);
+                purgeBuffers(true, false);
         }
         if (_vertexBuffer == null)
         {
-            _vertexBuffer = vertexData.createVertexBuffer(true);
-            _vertexBufferSize = vertexData.sizeIn32Bits;
+            _vertexBuffer = vertexData.createVertexBuffer(true, bufferUsage);
+            _vertexBufferSize = vertexData.size;
         }
     }
 
@@ -204,7 +233,7 @@ class Effect
      *  <code>afterDraw</code>, in this order. */
     public function render(firstIndex:Int=0, numTriangles:Int=-1):Void
     {
-        if (numTriangles < 0) numTriangles = Std.int(indexBufferSize / 3);
+        if (numTriangles < 0) numTriangles = Std.int(_indexBufferSize / 3);
         if (numTriangles == 0) return;
 
         var context:Context3D = Starling.sContext;
@@ -220,8 +249,8 @@ class Effect
      *  the context with the following constants and attributes:
      *
      *  <ul>
-     *    <li><code>vc0-vc3</code> — MVP matrix</li>
-     *    <li><code>va0</code> — vertex position (xy)</li>
+     *    <li><code>vc0-vc3</code> ? MVP matrix</li>
+     *    <li><code>va0</code> ? vertex position (xy)</li>
      *  </ul>
      */
     private function beforeDraw(context:Context3D):Void
@@ -354,7 +383,7 @@ class Effect
     /** The internally used index buffer used on rendering. */
     private var indexBuffer(get, never):IndexBuffer3D;
     @:noCompletion private function get_indexBuffer():IndexBuffer3D { return _indexBuffer; }
-    
+
     /** The current size of the index buffer (in number of indices). */
     private var indexBufferSize(get, never):Int;
     @:noCompletion private function get_indexBufferSize():Int { return _indexBufferSize; }

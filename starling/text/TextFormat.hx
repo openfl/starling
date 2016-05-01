@@ -111,7 +111,10 @@ class TextFormat extends EventDispatcher
     }
 
     /** The name of the font. TrueType fonts will be looked up from embedded fonts and
-     *  system fonts; bitmap fonts must be registered at the TextField class first. */
+     *  system fonts; bitmap fonts must be registered at the TextField class first.
+     *  Beware: If you loaded an embedded font at runtime, you must call
+     *  <code>TextField.updateEmbeddedFonts()</code> for Starling to recognize it.
+     */
     public var font(get, set):String;
     @:noCompletion private function get_font():String { return _font; }
     @:noCompletion private function set_font(value:String):String

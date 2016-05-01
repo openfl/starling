@@ -15,15 +15,16 @@ import openfl.errors.ArgumentError;
 #if flash
 import flash.ui.MouseCursor;
 #end
+import starling.utils.MathUtil;
 
 import starling.events.Event;
 import starling.events.Touch;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
+import starling.styles.MeshStyle;
 import starling.text.TextField;
 import starling.text.TextFormat;
 import starling.textures.Texture;
-import starling.utils.RectangleUtil;
 
 /** Dispatched when the user triggers the button. Bubbles. */
 //[Event(name="triggered", type="starling.events.Event")]
@@ -83,6 +84,7 @@ class Button extends DisplayObjectContainer
 
         _state = ButtonState.UP;
         _body = new Image(upState);
+        _body.pixelSnapping = true;
         _scaleWhenDown = downState != null ? 1.0 : 0.9;
         _scaleWhenOver = _alphaWhenDown = 1.0;
         _alphaWhenDisabled = disabledState != null ? 1.0: 0.5;
@@ -136,6 +138,7 @@ class Button extends DisplayObjectContainer
         if (_textField == null)
         {
             _textField = new TextField(Std.int(_textBounds.width), Std.int(_textBounds.height));
+            _textField.pixelSnapping = _body.pixelSnapping;
             _textField.touchable = false;
             _textField.autoScale = true;
             _textField.batchable = true;
@@ -315,6 +318,26 @@ class Button extends DisplayObjectContainer
         return _textField.format = value;
     }
 
+    /** The style that is used to render the button's TextField. */
+    public var textStyle(get, set):MeshStyle;
+    @:noCompletion private function get_textStyle():MeshStyle
+    {
+        if (_textField == null) createTextField();
+        return _textField.style;
+    }
+
+    @:noCompletion private function set_textStyle(value:MeshStyle):MeshStyle
+    {
+        if (_textField == null) createTextField();
+        _textField.style = value;
+        return value;
+    }
+
+    /** The style that is used to render the Button. */
+    public var style(get, set):MeshStyle;
+    @:noCompletion private function get_style():MeshStyle { return _body.style; }
+    @:noCompletion private function set_style(value:MeshStyle):MeshStyle { return _body.style = value; }
+
     /** The texture that is displayed when the button is not being touched. */
     public var upState(get, set):Texture;
     @:noCompletion private function get_upState():Texture { return _upState; }
@@ -416,28 +439,46 @@ class Button extends DisplayObjectContainer
     @:noCompletion private override function get_useHandCursor():Bool { return _useHandCursor; }
     @:noCompletion private override function set_useHandCursor(value:Bool):Bool { return _useHandCursor = value; }
 
-    /** @private */
-    @:noCompletion override private function set_width(value:Float):Float
+    /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
+     *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
+     *  @default true */
+    public var pixelSnapping(get, set):Bool;
+    @:noCompletion private function get_pixelSnapping():Bool { return _body.pixelSnapping; }
+    @:noCompletion private function set_pixelSnapping(value:Bool):Bool
     {
-        var scaleX:Float = value / _body.width;
-
-        _body.width = value;
-        _textBounds.x *= scaleX;
-        _textBounds.width *= scaleX;
-
-        if (_textField != null) _textField.width = value;
+        _body.pixelSnapping = value;
+        if (_textField != null) _textField.pixelSnapping = value;
         return value;
     }
 
+    /** @private */
+    @:noCompletion override private function set_width(value:Float):Float
+    {
+        // The Button might use a Scale9Grid ->
+        // we must update the body width/height manually for the grid to scale properly.
+
+        var newWidth:Float = value / MathUtil.logicalOr(this.scaleX, 1.0);
+        var scale:Float = newWidth / MathUtil.logicalOr(_body.width, 1.0);
+
+        _body.width = newWidth;
+        _textBounds.x *= scale;
+        _textBounds.width *= scale;
+
+        if (_textField != null) _textField.width = newWidth;
+        return value;
+    }
+
+    /** @private */
     @:noCompletion override private function set_height(value:Float):Float
     {
-        var scaleY:Float = value / _body.height;
+        var newHeight:Float = value /  MathUtil.logicalOr(this.scaleY, 1.0);
+        var scale:Float = newHeight / MathUtil.logicalOr(_body.height, 1.0);
 
-        _body.height = value;
-        _textBounds.y *= scaleY;
-        _textBounds.height *= scaleY;
+        _body.height = newHeight;
+        _textBounds.y *= scale;
+        _textBounds.height *= scale;
 
-        if (_textField != null) _textField.height = value;
+        if (_textField != null) _textField.height = newHeight;
         return value;
     }
 

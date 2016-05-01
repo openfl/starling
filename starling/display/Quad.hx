@@ -15,9 +15,9 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import starling.styles.MeshStyle;
 
 import starling.rendering.IndexData;
-import starling.rendering.MeshStyle;
 import starling.rendering.VertexData;
 import starling.textures.Texture;
 import starling.utils.RectangleUtil;
@@ -87,6 +87,7 @@ class Quad extends Mesh
         indexData.numIndices = 0;
         indexData.addQuad(0, 1, 2, 3);
         vertexData.numVertices = 4;
+        vertexData.trim();
 
         if (texture != null)
         {

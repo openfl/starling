@@ -33,12 +33,13 @@ class SystemUtil
     private static var sApplicationActive:Bool = true;
     private static var sWaitingCalls:Array<Array<Dynamic>> = [];
     private static var sPlatform:String;
+    private static var sDesktop:Bool;
     private static var sVersion:String;
     private static var sAIR:Bool;
     private static var sSupportsDepthAndStencil:Bool = true;
     
     /** @private */
-    public function SystemUtil() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
      *  application. This method is automatically called by the Starling constructor. */
@@ -47,12 +48,18 @@ class SystemUtil
         if (sInitialized) return;
         
         sInitialized = true;
+        sPlatform = Capabilities.version.substr(0, 3);
         sVersion = Capabilities.version.substr(4);
-        
+        sDesktop = (~/(WIN|MAC|LNX)/).match(sPlatform);
+
         try
         {
-            var nativeApp = Lib.current;
+            #if 0
+            var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
+            var nativeApp:EventDispatcher = nativeAppClass["nativeApplication"] as EventDispatcher;
+            #end
 
+            var nativeApp:EventDispatcher = Lib.current;
             nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
             nativeApp.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);
 
@@ -62,12 +69,8 @@ class SystemUtil
             var ds:String = appDescriptor.ns::initialWindow.ns::depthAndStencil.toString().toLowerCase();
 
             sSupportsDepthAndStencil = (ds == "true");
-            #elseif flash
-            #else
-            var windowConfig:WindowConfig = Application.current.window.config;
-            sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
-            #end
             sAIR = true;
+            #end
         }
         catch (e:Error)
         {
@@ -132,11 +135,7 @@ class SystemUtil
     public static function get_isDesktop():Bool
     {
         initialize();
-        #if (cpp || neko)
-        return ~/(WIN|MAC|LNX)/.match(Sys.systemName());
-        #else
-        return true;
-        #end
+        return sDesktop;
     }
     
     /** Returns the three-letter platform string of the current system. These are
@@ -146,11 +145,7 @@ class SystemUtil
     public static function get_platform():String
     {
         initialize();
-        #if (cpp || neko)
-        return Sys.systemName();
-        #else
-        return "";
-        #end
+        return sPlatform;
     }
 
     /** Returns the Flash Player/AIR version string. The format of the version number is:

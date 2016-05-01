@@ -88,6 +88,28 @@ class Color
 
         return argb(alpha, red, green, blue);
     }
+
+    /** Calculates a smooth transition between one color to the next.
+     *  <code>ratio</code> is expected between 0 and 1. */
+    public static function interpolate(startColor:UInt, endColor:UInt, ratio:Float):UInt
+    {
+        var startA:UInt = (startColor >> 24) & 0xff;
+        var startR:UInt = (startColor >> 16) & 0xff;
+        var startG:UInt = (startColor >>  8) & 0xff;
+        var startB:UInt = (startColor      ) & 0xff;
+
+        var endA:UInt = (endColor >> 24) & 0xff;
+        var endR:UInt = (endColor >> 16) & 0xff;
+        var endG:UInt = (endColor >>  8) & 0xff;
+        var endB:UInt = (endColor      ) & 0xff;
+
+        var newA:UInt = Std.int(startA + (endA - startA) * ratio);
+        var newR:UInt = Std.int(startR + (endR - startR) * ratio);
+        var newG:UInt = Std.int(startG + (endG - startG) * ratio);
+        var newB:UInt = Std.int(startB + (endB - startB) * ratio);
+
+        return (newA << 24) | (newR << 16) | (newG << 8) | newB;
+    }
     
     /** @private */
     public function new() { throw new AbstractClassError(); }

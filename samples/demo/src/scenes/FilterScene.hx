@@ -77,7 +77,7 @@ import utils.MenuButton;
         _displacementMap = createDisplacementMap(_image.width, _image.height);
 
         var displacementFilter:DisplacementMapFilter = new DisplacementMapFilter(
-            _displacementMap, null, cast BitmapDataChannel.RED, cast BitmapDataChannel.GREEN, 25, 25);
+            _displacementMap, cast BitmapDataChannel.RED, cast BitmapDataChannel.GREEN, 25, 25);
         _filterInfos.push(["Displacement Map", displacementFilter]);
 
         var invertFilter:ColorMatrixFilter = new ColorMatrixFilter();

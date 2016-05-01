@@ -33,7 +33,7 @@ import starling.utils.StringUtil;
  *  efficiently by the GPU.</p>
  *
  *  <p>Before you can move data into the buffers, you have to set it up in conventional
- *  memory â€” that is, in a Vector or a ByteArray. Since it's quite cumbersome to manually
+ *  memory â€? that is, in a Vector or a ByteArray. Since it's quite cumbersome to manually
  *  create and manipulate those data structures, the IndexData and VertexData classes provide
  *  a simple way to do just that. The data is stored in a ByteArray (one index or vertex after
  *  the other) that can easily be uploaded to a buffer.</p>
@@ -42,7 +42,7 @@ import starling.utils.StringUtil;
  *
  *  <p>In many cases, the indices we are working with will reference just quads, i.e.
  *  triangles composing rectangles. That means that many IndexData instances will contain
- *  similar or identical data â€” a great opportunity for optimization!</p>
+ *  similar or identical data â€? a great opportunity for optimization!</p>
  *
  *  <p>If an IndexData instance follows a specific layout, it will be recognized
  *  automatically and many operations can be executed much faster. In Starling, that
@@ -70,10 +70,13 @@ class IndexData
     private var _initialCapacity:Int;
     private var _useQuadLayout:Bool;
 
+    // basic quad layout
+    private static var sQuadData:ByteArray = new ByteArray();
+    private static var sQuadDataNumIndices:UInt = 0;
+
     // helper objects
     private static var sVector:Vector<UInt> = new Vector<UInt>();
     private static var sTrimData:ByteArray = new ByteArray();
-    private static var sQuadData:ByteArray = new ByteArray();
 
     /** Creates an empty IndexData instance with the given capacity (in indices).
      *
@@ -145,7 +148,9 @@ class IndexData
         if (target._numIndices < newNumIndices)
         {
             target._numIndices = newNumIndices;
-            ensureQuadDataCapacity(newNumIndices);
+
+            if (sQuadDataNumIndices  < newNumIndices)
+                ensureQuadDataCapacity(newNumIndices);
         }
 
         if (_useQuadLayout)
@@ -392,14 +397,17 @@ class IndexData
      *  made smaller. */
     private function ensureQuadDataCapacity(numIndices:Int):Void
     {
-        if (Std.int(sQuadData.length) >= numIndices * INDEX_SIZE) return;
+        if (sQuadDataNumIndices >= numIndices) return;
 
+        #if 0
         var i:Int;
-        var oldNumQuads:Int = Std.int(sQuadData.length / 12);
+        #end
+        var oldNumQuads:Int = Std.int(sQuadDataNumIndices / 6);
         var newNumQuads:Int = Math.ceil(numIndices / 6);
 
         sQuadData.endian = Endian.LITTLE_ENDIAN;
         sQuadData.position = sQuadData.length;
+        sQuadDataNumIndices = newNumQuads * 6;
 
         for (i in oldNumQuads ... newNumQuads)
         {

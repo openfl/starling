@@ -17,6 +17,7 @@ import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 #end
 import openfl.errors.ArgumentError;
+import starling.utils.MathUtil;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;
@@ -26,6 +27,7 @@ import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.rendering.Painter;
+import starling.styles.MeshStyle;
 import starling.utils.RectangleUtil;
 
 /** A TextField displays text, either using standard true type fonts or custom bitmap fonts.
@@ -66,13 +68,17 @@ import starling.utils.RectangleUtil;
  *  the intended result.</p>
  *
  *  <strong>Batching of TextFields</strong>
- *  
+ *
  *  <p>Normally, TextFields will require exactly one draw call. For TrueType fonts, you cannot
- *  avoid that; bitmap fonts, however, may be batched as long as the <code>batchable</code>
- *  property is enabled. Since only batchable meshes can make use of Starling's render cache,
- *  it makes sense to keep that property enabled in most circumstances. Only TextFields that
- *  are constantly changing (their position relative to the stage, their color, text, etc.)
- *  and contain are large number of bitmap glyphs should disable batching.</p>
+ *  avoid that; bitmap fonts, however, may be batched if you enable the "batchable" property.
+ *  This makes sense if you have several TextFields with short texts that are rendered one
+ *  after the other (e.g. subsequent children of the same sprite), or if your bitmap font
+ *  texture is in your main texture atlas.</p>
+ *
+ *  <p>The recommendation is to activate "batchable" if it reduces your draw calls (use the
+ *  StatsDisplay to check this) AND if the TextFields contain no more than about 10-15
+ *  characters (per TextField). For longer texts, the batching would take up more CPU time
+ *  than what is saved by avoiding the draw calls.</p>
  */
 class TextField extends DisplayObjectContainer
 {
@@ -89,6 +95,7 @@ class TextField extends DisplayObjectContainer
     private var _requiresRecomposition:Bool;
     private var _border:DisplayObjectContainer;
     private var _meshBatch:MeshBatch;
+    private var _style:MeshStyle;
 
     // helper objects
     private static var sMatrix:Matrix = new Matrix();
@@ -112,6 +119,7 @@ class TextField extends DisplayObjectContainer
 
         _meshBatch = new MeshBatch();
         _meshBatch.touchable = false;
+        _meshBatch.pixelSnapping = true;
         addChild(_meshBatch);
     }
     
@@ -173,13 +181,18 @@ class TextField extends DisplayObjectContainer
 
         format.copyFrom(_format);
 
-        if (isHorizontalAutoSize) width = 100000;
-        if (isVerticalAutoSize)  height = 100000;
+        // Horizontal autoSize does not work for HTML text, since it supports custom alignment.
+        // What should we do if one line is aligned to the left, another to the right?
 
+        if (isHorizontalAutoSize && !_options.isHtmlText) width = 100000;
+        if (isVerticalAutoSize) height = 100000;
+
+        _meshBatch.x = _meshBatch.y = 0;
         _options.textureScale = Starling.sContentScaleFactor;
         _options.textureFormat = sDefaultTextureFormat;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
 
+        if (_style != null) _meshBatch.style = _style;
         if (_autoSize != TextFieldAutoSize.NONE)
         {
             _textBounds = _meshBatch.getBounds(_meshBatch, _textBounds);
@@ -188,12 +201,14 @@ class TextField extends DisplayObjectContainer
             {
                 _meshBatch.x = _textBounds.x = -_textBounds.x;
                 _hitArea.width = _textBounds.width;
+                _textBounds.x = 0;
             }
 
             if (isVerticalAutoSize)
             {
                 _meshBatch.y = _textBounds.y = -_textBounds.y;
                 _hitArea.height = _textBounds.height;
+                _textBounds.y = 0;
             }
         }
         else
@@ -224,6 +239,7 @@ class TextField extends DisplayObjectContainer
         topLine.color = rightLine.color = bottomLine.color = leftLine.color = _format.color;
     }
 
+    /** Forces the text to be recomposed before rendering it in the upcoming frame. */
     private function setRequiresRecomposition():Void
     {
         _requiresRecomposition = true;
@@ -251,7 +267,7 @@ class TextField extends DisplayObjectContainer
     @:noCompletion private function get_textBounds():Rectangle
     {
         if (_requiresRecomposition) recompose();
-        if (_textBounds == null) _textBounds = _meshBatch.getBounds(_meshBatch);
+        if (_textBounds == null) _textBounds = _meshBatch.getBounds(this);
         return _textBounds.clone();
     }
     
@@ -277,8 +293,8 @@ class TextField extends DisplayObjectContainer
         // different to ordinary display objects, changing the size of the text field should 
         // not change the scaling, but make the texture bigger/smaller, while the size 
         // of the text/font stays the same (this applies to the height, as well).
-        
-        _hitArea.width = value;
+
+        _hitArea.width = value / MathUtil.logicalOr(scaleX, 1.0);
         setRequiresRecomposition();
         return value;
     }
@@ -286,7 +302,7 @@ class TextField extends DisplayObjectContainer
     /** @inheritDoc */
     @:noCompletion private override function set_height(value:Float):Float
     {
-        _hitArea.height = value;
+        _hitArea.height = value / MathUtil.logicalOr(scaleY, 1.0);
         setRequiresRecomposition();
         return value;
     }
@@ -393,15 +409,14 @@ class TextField extends DisplayObjectContainer
         }
         return value;
     }
-    
+
     /** Indicates if TextField should be batched on rendering.
      *
-     *  <p>Only batchable meshes can profit from the render cache; but batching large meshes
-     *  may take up a lot of CPU time. Thus, for large bitmap font text fields (i.e. many
-     *  glyphs) that are constantly changing (i.e. can't use the render cache anyway), it
-     *  makes sense to deactivate batching.</p>
+     *  <p>This works only with bitmap fonts, and it makes sense only for TextFields with no
+     *  more than 10-15 characters. Otherwise, the CPU costs will exceed any gains you get
+     *  from avoiding the additional draw call.</p>
      *
-     *  @default true
+     *  @default false
      */
     public var batchable(get, set):Bool;
     @:noCompletion private function get_batchable():Bool { return _meshBatch.batchable; }
@@ -426,6 +441,23 @@ class TextField extends DisplayObjectContainer
         return value;
     }
 
+    /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
+     *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
+     *  @default true */
+    public var pixelSnapping(get, set):Bool;
+    @:noCompletion private function get_pixelSnapping():Bool { return _meshBatch.pixelSnapping; }
+    @:noCompletion private function set_pixelSnapping(value:Bool):Bool { return _meshBatch.pixelSnapping = value; }
+
+    /** The style that is used to render the text's mesh. */
+    public var style(get, set):MeshStyle;
+    @:noCompletion private function get_style():MeshStyle { return _meshBatch.style; }
+    @:noCompletion private function set_style(value:MeshStyle):MeshStyle
+    {
+        _style = value;
+        setRequiresRecomposition();
+        return value;
+    }
+
     /** The Context3D texture format that is used for rendering of all TrueType texts.
      *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
      *  compromise between quality and memory consumption; use <pre>BGRA</pre> for
@@ -435,6 +467,13 @@ class TextField extends DisplayObjectContainer
     @:noCompletion private static function set_defaultTextureFormat(value:Context3DTextureFormat):Context3DTextureFormat
     {
         return sDefaultTextureFormat = value;
+    }
+
+    /** Updates the list of embedded fonts. Call this method when you loaded a TrueType font
+     *  at runtime so that Starling can recognize it as such. */
+    public static function updateEmbeddedFonts():Void
+    {
+        TrueTypeCompositor.updateEmbeddedFonts();
     }
 
     /** Makes a bitmap font available at any TextField in the current stage3D context.

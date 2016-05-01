@@ -10,6 +10,7 @@
 
 package starling.text;
 import flash.display.BitmapData;
+import flash.display3D.Context3DTextureFormat;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 import haxe.Int64;
@@ -283,7 +284,8 @@ class MiniBitmapFont
     public static function get_texture():Texture
     {
         var bitmapData:BitmapData = getBitmapData();
-        var texture:Texture = Texture.fromBitmapData(bitmapData, false);
+        var format:Context3DTextureFormat = Context3DTextureFormat.BGRA; /*Context3DTextureFormat.BGRA_PACKED*/
+        var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, 1, format);
         bitmapData.dispose();
         bitmapData = null;
 

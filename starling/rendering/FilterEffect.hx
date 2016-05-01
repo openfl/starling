@@ -31,7 +31,7 @@ class FilterEffect extends Effect
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2"</code> */
     public static var VERTEX_FORMAT:VertexDataFormat =
-        VertexDataFormat.fromString("position:float2, texCoords:float2");
+        Effect.VERTEX_FORMAT.extend("texCoords:float2");
 
     /** The AGAL code for the standard vertex shader that most filters will use.
      *  It simply transforms the vertex coordinates to clip-space and passes the texture
@@ -68,9 +68,7 @@ class FilterEffect extends Effect
         if (_texture != null)
         {
             var vertexShader:String = STD_VERTEX_SHADER;
-            var fragmentShader:String =
-                RenderUtil.createAGALTexOperation("oc", "v0", 0, _texture);
-
+            var fragmentShader:String = tex("oc", "v0", 0, _texture);
             return Program.fromSource(vertexShader, fragmentShader);
         }
         else
@@ -84,10 +82,10 @@ class FilterEffect extends Effect
      *  the context with the following constants and attributes:
      *
      *  <ul>
-     *    <li><code>vc0-vc3</code> â€” MVP matrix</li>
-     *    <li><code>va0</code> â€” vertex position (xy)</li>
-     *    <li><code>va1</code> â€” texture coordinates (uv)</li>
-     *    <li><code>fs0</code> â€” texture</li>
+     *    <li><code>vc0-vc3</code> â€? MVP matrix</li>
+     *    <li><code>va0</code> â€? vertex position (xy)</li>
+     *    <li><code>va1</code> â€? texture coordinates (uv)</li>
+     *    <li><code>fs0</code> â€? texture</li>
      *  </ul>
      */
     override private function beforeDraw(context:Context3D):Void
@@ -96,7 +94,8 @@ class FilterEffect extends Effect
 
         if (_texture != null)
         {
-            RenderUtil.setSamplerStateAt(0, _texture.mipMapping, _textureSmoothing, _textureRepeat);
+            var repeat:Bool = _textureRepeat && _texture.root.isPotTexture;
+            RenderUtil.setSamplerStateAt(0, _texture.mipMapping, _textureSmoothing, repeat);
             context.setTextureAt(0, _texture.base);
             vertexFormat.setVertexBufferAt(1, vertexBuffer, "texCoords");
         }
@@ -115,6 +114,19 @@ class FilterEffect extends Effect
         super.afterDraw(context);
     }
 
+    /** Creates an AGAL source string with a <code>tex</code> operation, including an options
+     *  list with the appropriate format flag. This is just a convenience method forwarding
+     *  to the respective RenderUtil method.
+     *
+     *  @see starling.utils.RenderUtil#createAGALTexOperation()
+     */
+    private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture,
+                                  convertToPmaIfRequired:Bool=true):String
+    {
+        return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture,
+            convertToPmaIfRequired);
+    }
+
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2, texCoords:float2"</code> */
     @:noCompletion override private function get_vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
@@ -129,10 +141,8 @@ class FilterEffect extends Effect
     @:noCompletion private function get_textureSmoothing():String { return _textureSmoothing; }
     @:noCompletion private function set_textureSmoothing(value:String):String { return _textureSmoothing = value; }
 
-    /** Indicates how the pixels of the texture will be wrapped at the edge.
-     *  If enabled, the texture will produce a repeating pattern; otherwise, the outermost
-     *  pixels will repeat. Unfortunately, this only works for power-of-two textures.
-     *  @default false */
+    /** Indicates if pixels at the edges will be repeated or clamped.
+     *  Only works for power-of-two textures. @default false */
     public var textureRepeat(get, set):Bool;
     @:noCompletion private function get_textureRepeat():Bool { return _textureRepeat; }
     @:noCompletion private function set_textureRepeat(value:Bool):Bool { return _textureRepeat = value; }
