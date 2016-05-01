@@ -483,7 +483,7 @@ class FragmentFilter extends EventDispatcher
     public function set_padding(value:Padding):Padding
     {
         padding.copyFrom(value);
-        return get_padding ();
+        return value;
     }
 
     /** Indicates if the filter is cached (via the <code>cache</code> method). */

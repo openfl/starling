@@ -50,6 +50,6 @@ class ProgressBar extends Sprite
     @:noCompletion private function set_ratio(value:Float):Float 
     {
         _bar.scaleX = Math.max(0.0, Math.min(1.0, value));
-        return get_ratio();
+        return value;
     }
 }
