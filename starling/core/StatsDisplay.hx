@@ -98,8 +98,8 @@ class StatsDisplay extends Sprite
                         "\nMEM: " + _memory.toFixed(_memory < 100 ? 1 : 0) +
                         "\nDRW: " + (_totalTime > 0 ? _drawCount - 2 : _drawCount); // ignore self
         #else
-        _textField.text = "FPS: " + _fps +
-                        "\nMEM: " + _memory +
+        _textField.text = "FPS: " + Math.round(_fps * 10) / 10 +
+                        "\nMEM: " + Math.round(_memory * 10) / 10 +
                         "\nDRW: " + (_totalTime > 0 ? _drawCount - 2 : _drawCount);
         #end
     }
