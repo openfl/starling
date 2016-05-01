@@ -18,10 +18,10 @@ import starling.events.Event;
 import starling.events.Touch;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
+import starling.styles.MeshStyle;
 import starling.text.TextField;
 import starling.text.TextFormat;
 import starling.textures.Texture;
-import starling.utils.RectangleUtil;
 
 /** Dispatched when the user triggers the button. Bubbles. */
 [Event(name="triggered", type="starling.events.Event")]
@@ -78,6 +78,7 @@ public class Button extends DisplayObjectContainer
 
         _state = ButtonState.UP;
         _body = new Image(upState);
+        _body.pixelSnapping = true;
         _scaleWhenDown = downState ? 1.0 : 0.9;
         _scaleWhenOver = _alphaWhenDown = 1.0;
         _alphaWhenDisabled = disabledState ? 1.0: 0.5;
@@ -131,6 +132,7 @@ public class Button extends DisplayObjectContainer
         if (_textField == null)
         {
             _textField = new TextField(_textBounds.width, _textBounds.height);
+            _textField.pixelSnapping = _body.pixelSnapping;
             _textField.touchable = false;
             _textField.autoScale = true;
             _textField.batchable = true;
@@ -296,6 +298,23 @@ public class Button extends DisplayObjectContainer
         _textField.format = value;
     }
 
+    /** The style that is used to render the button's TextField. */
+    public function get textStyle():MeshStyle
+    {
+        if (_textField == null) createTextField();
+        return _textField.style;
+    }
+
+    public function set textStyle(value:MeshStyle):Void
+    {
+        if (_textField == null) createTextField();
+        _textField.style = value;
+    }
+
+    /** The style that is used to render the Button. */
+    public function get style():MeshStyle { return _body.style; }
+    public function set style(value:MeshStyle):Void { _body.style = value; }
+
     /** The texture that is displayed when the button is not being touched. */
     public function get upState():Texture { return _upState; }
     public function set upState(value:Texture):Void
@@ -384,27 +403,43 @@ public class Button extends DisplayObjectContainer
     public override function get useHandCursor():Bool { return _useHandCursor; }
     public override function set useHandCursor(value:Bool):Void { _useHandCursor = value; }
 
+    /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
+     *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
+     *  @default true */
+    public function get pixelSnapping():Bool { return _body.pixelSnapping; }
+    public function set pixelSnapping(value:Bool):Void
+    {
+        _body.pixelSnapping = value;
+        if (_textField) _textField.pixelSnapping = value;
+    }
+
     /** @private */
     override public function set width(value:Float):Void
     {
-        var scaleX:Float = value / _body.width;
+        // The Button might use a Scale9Grid ->
+        // we must update the body width/height manually for the grid to scale properly.
 
-        _body.width = value;
-        _textBounds.x *= scaleX;
-        _textBounds.width *= scaleX;
+        var newWidth:Float = value / (this.scaleX || 1.0);
+        var scale:Float = newWidth / (_body.width || 1.0);
 
-        if (_textField) _textField.width = value;
+        _body.width = newWidth;
+        _textBounds.x *= scale;
+        _textBounds.width *= scale;
+
+        if (_textField) _textField.width = newWidth;
     }
 
+    /** @private */
     override public function set height(value:Float):Void
     {
-        var scaleY:Float = value / _body.height;
+        var newHeight:Float = value /  (this.scaleY || 1.0);
+        var scale:Float = newHeight / (_body.height || 1.0);
 
-        _body.height = value;
-        _textBounds.y *= scaleY;
-        _textBounds.height *= scaleY;
+        _body.height = newHeight;
+        _textBounds.y *= scale;
+        _textBounds.height *= scale;
 
-        if (_textField) _textField.height = value;
+        if (_textField) _textField.height = newHeight;
     }
 
     /** The current scaling grid used for the button's state image. Use this property to create

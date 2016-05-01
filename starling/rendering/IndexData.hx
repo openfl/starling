@@ -68,10 +68,13 @@ public class IndexData
     private var _initialCapacity:Int;
     private var _useQuadLayout:Bool;
 
+    // basic quad layout
+    private static var sQuadData:ByteArray = new ByteArray();
+    private static var sQuadDataNumIndices:UInt = 0;
+
     // helper objects
     private static var sVector:Vector.<UInt> = new <UInt>[];
     private static var sTrimData:ByteArray = new ByteArray();
-    private static var sQuadData:ByteArray = new ByteArray();
 
     /** Creates an empty IndexData instance with the given capacity (in indices).
      *
@@ -143,7 +146,9 @@ public class IndexData
         if (target._numIndices < newNumIndices)
         {
             target._numIndices = newNumIndices;
-            ensureQuadDataCapacity(newNumIndices);
+
+            if (sQuadDataNumIndices  < newNumIndices)
+                ensureQuadDataCapacity(newNumIndices);
         }
 
         if (_useQuadLayout)
@@ -390,14 +395,15 @@ public class IndexData
      *  made smaller. */
     private function ensureQuadDataCapacity(numIndices:Int):Void
     {
-        if (sQuadData.length >= numIndices * INDEX_SIZE) return;
+        if (sQuadDataNumIndices >= numIndices) return;
 
         var i:Int;
-        var oldNumQuads:Int = sQuadData.length / 12;
+        var oldNumQuads:Int = sQuadDataNumIndices / 6;
         var newNumQuads:Int = Math.ceil(numIndices / 6);
 
         sQuadData.endian = Endian.LITTLE_ENDIAN;
         sQuadData.position = sQuadData.length;
+        sQuadDataNumIndices = newNumQuads * 6;
 
         for (i = oldNumQuads; i < newNumQuads; ++i)
         {

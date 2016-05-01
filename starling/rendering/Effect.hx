@@ -91,7 +91,7 @@ import starling.utils.execute;
  *
  *  @see FilterEffect
  *  @see MeshEffect
- *  @see starling.rendering.MeshStyle
+ *  @see starling.styles.MeshStyle
  *  @see starling.filters.FragmentFilter
  *  @see starling.utils.RenderUtil
  */
@@ -102,10 +102,11 @@ public class Effect
     public static const VERTEX_FORMAT:VertexDataFormat =
         VertexDataFormat.fromString("position:float2");
 
+    private var _vertexBuffer:VertexBuffer3D;
+    private var _vertexBufferSize:Int; // in bytes
     private var _indexBuffer:IndexBuffer3D;
     private var _indexBufferSize:Int;  // in number of indices
-    private var _vertexBuffer:VertexBuffer3D;
-    private var _vertexBufferSize:Int; // in blocks of 32 bits
+    private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
     private var _onRestore:Function;
@@ -138,55 +139,80 @@ public class Effect
         execute(_onRestore, this);
     }
 
-    /** Purges one or both of the index- and vertex-buffers. */
-    public function purgeBuffers(indexBuffer:Bool=true, vertexBuffer:Bool=true):Void
+    /** Purges one or both of the vertex- and index-buffers. */
+    public function purgeBuffers(vertexBuffer:Bool=true, indexBuffer:Bool=true):Void
     {
-        if (_indexBuffer && indexBuffer)
-        {
-            _indexBuffer.dispose();
-            _indexBuffer = null;
-        }
-
         if (_vertexBuffer && vertexBuffer)
         {
             _vertexBuffer.dispose();
             _vertexBuffer = null;
         }
+
+        if (_indexBuffer && indexBuffer)
+        {
+            _indexBuffer.dispose();
+            _indexBuffer = null;
+        }
     }
 
     /** Uploads the given index data to the internal index buffer. If the buffer is too
-     *  small, a new one is created automatically. */
-    public function uploadIndexData(indexData:IndexData):Void
+     *  small, a new one is created automatically.
+     *
+     *  @param indexData   The IndexData instance to upload.
+     *  @param bufferUsage The expected buffer usage. Use one of the constants defined in
+     *                     <code>Context3DBufferUsage</code>. Only used when the method call
+     *                     causes the creation of a new index buffer.
+     */
+    public function uploadIndexData(indexData:IndexData,
+                                    bufferUsage:String="staticDraw"):Void
     {
+        var numIndices:Int = indexData.numIndices;
+        var isQuadLayout:Bool = indexData.useQuadLayout;
+        var wasQuadLayout:Bool = _indexBufferUsesQuadLayout;
+
         if (_indexBuffer)
         {
-            if (indexData.numIndices <= _indexBufferSize)
-                indexData.uploadToIndexBuffer(_indexBuffer);
+            if (numIndices <= _indexBufferSize)
+            {
+                if (!isQuadLayout || !wasQuadLayout)
+                {
+                    indexData.uploadToIndexBuffer(_indexBuffer);
+                    _indexBufferUsesQuadLayout = isQuadLayout && numIndices == _indexBufferSize;
+                }
+            }
             else
-                purgeBuffers(true, false);
+                purgeBuffers(false, true);
         }
         if (_indexBuffer == null)
         {
-            _indexBuffer = indexData.createIndexBuffer(true);
-            _indexBufferSize = indexData.numIndices;
+            _indexBuffer = indexData.createIndexBuffer(true, bufferUsage);
+            _indexBufferSize = numIndices;
+            _indexBufferUsesQuadLayout = isQuadLayout;
         }
     }
 
     /** Uploads the given vertex data to the internal vertex buffer. If the buffer is too
-     *  small, a new one is created automatically. */
-    public function uploadVertexData(vertexData:VertexData):Void
+     *  small, a new one is created automatically.
+     *
+     *  @param vertexData  The VertexData instance to upload.
+     *  @param bufferUsage The expected buffer usage. Use one of the constants defined in
+     *                     <code>Context3DBufferUsage</code>. Only used when the method call
+     *                     causes the creation of a new vertex buffer.
+     */
+    public function uploadVertexData(vertexData:VertexData,
+                                     bufferUsage:String="staticDraw"):Void
     {
         if (_vertexBuffer)
         {
-            if (vertexData.sizeIn32Bits <= _vertexBufferSize)
+            if (vertexData.size <= _vertexBufferSize)
                 vertexData.uploadToVertexBuffer(_vertexBuffer);
             else
-                purgeBuffers(false, true);
+                purgeBuffers(true, false);
         }
         if (_vertexBuffer == null)
         {
-            _vertexBuffer = vertexData.createVertexBuffer(true);
-            _vertexBufferSize = vertexData.sizeIn32Bits;
+            _vertexBuffer = vertexData.createVertexBuffer(true, bufferUsage);
+            _vertexBufferSize = vertexData.size;
         }
     }
 
@@ -197,7 +223,7 @@ public class Effect
      *  <code>afterDraw</code>, in this order. */
     public function render(firstIndex:Int=0, numTriangles:Int=-1):Void
     {
-        if (numTriangles < 0) numTriangles = indexBufferSize / 3;
+        if (numTriangles < 0) numTriangles = _indexBufferSize / 3;
         if (numTriangles == 0) return;
 
         var context:Context3D = Starling.context;
@@ -339,7 +365,7 @@ public class Effect
 
     /** The internally used index buffer used on rendering. */
     protected function get indexBuffer():IndexBuffer3D { return _indexBuffer; }
-    
+
     /** The current size of the index buffer (in number of indices). */
     protected function get indexBufferSize():Int { return _indexBufferSize; }
 

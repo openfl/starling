@@ -15,6 +15,9 @@ import flash.geom.Rectangle;
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;
 import starling.textures.Texture;
+import starling.utils.Padding;
+import starling.utils.Pool;
+import starling.utils.RectangleUtil;
 
 /** An Image is a quad with a texture mapped onto it.
  *
@@ -45,10 +48,14 @@ public class Image extends Quad
     private var _tileGrid:Rectangle;
 
     // helper objects
-    private static var s9Grid:Rectangle = new Rectangle();
+    private static var sPadding:Padding = new Padding();
     private static var sBounds:Rectangle = new Rectangle();
-    private static var sHorizSizes:Vector.<Float> = new Vector.<Float>(3, true);
-    private static var sVertSizes:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sBasCols:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sBasRows:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sPosCols:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sPosRows:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sTexCols:Vector.<Float> = new Vector.<Float>(3, true);
+    private static var sTexRows:Vector.<Float> = new Vector.<Float>(3, true);
 
     /** Creates an image with a texture mapped onto it. */
     public function Image(texture:Texture)
@@ -67,14 +74,15 @@ public class Image extends Quad
      *  <p>Notes:</p>
      *
      *  <ul>
-     *  <li>Assigning a Scale9 rectangle will change the number of vertices to sixteen,
-     *  and all vertices will be colored like vertex 0 (the top left vertex).</li>
+     *  <li>Assigning a Scale9 rectangle will change the number of vertices to a maximum of 16
+     *  (less if possible) and all vertices will be colored like vertex 0 (the top left vertex).
+     *  </li>
      *  <li>An image can have either a <code>scale9Grid</code> or a <code>tileGrid</code>, but
      *  not both. Assigning one will delete the other.</li>
      *  <li>Changes will only be applied on assignment. To force an update, simply call
      *  <code>image.scale9Grid = image.scale9Grid</code>.</li>
-     *  <li>Furthermore, with a Scale9 rectangle assigned, any change of the texture will
-     *  implicitly call <code>readjustSize</code>.</li>
+     *  <li>Assignment causes an implicit call to <code>readjustSize()</code>,
+     *  and the same will happen when the texture is changed afterwards.</li>
      *  </ul>
      *
      *  @default null
@@ -87,6 +95,7 @@ public class Image extends Quad
             if (_scale9Grid == null) _scale9Grid = value.clone();
             else _scale9Grid.copyFrom(value);
 
+            readjustSize();
             _tileGrid = null;
         }
         else _scale9Grid = null;
@@ -171,8 +180,6 @@ public class Image extends Quad
 
     private function setupScale9Grid():Void
     {
-        s9Grid.copyFrom(_scale9Grid);
-
         var texture:Texture = this.texture;
         var frame:Rectangle = texture.frame;
         var absScaleX:Float = scaleX > 0 ? scaleX : -scaleX;
@@ -182,125 +189,185 @@ public class Image extends Quad
         var vertexData:VertexData = this.vertexData;
         var indexData:IndexData = this.indexData;
         var prevNumVertices:Int = vertexData.numVertices;
-        var startX:Float = 0.0, startY:Float = 0.0;
-        var col:Float, row:Float;
+        var numVertices:Int, numQuads:Int;
         var correction:Float;
 
-        indexData.numIndices = 0;
-        vertexData.numVertices = 16;
+        // The following rectangles are used to figure everything out.
+        // The meaning of each is depicted in this sketch: http://i.imgur.com/KUcv71O.jpg
+
+        var gridCenter:Rectangle = Pool.getRectangle();
+        var textureBounds:Rectangle = Pool.getRectangle();
+        var pixelBounds:Rectangle = Pool.getRectangle();
+        var intersection:Rectangle = Pool.getRectangle();
+
+        gridCenter.copyFrom(_scale9Grid);
+        textureBounds.setTo(0, 0, texture.frameWidth, texture.frameHeight);
+
+        if (frame) pixelBounds.setTo(-frame.x, -frame.y, texture.width, texture.height);
+        else       pixelBounds.copyFrom(textureBounds);
 
         // calculate 3x3 grid according to texture and scale9 properties,
         // taking special care about the texture frame (headache included)
 
-        if (frame)
-        {
-            s9Grid.x += frame.x;
-            s9Grid.y += frame.y;
-            startX = invScaleX * -frame.x;
-            startY = invScaleY * -frame.y;
-        }
+        RectangleUtil.intersect(gridCenter, pixelBounds, intersection);
 
-        sHorizSizes[0] = s9Grid.x * invScaleX;
-        sHorizSizes[1] = texture.frameWidth - (texture.frameWidth - s9Grid.width) * invScaleX;
-        sHorizSizes[2] = (texture.width  - s9Grid.right) * invScaleX;
+        sBasCols[0] = sBasCols[2] = 0;
+        sBasRows[0] = sBasRows[2] = 0;
+        sBasCols[1] = intersection.width;
+        sBasRows[1] = intersection.height;
 
-        sVertSizes[0] = s9Grid.y * invScaleY;
-        sVertSizes[1] = texture.frameHeight - (texture.frameHeight - s9Grid.height) * invScaleY;
-        sVertSizes[2] = (texture.height - s9Grid.bottom) * invScaleY;
+        if (pixelBounds.x < gridCenter.x)
+            sBasCols[0] = gridCenter.x - pixelBounds.x;
+
+        if (pixelBounds.y < gridCenter.y)
+            sBasRows[0] = gridCenter.y - pixelBounds.y;
+
+        if (pixelBounds.right > gridCenter.right)
+            sBasCols[2] = pixelBounds.right - gridCenter.right;
+
+        if (pixelBounds.bottom > gridCenter.bottom)
+            sBasRows[2] = pixelBounds.bottom - gridCenter.bottom;
+
+        // set vertex positions
+
+        if (pixelBounds.x < gridCenter.x)
+            sPadding.left = pixelBounds.x * invScaleX;
+        else
+            sPadding.left = gridCenter.x * invScaleX + pixelBounds.x - gridCenter.x;
+
+        if (pixelBounds.right > gridCenter.right)
+            sPadding.right = (textureBounds.width - pixelBounds.right) * invScaleX;
+        else
+            sPadding.right = (textureBounds.width - gridCenter.right) * invScaleX + gridCenter.right - pixelBounds.right;
+
+        if (pixelBounds.y < gridCenter.y)
+            sPadding.top = pixelBounds.y * invScaleY;
+        else
+            sPadding.top = gridCenter.y * invScaleY + pixelBounds.y - gridCenter.y;
+
+        if (pixelBounds.bottom > gridCenter.bottom)
+            sPadding.bottom = (textureBounds.height - pixelBounds.bottom) * invScaleY;
+        else
+            sPadding.bottom = (textureBounds.height - gridCenter.bottom) * invScaleY + gridCenter.bottom - pixelBounds.bottom;
+
+        sPosCols[0] = sBasCols[0] * invScaleX;
+        sPosCols[2] = sBasCols[2] * invScaleX;
+        sPosCols[1] = textureBounds.width - sPadding.left - sPadding.right - sPosCols[0] - sPosCols[2];
+
+        sPosRows[0] = sBasRows[0] * invScaleY;
+        sPosRows[2] = sBasRows[2] * invScaleY;
+        sPosRows[1] = textureBounds.height - sPadding.top - sPadding.bottom - sPosRows[0] - sPosRows[2];
 
         // if the total width / height becomes smaller than the outer columns / rows,
         // we hide the center column / row and scale the rest normally.
 
-        if (sHorizSizes[1] < 0)
+        if (sPosCols[1] < 0)
         {
-            correction = texture.frameWidth / (texture.frameWidth - s9Grid.width) * absScaleX;
-            startX *= correction;
-            sHorizSizes[0] *= correction;
-            sHorizSizes[1]  = 0;
-            sHorizSizes[2] *= correction;
+            correction = textureBounds.width / (textureBounds.width - gridCenter.width) * absScaleX;
+            sPadding.left *= correction;
+            sPosCols[0] *= correction;
+            sPosCols[1]  = 0.0001; // losing the column altogether would mix up texture coords
+            sPosCols[2] *= correction;
         }
 
-        if (sVertSizes[1] < 0)
+        if (sPosRows[1] < 0)
         {
-            correction = texture.frameHeight / (texture.frameHeight - s9Grid.height) * absScaleY;
-            startY *= correction;
-            sVertSizes[0] *= correction;
-            sVertSizes[1]  = 0;
-            sVertSizes[2] *= correction;
+            correction = textureBounds.height / (textureBounds.height - gridCenter.height) * absScaleY;
+            sPadding.top *= correction;
+            sPosRows[0] *= correction;
+            sPosRows[1]  = 0.0001; // losing the row altogether would mix up texture coords
+            sPosRows[2] *= correction;
         }
 
-        // set the vertex positions according to the values calculated above
-
-        var posX:Float, posY:Float = startY;
-        var vertexID:Int = 0;
-
-        for (row=0; row<4; ++row)
-        {
-            posX = startX;
-
-            for (col=0; col<4; ++col)
-            {
-                vertexData.setPoint(vertexID++, "position", posX, posY);
-                if (col != 3) posX += sHorizSizes[col];
-            }
-
-            if (row != 3) posY += sVertSizes[row];
-        }
+        numVertices = setupScale9GridAttributes(
+            sPadding.left, sPadding.top, sPosCols, sPosRows, setupScale9GridVertexPosition);
 
         // now set the texture coordinates
 
-        var paddingLeft:Float = frame ? -frame.x : 0;
-        var paddingTop:Float  = frame ? -frame.y : 0;
+        sTexCols[0] = sBasCols[0] / pixelBounds.width;
+        sTexCols[2] = sBasCols[2] / pixelBounds.width;
+        sTexCols[1] = 1.0 - sTexCols[0] - sTexCols[2];
 
-        sHorizSizes[0] = (_scale9Grid.x - paddingLeft) / texture.width;
-        sHorizSizes[1] =  _scale9Grid.width / texture.width;
-        sHorizSizes[2] = 1.0 - sHorizSizes[0] - sHorizSizes[1];
+        sTexRows[0] = sBasRows[0] / pixelBounds.height;
+        sTexRows[2] = sBasRows[2] / pixelBounds.height;
+        sTexRows[1] = 1.0 - sTexRows[0] - sTexRows[2];
 
-        sVertSizes[0] = (_scale9Grid.y - paddingTop) / texture.height;
-        sVertSizes[1] =  _scale9Grid.height / texture.height;
-        sVertSizes[2] = 1.0 - sVertSizes[0] - sVertSizes[1];
-
-        posX = posY = vertexID = 0;
-
-        for (row=0; row<4; ++row)
-        {
-            posX = 0.0;
-
-            for (col=0; col<4; ++col)
-            {
-                texture.setTexCoords(vertexData, vertexID++, "texCoords", posX, posY);
-                if (col != 3) posX += sHorizSizes[col];
-            }
-
-            if (row != 3) posY += sVertSizes[row];
-        }
+        setupScale9GridAttributes(0, 0, sTexCols, sTexRows, setupScale9GridVertexTexCoords);
 
         // update indices
 
-        indexData.addQuad(0, 1, 4, 5);
-        indexData.addQuad(1, 2, 5, 6);
-        indexData.addQuad(2, 3, 6, 7);
-        indexData.addQuad(4, 5, 8, 9);
-        indexData.addQuad(5, 6, 9, 10);
-        indexData.addQuad(6, 7, 10, 11);
-        indexData.addQuad(8, 9, 12, 13);
-        indexData.addQuad(9, 10, 13, 14);
-        indexData.addQuad(10, 11, 14, 15);
+        numQuads = numVertices / 4;
+        vertexData.numVertices = numVertices;
+        indexData.numIndices = 0;
 
-        // if we just switched from a normal to a scale9 image, all vertices are colorized
-        // just like the first one; we also trim the data instances to optimize memory usage.
+        for (var i:Int=0; i<numQuads; ++i)
+            indexData.addQuad(i*4, i*4 + 1, i*4 + 2, i*4 + 3);
 
-        if (prevNumVertices != vertexData.numVertices)
+        // if we just switched from a normal to a scale9 image,
+        // we need to colorize all vertices just like the first one.
+
+        if (numVertices != prevNumVertices)
         {
             var color:UInt   = prevNumVertices ? vertexData.getColor(0) : 0xffffff;
             var alpha:Float = prevNumVertices ? vertexData.getAlpha(0) : 1.0;
-
             vertexData.colorize("color", color, alpha);
-            vertexData.trim();
-            indexData.trim();
         }
 
+        Pool.putRectangle(textureBounds);
+        Pool.putRectangle(pixelBounds);
+        Pool.putRectangle(gridCenter);
+        Pool.putRectangle(intersection);
+
         setRequiresRedraw();
+    }
+
+    private function setupScale9GridVertexPosition(vertexData:VertexData, texture:Texture,
+                                                   vertexID:Int, x:Float, y:Float):Void
+    {
+        vertexData.setPoint(vertexID, "position", x, y);
+    }
+
+    private function setupScale9GridVertexTexCoords(vertexData:VertexData, texture:Texture,
+                                                    vertexID:Int, x:Float, y:Float):Void
+    {
+        texture.setTexCoords(vertexData, vertexID, "texCoords", x, y);
+    }
+
+    private function setupScale9GridAttributes(startX:Float, startY:Float,
+                                               colWidths:Vector.<Float>,
+                                               rowHeights:Vector.<Float>,
+                                               callback:Function):Int
+    {
+        var row:Int, col:Int, colWidth:Float, rowHeight:Float;
+        var vertexData:VertexData = this.vertexData;
+        var texture:Texture = this.texture;
+        var currentX:Float = startX;
+        var currentY:Float = startY;
+        var vertexID:Int = 0;
+
+        for (row = 0; row < 3; ++row)
+        {
+            rowHeight = rowHeights[row];
+            if (rowHeight > 0)
+            {
+                for (col = 0; col < 3; ++col)
+                {
+                    colWidth = colWidths[col];
+                    if (colWidth > 0)
+                    {
+                        callback(vertexData, texture, vertexID++, currentX, currentY);
+                        callback(vertexData, texture, vertexID++, currentX + colWidth, currentY);
+                        callback(vertexData, texture, vertexID++, currentX, currentY + rowHeight);
+                        callback(vertexData, texture, vertexID++, currentX + colWidth, currentY + rowHeight);
+                        currentX += colWidth;
+                    }
+                }
+                currentY += rowHeight;
+            }
+            currentX = startX;
+        }
+
+        return vertexID;
     }
 
     private function setupTileGrid():Void

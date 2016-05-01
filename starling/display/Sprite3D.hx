@@ -97,7 +97,7 @@ public class Sprite3D extends DisplayObjectContainer
     }
 
     /** @inheritDoc */
-    public override function render(painter:Painter):Void
+    override public function render(painter:Painter):Void
     {
         if (_is2D) super.render(painter);
         else
@@ -109,12 +109,13 @@ public class Sprite3D extends DisplayObjectContainer
             super.render(painter);
 
             painter.finishMeshBatch();
+            painter.excludeFromCache(this);
             painter.popState();
         }
     }
 
     /** @inheritDoc */
-    public override function hitTest(localPoint:Point):DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (_is2D) return super.hitTest(localPoint);
         else
@@ -135,22 +136,15 @@ public class Sprite3D extends DisplayObjectContainer
         }
     }
 
-    public override function setRequiresRedraw():Void
+    /** @private */
+    override public function setRequiresRedraw():Void
     {
-        var was2D:Bool = _is2D;
-
         _is2D = _z > -E && _z < E &&
                 _rotationX > -E && _rotationX < E &&
                 _rotationY > -E && _rotationY < E &&
                 _pivotZ > -E && _pivotZ < E;
 
-        if (_is2D != was2D) updateSupportsRenderCache();
         super.setRequiresRedraw();
-    }
-
-    protected override function get supportsRenderCache():Bool
-    {
-        return _is2D && super.supportsRenderCache;
     }
 
     // helpers

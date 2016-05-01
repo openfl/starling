@@ -108,6 +108,9 @@ internal class ConcretePotTexture extends ConcreteTexture
     }
 
     /** @inheritDoc */
+    override public function get isPotTexture():Bool { return true; }
+
+    /** @inheritDoc */
     override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:* = null):Void
     {
         var isAsync:Bool = async is Function || async === true;

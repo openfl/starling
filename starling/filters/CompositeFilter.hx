@@ -15,6 +15,7 @@ import flash.geom.Point;
 import starling.rendering.FilterEffect;
 import starling.rendering.Painter;
 import starling.textures.Texture;
+import starling.utils.MathUtil;
 
 /** The CompositeFilter class allows to combine several layers of textures into one texture.
  *  It's mainly used as a building block for more complex filters; e.g. the DropShadowFilter
@@ -28,7 +29,7 @@ public class CompositeFilter extends FragmentFilter
 
     /** Combines up to four input textures into one new texture,
      *  adhering to the properties of each layer. */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
@@ -37,7 +38,11 @@ public class CompositeFilter extends FragmentFilter
         compositeEffect.getLayerAt(2).texture = input2;
         compositeEffect.getLayerAt(3).texture = input3;
 
-        return super.process(painter, pool, input0, input1, input2, input3);
+        if (input1) input1.setupTextureCoordinates(vertexData, 0, "texCoords1");
+        if (input2) input2.setupTextureCoordinates(vertexData, 0, "texCoords2");
+        if (input3) input3.setupTextureCoordinates(vertexData, 0, "texCoords3");
+
+        return super.process(painter, helper, input0, input1, input2, input3);
     }
 
     /** @private */
@@ -91,7 +96,7 @@ public class CompositeFilter extends FragmentFilter
     /** Adjusts the alpha value with which the layer is drawn. */
     public function setAlphaAt(layerID:Int, alpha:Float):Void
     {
-        compositeEffect.getLayerAt(layerID).alpha = alpha;
+        compositeEffect.getLayerAt(layerID).alpha = MathUtil.clamp(alpha, 0, 1);
     }
 
     private function get compositeEffect():CompositeEffect
@@ -106,6 +111,7 @@ import flash.display3D.Context3DProgramType;
 
 import starling.rendering.FilterEffect;
 import starling.rendering.Program;
+import starling.rendering.VertexDataFormat;
 import starling.textures.Texture;
 import starling.utils.Color;
 import starling.utils.RenderUtil;
@@ -113,6 +119,10 @@ import starling.utils.StringUtil;
 
 class CompositeEffect extends FilterEffect
 {
+public static const VERTEX_FORMAT:VertexDataFormat =
+    FilterEffect.VERTEX_FORMAT.extend(
+        "texCoords1:float2, texCoords2:float2, texCoords3:float2");
+
 private var _layers:Vector.<CompositeLayer>;
 
 private static var sLayers:Array = [];
@@ -157,9 +167,9 @@ override protected function createProgram():Program
         var vertexShader:Array = ["m44 op, va0, vc0"]; // transform position to clip-space
         var layer:CompositeLayer = _layers[0];
 
-        for (i=0; i<numLayers; ++i)
+        for (i=0; i<numLayers; ++i) // v0-4 -> texture coords
             vertexShader.push(
-                StringUtil.format("sub v{0}, va1, vc{1} \n", i, i + 4) // v0-4 -> texture coords
+                StringUtil.format("add v{0}, va{1}, vc{2}", i, i + 1, i + 4) // add offset
             );
 
         var fragmentShader:Array = [
@@ -199,7 +209,7 @@ override protected function createProgram():Program
             }
         }
 
-        fragmentShader.push("mov oc ft0"); // done! :)
+        fragmentShader.push("mov oc, ft0"); // done! :)
 
         return Program.fromSource(vertexShader.join("\n"), fragmentShader.join("\n"));
     }
@@ -227,13 +237,13 @@ override protected function get programVariantName():UInt
     return totalBits;
 }
 
-/** vc0-vc3 — MVP matrix
- *  vc4-vc7 - layer offsets
- *  fs0-fs3 — input textures
- *  fc0-fc3 - input colors (RGBA+pma)
- *  va0 — vertex position (xy)
- *  va1 — texture coordinates
- *  v0-v4 - texture coordinates with offset
+/** vc0-vc3  — MVP matrix
+ *  vc4-vc7  — layer offsets
+ *  fs0-fs3  — input textures
+ *  fc0-fc3  — input colors (RGBA+pma)
+ *  va0      — vertex position (xy)
+ *  va1-va4  — texture coordinates (without offset)
+ *  v0-v3    — texture coordinates (with offset)
  */
 override protected function beforeDraw(context:Context3D):Void
 {
@@ -248,8 +258,8 @@ override protected function beforeDraw(context:Context3D):Void
             var texture:Texture = layer.texture;
             var alphaFactor:Float = layer.replaceColor ? 1.0 : layer.alpha;
 
-            sOffset[0] = layer.x / texture.root.width;
-            sOffset[1] = layer.y / texture.root.height;
+            sOffset[0] = -layer.x / (texture.root.nativeWidth  / texture.scale);
+            sOffset[1] = -layer.y / (texture.root.nativeHeight / texture.scale);
             sColor[0] = Color.getRed(layer.color)   * alphaFactor / 255.0;
             sColor[1] = Color.getGreen(layer.color) * alphaFactor / 255.0;
             sColor[2] = Color.getBlue(layer.color)  * alphaFactor / 255.0;
@@ -260,6 +270,9 @@ override protected function beforeDraw(context:Context3D):Void
             context.setTextureAt(i, texture.base);
             RenderUtil.setSamplerStateAt(i, texture.mipMapping, textureSmoothing);
         }
+
+        for (i=1; i<numLayers; ++i)
+            vertexFormat.setVertexBufferAt(i + 1, vertexBuffer, "texCoords" + i);
     }
 
     super.beforeDraw(context);
@@ -267,13 +280,21 @@ override protected function beforeDraw(context:Context3D):Void
 
 override protected function afterDraw(context:Context3D):Void
 {
-    for (var i:Int = 0, len:Int = _layers.length; i < len; ++i)
+    var layers:Array = getUsedLayers(sLayers);
+    var numLayers:Int = layers.length;
+
+    for (var i:Int=0; i<numLayers; ++i)
+    {
         context.setTextureAt(i, null);
+        context.setVertexBufferAt(i + 1, null);
+    }
+
+    super.afterDraw(context);
 }
 
-private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture):String
+override public function get vertexFormat():VertexDataFormat
 {
-    return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture);
+    return VERTEX_FORMAT;
 }
 
 // properties

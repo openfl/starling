@@ -22,10 +22,11 @@ public class GlowFilter extends FragmentFilter
     private var _compositeFilter:CompositeFilter;
 
     /** Initializes a new GlowFilter instance with the specified parameters. */
-    public function GlowFilter(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0)
+    public function GlowFilter(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+                               resolution:Float=0.5)
     {
         _compositeFilter = new CompositeFilter();
-        _blurFilter = new BlurFilter(blur, blur);
+        _blurFilter = new BlurFilter(blur, blur, resolution);
 
         this.color = color;
         this.alpha = alpha;
@@ -43,14 +44,20 @@ public class GlowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
-        var glow:Texture = _blurFilter.process(painter, pool, input0);
-        var result:Texture = _compositeFilter.process(painter, pool, glow, input0);
-        pool.putTexture(glow);
+        var glow:Texture = _blurFilter.process(painter, helper, input0);
+        var result:Texture = _compositeFilter.process(painter, helper, glow, input0);
+        helper.putTexture(glow);
         return result;
+    }
+
+    /** @private */
+    override public function get numPasses():Int
+    {
+        return _blurFilter.numPasses + _compositeFilter.numPasses;
     }
 
     private function updatePadding():Void
@@ -89,6 +96,17 @@ public class GlowFilter extends FragmentFilter
         if (blur != value)
         {
             _blurFilter.blurX = _blurFilter.blurY = value;
+            updatePadding();
+        }
+    }
+
+    /** @private */
+    override public function get resolution():Float { return _blurFilter.resolution; }
+    override public function set resolution(value:Float):Void
+    {
+        if (resolution != value)
+        {
+            _blurFilter.resolution = value;
             updatePadding();
         }
     }

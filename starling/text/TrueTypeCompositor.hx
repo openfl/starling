@@ -12,6 +12,8 @@ package starling.text
 {
 import flash.geom.Matrix;
 import flash.text.AntiAliasType;
+import flash.text.Font;
+import flash.text.FontStyle;
 import flash.text.TextField;
 
 import starling.display.MeshBatch;
@@ -31,10 +33,11 @@ internal class TrueTypeCompositor implements ITextCompositor
     private static var sHelperQuad:Quad = new Quad(100, 100);
     private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
     private static var sNativeFormat:flash.text.TextFormat = new flash.text.TextFormat();
+    private static var sEmbeddedFonts:Array = null;
 
     /** Creates a new TrueTypeCompositor instance. */
     public function TrueTypeCompositor()
-    {}
+    { }
 
     /** @inheritDoc */
     public function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
@@ -91,6 +94,7 @@ internal class TrueTypeCompositor implements ITextCompositor
         format.toNativeFormat(sNativeFormat);
 
         sNativeFormat.size = Float(sNativeFormat.size) * options.textureScale;
+        sNativeTextField.embedFonts = isEmbeddedFont(format);
         sNativeTextField.defaultTextFormat = sNativeFormat;
         sNativeTextField.width  = scaledWidth;
         sNativeTextField.height = scaledHeight;
@@ -102,15 +106,8 @@ internal class TrueTypeCompositor implements ITextCompositor
         if (options.isHtmlText) sNativeTextField.htmlText = text;
         else                    sNativeTextField.text     = text;
 
-        sNativeTextField.embedFonts = true;
-
-        // we try embedded fonts first, non-embedded fonts are just a fallback
-        if (sNativeTextField.textWidth == 0.0 || sNativeTextField.textHeight == 0.0)
-            sNativeTextField.embedFonts = false;
-
         if (options.autoScale)
-            autoScaleNativeTextField(sNativeTextField, sNativeFormat,
-                scaledWidth, scaledHeight, text, options.isHtmlText);
+            autoScaleNativeTextField(sNativeTextField, text, options.isHtmlText);
 
         var textWidth:Float  = sNativeTextField.textWidth;
         var textHeight:Float = sNativeTextField.textHeight;
@@ -118,6 +115,10 @@ internal class TrueTypeCompositor implements ITextCompositor
         var bitmapHeight:Int  = Math.ceil(textHeight) + 4;
         var maxTextureSize:Int = Texture.maxSize;
         var minTextureSize:Int = 1;
+        var offsetX:Float = 0.0;
+
+        // HTML text may have its own alignment -> use the complete width
+        if (options.isHtmlText) textWidth = bitmapWidth = scaledWidth;
 
         // check for invalid texture sizes
         if (bitmapWidth  < minTextureSize) bitmapWidth  = 1;
@@ -129,10 +130,11 @@ internal class TrueTypeCompositor implements ITextCompositor
         }
         else
         {
-            var offsetX:Float = 0.0;
-
-            if      (hAlign == Align.RIGHT)  offsetX =  scaledWidth - textWidth - 4;
-            else if (hAlign == Align.CENTER) offsetX = (scaledWidth - textWidth - 4) / 2.0;
+            if (!options.isHtmlText)
+            {
+                if      (hAlign == Align.RIGHT)  offsetX =  scaledWidth - textWidth - 4;
+                else if (hAlign == Align.CENTER) offsetX = (scaledWidth - textWidth - 4) / 2.0;
+            }
 
             // finally: draw TextField to bitmap data
             var bitmapData:BitmapDataEx = new BitmapDataEx(bitmapWidth, bitmapHeight);
@@ -145,10 +147,11 @@ internal class TrueTypeCompositor implements ITextCompositor
     }
 
     private function autoScaleNativeTextField(textField:flash.text.TextField,
-                                              textFormat:flash.text.TextFormat,
-                                              maxTextWidth:Int, maxTextHeight:Int,
                                               text:String, isHtmlText:Bool):Void
     {
+        var textFormat:flash.text.TextFormat = textField.defaultTextFormat;
+        var maxTextWidth:Int  = textField.width  - 4;
+        var maxTextHeight:Int = textField.height - 4;
         var size:Float = Float(textFormat.size);
 
         while (textField.textWidth > maxTextWidth || textField.textHeight > maxTextHeight)
@@ -161,6 +164,30 @@ internal class TrueTypeCompositor implements ITextCompositor
             if (isHtmlText) textField.htmlText = text;
             else            textField.text     = text;
         }
+    }
+
+    /** Updates the list of embedded fonts. To be called when a font is loaded at runtime. */
+    public static function updateEmbeddedFonts():Void
+    {
+        sEmbeddedFonts = null; // will be updated in 'isEmbeddedFont()'
+    }
+
+    private static function isEmbeddedFont(format:TextFormat):Bool
+    {
+        if (sEmbeddedFonts == null)
+            sEmbeddedFonts = Font.enumerateFonts(false);
+
+        for each (var font:Font in sEmbeddedFonts)
+        {
+            var style:String = font.fontStyle;
+            var isBold:Bool = style == FontStyle.BOLD || style == FontStyle.BOLD_ITALIC;
+            var isItalic:Bool = style == FontStyle.ITALIC || style == FontStyle.BOLD_ITALIC;
+
+            if (format.font == font.fontName && format.italic == isItalic && format.bold == isBold)
+                return true;
+        }
+
+        return false;
     }
 }
 }

@@ -25,6 +25,7 @@ public class SystemUtil
     private static var sApplicationActive:Bool = true;
     private static var sWaitingCalls:Array = [];
     private static var sPlatform:String;
+    private static var sDesktop:Bool;
     private static var sVersion:String;
     private static var sAIR:Bool;
     private static var sSupportsDepthAndStencil:Bool = true;
@@ -41,7 +42,8 @@ public class SystemUtil
         sInitialized = true;
         sPlatform = Capabilities.version.substr(0, 3);
         sVersion = Capabilities.version.substr(4);
-        
+        sDesktop = /(WIN|MAC|LNX)/.exec(sPlatform) != null;
+
         try
         {
             var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
@@ -117,7 +119,7 @@ public class SystemUtil
     public static function get isDesktop():Bool
     {
         initialize();
-        return /(WIN|MAC|LNX)/.exec(sPlatform) != null;
+        return sDesktop;
     }
     
     /** Returns the three-letter platform string of the current system. These are

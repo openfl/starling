@@ -23,6 +23,7 @@ import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.utils.Dictionary;
 
+import starling.core.starling_internal;
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
 import starling.display.Mesh;
@@ -37,6 +38,8 @@ import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 import starling.utils.RenderUtil;
 import starling.utils.SystemUtil;
+
+use namespace starling_internal;
 
 /** A class that orchestrates rendering of all Starling display objects.
  *
@@ -86,6 +89,7 @@ public class Painter
     private var _clipRectStack:Vector.<Rectangle>;
     private var _batchProcessor:BatchProcessor;
     private var _batchCache:BatchProcessor;
+    private var _batchCacheExclusions:Vector.<DisplayObject>;
 
     private var _actualRenderTarget:TextureBase;
     private var _actualCulling:String;
@@ -98,6 +102,7 @@ public class Painter
     private var _state:RenderState;
     private var _stateStack:Vector.<RenderState>;
     private var _stateStackPos:Int;
+    private var _stateStackLength:Int;
 
     // helper objects
     private static var sMatrix:Matrix = new Matrix();
@@ -130,11 +135,13 @@ public class Painter
 
         _batchCache = new BatchProcessor();
         _batchCache.onBatchComplete = drawBatch;
+        _batchCacheExclusions = new Vector.<DisplayObject>();
 
         _state = new RenderState();
         _state.onDrawRequired = finishMeshBatch;
         _stateStack = new <RenderState>[];
         _stateStackPos = -1;
+        _stateStackLength = 0;
     }
     
     /** Disposes all quad batches, programs, and - if it is not being shared -
@@ -199,6 +206,15 @@ public class Painter
         if (_context.profile == "baselineConstrained")
             _context.configureBackBuffer(32, 32, antiAlias, enableDepthAndStencil);
 
+        // If supporting HiDPI mode would exceed the maximum buffer size
+        // (can happen e.g in software mode), we stick to the low resolution.
+
+        if (viewPort.width  * contentScaleFactor > _context.maxBackBufferWidth ||
+            viewPort.height * contentScaleFactor > _context.maxBackBufferHeight)
+        {
+            contentScaleFactor = 1.0;
+        }
+
         _stage3D.x = viewPort.x;
         _stage3D.y = viewPort.y;
 
@@ -257,7 +273,7 @@ public class Painter
     {
         _stateStackPos++;
 
-        if (_stateStack.length < _stateStackPos + 1) _stateStack[_stateStackPos] = new RenderState();
+        if (_stateStackLength < _stateStackPos + 1) _stateStack[_stateStackLength++] = new RenderState();
         if (token) _batchProcessor.fillToken(token);
 
         _stateStack[_stateStackPos].copyFrom(_state);
@@ -273,8 +289,8 @@ public class Painter
     public function setStateTo(transformationMatrix:Matrix, alphaFactor:Float=1.0,
                                blendMode:String="auto"):Void
     {
-        if (transformationMatrix) _state.transformModelviewMatrix(transformationMatrix);
-        if (alphaFactor != 1.0) _state.alpha *= alphaFactor;
+        if (transformationMatrix) MatrixUtil.prependMatrix(_state._modelviewMatrix, transformationMatrix);
+        if (alphaFactor != 1.0) _state._alpha *= alphaFactor;
         if (blendMode != BlendMode.AUTO) _state.blendMode = blendMode;
     }
 
@@ -310,8 +326,12 @@ public class Painter
      *  state instead of utilizing the stencil buffer. This is possible when the mask object
      *  is of type <code>starling.display.Quad</code> and is aligned parallel to the stage
      *  axes.</p>
+     *
+     *  <p>Note that masking breaks the render cache; the masked object must be redrawn anew
+     *  in the next frame. If you pass <code>maskee</code>, the method will automatically
+     *  call <code>excludeFromCache(maskee)</code> for you.</p>
      */
-    public function drawMask(mask:DisplayObject):Void
+    public function drawMask(mask:DisplayObject, maskee:DisplayObject=null):Void
     {
         if (_context == null) return;
 
@@ -334,6 +354,8 @@ public class Painter
             _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
                 Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
         }
+
+        excludeFromCache(maskee);
     }
 
     /** Draws a display object into the stencil buffer, decrementing the
@@ -412,13 +434,13 @@ public class Painter
     }
 
     /** Figures out if the mask can be represented by a scissor rectangle; this is possible
-     *  if it's just a simple quad that is parallel to the stage axes. The 'out' parameter
-     *  will be filled with the transformation matrix required to move the mask into stage
-     *  coordinates. */
+     *  if it's just a simple (untextured) quad that is parallel to the stage axes. The 'out'
+     *  parameter will be filled with the transformation matrix required to move the mask into
+     *  stage coordinates. */
     private function isRectangularMask(mask:DisplayObject, out:Matrix):Bool
     {
         var quad:Quad = mask as Quad;
-        if (quad && !quad.is3D && quad.style.type == MeshStyle)
+        if (quad && !quad.is3D && quad.texture == null)
         {
             if (mask.stage) mask.getTransformationMatrix(null, out);
             else
@@ -463,6 +485,7 @@ public class Painter
         _batchProcessor.finishBatch();
         swapBatchProcessors();
         _batchProcessor.clear();
+        processCacheExclusions();
     }
 
     private function swapBatchProcessors():Void
@@ -470,6 +493,13 @@ public class Painter
         var tmp:BatchProcessor = _batchProcessor;
         _batchProcessor = _batchCache;
         _batchCache = tmp;
+    }
+
+    private function processCacheExclusions():Void
+    {
+        var i:Int, length:Int = _batchCacheExclusions.length;
+        for (i=0; i<length; ++i) _batchCacheExclusions[i].excludeFromCache();
+        _batchCacheExclusions.length = 0;
     }
 
     /** Resets the current state, state stack, batch processor, stencil reference value,
@@ -518,7 +548,8 @@ public class Painter
 
                 if (subset.numVertices)
                 {
-                    setStateTo(null, 1.0, meshBatch.blendMode);
+                    _state.alpha = 1.0;
+                    _state.blendMode = meshBatch.blendMode;
                     _batchProcessor.addMesh(meshBatch, _state, subset, true);
                 }
             }
@@ -533,6 +564,19 @@ public class Painter
     public function rewindCacheTo(token:BatchToken):Void
     {
         _batchProcessor.rewindTo(token);
+    }
+
+    /** Prevents the object from being drawn from the render cache in the next frame.
+     *  Different to <code>setRequiresRedraw()</code>, this does not indicate that the object
+     *  has changed in any way, but just that it doesn't support being drawn from cache.
+     *
+     *  <p>Note that when a container is excluded from the render cache, its children will
+     *  still be cached! This just means that batching is interrupted at this object when
+     *  the display tree is traversed.</p>
+     */
+    public function excludeFromCache(object:DisplayObject):Void
+    {
+        if (object) _batchCacheExclusions[_batchCacheExclusions.length] = object;
     }
 
     private function drawBatch(meshBatch:MeshBatch):Void

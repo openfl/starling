@@ -12,6 +12,7 @@ package starling.rendering
 {
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
+import flash.utils.getQualifiedClassName;
 
 import starling.utils.RenderUtil;
 
@@ -24,16 +25,18 @@ import starling.utils.RenderUtil;
  *
  *  @see Effect
  *  @see FilterEffect
- *  @see starling.rendering.MeshStyle
+ *  @see starling.styles.MeshStyle
  */
 public class MeshEffect extends FilterEffect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
     public static const VERTEX_FORMAT:VertexDataFormat =
-            VertexDataFormat.fromString("position:float2, texCoords:float2, color:bytes4");
+        FilterEffect.VERTEX_FORMAT.extend("color:bytes4");
 
     private var _alpha:Float;
+    private var _tinted:Bool;
+    private var _optimizeIfNotTinted:Bool;
 
     // helper objects
     private static var sRenderAlpha:Vector.<Float> = new Vector.<Float>(4, true);
@@ -41,7 +44,21 @@ public class MeshEffect extends FilterEffect
     /** Creates a new MeshEffect instance. */
     public function MeshEffect()
     {
+        // Non-tinted meshes may be rendered with a simpler fragment shader, which brings
+        // a huge performance benefit on some low-end hardware. However, I don't want
+        // subclasses to become any more complicated because of this optimization (they
+        // probably use much longer shaders, anyway), so I only apply this optimization if
+        // this is actually the "MeshEffect" class.
+
         _alpha = 1.0;
+        _optimizeIfNotTinted = getQualifiedClassName(this) == "starling.rendering::MeshEffect";
+    }
+
+    /** @private */
+    override protected function get programVariantName():UInt
+    {
+        var noTinting:UInt = UInt(_optimizeIfNotTinted && !_tinted && _alpha == 1.0);
+        return super.programVariantName | (noTinting << 3);
     }
 
     /** @private */
@@ -51,13 +68,16 @@ public class MeshEffect extends FilterEffect
 
         if (texture)
         {
+            if (_optimizeIfNotTinted && !_tinted && _alpha == 1.0)
+                return super.createProgram();
+
             vertexShader =
                 "m44 op, va0, vc0 \n" + // 4x4 matrix transform to output clip-space
                 "mov v0, va1      \n" + // pass texture coordinates to fragment program
                 "mul v1, va2, vc4 \n";  // multiply alpha (vc4) with color (va2), pass to fp
 
             fragmentShader =
-                RenderUtil.createAGALTexOperation("ft0", "v0", 0, texture) +
+                tex("ft0", "v0", 0, texture) +
                 "mul oc, ft0, v1  \n";  // multiply color with texel color
         }
         else
@@ -92,7 +112,9 @@ public class MeshEffect extends FilterEffect
 
         sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = sRenderAlpha[3] = _alpha;
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, sRenderAlpha);
-        vertexFormat.setVertexBufferAt(2, vertexBuffer, "color");
+
+        if (_tinted || _alpha != 1.0 || !_optimizeIfNotTinted || texture == null)
+            vertexFormat.setVertexBufferAt(2, vertexBuffer, "color");
     }
 
     /** This method is called by <code>render</code>, directly after
@@ -112,5 +134,12 @@ public class MeshEffect extends FilterEffect
      *  by all subclasses. */
     public function get alpha():Float { return _alpha; }
     public function set alpha(value:Float):Void { _alpha = value; }
+
+    /** Indicates if the rendered vertices are tinted in any way, i.e. if there are vertices
+     *  that have a different color than fully opaque white. The base <code>MeshEffect</code>
+     *  class uses this information to simplify the fragment shader if possible. May be
+     *  ignored by subclasses. */
+    public function get tinted():Bool { return _tinted; }
+    public function set tinted(value:Bool):Void { _tinted = value; }
 }
 }

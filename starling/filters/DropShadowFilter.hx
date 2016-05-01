@@ -26,10 +26,11 @@ public class DropShadowFilter extends FragmentFilter
 
     /** Creates a new DropShadowFilter instance with the specified parameters. */
     public function DropShadowFilter(distance:Float=4.0, angle:Float=0.785,
-                                     color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0)
+                                     color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
+                                     resolution:Float=0.5)
     {
         _compositeFilter = new CompositeFilter();
-        _blurFilter = new BlurFilter(blur, blur);
+        _blurFilter = new BlurFilter(blur, blur, resolution);
         _distance = distance;
         _angle = angle;
 
@@ -49,14 +50,20 @@ public class DropShadowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
-        var shadow:Texture = _blurFilter.process(painter, pool, input0);
-        var result:Texture = _compositeFilter.process(painter, pool, shadow, input0);
-        pool.putTexture(shadow);
+        var shadow:Texture = _blurFilter.process(painter, helper, input0);
+        var result:Texture = _compositeFilter.process(painter, helper, shadow, input0);
+        helper.putTexture(shadow);
         return result;
+    }
+
+    /** @private */
+    override public function get numPasses():Int
+    {
+        return _blurFilter.numPasses + _compositeFilter.numPasses;
     }
 
     private function updatePadding():Void
@@ -131,6 +138,17 @@ public class DropShadowFilter extends FragmentFilter
         if (blur != value)
         {
             _blurFilter.blurX = _blurFilter.blurY = value;
+            updatePadding();
+        }
+    }
+
+    /** @private */
+    override public function get resolution():Float { return _blurFilter.resolution; }
+    override public function set resolution(value:Float):Void
+    {
+        if (resolution != value)
+        {
+            _blurFilter.resolution = value;
             updatePadding();
         }
     }

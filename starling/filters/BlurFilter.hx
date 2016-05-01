@@ -31,16 +31,15 @@ public class BlurFilter extends FragmentFilter
      *      <li>etc.</li>
      *  </ul>
      */
-    public function BlurFilter(blurX:Float=1.0, blurY:Float=1.0)
+    public function BlurFilter(blurX:Float=1.0, blurY:Float=1.0, resolution:Float=1.0)
     {
         _blurX = blurX;
         _blurY = blurY;
-
-        updatePadding();
+        this.resolution = resolution;
     }
 
     /** @private */
-    override public function process(painter:Painter, pool:ITexturePool,
+    override public function process(painter:Painter, helper:IFilterHelper,
                                      input0:Texture = null, input1:Texture = null,
                                      input2:Texture = null, input3:Texture = null):Texture
     {
@@ -49,7 +48,7 @@ public class BlurFilter extends FragmentFilter
         if (_blurX == 0 && _blurY == 0)
         {
             effect.strength = 0;
-            return super.process(painter, pool, input0);
+            return super.process(painter, helper, input0);
         }
 
         var blurX:Float = Math.abs(_blurX);
@@ -65,9 +64,9 @@ public class BlurFilter extends FragmentFilter
 
             blurX -= effect.strength;
             inTexture = outTexture;
-            outTexture = super.process(painter, pool, inTexture);
+            outTexture = super.process(painter, helper, inTexture);
 
-            if (inTexture != input0) pool.putTexture(inTexture);
+            if (inTexture != input0) helper.putTexture(inTexture);
         }
 
         effect.direction = BlurEffect.VERTICAL;
@@ -78,9 +77,9 @@ public class BlurFilter extends FragmentFilter
 
             blurY -= effect.strength;
             inTexture = outTexture;
-            outTexture = super.process(painter, pool, inTexture);
+            outTexture = super.process(painter, helper, inTexture);
 
-            if (inTexture != input0) pool.putTexture(inTexture);
+            if (inTexture != input0) helper.putTexture(inTexture);
         }
 
         return outTexture;
@@ -92,10 +91,23 @@ public class BlurFilter extends FragmentFilter
         return new BlurEffect();
     }
 
+    /** @private */
+    override public function set resolution(value:Float):Void
+    {
+        super.resolution = value;
+        updatePadding();
+    }
+
+    /** @private */
+    override public function get numPasses():Int
+    {
+        return (Math.ceil(_blurX) + Math.ceil(_blurY)) || 1;
+    }
+
     private function updatePadding():Void
     {
-        var paddingX:Float = _blurX ? Math.ceil(Math.abs(_blurX)) + 3 : 1;
-        var paddingY:Float = _blurY ? Math.ceil(Math.abs(_blurY)) + 3 : 1;
+        var paddingX:Float = (_blurX ? Math.ceil(Math.abs(_blurX)) + 3 : 1) / resolution;
+        var paddingY:Float = (_blurY ? Math.ceil(Math.abs(_blurY)) + 3 : 1) / resolution;
 
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }
@@ -125,9 +137,7 @@ import flash.display3D.Context3DProgramType;
 
 import starling.rendering.FilterEffect;
 import starling.rendering.Program;
-import starling.textures.Texture;
 import starling.utils.MathUtil;
-import starling.utils.RenderUtil;
 
 class BlurEffect extends FilterEffect
 {
@@ -282,11 +292,6 @@ private function updateParameters():Void
         _offsets[2] = 0;
         _offsets[3] = offset2;
     }
-}
-
-private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture):String
-{
-    return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture);
 }
 
 public function get direction():String { return _direction; }

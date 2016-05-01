@@ -338,6 +338,10 @@ public class MovieClip extends Image implements IAnimatable
             }
 
             restTimeInFrame = frame.duration;
+
+            // prevent a mean floating point problem (issue #851)
+            if (passedTime + 0.0001 > restTimeInFrame && passedTime - 0.0001 < restTimeInFrame)
+                passedTime = restTimeInFrame;
         }
 
         if (previousFrameID != _currentFrameID)

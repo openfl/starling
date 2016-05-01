@@ -510,7 +510,7 @@ public class DisplayObject extends EventDispatcher
     // internal methods
     
     /** @private */
-    internal function setParent(value:DisplayObjectContainer):Void 
+    starling_internal function setParent(value:DisplayObjectContainer):Void
     {
         // check for a recursion
         var ancestor:DisplayObject = value;
@@ -545,9 +545,9 @@ public class DisplayObject extends EventDispatcher
      *  custom mesh styles or any other custom rendering code, call this method if the object
      *  needs to be redrawn.</p>
      *
-     *  <p>If a class does not support the render cache (like <code>Sprite3D</code>),
-     *  it may override <code>supportsRenderCache</code>. That way, the object will be
-     *  redrawn automatically each frame.</p>
+     *  <p>If the object needs to be redrawn just because it does not support the render cache,
+     *  call <code>painter.excludeFromCache()</code> in the object's render method instead.
+     *  That way, Starling's <code>skipUnchangedFrames</code> policy won't be disrupted.</p>
      */
     public function setRequiresRedraw():Void
     {
@@ -560,41 +560,38 @@ public class DisplayObject extends EventDispatcher
         while (parent && parent._lastChildChangeFrameID != frameID)
         {
             parent._lastChildChangeFrameID = frameID;
+            if (parent._mask) parent._mask.setRequiresRedraw();
             parent = parent._parent;
         }
+
+        if (_isMask) Starling.current.setRequiresRedraw(); // notify 'skipUnchangedFrames'
+        else if (_mask) _mask.setRequiresRedraw();         // propagate into mask
     }
 
-    /** Indicates if this class supports the render cache.
-     *  Subclasses that need to circumvent the cache have to override this method and call
-     *  <code>updateSupportsRenderCache</code> whenever that boolean changes. Don't forget
-     *  to combine the result with <code>super.supportsRenderCache</code> when overriding
-     *  the method!
-     *
-     *  <p>Note that when a container does not support the render cache, its children will
-     *  still be cached! This just means that batching is interrupted at this object when
-     *  the display tree is traversed.</p>
-     */
-    protected function get supportsRenderCache():Bool
+    /** Indicates if the object needs to be redrawn in the upcoming frame, i.e. if it has
+     *  changed its location relative to the stage or some other aspect of its appearance
+     *  since it was last rendered. */
+    public function get requiresRedraw():Bool
     {
-        return _mask == null;
+        var frameID:UInt = Starling.frameID;
+
+        return _lastParentOrSelfChangeFrameID == frameID ||
+               _lastChildChangeFrameID == frameID;
     }
 
-    /** Must be called when support for the render cache changes. The actual value is read
-     *  from the <code>supportsRenderCache</code> property. */
-    protected function updateSupportsRenderCache():Void
+    /** @private Makes sure the object is not drawn from cache in the next frame.
+     *  This method is meant to be called only from <code>Painter.finishFrame()</code>,
+     *  since it requires rendering to be concluded. */
+    starling_internal function excludeFromCache():Void
     {
-        if (supportsRenderCache)
-            removeEventListener(Event.ENTER_FRAME, onEnterFrameWithoutRenderCache);
-        else
-            addEventListener(Event.ENTER_FRAME, onEnterFrameWithoutRenderCache);
-    }
+        var object:DisplayObject = this;
+        var max:UInt = 0xffffffff;
 
-    private function onEnterFrameWithoutRenderCache():Void
-    {
-        // by wrapping 'setRequiresRedraw' in a private method, we can make sure that no
-        // subclasses are messing with this event handler.
-
-        setRequiresRedraw();
+        while (object && object._tokenFrameID != max)
+        {
+            object._tokenFrameID = max;
+            object = object._parent;
+        }
     }
 
     // helpers
@@ -843,10 +840,13 @@ public class DisplayObject extends EventDispatcher
     {
         // this method calls 'this.scaleX' instead of changing _scaleX directly.
         // that way, subclasses reacting on size changes need to override only the scaleX method.
-        
-        scaleX = 1.0;
-        var actualWidth:Float = width;
-        if (actualWidth != 0.0) scaleX = value / actualWidth;
+
+        var actualWidth:Float;
+
+        if (_scaleX == 0.0) { scaleX = 1.0; actualWidth = width; }
+        else actualWidth = Math.abs(width / _scaleX);
+
+        if (actualWidth) scaleX = value / actualWidth;
     }
     
     /** The height of the object in pixels.
@@ -855,9 +855,12 @@ public class DisplayObject extends EventDispatcher
     public function get height():Float { return getBounds(_parent, sHelperRect).height; }
     public function set height(value:Float):Void
     {
-        scaleY = 1.0;
-        var actualHeight:Float = height;
-        if (actualHeight != 0.0) scaleY = value / actualHeight;
+        var actualHeight:Float;
+
+        if (_scaleY == 0.0) { scaleY = 1.0; actualHeight = height; }
+        else actualHeight = Math.abs(height / _scaleY);
+
+        if (actualHeight) scaleY = value / actualHeight;
     }
     
     /** The x coordinate of the object relative to the local coordinates of the parent. */
@@ -1074,7 +1077,6 @@ public class DisplayObject extends EventDispatcher
 
             _mask = value;
             setRequiresRedraw();
-            updateSupportsRenderCache();
         }
     }
 
