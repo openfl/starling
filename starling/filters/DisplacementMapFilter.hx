@@ -311,14 +311,14 @@ class DisplacementMapEffect extends FilterEffect
         for (i in 0 ... 16)
             sMatrixData[i] = 0;
 
-        if      (_componentX == BitmapDataChannel.RED)   columnX = 0;
-        else if (_componentX == BitmapDataChannel.GREEN) columnX = 1;
-        else if (_componentX == BitmapDataChannel.BLUE)  columnX = 2;
+        if      (_componentX == (cast BitmapDataChannel.RED : UInt))   columnX = 0;
+        else if (_componentX == (cast BitmapDataChannel.GREEN : UInt)) columnX = 1;
+        else if (_componentX == (cast BitmapDataChannel.BLUE : UInt))  columnX = 2;
         else                                             columnX = 3;
 
-        if      (_componentY == BitmapDataChannel.RED)   columnY = 0;
-        else if (_componentY == BitmapDataChannel.GREEN) columnY = 1;
-        else if (_componentY == BitmapDataChannel.BLUE)  columnY = 2;
+        if      (_componentY == (cast BitmapDataChannel.RED : UInt))   columnY = 0;
+        else if (_componentY == (cast BitmapDataChannel.GREEN : UInt)) columnY = 1;
+        else if (_componentY == (cast BitmapDataChannel.BLUE : UInt))  columnY = 2;
         else                                             columnY = 3;
 
         sMatrixData[columnX * 4    ] = _scaleX * scale / textureWidth;

@@ -799,7 +799,6 @@ class Starling extends EventDispatcher
 
         #if flash
         if (!multitouchEnabled || Mouse.supportsCursor)
-            types.push(MouseEvent.MOUSE_DOWN,  MouseEvent.MOUSE_MOVE, MouseEvent.MOUSE_UP);
         #else
         #end
         {

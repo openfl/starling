@@ -149,7 +149,7 @@ class IndexData
         {
             target._numIndices = newNumIndices;
 
-            if (sQuadDataNumIndices  < newNumIndices)
+            if (sQuadDataNumIndices  < (cast newNumIndices : UInt))
                 ensureQuadDataCapacity(newNumIndices);
         }
 
@@ -241,7 +241,7 @@ class IndexData
 
         if (_useQuadLayout)
         {
-            if (getBasicQuadIndexAt(indexID) == index) return;
+            if ((cast getBasicQuadIndexAt(indexID) : UInt) == index) return;
             else switchToGenericData();
         }
 
@@ -324,7 +324,7 @@ class IndexData
     {
         if (_useQuadLayout)
         {
-            if (Std.int(a) == getBasicQuadIndexAt(_numIndices) &&
+            if (a == (cast getBasicQuadIndexAt(_numIndices) : UInt) &&
                 b == a + 1 && c == b + 1 && d == c + 1)
             {
                 _numIndices += 6;
@@ -397,7 +397,7 @@ class IndexData
      *  made smaller. */
     private function ensureQuadDataCapacity(numIndices:Int):Void
     {
-        if (sQuadDataNumIndices >= numIndices) return;
+        if (sQuadDataNumIndices >= (cast numIndices : UInt)) return;
 
         #if 0
         var i:Int;

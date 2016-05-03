@@ -700,7 +700,7 @@ class VertexData
         {
             _rawData.position = pos;
 
-            if (_rawData.readUnsignedInt() != 0xffffffff)
+            if (_rawData.readUnsignedInt() != (cast 0xffffffff : UInt))
             {
                 _tinted = true;
                 break;
@@ -825,8 +825,8 @@ class VertexData
 
         var rgba:UInt = ((color << 8) & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
 
-        if (rgba == 0xffffffff && numVertices == _numVertices) _tinted = false;
-        else if (rgba != 0xffffffff) _tinted = true;
+        if (rgba == (cast 0xffffffff : UInt) && numVertices == _numVertices) _tinted = false;
+        else if (rgba != (cast 0xffffffff : UInt)) _tinted = true;
 
         if (_premultipliedAlpha && alpha != 1.0) rgba = premultiplyAlpha(rgba);
 
@@ -983,8 +983,8 @@ class VertexData
     {
         if (value > _numVertices)
         {
-            var oldLength:Int = _numVertices * vertexSize;
-            var newLength:Int = value * _vertexSize;
+            var oldLength:UInt = _numVertices * vertexSize;
+            var newLength:UInt = value * _vertexSize;
 
             if (_rawData.length > oldLength)
             {

@@ -50,9 +50,9 @@ use namespace starling_internal;
 #end
 
 #if flash
-import haxe.ds.WeakMap;
+typedef WeakObjectMap<K, V> = haxe.ds.WeakMap<{}, V>;
 #else
-typedef WeakMap<K, V> = Map<K, V>;
+typedef WeakObjectMap<K, V> = haxe.ds.ObjectMap<{}, V>;
 #end
 
 /** A class that orchestrates rendering of all Starling display objects.
@@ -99,7 +99,7 @@ class Painter
     private var _frameID:UInt;
     private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
-    private var _stencilReferenceValues:WeakMap<TextureBase, UInt>;
+    private var _stencilReferenceValues:WeakObjectMap<{}, UInt>;
     private var _clipRectStack:Array<Rectangle>;
     private var _batchProcessor:BatchProcessor;
     private var _batchCache:BatchProcessor;
@@ -139,7 +139,7 @@ class Painter
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
-        _stencilReferenceValues = new WeakMap();
+        _stencilReferenceValues = new WeakObjectMap();
         _clipRectStack = new Array<Rectangle>();
         _programs = new Map();
         _data = new Map();
@@ -710,8 +710,8 @@ class Painter
             }
             else
             {
-                width  = Std.int(backBufferWidth);
-                height = Std.int(backBufferHeight);
+                width  = backBufferWidth;
+                height = backBufferHeight;
             }
 
             // convert to pixel coordinates (matrix transformation ends up in range [-1, 1])
