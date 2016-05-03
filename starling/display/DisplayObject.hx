@@ -204,6 +204,20 @@ class DisplayObject extends EventDispatcher
         _visible = _touchable = _hasVisibleArea = true;
         _blendMode = BlendMode.AUTO;
         _transformationMatrix = new Matrix();
+        
+        _name = null;
+        _useHandCursor = false;
+        _parent = null;
+        _transformationMatrix3D = null;
+        _orientationChanged = false;
+        _is3D = false;
+        _isMask = false;
+        
+        _lastParentOrSelfChangeFrameID = 0;
+        _lastChildChangeFrameID = 0;
+        _tokenFrameID = 0;
+        _filter = null;
+        _mask = null;
     }
     
     /** Disposes all resources of the display object. 
