@@ -15,9 +15,7 @@ import starling.text.TextField;
 @:keep class MaskScene extends Scene
 {
     private var _contents:Sprite;
-    #if 0
-    private var _mask:Canvas;
-    #end
+    private var _mask2:Canvas;
     private var _maskDisplay:Canvas;
     
     public function new()
@@ -55,8 +53,8 @@ import starling.text.TextField;
         _maskDisplay.touchable = false;
         addChild(_maskDisplay);
 
-        _mask = createCircle();
-        _contents.mask = _mask;
+        _mask2 = createCircle();
+        _contents.mask = _mask2;
         
         addEventListener(TouchEvent.TOUCH, onTouch);
     }
@@ -70,8 +68,8 @@ import starling.text.TextField;
         if (touch != null)
         {
             var localPos:Point = touch.getLocation(this);
-            _mask.x = _maskDisplay.x = localPos.x;
-            _mask.y = _maskDisplay.y = localPos.y;
+            _mask2.x = _maskDisplay.x = localPos.x;
+            _mask2.y = _maskDisplay.y = localPos.y;
         }
     }
 
