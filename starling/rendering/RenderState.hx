@@ -89,7 +89,7 @@ class RenderState
     }
 
     /** Duplicates all properties of another instance on the current instance. */
-    public function copyFrom(renderState:RenderState):Void
+    public function copyFrom(renderState:RenderState, copyProjectionMatrix3D:Bool):Void
     {
         if (_onDrawRequired != null)
         {
@@ -111,7 +111,11 @@ class RenderState
         _renderTargetOptions = renderState._renderTargetOptions;
         _culling = renderState._culling;
         _modelviewMatrix.copyFrom(renderState._modelviewMatrix);
-        _projectionMatrix3D.copyFrom(renderState._projectionMatrix3D);
+        if (copyProjectionMatrix3D && renderState._projectionMatrix3D != null)
+        {
+            if (_projectionMatrix3D == null) _projectionMatrix3D = new Matrix3D();
+            _projectionMatrix3D.copyFrom(renderState._projectionMatrix3D);
+        }
 
         if (_modelviewMatrix3D != null || renderState._modelviewMatrix3D != null)
             this.modelviewMatrix3D = renderState._modelviewMatrix3D;

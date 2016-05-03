@@ -255,7 +255,7 @@ class FragmentFilter extends EventDispatcher
         // later might reference data that does not exist any longer.
 
         painter.frameID = 0;
-        painter.pushState(_token);
+        painter.pushState3D(_token);
         painter.state.renderTarget = input;
         painter.state.setProjectionMatrix(bounds.x, bounds.y,
             input.root.width, input.root.height,

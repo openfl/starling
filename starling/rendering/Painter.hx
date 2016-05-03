@@ -301,7 +301,20 @@ class Painter
         if (_stateStackLength < _stateStackPos + 1) _stateStack[_stateStackLength++] = new RenderState();
         if (token != null) _batchProcessor.fillToken(token);
 
-        _stateStack[_stateStackPos].copyFrom(_state);
+        _stateStack[_stateStackPos].copyFrom(_state, false);
+        @:privateAccess _stateStack[_stateStackPos]._projectionMatrix3D = null;
+    }
+    
+    /** Pushes the current render state to a stack from which it can be restored later.
+     */
+    public function pushState3D(token:BatchToken=null):Void
+    {
+        _stateStackPos++;
+
+        if (_stateStackLength < _stateStackPos + 1) _stateStack[_stateStackLength++] = new RenderState();
+        if (token != null) _batchProcessor.fillToken(token);
+
+        _stateStack[_stateStackPos].copyFrom(_state, true);
     }
 
     /** Modifies the current state with a transformation matrix, alpha factor, and blend mode.
@@ -332,7 +345,7 @@ class Painter
         if (_stateStackPos < 0)
             throw new IllegalOperationError("Cannot pop empty state stack");
 
-        _state.copyFrom(_stateStack[_stateStackPos]); // -> might cause 'finishMeshBatch'
+        _state.copyFrom(_stateStack[_stateStackPos], true); // -> might cause 'finishMeshBatch'
         _stateStackPos--;
 
         if (token != null) _batchProcessor.fillToken(token);
