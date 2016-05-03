@@ -72,7 +72,7 @@ class RenderState
     private var _renderTargetOptions:UInt;
     private var _culling:Context3DTriangleFace;
     private var _clipRect:Rectangle;
-    private var _onDrawRequired:Dynamic;
+    private var _onDrawRequired:Void->Void;
     private var _modelviewMatrix3D:Matrix3D;
     private var _projectionMatrix3D:Matrix3D;
     private var _mvpMatrix3D:Matrix3D;
@@ -376,7 +376,7 @@ class RenderState
      *  This callback is executed whenever a state change requires a draw operation.
      *  This is the case if blend mode, render target, culling or clipping rectangle
      *  are changing. */
-    public var onDrawRequired(get, set):Dynamic;
-    @:noCompletion private function get_onDrawRequired():Dynamic { return _onDrawRequired; }
-    @:noCompletion private function set_onDrawRequired(value:Dynamic):Dynamic { return _onDrawRequired = value; }
+    public var onDrawRequired(get, set):Void->Void;
+    @:noCompletion private function get_onDrawRequired():Void->Void { return _onDrawRequired; }
+    @:noCompletion private function set_onDrawRequired(value:Void->Void):Void->Void { return _onDrawRequired = value; }
 }
