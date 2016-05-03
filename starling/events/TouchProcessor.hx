@@ -21,6 +21,13 @@ import starling.core.Starling;
 import starling.display.DisplayObject;
 import starling.display.Stage;
 
+typedef TouchData =
+{
+    touch:Touch,
+    target:DisplayObject,
+    bubbleChain:Array<EventDispatcher>
+}
+
 /** The TouchProcessor is used to convert mouse and touch events of the conventional
  *  Flash stage to Starling's TouchEvents.
  *  
@@ -76,7 +83,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Array<Touch> = new Array<Touch>();
-    private static var sHoveringTouchData:Array<Dynamic> = new Array<Dynamic>();
+    private static var sHoveringTouchData:Array<TouchData> = new Array<TouchData>();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new TouchProcessor that will dispatch events to the given stage. */
