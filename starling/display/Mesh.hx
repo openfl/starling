@@ -69,6 +69,8 @@ class Mesh extends DisplayObject
         _indexData = indexData;
 
         setStyle(style, false);
+        
+        _pixelSnapping = false;
     }
 
     /** @inheritDoc */
