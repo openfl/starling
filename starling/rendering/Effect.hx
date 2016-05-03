@@ -113,7 +113,7 @@ class Effect
     private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
-    private var _onRestore:Dynamic;
+    private var _onRestore:Void->Void;
     private var _programBaseName:String;
 
     // helper objects
@@ -150,7 +150,7 @@ class Effect
         #if 0
         execute(_onRestore, this);
         #else
-        _onRestore(this);
+        _onRestore();
         #end
     }
 
@@ -373,9 +373,9 @@ class Effect
     /** The function that you provide here will be called after a context loss.
      *  Call both "upload..." methods from within the callback to restore any vertex or
      *  index buffers. The callback will be executed with the effect as its sole parameter. */
-    public var onRestore(get, set):Dynamic;
-    @:noCompletion private function get_onRestore():Dynamic { return _onRestore; }
-    @:noCompletion private function set_onRestore(value:Dynamic):Dynamic { return _onRestore = value; }
+    public var onRestore(get, set):Void->Void;
+    @:noCompletion private function get_onRestore():Void->Void { return _onRestore; }
+    @:noCompletion private function set_onRestore(value:Void->Void):Void->Void { return _onRestore = value; }
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2"</code> */
