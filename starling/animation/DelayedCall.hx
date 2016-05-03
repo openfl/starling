@@ -31,14 +31,14 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private var _repeatCount:Int;
     
     /** Creates a delayed call. */
-    public function new(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null)
+    public function new(callback:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null)
     {
         super();
         reset(callback, delay, args);
     }
     
     /** Resets the delayed call to its default values, which is useful for pooling. */
-    public function reset(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null):DelayedCall
+    public function reset(callback:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null):DelayedCall
     {
         _currentTime = 0;
         _totalTime = Math.max(delay, 0.0001);

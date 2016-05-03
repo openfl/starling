@@ -258,7 +258,7 @@ class Juggler implements IAnimatable
      *  @return Unique numeric identifier for the delayed call. This identifier may be used
      *          to remove the object via <code>removeByID()</code>.
      */
-    public function delayCall(call:Dynamic, delay:Float, args:Array<Dynamic>):UInt
+    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>):UInt
     {
         if (call == null) throw new ArgumentError("call must not be null");
         
