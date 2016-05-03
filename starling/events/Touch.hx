@@ -61,6 +61,16 @@ class Touch
         _phase = TouchPhase.HOVER;
         _pressure = _width = _height = 1.0;
         _bubbleChain = new Array<EventDispatcher>();
+        
+        _globalX = 0;
+        _globalY = 0;
+        _previousGlobalX = 0;
+        _previousGlobalY = 0;
+        _target = null;
+        _timestamp = 0;
+        _width = 0;
+        _height = 0;
+        _cancelled = false;
     }
     
     /** Converts the current location of a touch to the local coordinate system of a display 
