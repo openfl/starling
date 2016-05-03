@@ -84,6 +84,8 @@ class RenderState
     public function new()
     {
         reset();
+        this._renderTargetOptions = 0;
+        this._onDrawRequired = null;
     }
 
     /** Duplicates all properties of another instance on the current instance. */
