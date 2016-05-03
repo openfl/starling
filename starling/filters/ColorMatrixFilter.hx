@@ -212,9 +212,9 @@ class ColorMatrixFilter extends FragmentFilter
     }
 
     /** A vector of 20 items arranged as a 4x5 matrix. */
-    public var matrix(get, set):Vector<Float>;
-    @:noCompletion private function get_matrix():Vector<Float> { return colorEffect.matrix; }
-    @:noCompletion private function set_matrix(value:Vector<Float>):Vector<Float>
+    public var matrix(get, set):Array<Float>;
+    @:noCompletion private function get_matrix():Array<Float> { return colorEffect.matrix; }
+    @:noCompletion private function set_matrix(value:Array<Float>):Array<Float>
     {
         colorEffect.matrix = value;
         setRequiresRedraw();
@@ -231,9 +231,9 @@ class ColorMatrixFilter extends FragmentFilter
 class ColorMatrixEffect extends FilterEffect
 {
     private var _userMatrix:Array<Float>;   // offset in range 0-255
-    private var _shaderMatrix:Vector<Float>; // offset in range 0-1, changed order
+    private var _shaderMatrix:Array<Float>; // offset in range 0-1, changed order
 
-    private static var MIN_COLOR:Vector<Float> = [0, 0, 0, 0.0001];
+    private static var MIN_COLOR:Array<Float> = [0, 0, 0, 0.0001];
     private static var IDENTITY:Array<Float> = [1.0,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
 
     // helpers
