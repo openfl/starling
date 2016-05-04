@@ -162,7 +162,7 @@ class BlurEffect extends FilterEffect
     private var _weights:Vector<Float> = Vector.ofArray([0, 0, 0, 0]);
 
     // helpers
-    private var sTmpWeights:Vector<Float> = new Vector<Float>(5);
+    private var sTmpWeights:Vector<Float> = new Vector<Float>(5, true);
 
     /** Creates a new BlurEffect.
      *
