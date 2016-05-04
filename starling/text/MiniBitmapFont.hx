@@ -10,6 +10,7 @@
 
 package starling.text;
 import flash.display.BitmapData;
+import flash.display3D.Context3DTextureFormat;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 import haxe.Int64;
@@ -79,7 +80,7 @@ class MiniBitmapFont
 0x45fba577, 0x2eecdb70, 
     ];
     
-    private static var XML_DATA:Xml = Xml.createElement('
+    private static var XML_DATA:Xml = Xml.parse('
       <font>
       <info face="mini" size="8" bold="0" italic="0" smooth="0"/>
       <common lineHeight="8" base="7" scaleW="128" scaleH="64" pages="1" packed="0"/>
@@ -283,7 +284,8 @@ class MiniBitmapFont
     public static function get_texture():Texture
     {
         var bitmapData:BitmapData = getBitmapData();
-        var texture:Texture = Texture.fromBitmapData(bitmapData, false);
+        var format:Context3DTextureFormat = Context3DTextureFormat.BGRA; /*Context3DTextureFormat.BGRA_PACKED*/
+        var texture:Texture = Texture.fromBitmapData(bitmapData, false, false, 1, format);
         bitmapData.dispose();
         bitmapData = null;
 
@@ -304,7 +306,7 @@ class MiniBitmapFont
         var bmpBytes:ByteArray = new ByteArray();
         var numBytes:Int = BITMAP_DATA.length;
         
-        for (var i:Int=0; i<numBytes; ++i)
+        for (i in 0 ... numBytes)
             bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
         
         bmpBytes.uncompress();

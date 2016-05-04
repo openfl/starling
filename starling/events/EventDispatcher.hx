@@ -37,7 +37,7 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var mEventListeners:Map<String, Array<Dynamic>>;
+    private var _eventListeners:Map<String, Array<Dynamic>>;
     
     /** Helper object. */
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
@@ -49,15 +49,12 @@ class EventDispatcher
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Dynamic):Void
     {
-        if (mEventListeners == null)
-            mEventListeners = new Map<String, Array<Dynamic>>();
+        if (_eventListeners == null)
+            _eventListeners = new Map();
         
-        var listeners:Array<Dynamic> = mEventListeners[type];
+        var listeners:Array<Dynamic> = _eventListeners[type];
         if (listeners == null)
-        {
-            mEventListeners[type] = new Array<Dynamic>();
-            mEventListeners[type].push(listener);
-        }
+            _eventListeners[type] = [listener];
         else if (listeners.indexOf(listener) == -1) // check for duplicates
             listeners[listeners.length] = listener; // avoid 'push'
     }
@@ -65,9 +62,9 @@ class EventDispatcher
     /** Removes an event listener from the object. */
     public function removeEventListener(type:String, listener:Dynamic):Void
     {
-        if (mEventListeners != null)
+        if (_eventListeners != null)
         {
-            var listeners:Array < Dynamic > = mEventListeners[type];
+            var listeners:Array<Dynamic> = _eventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -85,7 +82,7 @@ class EventDispatcher
                     for (i in index + 1 ... numListeners)
                         restListeners[i-1] = listeners[i];
 
-                    mEventListeners[type] = restListeners;
+                    _eventListeners[type] = restListeners;
                 }
             }
         }
@@ -95,10 +92,10 @@ class EventDispatcher
      *  Be careful when removing all event listeners: you never know who else was listening. */
     public function removeEventListeners(type:String=null):Void
     {
-        if (type != null && mEventListeners != null)
-            mEventListeners.remove(type);
+        if (type != null && _eventListeners != null)
+            _eventListeners.remove(type);
         else
-            mEventListeners = null;
+            _eventListeners = null;
     }
     
     /** Dispatches an event to all objects that have registered listeners for its type. 
@@ -109,7 +106,7 @@ class EventDispatcher
     {
         var bubbles:Bool = event.bubbles;
         
-        if (!bubbles && (mEventListeners == null || !(mEventListeners.exists(event.type))))
+        if (!bubbles && (_eventListeners == null || !(_eventListeners.exists(event.type))))
             return; // no need to do anything
         
         // we save the current target and restore it later;
@@ -130,7 +127,8 @@ class EventDispatcher
      *  method uses this method internally. */
     public function invokeEvent(event:Event):Bool
     {
-        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Array<Dynamic> = _eventListeners != null ?
+            _eventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)
@@ -204,10 +202,17 @@ class EventDispatcher
         }
     }
     
-    /** Returns if there are listeners registered for a certain event type. */
-    public function hasEventListener(type:String):Bool
+    /** If called with one argument, figures out if there are any listeners registered for
+     *  the given event type. If called with two arguments, also determines if a specific
+     *  listener is registered. */
+    public function hasEventListener(type:String, listener:Dynamic=null):Bool
     {
-        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[type] : null;
-        return listeners != null ? listeners.length != 0 : false;
+        var listeners:Array<Dynamic> = _eventListeners != null ? _eventListeners[type] : null;
+        if (listeners == null) return false;
+        else
+        {
+            if (listener != null) return listeners.indexOf(listener) != -1;
+            else return listeners.length != 0;
+        }
     }
 }

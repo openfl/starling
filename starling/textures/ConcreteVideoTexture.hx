@@ -11,54 +11,93 @@
 package starling.textures;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
-import openfl.errors.ArgumentError;
+import flash.display3D.textures.VideoTexture;
+import flash.events.Event;
 
-/** A concrete texture that may only be used for a 'VideoTexture' base.
+import starling.core.Starling;
+#if 0
+import starling.utils.execute;
+#end
+
+/** @private
+ *
+ *  A concrete texture that wraps a <code>VideoTexture</code> base.
  *  For internal use only. */
 class ConcreteVideoTexture extends ConcreteTexture
 {
-    /** Creates a new VideoTexture. 'base' must be of type 'VideoTexture'. */
-    public function new(base:TextureBase, scale:Float = 1)
+    private var _textureReadyCallback:Dynamic;
+
+    /** Creates a new instance with the given parameters.
+     *  <code>base</code> must be of type <code>flash.display3D.textures.VideoTexture</code>.
+     */
+    public function new(base:VideoTexture, scale:Float=1)
     {
-        // we must not reference the "VideoTexture" class directly
-        // because it's only available in AIR.
+        super(base, Context3DTextureFormat.BGRA, base.videoWidth, base.videoHeight, false,
+              false, false, scale);
+    }
 
-        var format:Context3DTextureFormat = Context3DTextureFormat.BGRA;
-        var width:Null<Int>  = Reflect.getProperty(base, "videoWidth");
-        var height:Null<Int> = Reflect.getProperty(base, "videoHeight");
-        if (width == null) width = 0;
-        if (height == null) height = 0;
+    /** @inheritDoc */
+    override public function dispose():Void
+    {
+        base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+        super.dispose();
+    }
 
-        super(base, format, width, height, false, false, false, scale, false);
+    /** @inheritDoc */
+    override private function createBase():TextureBase
+    {
+        return Starling.sContext.createVideoTexture();
+    }
 
-        if (Type.getClassName(Type.getClass(base)) != "flash.display3D.textures.VideoTexture")
-            throw new ArgumentError("'base' must be VideoTexture");
+    /** @private */
+    override public function attachVideo(type:String, attachment:Dynamic,
+                                           onComplete:Dynamic=null):Void
+    {
+        _textureReadyCallback = onComplete;
+        Reflect.setProperty(base, "attach" + type, attachment);
+        base.addEventListener(Event.TEXTURE_READY, onTextureReady);
+
+        setDataUploaded();
+    }
+
+    private function onTextureReady(event:Event):Void
+    {
+        base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+        #if 0
+        execute(_textureReadyCallback, this);
+        #else
+        _textureReadyCallback(this);
+        #end
+        _textureReadyCallback = null;
     }
 
     /** The actual width of the video in pixels. */
     override public function get_nativeWidth():Float
     {
-        return Reflect.getProperty(base, "videoWidth");
+        return videoBase.videoWidth;
     }
 
     /** The actual height of the video in pixels. */
     override public function get_nativeHeight():Float
     {
-        return Reflect.getProperty(base, "videoHeight");
+        return videoBase.videoHeight;
     }
 
-    /** inheritDoc */
+    /** @inheritDoc */
     override public function get_width():Float
     {
         return nativeWidth / scale;
     }
 
-    /** inheritDoc */
+    /** @inheritDoc */
     override public function get_height():Float
     {
         return nativeHeight / scale;
+    }
+
+    private var videoBase(get, never):VideoTexture;
+    @:noCompletion private function get_videoBase():VideoTexture
+    {
+        return cast base;
     }
 }

@@ -51,17 +51,17 @@ class TouchSheet extends Sprite
             var currentAngle:Float  = Math.atan2(currentVector.y, currentVector.x);
             var previousAngle:Float = Math.atan2(previousVector.y, previousVector.x);
             var deltaAngle:Float = currentAngle - previousAngle;
-            
+
             // update pivot point based on previous center
             var previousLocalA:Point  = touchA.getPreviousLocation(this);
             var previousLocalB:Point  = touchB.getPreviousLocation(this);
             pivotX = (previousLocalA.x + previousLocalB.x) * 0.5;
             pivotY = (previousLocalA.y + previousLocalB.y) * 0.5;
-            
+
             // update location based on the current center
             x = (currentPosA.x + currentPosB.x) * 0.5;
             y = (currentPosA.y + currentPosB.y) * 0.5;
-            
+
             // rotate
             rotation += deltaAngle;
 

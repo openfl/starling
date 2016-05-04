@@ -17,12 +17,12 @@ import openfl.errors.Error;
 /** A parser for the ATF data format. */
 class AtfData
 {
-    private var mFormat:Context3DTextureFormat;
-    private var mWidth:Int;
-    private var mHeight:Int;
-    private var mNumTextures:Int;
-    private var mIsCubeMap:Bool;
-    private var mData:ByteArray;
+    private var _format:Context3DTextureFormat;
+    private var _width:Int;
+    private var _height:Int;
+    private var _numTextures:Int;
+    private var _isCubeMap:Bool;
+    private var _data:ByteArray;
     
     /** Create a new instance by parsing the given byte array. */
     public function new(data:ByteArray)
@@ -35,17 +35,22 @@ class AtfData
         var format:UInt = data.readUnsignedByte();
         switch (format & 0x7f)
         {
-            case  0, 1: mFormat = Context3DTextureFormat.BGRA;
-            case 12, 2, 3: mFormat = Context3DTextureFormat.COMPRESSED;
-            case 13, 4, 5: mFormat = Context3DTextureFormat.COMPRESSED_ALPHA/*"compressedAlpha"*/; // explicit string for compatibility
+            case  0:
+            case  1: _format = Context3DTextureFormat.BGRA;
+            case 12:
+            case  2:
+            case  3: _format = Context3DTextureFormat.COMPRESSED;
+            case 13:
+            case  4:
+            case  5: _format = Context3DTextureFormat.COMPRESSED_ALPHA;
             default: throw new Error("Invalid ATF format");
         }
         
-        mWidth = Std.int(Math.pow(2, data.readUnsignedByte())); 
-        mHeight = Std.int(Math.pow(2, data.readUnsignedByte()));
-        mNumTextures = data.readUnsignedByte();
-        mIsCubeMap = (format & 0x80) != 0;
-        mData = data;
+        _width = Std.int(Math.pow(2, data.readUnsignedByte()));
+        _height = Std.int(Math.pow(2, data.readUnsignedByte()));
+        _numTextures = data.readUnsignedByte();
+        _isCubeMap = (format & 0x80) != 0;
+        _data = data;
         
         // version 2 of the new file format contains information about
         // the "-e" and "-n" parameters of png2atf
@@ -54,7 +59,7 @@ class AtfData
         {
             var emptyMipmaps:Bool = (data[5] & 0x01) == 1;
             var numTextures:Int  = data[5] >> 1 & 0x7f;
-            mNumTextures = emptyMipmaps ? 1 : numTextures;
+            _numTextures = emptyMipmaps ? 1 : numTextures;
         }
     }
 
@@ -73,25 +78,25 @@ class AtfData
 
     /** The texture format. @see flash.display3D.textures.Context3DTextureFormat */
     public var format(get, never):Context3DTextureFormat;
-    public function get_format():Context3DTextureFormat { return mFormat; }
+    public function get_format():Context3DTextureFormat { return _format; }
 
     /** The width of the texture in pixels. */
     public var width(get, never):Int;
-    public function get_width():Int { return mWidth; }
+    public function get_width():Int { return _width; }
 
     /** The height of the texture in pixels. */
     public var height(get, never):Int;
-    public function get_height():Int { return mHeight; }
+    public function get_height():Int { return _height; }
 
     /** The number of encoded textures. '1' means that there are no mip maps. */
     public var numTextures(get, never):Int;
-    public function get_numTextures():Int { return mNumTextures; }
+    public function get_numTextures():Int { return _numTextures; }
 
     /** Indicates if the ATF data encodes a cube map. Not supported by Starling! */
     public var isCubeMap(get, never):Bool;
-    public function get_isCubeMap():Bool { return mIsCubeMap; }
+    public function get_isCubeMap():Bool { return _isCubeMap; }
 
     /** The actual byte data, including header. */
     public var data(get, never):ByteArray;
-    public function get_data():ByteArray { return mData; }
+    public function get_data():ByteArray { return _data; }
 }

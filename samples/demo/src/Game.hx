@@ -23,8 +23,8 @@ import starling.utils.AssetManager;
     private static const UbuntuRegular:Class;
     #end
     
-    private var mMainMenu:MainMenu;
-    private var mCurrentScene:Scene;
+    private var _mainMenu:MainMenu;
+    private var _currentScene:Scene;
     
     private static var sAssets:AssetManager;
     
@@ -52,10 +52,10 @@ import starling.utils.AssetManager;
         #end
         System.gc();
         
-        if (mMainMenu == null)
-            mMainMenu = new MainMenu();
+        if (_mainMenu == null)
+            _mainMenu = new MainMenu();
         
-        addChild(mMainMenu);
+        addChild(_mainMenu);
     }
     
     private function onKey(event:KeyboardEvent):Void
@@ -63,7 +63,7 @@ import starling.utils.AssetManager;
         if (event.keyCode == Keyboard.SPACE)
             Starling.current.showStats = !Starling.current.showStats;
         else if (event.keyCode == Keyboard.X)
-            Starling.current.context.dispose();
+            Starling.sContext.dispose();
     }
     
     private function onButtonTriggered(event:Event):Void
@@ -78,19 +78,19 @@ import starling.utils.AssetManager;
     
     private function closeScene():Void
     {
-        mCurrentScene.removeFromParent(true);
-        mCurrentScene = null;
+        _currentScene.removeFromParent(true);
+        _currentScene = null;
         showMainMenu();
     }
     
     private function showScene(name:String):Void
     {
-        if (mCurrentScene != null) return;
+        if (_currentScene != null) return;
         
         var sceneClass:Class<Dynamic> = Type.resolveClass(name);
-        mCurrentScene = cast(Type.createInstance(sceneClass, []), Scene);
-        mMainMenu.removeFromParent();
-        addChild(mCurrentScene);
+        _currentScene = cast(Type.createInstance(sceneClass, []), Scene);
+        _mainMenu.removeFromParent();
+        addChild(_currentScene);
     }
     
     public static var assets(get, never):AssetManager;

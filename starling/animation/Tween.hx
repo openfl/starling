@@ -11,9 +11,13 @@
 
 package starling.animation;
 import openfl.errors.ArgumentError;
+#if 0
+import starling.core.starling_internal;
+#end
 import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.utils.ArrayUtil;
+import starling.utils.Color;
 
 /** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
@@ -44,35 +48,35 @@ class Tween extends EventDispatcher implements IAnimatable
 {
     inline private static var HINT_MARKER:String = '#';
 
-    private var mTarget:Dynamic;
-    private var mTransitionFunc:Float->Float;
-    private var mTransitionName:String;
+    private var _target:Dynamic;
+    private var _transitionFunc:Float->Float;
+    private var _transitionName:String;
     
-    private var mProperties:Array<String>;
-    private var mStartValues:Array<Float>;
-    private var mEndValues:Array<Float>;
-    private var mUpdateFuncs:Array<String->Float->Float->Void>;
+    private var _properties:Array<String>;
+    private var _startValues:Array<Float>;
+    private var _endValues:Array<Float>;
+    private var _updateFuncs:Array<String->Float->Float->Void>;
 
-    private var mOnStart:Dynamic;
-    private var mOnUpdate:Dynamic;
-    private var mOnRepeat:Dynamic;
-    private var mOnComplete:Dynamic;  
+    private var _onStart:Array<Dynamic>->Void;
+    private var _onUpdate:Array<Dynamic>->Void;
+    private var _onRepeat:Array<Dynamic>->Void;
+    private var _onComplete:Array<Dynamic>->Void;
     
-    private var mOnStartArgs:Array<Dynamic>;
-    private var mOnUpdateArgs:Array<Dynamic>;
-    private var mOnRepeatArgs:Array<Dynamic>;
-    private var mOnCompleteArgs:Array<Dynamic>;
+    private var _onStartArgs:Array<Dynamic>;
+    private var _onUpdateArgs:Array<Dynamic>;
+    private var _onRepeatArgs:Array<Dynamic>;
+    private var _onCompleteArgs:Array<Dynamic>;
     
-    private var mTotalTime:Float;
-    private var mCurrentTime:Float;
-    private var mProgress:Float;
-    private var mDelay:Float;
-    private var mRoundToInt:Bool;
-    private var mNextTween:Tween;
-    private var mRepeatCount:Int;
-    private var mRepeatDelay:Float;
-    private var mReverse:Bool;
-    private var mCurrentCycle:Int;
+    private var _totalTime:Float;
+    private var _currentTime:Float;
+    private var _progress:Float;
+    private var _delay:Float;
+    private var _roundToInt:Bool;
+    private var _nextTween:Tween;
+    private var _repeatCount:Int;
+    private var _repeatDelay:Float;
+    private var _reverse:Bool;
+    private var _currentCycle:Int;
     
     /** Creates a tween with a target, duration (in seconds) and a transition function.
      *  @param target the object that you want to animate
@@ -82,24 +86,24 @@ class Tween extends EventDispatcher implements IAnimatable
      *         documentation about the required function signature. */ 
     public function new(target:Dynamic, time:Float, transition:Dynamic="linear")        
     {
-         super();
+        super();
          reset(target, time, transition);
     }
 
     /** Resets the tween to its default values. Useful for pooling tweens. */
     public function reset(target:Dynamic, time:Float, transition:Dynamic="linear"):Tween
     {
-        mTarget = target;
-        mCurrentTime = 0.0;
-        mTotalTime = Math.max(0.0001, time);
-        mProgress = 0.0;
-        mDelay = mRepeatDelay = 0.0;
-        mOnStart = mOnUpdate = mOnRepeat = mOnComplete = null;
-        mOnStartArgs = mOnUpdateArgs = mOnRepeatArgs = mOnCompleteArgs = null;
-        mRoundToInt = mReverse = false;
-        mRepeatCount = 1;
-        mCurrentCycle = -1;
-        mNextTween = null;
+        _target = target;
+        _currentTime = 0.0;
+        _totalTime = Math.max(0.0001, time);
+        _progress = 0.0;
+        _delay = _repeatDelay = 0.0;
+        _onStart = _onUpdate = _onRepeat = _onComplete = null;
+        _onStartArgs = _onUpdateArgs = _onRepeatArgs = _onCompleteArgs = null;
+        _roundToInt = _reverse = false;
+        _repeatCount = 1;
+        _currentCycle = -1;
+        _nextTween = null;
         
         if (Std.is(transition, String))
             this.transition = cast transition;
@@ -108,15 +112,14 @@ class Tween extends EventDispatcher implements IAnimatable
         else 
             throw new ArgumentError("Transition must be either a string or a function");
         
-        if (mProperties != null)  ArrayUtil.clear(mProperties); else mProperties  = new Array<String>();
-        if (mStartValues != null) ArrayUtil.clear(mStartValues); else mStartValues = new Array<Float>();
-        if (mEndValues != null)   ArrayUtil.clear(mEndValues); else mEndValues   = new Array<Float>();
-        if (mUpdateFuncs != null) ArrayUtil.clear(mUpdateFuncs); else mUpdateFuncs = new Array<String->Float->Float->Void>();
+        if (_properties != null)  ArrayUtil.clear(_properties); else _properties  = new Array<String>();
+        if (_startValues != null) ArrayUtil.clear(_startValues); else _startValues = new Array<Float>();
+        if (_endValues != null)   ArrayUtil.clear(_endValues); else _endValues   = new Array<Float>();
+        if (_updateFuncs != null) ArrayUtil.clear(_updateFuncs); else _updateFuncs = new Array<String->Float->Float->Void>();
         
         return this;
     }
-  
-          
+    
     /** Animates the property of the target to a certain value. You can call this method
      *  multiple times on one tween.
      *
@@ -134,15 +137,15 @@ class Tween extends EventDispatcher implements IAnimatable
      */
     public function animate(property:String, endValue:Float):Void
     {
-        if (mTarget == null) return; // tweening null just does nothing.
+        if (_target == null) return; // tweening null just does nothing.
 
-        var pos:Int = mProperties.length;
+        var pos:Int = _properties.length;
         var updateFunc:String->Float->Float->Void = getUpdateFuncFromProperty(property);
 
-        mProperties[pos] = getPropertyName(property);
-        mStartValues[pos] = Math.NaN;
-        mEndValues[pos] = endValue;
-        mUpdateFuncs[pos] = updateFunc;
+        _properties[pos] = getPropertyName(property);
+        _startValues[pos] = Math.NaN;
+        _endValues[pos] = endValue;
+        _updateFuncs[pos] = updateFunc;
     }
 
     /** Animates the 'scaleX' and 'scaleY' properties of an object simultaneously. */
@@ -176,64 +179,64 @@ class Tween extends EventDispatcher implements IAnimatable
     /** @inheritDoc */
     public function advanceTime(time:Float):Void
     {
-        if (time == 0 || (mRepeatCount == 1 && mCurrentTime == mTotalTime)) return;
+        if (time == 0 || (_repeatCount == 1 && _currentTime == _totalTime)) return;
         
         var i:Int;
-        var previousTime:Float = mCurrentTime;
-        var restTime:Float = mTotalTime - mCurrentTime;
+        var previousTime:Float = _currentTime;
+        var restTime:Float = _totalTime - _currentTime;
         var carryOverTime:Float = time > restTime ? time - restTime : 0.0;
         
-        mCurrentTime += time;
+        _currentTime += time;
         
-        if (mCurrentTime <= 0) 
+        if (_currentTime <= 0)
             return; // the delay is not over yet
-        else if (mCurrentTime > mTotalTime) 
-            mCurrentTime = mTotalTime;
+        else if (_currentTime > _totalTime)
+            _currentTime = _totalTime;
         
-        if (mCurrentCycle < 0 && previousTime <= 0 && mCurrentTime > 0)
+        if (_currentCycle < 0 && previousTime <= 0 && _currentTime > 0)
         {
-            mCurrentCycle++;
-            if (mOnStart != null) mOnStart(mOnStartArgs);
+            _currentCycle++;
+            if (_onStart != null) _onStart(_onStartArgs);
         }
 
-        var ratio:Float = mCurrentTime / mTotalTime;
-        var reversed:Bool = mReverse && (mCurrentCycle % 2 == 1);
-        var numProperties:Int = mStartValues.length;
-        mProgress = reversed ? mTransitionFunc(1.0 - ratio) : mTransitionFunc(ratio);
+        var ratio:Float = _currentTime / _totalTime;
+        var reversed:Bool = _reverse && (_currentCycle % 2 == 1);
+        var numProperties:Int = _startValues.length;
+        _progress = reversed ? _transitionFunc(1.0 - ratio) : _transitionFunc(ratio);
 
-        //for (i=0; i<numProperties; ++i)
-        for(i in 0 ... numProperties)
+        for (i in 0 ... numProperties)
         {                
-            if (mStartValues[i] != mStartValues[i]) // isNaN check - "isNaN" causes allocation! 
-                mStartValues[i] = Reflect.getProperty(mTarget, mProperties[i]);
+            if (_startValues[i] != _startValues[i]) // isNaN check - "isNaN" causes allocation!
+                _startValues[i] = Reflect.getProperty(_target, _properties[i]);
 
-            var updateFunc:String->Float->Float->Void = mUpdateFuncs[i];
-            updateFunc(mProperties[i], mStartValues[i], mEndValues[i]);
+            var updateFunc:String->Float->Float->Void = _updateFuncs[i];
+            updateFunc(_properties[i], _startValues[i], _endValues[i]);
         }
 
-        if (mOnUpdate != null) 
-            mOnUpdate(mOnUpdateArgs);
+        if (_onUpdate != null)
+            _onUpdate(_onUpdateArgs);
         
-        if (previousTime < mTotalTime && mCurrentTime >= mTotalTime)
+        if (previousTime < _totalTime && _currentTime >= _totalTime)
         {
-            if (mRepeatCount == 0 || mRepeatCount > 1)
+            if (_repeatCount == 0 || _repeatCount > 1)
             {
-                mCurrentTime = -mRepeatDelay;
-                mCurrentCycle++;
-                if (mRepeatCount > 1) mRepeatCount--;
-                if (mOnRepeat != null) mOnRepeat(mOnRepeatArgs);
+                _currentTime = -_repeatDelay;
+                _currentCycle++;
+                if (_repeatCount > 1) _repeatCount--;
+                if (_onRepeat != null) _onRepeat(_onRepeatArgs);
             }
             else
             {
                 // save callback & args: they might be changed through an event listener
-                var onComplete:Dynamic = mOnComplete;
-                var onCompleteArgs:Array<Dynamic> = mOnCompleteArgs;
+                var onComplete:Array<Dynamic>->Void = _onComplete;
+                var onCompleteArgs:Array<Dynamic> = _onCompleteArgs;
                 
                 // in the 'onComplete' callback, people might want to call "tween.reset" and
                 // add it to another juggler; so this event has to be dispatched *before*
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
                 if (onComplete != null) onComplete(onCompleteArgs);
+                if (_currentTime == 0) carryOverTime = 0; // tween was reset
             }
         }
         
@@ -250,10 +253,10 @@ class Tween extends EventDispatcher implements IAnimatable
 
         switch (hint)
         {
-            case null:  updateFunc = updateStandard; //break;
-            case "rgb": updateFunc = updateRgb; //break;
-            case "rad": updateFunc = updateRad; //break;
-            case "deg": updateFunc = updateDeg; //break;
+            case null:  updateFunc = updateStandard;
+            case "rgb": updateFunc = updateRgb;
+            case "rad": updateFunc = updateRad;
+            case "deg": updateFunc = updateDeg;
             default:
                 trace("[Starling] Ignoring unknown property hint:", hint);
                 updateFunc = updateStandard;
@@ -284,32 +287,14 @@ class Tween extends EventDispatcher implements IAnimatable
 
     private function updateStandard(property:String, startValue:Float, endValue:Float):Void
     {
-        var newValue:Float = startValue + mProgress * (endValue - startValue);
-        if (mRoundToInt) newValue = Math.round(newValue);
-        Reflect.setProperty(mTarget, property, newValue);
+        var newValue:Float = startValue + _progress * (endValue - startValue);
+        if (_roundToInt) newValue = Math.round(newValue);
+        Reflect.setProperty(_target, property, newValue);
     }
 
     private function updateRgb(property:String, startValue:Float, endValue:Float):Void
     {
-        var startColor:UInt = Std.int(startValue);
-        var endColor:UInt   = Std.int(endValue);
-
-        var startA:UInt = (startColor >> 24) & 0xff;
-        var startR:UInt = (startColor >> 16) & 0xff;
-        var startG:UInt = (startColor >>  8) & 0xff;
-        var startB:UInt = (startColor      ) & 0xff;
-
-        var endA:UInt = (endColor >> 24) & 0xff;
-        var endR:UInt = (endColor >> 16) & 0xff;
-        var endG:UInt = (endColor >>  8) & 0xff;
-        var endB:UInt = (endColor      ) & 0xff;
-
-        var newA:UInt = Std.int(startA + (endA - startA) * mProgress);
-        var newR:UInt = Std.int(startR + (endR - startR) * mProgress);
-        var newG:UInt = Std.int(startG + (endG - startG) * mProgress);
-        var newB:UInt = Std.int(startB + (endB - startB) * mProgress);
-
-        Reflect.setProperty(mTarget, property, (newA << 24) | (newR << 16) | (newG << 8) | newB);
+        Reflect.setProperty(_target, property, Color.interpolate(Std.int(startValue), Std.int(endValue), _progress));
     }
 
     private function updateRad(property:String, startValue:Float, endValue:Float):Void
@@ -337,135 +322,135 @@ class Tween extends EventDispatcher implements IAnimatable
      *  property is not being animated. */
     public function getEndValue(property:String):Float
     {
-        var index:Int = mProperties.indexOf(property);
+        var index:Int = _properties.indexOf(property);
         if (index == -1) throw new ArgumentError("The property '" + property + "' is not animated");
-        else return mEndValues[index];
+        else return _endValues[index];
     }
     
     /** Indicates if the tween is finished. */
     public var isComplete(get, never):Bool;
-    private function get_isComplete():Bool 
+    @:noCompletion private function get_isComplete():Bool 
     { 
-        return mCurrentTime >= mTotalTime && mRepeatCount == 1; 
+        return _currentTime >= _totalTime && _repeatCount == 1;
     }        
     
     /** The target object that is animated. */
     public var target(get, never):Dynamic;
-    private function get_target():Dynamic { return mTarget; }
+    @:noCompletion private function get_target():Dynamic { return _target; }
     
     /** The transition method used for the animation. @see Transitions */
     public var transition(get, set):String;
-    private function get_transition():String { return mTransitionName; }
-    private function set_transition(value:String):String 
+    @:noCompletion private function get_transition():String { return _transitionName; }
+    @:noCompletion private function set_transition(value:String):String 
     { 
-        mTransitionName = value;
-        mTransitionFunc = Transitions.getTransition(value);
+        _transitionName = value;
+        _transitionFunc = Transitions.getTransition(value);
         
-        if (mTransitionFunc == null)
+        if (_transitionFunc == null)
             throw new ArgumentError("Invalid transiton: " + value);
-        return mTransitionName;
+        return value;
     }
     
     /** The actual transition function used for the animation. */
     public var transitionFunc(get, set):Float->Float;
-    private function get_transitionFunc():Float->Float { return mTransitionFunc; }
-    private function set_transitionFunc(value:Float->Float):Float->Float
+    @:noCompletion private function get_transitionFunc():Float->Float { return _transitionFunc; }
+    @:noCompletion private function set_transitionFunc(value:Float->Float):Float->Float
     {
-        mTransitionName = "custom";
-        mTransitionFunc = value;
+        _transitionName = "custom";
+        _transitionFunc = value;
         return value;
     }
     
     /** The total time the tween will take per repetition (in seconds). */
     public var totalTime(get, never):Float;
-    private function get_totalTime():Float { return mTotalTime; }
+    @:noCompletion private function get_totalTime():Float { return _totalTime; }
     
     /** The time that has passed since the tween was created (in seconds). */
     public var currentTime(get, never):Float;
-    private function get_currentTime():Float { return mCurrentTime; }
+    @:noCompletion private function get_currentTime():Float { return _currentTime; }
     
     /** The current progress between 0 and 1, as calculated by the transition function. */
     public var progress(get, never):Float;
-    private function get_progress():Float { return mProgress; } 
+    @:noCompletion private function get_progress():Float { return _progress; }
     
     /** The delay before the tween is started (in seconds). @default 0 */
     public var delay(get, set):Float;
-    private function get_delay():Float { return mDelay; }
-    private function set_delay(value:Float):Float 
+    @:noCompletion private function get_delay():Float { return _delay; }
+    @:noCompletion private function set_delay(value:Float):Float 
     { 
-        mCurrentTime = mCurrentTime + mDelay - value;
-        mDelay = value;
-        return mDelay;
+        _currentTime = _currentTime + _delay - value;
+        _delay = value;
+        return value;
     }
     
     /** The number of times the tween will be executed. 
      *  Set to '0' to tween indefinitely. @default 1 */
     public var repeatCount(get, set):Int;
-    private function get_repeatCount():Int { return mRepeatCount; }
-    private function set_repeatCount(value:Int):Int { return mRepeatCount = value; }
+    @:noCompletion private function get_repeatCount():Int { return _repeatCount; }
+    @:noCompletion private function set_repeatCount(value:Int):Int { return _repeatCount = value; }
     
     /** The amount of time to wait between repeat cycles (in seconds). @default 0 */
     public var repeatDelay(get, set):Float;
-    private function get_repeatDelay():Float { return mRepeatDelay; }
-    private function set_repeatDelay(value:Float):Float { return mRepeatDelay = value; }
+    @:noCompletion private function get_repeatDelay():Float { return _repeatDelay; }
+    @:noCompletion private function set_repeatDelay(value:Float):Float { return _repeatDelay = value; }
     
     /** Indicates if the tween should be reversed when it is repeating. If enabled, 
      *  every second repetition will be reversed. @default false */
     public var reverse(get, set):Bool;
-    private function get_reverse():Bool { return mReverse; }
-    private function set_reverse(value:Bool):Bool { return mReverse = value; }
+    @:noCompletion private function get_reverse():Bool { return _reverse; }
+    @:noCompletion private function set_reverse(value:Bool):Bool { return _reverse = value; }
     
     /** Indicates if the numeric values should be cast to Integers. @default false */
     public var roundToInt(get, set):Bool;
-    private function get_roundToInt():Bool { return mRoundToInt; }
-    private function set_roundToInt(value:Bool):Bool { return mRoundToInt = value; }        
+    @:noCompletion private function get_roundToInt():Bool { return _roundToInt; }
+    @:noCompletion private function set_roundToInt(value:Bool):Bool { return _roundToInt = value; }
     
     /** A function that will be called when the tween starts (after a possible delay). */
-    public var onStart(get, set):Dynamic;
-    private function get_onStart():Dynamic { return mOnStart; }
-    private function set_onStart(value:Dynamic):Dynamic { return mOnStart = value; }
+    public var onStart(get, set):Array<Dynamic>->Void;
+    @:noCompletion private function get_onStart():Array<Dynamic>->Void { return _onStart; }
+    @:noCompletion private function set_onStart(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return _onStart = value; }
     
     /** A function that will be called each time the tween is advanced. */
-    public var onUpdate(get, set):Dynamic;
-    private function get_onUpdate():Dynamic { return mOnUpdate; }
-    private function set_onUpdate(value:Dynamic):Dynamic { return mOnUpdate = value; }
+    public var onUpdate(get, set):Array<Dynamic>->Void;
+    @:noCompletion private function get_onUpdate():Array<Dynamic>->Void { return _onUpdate; }
+    @:noCompletion private function set_onUpdate(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return _onUpdate = value; }
     
     /** A function that will be called each time the tween finishes one repetition
      *  (except the last, which will trigger 'onComplete'). */
-    public var onRepeat(get, set):Dynamic;
-    private function get_onRepeat():Dynamic { return mOnRepeat; }
-    private function set_onRepeat(value:Dynamic):Dynamic { return mOnRepeat = value; }
+    public var onRepeat(get, set):Array<Dynamic>->Void;
+    @:noCompletion private function get_onRepeat():Array<Dynamic>->Void { return _onRepeat; }
+    @:noCompletion private function set_onRepeat(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return _onRepeat = value; }
     
     /** A function that will be called when the tween is complete. */
-    public var onComplete(get, set):Dynamic;
-    private function get_onComplete():Dynamic { return mOnComplete; }
-    private function set_onComplete(value:Dynamic):Dynamic { return mOnComplete = value; }
+    public var onComplete(get, set):Array<Dynamic>->Void;
+    @:noCompletion private function get_onComplete():Array<Dynamic>->Void { return _onComplete; }
+    @:noCompletion private function set_onComplete(value:Array<Dynamic>->Void):Array<Dynamic>->Void { return _onComplete = value; }
     
     /** The arguments that will be passed to the 'onStart' function. */
     public var onStartArgs(get, set):Array<Dynamic>;
-    private function get_onStartArgs():Array<Dynamic> { return mOnStartArgs; }
-    private function set_onStartArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnStartArgs = value; }
+    @:noCompletion private function get_onStartArgs():Array<Dynamic> { return _onStartArgs; }
+    @:noCompletion private function set_onStartArgs(value:Array<Dynamic>):Array<Dynamic> { return _onStartArgs = value; }
     
     /** The arguments that will be passed to the 'onUpdate' function. */
-    public var onUpdateArgs:Array<Dynamic>;
-    private function get_onUpdateArgs():Array<Dynamic> { return mOnUpdateArgs; }
-    private function set_onUpdateArgs(value:Array<Dynamic>):Void { mOnUpdateArgs = value; }
+    public var onUpdateArgs(get, set):Array<Dynamic>;
+    @:noCompletion private function get_onUpdateArgs():Array<Dynamic> { return _onUpdateArgs; }
+    @:noCompletion private function set_onUpdateArgs(value:Array<Dynamic>):Array<Dynamic> { return _onUpdateArgs = value; }
     
     /** The arguments that will be passed to the 'onRepeat' function. */
     public var onRepeatArgs(get, set):Array<Dynamic>;
-    private function get_onRepeatArgs():Array<Dynamic> { return mOnRepeatArgs; }
-    private function set_onRepeatArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnRepeatArgs = value; }
+    @:noCompletion private function get_onRepeatArgs():Array<Dynamic> { return _onRepeatArgs; }
+    @:noCompletion private function set_onRepeatArgs(value:Array<Dynamic>):Array<Dynamic> { return _onRepeatArgs = value; }
     
     /** The arguments that will be passed to the 'onComplete' function. */
     public var onCompleteArgs(get, set):Array<Dynamic>;
-    private function get_onCompleteArgs():Array<Dynamic> { return mOnCompleteArgs; }
-    private function set_onCompleteArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnCompleteArgs = value; }
+    @:noCompletion private function get_onCompleteArgs():Array<Dynamic> { return _onCompleteArgs; }
+    @:noCompletion private function set_onCompleteArgs(value:Array<Dynamic>):Array<Dynamic> { return _onCompleteArgs = value; }
     
     /** Another tween that will be started (i.e. added to the same juggler) as soon as 
      *  this tween is completed. */
     public var nextTween(get, set):Tween;
-    private function get_nextTween():Tween { return mNextTween; }
-    private function set_nextTween(value:Tween):Tween { return mNextTween = value; }
+    @:noCompletion private function get_nextTween():Tween { return _nextTween; }
+    @:noCompletion private function set_nextTween(value:Tween):Tween { return _nextTween = value; }
     
     // tween pooling
     
@@ -483,10 +468,10 @@ class Tween extends EventDispatcher implements IAnimatable
     public static function toPool(tween:Tween):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
-        tween.mOnStart = tween.mOnUpdate = tween.mOnRepeat = tween.mOnComplete = null;
-        tween.mOnStartArgs = tween.mOnUpdateArgs = tween.mOnRepeatArgs = tween.mOnCompleteArgs = null;
-        tween.mTarget = null;
-        tween.mTransitionFunc = null;
+        tween._onStart = tween._onUpdate = tween._onRepeat = tween._onComplete = null;
+        tween._onStartArgs = tween._onUpdateArgs = tween._onRepeatArgs = tween._onCompleteArgs = null;
+        tween._target = null;
+        tween._transitionFunc = null;
         tween.removeEventListeners();
         sTweenPool.push(tween);
     }

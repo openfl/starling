@@ -10,17 +10,23 @@
 
 package starling.display;
 import flash.display.BitmapData;
+import flash.display3D.Context3D;
 import flash.errors.IllegalOperationError;
+import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
+import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import starling.utils.ArrayUtil;
 
-import starling.core.RenderSupport;
 import starling.core.Starling;
 import starling.events.EnterFrameEvent;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
+import starling.rendering.Painter;
+import starling.rendering.RenderState;
 import starling.utils.MatrixUtil;
+import starling.utils.RectangleUtil;
 
 /** Dispatched when the Flash container is resized. */
 //[Event(name="resize", type="starling.events.ResizeEvent")]
@@ -53,55 +59,54 @@ import starling.utils.MatrixUtil;
  */
 class Stage extends DisplayObjectContainer
 {
-    private var mWidth:Int;
-    private var mHeight:Int;
-    private var mColor:UInt;
-    private var mFieldOfView:Float;
-    private var mProjectionOffset:Point;
-    private var mCameraPosition:Vector3D;
-    private var mEnterFrameEvent:EnterFrameEvent;
-    private var mEnterFrameListeners:Array<DisplayObject>;
-    
-    /** Helper objects. */
-    private static var sHelperMatrix:Matrix3D = new Matrix3D();
+    private var _width:Int;
+    private var _height:Int;
+    private var _color:UInt;
+    private var _fieldOfView:Float;
+    private var _projectionOffset:Point;
+    private var _cameraPosition:Vector3D;
+    private var _enterFrameEvent:EnterFrameEvent;
+    private var _enterFrameListeners:Array<DisplayObject>;
+
+    // helper objects
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sMatrix3D:Matrix3D = new Matrix3D();
 
     /** @private */
     public function new(width:Int, height:Int, color:UInt=0)
     {
         super();
-        mWidth = width;
-        mHeight = height;
-        mColor = color;
-        mFieldOfView = 1.0;
-        mProjectionOffset = new Point();
-        mCameraPosition = new Vector3D();
-        mEnterFrameEvent = new EnterFrameEvent(Event.ENTER_FRAME, 0.0);
-        mEnterFrameListeners = new Array<DisplayObject>();
+        _width = width;
+        _height = height;
+        _color = color;
+        _fieldOfView = 1.0;
+        _projectionOffset = new Point();
+        _cameraPosition = new Vector3D();
+        _enterFrameEvent = new EnterFrameEvent(Event.ENTER_FRAME, 0.0);
+        _enterFrameListeners = new Array<DisplayObject>();
     }
     
     /** @inheritDoc */
     public function advanceTime(passedTime:Float):Void
     {
-        mEnterFrameEvent.reset(Event.ENTER_FRAME, false, passedTime);
-        broadcastEvent(mEnterFrameEvent);
+        _enterFrameEvent.reset(Event.ENTER_FRAME, false, passedTime);
+        broadcastEvent(_enterFrameEvent);
     }
 
     /** Returns the object that is found topmost beneath a point in stage coordinates, or  
      *  the stage itself if nothing else is found. */
-    public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
+    public override function hitTest(localPoint:Point):DisplayObject
     {
-        if (forTouch && (!visible || !touchable))
-            return null;
+        if (!visible || !touchable) return null;
         
         // locations outside of the stage area shouldn't be accepted
-        if (localPoint.x < 0 || localPoint.x > mWidth ||
-            localPoint.y < 0 || localPoint.y > mHeight)
+        if (localPoint.x < 0 || localPoint.x > _width ||
+            localPoint.y < 0 || localPoint.y > _height)
             return null;
         
         // if nothing else is hit, the stage returns itself as target
-        var target:DisplayObject = super.hitTest(localPoint, forTouch);
-        if (target == null) target = this;
-        return target;
+        var target:DisplayObject = super.hitTest(localPoint);
+        return target != null ? target : this;
     }
     
     /** Draws the complete stage into a BitmapData object.
@@ -120,32 +125,46 @@ class Stage extends DisplayObjectContainer
     public function drawToBitmapData(destination:BitmapData=null,
                                      transparent:Bool=true):BitmapData
     {
-        var support:RenderSupport = new RenderSupport();
-        var star:Starling = Starling.current;
+        var painter:Painter = Starling.sPainter;
+        var state:RenderState = painter.state;
+        var context:Context3D = painter.context;
 
         if (destination == null)
         {
-            var width:Int  = star.backBufferWidth  * star.backBufferPixelsPerPoint;
-            var height:Int = star.backBufferHeight * star.backBufferPixelsPerPoint;
+            var width:Int  = context.backBufferWidth;
+            var height:Int = context.backBufferHeight;
             destination = new BitmapData(width, height, transparent);
         }
+
+        painter.pushState();
+        state.renderTarget = null;
+        state.setProjectionMatrix(0, 0, _width, _height, _width, _height, cameraPosition);
         
-        support.renderTarget = null;
-        support.setProjectionMatrix(0, 0, mWidth, mHeight, mWidth, mHeight, cameraPosition);
+        if (transparent) painter.clear();
+        else             painter.clear(_color, 1);
         
-        if (transparent) support.clear();
-        else             support.clear(mColor, 1);
-        
-        render(support, 1.0);
-        support.finishQuadBatch();
-        support.dispose();
-        
-        Starling.current.context.drawToBitmapData(destination);
-        Starling.current.context.present(); // required on some platforms to avoid flickering
-        
+        render(painter);
+        painter.finishMeshBatch();
+
+        context.drawToBitmapData(destination);
+        context.present(); // required on some platforms to avoid flickering
+
+        painter.popState();
         return destination;
     }
-    
+
+    /** Returns the stage bounds (i.e. not the bounds of its contents, but the rectangle
+     *  spawned up by 'stageWidth' and 'stageHeight') in another coordinate system. */
+    public function getStageBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
+    {
+        if (out == null) out = new Rectangle();
+
+        out.setTo(0, 0, _width, _height);
+        getTransformationMatrix(targetSpace, sMatrix);
+
+        return RectangleUtil.getBounds(out, sMatrix, out);
+    }
+
     // camera positioning
 
     /** Returns the position of the camera within the local coordinate system of a certain
@@ -153,13 +172,13 @@ class Stage extends DisplayObjectContainer
      *  To change the position of the camera, you can modify the properties 'fieldOfView',
      *  'focalDistance' and 'projectionOffset'.
      */
-    public function getCameraPosition(space:DisplayObject=null, result:Vector3D=null):Vector3D
+    public function getCameraPosition(space:DisplayObject=null, out:Vector3D=null):Vector3D
     {
-        getTransformationMatrix3D(space, sHelperMatrix);
+        getTransformationMatrix3D(space, sMatrix3D);
 
-        return MatrixUtil.transformCoords3D(sHelperMatrix,
-            mWidth / 2 + mProjectionOffset.x, mHeight / 2 + mProjectionOffset.y,
-           -focalLength, result);
+        return MatrixUtil.transformCoords3D(sMatrix3D,
+            _width / 2 + _projectionOffset.x, _height / 2 + _projectionOffset.y,
+            -focalLength, out);
     }
 
     // enter frame event optimization
@@ -167,14 +186,15 @@ class Stage extends DisplayObjectContainer
     /** @private */
     public function addEnterFrameListener(listener:DisplayObject):Void
     {
-        mEnterFrameListeners.push(listener);
+        var index:Int = _enterFrameListeners.indexOf(listener);
+        if (index < 0)  _enterFrameListeners[_enterFrameListeners.length] = listener;
     }
     
     /** @private */
     public function removeEnterFrameListener(listener:DisplayObject):Void
     {
-        var index:Int = mEnterFrameListeners.indexOf(listener);
-        if (index >= 0) mEnterFrameListeners.splice(index, 1); 
+        var index:Int = _enterFrameListeners.indexOf(listener);
+        if (index >= 0) _enterFrameListeners.splice(index, 1);
     }
     
     /** @private */
@@ -183,9 +203,9 @@ class Stage extends DisplayObjectContainer
     {
         if (eventType == Event.ENTER_FRAME && object == this)
         {
-            var length:Int = mEnterFrameListeners.length;
+            var length:Int = _enterFrameListeners.length;
             for (i in 0 ... length)
-                listeners[listeners.length] = mEnterFrameListeners[i]; // avoiding 'push' 
+                listeners[listeners.length] = _enterFrameListeners[i]; // avoiding 'push'
         }
         else
             super.getChildEventListeners(object, eventType, listeners);
@@ -255,32 +275,32 @@ class Stage extends DisplayObjectContainer
     
     /** The background color of the stage. */
     public var color(get, set):UInt;
-    private function get_color():UInt { return mColor; }
-    private function set_color(value:UInt):UInt { return mColor = value; }
+    private function get_color():UInt { return _color; }
+    private function set_color(value:UInt):UInt { return _color = value; }
     
     /** The width of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */ 
     public var stageWidth(get, set):Int;
-    private function get_stageWidth():Int { return mWidth; }
-    private function set_stageWidth(value:Int):Int { return mWidth = value; }
+    private function get_stageWidth():Int { return _width; }
+    private function set_stageWidth(value:Int):Int { return _width = value; }
     
     /** The height of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */
     public var stageHeight(get, set):Int;
-    public function get_stageHeight():Int { return mHeight; }
-    public function set_stageHeight(value:Int):Int { return mHeight = value; }
+    public function get_stageHeight():Int { return _height; }
+    public function set_stageHeight(value:Int):Int { return _height = value; }
 
     /** The distance between the stage and the camera. Changing this value will update the
      *  field of view accordingly. */
     public var focalLength(get, set):Float;
     public function get_focalLength():Float
     {
-        return mWidth / (2 * Math.tan(mFieldOfView/2));
+        return _width / (2 * Math.tan(_fieldOfView/2));
     }
 
     public function set_focalLength(value:Float):Float
     {
-        return mFieldOfView = 2 * Math.atan(stageWidth / (2*value));
+        return _fieldOfView = 2 * Math.atan(stageWidth / (2*value));
     }
 
     /** Specifies an angle (radian, between zero and PI) for the field of view. This value
@@ -294,19 +314,19 @@ class Stage extends DisplayObjectContainer
      *  @default 1.0
      */
     public var fieldOfView(get, set):Float;
-    public function get_fieldOfView():Float { return mFieldOfView; }
-    public function set_fieldOfView(value:Float):Float { return mFieldOfView = value; }
+    public function get_fieldOfView():Float { return _fieldOfView; }
+    public function set_fieldOfView(value:Float):Float { return _fieldOfView = value; }
 
     /** A vector that moves the camera away from its default position in the center of the
      *  stage. Use this property to change the center of projection, i.e. the vanishing
      *  point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
      */
     public var projectionOffset(get, set):Point;
-    public function get_projectionOffset():Point { return mProjectionOffset; }
+    public function get_projectionOffset():Point { return _projectionOffset; }
     public function set_projectionOffset(value:Point):Point
     {
-        mProjectionOffset.setTo(value.x, value.y);
-        return mProjectionOffset;
+        _projectionOffset.setTo(value.x, value.y);
+        return _projectionOffset;
     }
 
     /** The global position of the camera. This property can only be used to find out the
@@ -319,6 +339,6 @@ class Stage extends DisplayObjectContainer
     public var cameraPosition(get, never):Vector3D;
     public function get_cameraPosition():Vector3D
     {
-        return getCameraPosition(null, mCameraPosition);
+        return getCameraPosition(null, _cameraPosition);
     }
 }

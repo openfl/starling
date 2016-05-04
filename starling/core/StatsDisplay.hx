@@ -11,15 +11,16 @@
 package starling.core;
 import flash.system.System;
 
-import starling.display.BlendMode;
 import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.EnterFrameEvent;
 import starling.events.Event;
+import starling.rendering.Painter;
+import starling.styles.MeshStyle;
 import starling.text.BitmapFont;
 import starling.text.TextField;
-import starling.utils.HAlign;
-import starling.utils.VAlign;
+import starling.text.TextFormat;
+import starling.utils.Align;
 
 /** A small, lightweight box that displays the current framerate, memory consumption and
  *  the number of draw calls per frame. The display is updated automatically once per frame. */
@@ -27,98 +28,111 @@ class StatsDisplay extends Sprite
 {
     private inline static var UPDATE_INTERVAL:Float = 0.5;
     
-    private var mBackground:Quad;
-    private var mTextField:TextField;
+    private var _background:Quad;
+    private var _textField:TextField;
     
-    private var mFrameCount:Int = 0;
-    private var mTotalTime:Float = 0;
+    private var _frameCount:Int = 0;
+    private var _totalTime:Float = 0;
     
-    private var mFps:Float = 0;
-    private var mMemory:Float = 0;
-    private var mDrawCount:Int = 0;
+    private var _fps:Float = 0;
+    private var _memory:Float = 0;
+    private var _drawCount:Int = 0;
+    private var _skipCount:Int = 0;
     
     /** Creates a new Statistics Box. */
     public function new()
     {
         super();
-        mBackground = new Quad(70, 45, 0x0);
-        mTextField = new TextField(68, 45, "", "Verdana", 12, 0xffffffff);
-        mTextField.x = 2;
-        mTextField.hAlign = HAlign.LEFT;
-        mTextField.vAlign = VAlign.TOP;
-        
-        addChild(mBackground);
-        addChild(mTextField);
-        
-        //blendMode = BlendMode.NONE;
+        var format:TextFormat = new TextFormat(BitmapFont.MINI, BitmapFont.NATIVE_SIZE,
+                0xffffff, Align.LEFT, Align.TOP);
+
+        _background = new Quad(50, 25, 0x0);
+        _textField = new TextField(48, 25, "", format);
+        _textField.x = 2;
+
+        // make sure that rendering takes 2 draw calls
+        if (_background.style.type != MeshStyle) _background.style = new MeshStyle();
+        if ( _textField.style.type != MeshStyle) _textField.style  = new MeshStyle();
+
+        addChild(_background);
+        addChild(_textField);
         
         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
     
-    private function onAddedToStage(e:Event):Void
+    private function onAddedToStage():Void
     {
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
-        mTotalTime = mFrameCount = 0;
+        _totalTime = _frameCount = _skipCount = 0;
         update();
     }
     
-    private function onRemovedFromStage(e:Event):Void
+    private function onRemovedFromStage():Void
     {
         removeEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
     
-    private function onEnterFrame(e:Event):Void
+    private function onEnterFrame(event:EnterFrameEvent):Void
     {
-        var event:EnterFrameEvent = cast(e, EnterFrameEvent);
-        mTotalTime += event.passedTime;
-        mFrameCount++;
+        _totalTime += event.passedTime;
+        _frameCount++;
         
-        if (mTotalTime > UPDATE_INTERVAL)
+        if (_totalTime > UPDATE_INTERVAL)
         {
             update();
-            mFrameCount = Std.int(mTotalTime = 0);
+            _frameCount = _skipCount = 0;
+            _totalTime = 0;
         }
     }
     
     /** Updates the displayed values. */
     public function update():Void
     {
-        mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
-        mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
+        _fps = _totalTime > 0 ? _frameCount / _totalTime : 0;
+        _memory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
+        _background.color = _skipCount > _frameCount / 2 ? 0x003F00 : 0x0;
         
-        mTextField.text = "FPS: " + Math.round(mFps * 10) / 10 + 
-                        "\nMEM: " + Math.round(mMemory * 10) / 10 +
-                        "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
+        #if 0
+        _textField.text = "FPS: " + _fps.toFixed(_fps < 100 ? 1 : 0) +
+                        "\nMEM: " + _memory.toFixed(_memory < 100 ? 1 : 0) +
+                        "\nDRW: " + (_totalTime > 0 ? _drawCount - 2 : _drawCount); // ignore self
+        #else
+        _textField.text = "FPS: " + Math.round(_fps * 10) / 10 +
+                        "\nMEM: " + Math.round(_memory * 10) / 10 +
+                        "\nDRW: " + (_totalTime > 0 ? _drawCount - 2 : _drawCount);
+        #end
+    }
+
+    /** Call this once in every frame that can skip rendering because nothing changed. */
+    public function markFrameAsSkipped():Void
+    {
+        _skipCount += 1;
     }
     
-    public override function render(support:RenderSupport, parentAlpha:Float):Void
+    public override function render(painter:Painter):Void
     {
-        // The display should always be rendered with two draw calls, so that we can
-        // always reduce the draw count by that number to get the number produced by the 
-        // actual content.
-        
-        support.finishQuadBatch();
-        super.render(support, parentAlpha);
+        // By calling 'finishQuadBatch' and 'excludeFromCache', we can make sure that the stats
+        // display is always rendered with exactly two draw calls. That is taken into account
+        // when showing the drawCount value (see 'ignore self' comment above)
+
+        painter.excludeFromCache(this);
+        painter.finishMeshBatch();
+        super.render(painter);
     }
     
     /** The number of Stage3D draw calls per second. */
     public var drawCount(get, set):Int;
-    private function get_drawCount():Int { return mDrawCount; }
-    private function set_drawCount(value:Int):Int { return mDrawCount = value; }
+    @:noCompletion private function get_drawCount():Int { return _drawCount; }
+    @:noCompletion private function set_drawCount(value:Int):Int { return _drawCount = value; }
     
     /** The current frames per second (updated twice per second). */
     public var fps(get, set):Float;
-    private function get_fps():Float { return mFps; }
-    private function set_fps(value:Float):Float { return mFps = value; }
+    @:noCompletion private function get_fps():Float { return _fps; }
+    @:noCompletion private function set_fps(value:Float):Float { return _fps = value; }
     
     /** The currently required system memory in MB. */
     public var memory(get, set):Float;
-    private function get_memory():Float { return mMemory; }
-    private function set_memory(value:Float):Float { return mMemory = value; }
-
-    /** The font statsCounter is rendered with. */
-    public var fontName(get, set):String;
-    private function get_fontName():String { return mTextField.fontName; }
-    private function set_fontName(value:String):String { return mTextField.fontName = value; }
+    @:noCompletion private function get_memory():Float { return _memory; }
+    @:noCompletion private function set_memory(value:Float):Float { return _memory = value; }
 }
