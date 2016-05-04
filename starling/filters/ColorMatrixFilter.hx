@@ -172,7 +172,7 @@ class ColorMatrixFilter extends FragmentFilter
     }
 
     /** Concatenates the current matrix with another one. */
-    public function concat(matrix:Vector<Float>):Void
+    public function concat(matrix:Array<Float>):Void
     {
         colorEffect.concat(matrix);
         setRequiresRedraw();
