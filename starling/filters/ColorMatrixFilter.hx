@@ -268,7 +268,7 @@ class ColorMatrixEffect extends FilterEffect
     {
         super.beforeDraw(context);
 
-        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _shaderMatrix);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _shaderMatrix, 5);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
     }
 
