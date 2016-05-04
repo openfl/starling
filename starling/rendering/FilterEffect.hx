@@ -49,6 +49,9 @@ class FilterEffect extends Effect
     {
         super();
         _textureSmoothing = TextureSmoothing.BILINEAR;
+        
+        _texture = null;
+        _textureRepeat = false;
     }
 
     /** Override this method if the effect requires a different program depending on the
