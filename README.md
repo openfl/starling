@@ -5,8 +5,6 @@ An unofficial port of Starling framework. Currently based on Starling v2.0.1.
 
 [HTML5 version of the demo](http://vroad.github.io/starling-samples)
 
-[io.js version of the demo for Windows x86](https://www.dropbox.com/s/2rt488tjxqzdqvi/Starling_demo_iojs_20150215.zip?dl=0)
-
 Install
 -------
    haxelib git starling https://github.com/vroad/starling-openfl
