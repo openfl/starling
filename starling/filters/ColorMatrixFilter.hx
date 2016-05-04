@@ -237,7 +237,7 @@ class ColorMatrixEffect extends FilterEffect
     private static var IDENTITY:Array<Float> = [1.0,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
 
     // helpers
-    private static var sMatrix:Vector<Float> = new Vector<Float>(20);
+    private static var sMatrix:Vector<Float> = new Vector<Float>(20, true);
 
     public function new():Void
     {
