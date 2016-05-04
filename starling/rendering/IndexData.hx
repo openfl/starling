@@ -17,6 +17,7 @@ import flash.utils.ByteArray;
 import flash.utils.Endian;
 import openfl.Vector;
 import starling.utils.ArrayUtil;
+import starling.utils.Int16ArrayWrapper;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -65,13 +66,13 @@ class IndexData
     /** The number of bytes per index element. */
     inline private static var INDEX_SIZE:Int = 2;
 
-    private var _rawData:ByteArray;
+    private var _rawData:Int16ArrayWrapper;
     private var _numIndices:Int;
     private var _initialCapacity:Int;
     private var _useQuadLayout:Bool;
 
     // basic quad layout
-    private static var sQuadData:ByteArray = new ByteArray();
+    private static var sQuadData:Int16ArrayWrapper = new Int16ArrayWrapper();
     private static var sQuadDataNumIndices:UInt = 0;
 
     // helper objects
@@ -142,7 +143,7 @@ class IndexData
         if (numIndices < 0 || indexID + numIndices > _numIndices)
             numIndices = _numIndices - indexID;
 
-        var sourceData:ByteArray, targetData:ByteArray;
+        var sourceData:Int16ArrayWrapper, targetData:Int16ArrayWrapper;
         var newNumIndices:Int = targetIndexID + numIndices;
 
         if (target._numIndices < newNumIndices)
@@ -351,7 +352,7 @@ class IndexData
         if (out == null) out = new Vector<UInt>(_numIndices);
         else out.length = _numIndices;
 
-        var rawData:ByteArray = _useQuadLayout ? sQuadData : _rawData;
+        var rawData:Int16ArrayWrapper = _useQuadLayout ? sQuadData : _rawData;
         rawData.position = 0;
 
         for (i in 0 ... numIndices)
@@ -381,7 +382,7 @@ class IndexData
 
             if (_rawData == null)
             {
-                _rawData = new ByteArray();
+                _rawData = new Int16ArrayWrapper();
                 _rawData.endian = Endian.LITTLE_ENDIAN;
                 _rawData.length = _initialCapacity * INDEX_SIZE; // -> allocated memory
                 _rawData.length = _numIndices * INDEX_SIZE;      // -> actual length

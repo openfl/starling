@@ -22,6 +22,7 @@ import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
 import openfl.errors.ArgumentError;
+import starling.utils.Float32ArrayWrapper;
 import starling.utils.Max;
 
 import starling.core.Starling;
@@ -106,7 +107,7 @@ import starling.utils.StringUtil;
  */
 class VertexData
 {
-    private var _rawData:ByteArray;
+    private var _rawData:Float32ArrayWrapper;
     private var _numVertices:Int;
     private var _format:VertexDataFormat;
     private var _attributes:Array<VertexDataAttribute>;
@@ -161,7 +162,7 @@ class VertexData
         _vertexSize = _format.vertexSize;
         _numVertices = 0;
         _premultipliedAlpha = true;
-        _rawData = new ByteArray();
+        _rawData = new Float32ArrayWrapper();
         _rawData.endian = sBytes.endian = Endian.LITTLE_ENDIAN;
         _rawData.length = initialCapacity * _vertexSize; // just for the initial allocation
         _rawData.length = 0;                             // changes length, but not memory!
@@ -218,7 +219,7 @@ class VertexData
             // In this case, it's fastest to copy the complete range in one call
             // and then overwrite only the transformed positions.
 
-            var targetRawData:ByteArray = target._rawData;
+            var targetRawData:Float32ArrayWrapper = target._rawData;
             targetRawData.position = targetVertexID * _vertexSize;
             targetRawData.writeBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
 
@@ -310,8 +311,8 @@ class VertexData
 		#if 0
         var i:Int, j:Int, x:Float, y:Float;
         #end
-        var sourceData:ByteArray = _rawData;
-        var targetData:ByteArray = target._rawData;
+        var sourceData:Float32ArrayWrapper = _rawData;
+        var targetData:Float32ArrayWrapper = target._rawData;
         var sourceDelta:Int = _vertexSize - sourceAttribute.size;
         var targetDelta:Int = target._vertexSize - targetAttribute.size;
         var attributeSizeIn32Bits:Int = Std.int(sourceAttribute.size / 4);
