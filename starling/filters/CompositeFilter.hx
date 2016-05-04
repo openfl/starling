@@ -263,6 +263,8 @@ class CompositeEffect extends FilterEffect
      */
     override private function beforeDraw(context:Context3D):Void
     {
+        super.beforeDraw(context);
+        
         var layers:Array<CompositeLayer> = getUsedLayers(sLayers);
         var numLayers:Int = layers.length;
 
@@ -290,8 +292,6 @@ class CompositeEffect extends FilterEffect
             for (i in 1 ... numLayers)
                 vertexFormat.setVertexBufferAt(i + 1, vertexBuffer, "texCoords" + i);
         }
-
-        super.beforeDraw(context);
     }
 
     override private function afterDraw(context:Context3D):Void
