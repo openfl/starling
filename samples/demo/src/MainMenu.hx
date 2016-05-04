@@ -78,7 +78,7 @@ class MainMenu extends Sprite
         
         // show information about rendering method (hardware/software)
         
-        var driverInfo:String = "No driverInfo available" /*Starling.sContext.driverInfo*/;
+        var driverInfo:String = Starling.sContext.driverInfo;
         var infoText:TextField = new TextField(310, 64, driverInfo);
         infoText.format.size = 10;
         infoText.format.verticalAlign = Align.BOTTOM;

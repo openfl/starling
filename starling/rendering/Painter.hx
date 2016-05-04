@@ -857,16 +857,12 @@ class Painter
     public var contextValid(get, never):Bool;
     @:noCompletion private function get_contextValid():Bool
     {
-        #if flash
         if (_context != null)
         {
             var driverInfo:String = _context.driverInfo;
             return driverInfo != null && driverInfo != "" && driverInfo != "Disposed";
         }
         else return false;
-        #else
-        return _context != null;
-        #end
     }
 
     /** The Context3D profile of the current render context, or <code>null</code>
