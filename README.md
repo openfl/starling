@@ -1,5 +1,7 @@
 starling-openfl
 ===============
+
+[![Join the chat at https://gitter.im/vroad/starling-openfl](https://badges.gitter.im/vroad/starling-openfl.svg)](https://gitter.im/vroad/starling-openfl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 An unofficial port of Starling framework. Currently based on Starling 1.7.
 
 [HTML5 version of the demo](http://vroad.github.io/starling-samples)
