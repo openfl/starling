@@ -207,7 +207,7 @@ import utils.MenuButton;
         var numChildren:Int = _container.numChildren;
         var resultString:String = StringUtil.format("Result:\n{0} objects\nwith {1} fps",
                                                     [numChildren, fps]);
-        (~/\n/g).replace(resultString, " ");
+        trace((~/\n/g).replace(resultString, " "));
 
         _resultText = new TextField(240, 200, resultString);
         _resultText.format.size = 30;
