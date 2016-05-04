@@ -129,7 +129,7 @@ class CompositeEffect extends FilterEffect
     FilterEffect.VERTEX_FORMAT.extend(
         "texCoords1:float2, texCoords2:float2, texCoords3:float2");
     
-    private var _layers:Array<CompositeLayer>;
+    private var _layers:Vector<CompositeLayer>;
     
     private static var sLayers:Vector<CompositeLayer> = Vector.ofArray([]);
     private static var sOffset:Vector<Float> = Vector.ofArray([0.0, 0, 0, 0]);
@@ -141,7 +141,7 @@ class CompositeEffect extends FilterEffect
         if (numLayers < 1 || numLayers > 4)
             throw new ArgumentError("number of layers must be between 1 and 4");
 
-        _layers = new Vector<CompositeLayer>(numLayers);
+        _layers = new Vector<CompositeLayer>(numLayers, true);
 
         for (i in 0 ... numLayers)
             _layers[i] = new CompositeLayer();
