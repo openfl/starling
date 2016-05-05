@@ -55,7 +55,7 @@ class MeshEffect extends FilterEffect
 
         super();
         _alpha = 1.0;
-        _optimizeIfNotTinted = Type.getClassName(Type.getClass(this)) == "starling.rendering.MeshEffect";
+        _optimizeIfNotTinted = Std.instance(this, MeshEffect) != null;
     }
 
     /** @private */
