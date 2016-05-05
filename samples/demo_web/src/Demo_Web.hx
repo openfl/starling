@@ -63,7 +63,7 @@ class Demo_Web extends Sprite
 
         Starling.multitouchEnabled = true; // for Multitouch Scene
 
-        _starling = new Starling(Game, stage);
+        _starling = new Starling(Game, stage, new Rectangle(0, 0, 320, 480));
         _starling.simulateMultitouch = true;
         _starling.skipUnchangedFrames = true;
         _starling.enableErrorChecking = Capabilities.isDebugger;
