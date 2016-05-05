@@ -85,10 +85,10 @@ class FilterEffect extends Effect
      *  the context with the following constants and attributes:
      *
      *  <ul>
-     *    <li><code>vc0-vc3</code> â€? MVP matrix</li>
-     *    <li><code>va0</code> â€? vertex position (xy)</li>
-     *    <li><code>va1</code> â€? texture coordinates (uv)</li>
-     *    <li><code>fs0</code> â€? texture</li>
+     *    <li><code>vc0-vc3</code> â€” MVP matrix</li>
+     *    <li><code>va0</code> â€” vertex position (xy)</li>
+     *    <li><code>va1</code> â€” texture coordinates (uv)</li>
+     *    <li><code>fs0</code> â€” texture</li>
      *  </ul>
      */
     override private function beforeDraw(context:Context3D):Void

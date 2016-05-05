@@ -256,8 +256,8 @@ class Effect
      *  the context with the following constants and attributes:
      *
      *  <ul>
-     *    <li><code>vc0-vc3</code> ? MVP matrix</li>
-     *    <li><code>va0</code> ? vertex position (xy)</li>
+     *    <li><code>vc0-vc3</code> — MVP matrix</li>
+     *    <li><code>va0</code> — vertex position (xy)</li>
      *  </ul>
      */
     private function beforeDraw(context:Context3D):Void
