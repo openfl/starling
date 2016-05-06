@@ -11,7 +11,6 @@
 package starling.display;
 import flash.geom.Point;
 import starling.utils.ArrayUtil;
-import starling.utils.VertexBufferUtil;
 
 import starling.geom.Polygon;
 import starling.rendering.IndexData;
