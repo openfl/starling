@@ -5,7 +5,7 @@ import starling.errors.AbstractClassError;
 class ScaleMode
 {
     /** @private */
-    public function ScaleMode() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** Specifies that the rectangle is not scaled, but simply centered within the 
      *  specified area. */
