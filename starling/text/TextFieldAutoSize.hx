@@ -16,7 +16,7 @@ import starling.errors.AbstractClassError;
 class TextFieldAutoSize
 {
     /** @private */
-    public function TextFieldAutoSize() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** No auto-sizing will happen. */
     inline public static var NONE:String = "none";
