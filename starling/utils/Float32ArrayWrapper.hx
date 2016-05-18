@@ -1,8 +1,10 @@
 package starling.utils;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
+import haxe.io.Bytes;
 import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
+import openfl.utils.ByteArray.ByteArrayData;
 
 @:forward(clear, readFloat, readUnsignedInt, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
@@ -36,7 +38,7 @@ class Float32ArrayWrappedData
     public function new()
     {
         data = new ByteArray();
-        #if !flash
+        #if js
         float32Array = new Float32Array(data.toArrayBuffer());
         #end
     }
@@ -46,13 +48,16 @@ class Float32ArrayWrappedData
         data.clear();
     }
     
-    public inline function readFloat():Float
+    public #if (js || flash) inline #end function readFloat():Float
     {
-        #if flash
+        #if js
+        data.position += 4;
+        return float32Array[Std.int((data.position - 4) / 4)];
+        #elseif flash
         return data.readFloat();
         #else
         data.position += 4;
-        return float32Array[Std.int((data.position - 4) / 4)];
+        return (data:ByteArrayData).getFloat(data.position - 4);
         #end
     }
     
@@ -64,17 +69,20 @@ class Float32ArrayWrappedData
     public inline function writeBytes(bytes:ByteArray, offset:UInt=0, length:UInt=0)
     {
         data.writeBytes(bytes, offset, length);
-        #if !flash
+        #if js
         createFloat32ArrayIfNeeded();
         #end
     }
 
-    public inline function writeFloat(value:Float):Void
+    public #if (js || flash) inline #end function writeFloat(value:Float):Void
     {
-        #if flash
+        #if js
+        float32Array[Std.int(data.position / 4)] = value;
+        data.position += 4;
+        #elseif flash
         data.writeFloat(value);
         #else
-        float32Array[Std.int(data.position / 4)] = value;
+        (data:ByteArrayData).setFloat (data.position, value);
         data.position += 4;
         #end
     }
@@ -86,7 +94,7 @@ class Float32ArrayWrappedData
     
     private function createFloat32ArrayIfNeeded():Void
     {
-        #if !flash
+        #if js
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (data.toArrayBuffer() != float32Array.buffer)
             float32Array = new Float32Array(buffer);
@@ -104,12 +112,12 @@ class Float32ArrayWrappedData
     @:noCompletion private inline function get_length():UInt { return data.length; }
     @:noCompletion private inline function set_length(value:Int):UInt
     {
-        #if flash
-        return data.length = value;
-        #else
+        #if js
         data.length = value;
         createFloat32ArrayIfNeeded();
         return value;
+        #else
+        return data.length = value;
         #end
     }
     
