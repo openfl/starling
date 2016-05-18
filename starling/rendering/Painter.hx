@@ -156,6 +156,7 @@ class Painter
         _stateStack = new Array<RenderState>();
         _stateStackPos = -1;
         _stateStackLength = 0;
+		_frameID = 0;
     }
     
     /** Disposes all quad batches, programs, and - if it is not being shared -
