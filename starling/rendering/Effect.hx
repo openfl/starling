@@ -129,12 +129,9 @@ class Effect
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
             onContextCreated, false, 0, true);
         
-        _vertexBuffer = null;
         _vertexBufferSize = 0;
-        _indexBuffer = null;
         _indexBufferSize = 0;
         _indexBufferUsesQuadLayout = false;
-        _onRestore = null;
     }
 
     /** Purges the index- and vertex-buffers. */

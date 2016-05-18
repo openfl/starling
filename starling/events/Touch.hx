@@ -66,7 +66,6 @@ class Touch
         _globalY = 0;
         _previousGlobalX = 0;
         _previousGlobalY = 0;
-        _target = null;
         _timestamp = 0;
         _width = 0;
         _height = 0;

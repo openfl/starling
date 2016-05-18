@@ -50,7 +50,6 @@ class FilterEffect extends Effect
         super();
         _textureSmoothing = TextureSmoothing.BILINEAR;
         
-        _texture = null;
         _textureRepeat = false;
     }
 

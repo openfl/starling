@@ -141,14 +141,6 @@ class FragmentFilter extends EventDispatcher
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
             onContextCreated, false, 0, true);
         
-        _quad = null;
-        _target = null;
-        _effect = null;
-        _vertexData = null;
-        _indexData = null;
-        _token = null;
-        _padding = null;
-        _helper = null;
         _alwaysDrawToBackBuffer = false;
         _cacheRequested = false;
         _cached = false;
