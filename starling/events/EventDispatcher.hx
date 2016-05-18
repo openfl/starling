@@ -14,8 +14,11 @@ package starling.events;
 //import starling.core.starling_internal;
 import openfl.Vector;
 import starling.display.DisplayObject;
+import starling.utils.AcceptEither;
 
 //use namespace starling_internal;
+
+typedef ListenerTypes = AcceptEither<Void->Void, Event->Void, Event->Dynamic->Void, KeyboardEvent->Void, TouchEvent->Void, EnterFrameEvent->Float->Void, EnterFrameEvent->Void>;
 
 /** The EventDispatcher class is the base class for all classes that dispatch events. 
  *  This is the Starling version of the Flash class with the same name. 
@@ -37,7 +40,7 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var _eventListeners:Map<String, Array<Dynamic>>;
+    private var _eventListeners:Map<String, Array<ListenerTypes>>;
     
     /** Helper object. */
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
@@ -47,12 +50,12 @@ class EventDispatcher
     {  }
     
     /** Registers an event listener at a certain object. */
-    public function addEventListener(type:String, listener:Dynamic):Void
+    public function addEventListener(type:String, listener:ListenerTypes):Void
     {
         if (_eventListeners == null)
             _eventListeners = new Map();
         
-        var listeners:Array<Dynamic> = _eventListeners[type];
+        var listeners:Array<ListenerTypes> = _eventListeners[type];
         if (listeners == null)
             _eventListeners[type] = [listener];
         else if (listeners.indexOf(listener) == -1) // check for duplicates
@@ -60,11 +63,11 @@ class EventDispatcher
     }
     
     /** Removes an event listener from the object. */
-    public function removeEventListener(type:String, listener:Dynamic):Void
+    public function removeEventListener(type:String, listener:ListenerTypes):Void
     {
         if (_eventListeners != null)
         {
-            var listeners:Array<Dynamic> = _eventListeners[type];
+            var listeners:Array<ListenerTypes> = _eventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -76,7 +79,7 @@ class EventDispatcher
 
                 if (index != -1)
                 {
-                    var restListeners:Array<Dynamic> = listeners.slice(0, index);
+                    var restListeners = listeners.slice(0, index);
 
                     //for (var i:Int=index+1; i<numListeners; ++i)
                     for (i in index + 1 ... numListeners)
@@ -127,7 +130,7 @@ class EventDispatcher
      *  method uses this method internally. */
     public function invokeEvent(event:Event):Bool
     {
-        var listeners:Array<Dynamic> = _eventListeners != null ?
+        var listeners = _eventListeners != null ?
             _eventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
@@ -141,15 +144,24 @@ class EventDispatcher
             
             for (i in 0 ... numListeners)
             {
-                var listener:Dynamic = listeners[i];
-                #if flash
-                var numArgs:Int = untyped listener.length;
-                if (numArgs == 0) listener();
-                else if (numArgs == 1) listener(event);
-                else listener(event, event.data);
-                #else
-                listener(event, event.data);
-                #end
+                var listener:ListenerTypes = listeners[i];
+                switch(listener.type)
+                {
+                    case TypeA(v):
+                        v();
+                    case TypeB(v):
+                        v(event);
+                    case TypeC(v):
+                        v(event, event.data);
+                    case TypeD(v):
+                        v(cast event);
+                    case TypeE(v):
+                        v(cast event);
+                    case TypeF(v):
+                        v(cast event, event.data);
+                    case TypeG(v):
+                        v(cast event);
+                }
                 
                 if (event.stopsImmediatePropagation)
                     return true;

@@ -21,6 +21,7 @@ import flash.ui.Mouse;
 #if flash
 import flash.ui.MouseCursor;
 #end
+import starling.utils.AcceptEither;
 import starling.utils.ArrayUtil;
 //import flash.utils.getQualifiedClassName;
 
@@ -671,20 +672,20 @@ class DisplayObject extends EventDispatcher
     // dispose and (c) there might be multiple listeners for this event.
     
     /** @inheritDoc */
-    public override function addEventListener(type:String, listener:Dynamic):Void
+    public override function addEventListener(type:String, listener:ListenerTypes):Void
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
             addEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
             addEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            if (this.stage != null) addEnterFrameListenerToStage();
+            if (this.stage != null) addEnterFrameListenerToStage(null);
         }
         
         super.addEventListener(type, listener);
     }
     
     /** @inheritDoc */
-    public override function removeEventListener(type:String, listener:Dynamic):Void
+    public override function removeEventListener(type:String, listener:ListenerTypes):Void
     {
         super.removeEventListener(type, listener);
         
@@ -692,7 +693,7 @@ class DisplayObject extends EventDispatcher
         {
             removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
             removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEnterFrameListenerFromStage(null);
         }
     }
     
@@ -703,18 +704,18 @@ class DisplayObject extends EventDispatcher
         {
             removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
             removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEnterFrameListenerFromStage(null);
         }
 
         super.removeEventListeners(type);
     }
     
-    private function addEnterFrameListenerToStage(e:Event = null):Void
+    private function addEnterFrameListenerToStage(e:Event):Void
     {
         Starling.current.stage.addEnterFrameListener(this);
     }
     
-    private function removeEnterFrameListenerFromStage(e:Event = null):Void
+    private function removeEnterFrameListenerFromStage(e:Event):Void
     {
         Starling.current.stage.removeEnterFrameListener(this);
     }
