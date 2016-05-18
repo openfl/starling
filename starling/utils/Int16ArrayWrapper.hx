@@ -38,7 +38,7 @@ class Int16ArrayWrappedData
     public function new()
     {
         data = new ByteArray();
-        #if !flash
+        #if js
         int16Array = new Int16Array(data.toArrayBuffer());
         #end
     }
@@ -55,31 +55,31 @@ class Int16ArrayWrappedData
     
     public inline function readUnsignedShort():UInt
     {
-        #if flash
-        return data.readUnsignedShort();
-        #else
+        #if js
         data.position += 2;
         return int16Array[Std.int((data.position - 2) / 2)];
+        #else
+        return data.readUnsignedShort();
         #end
     }
     
     public inline function writeBytes(bytes:ByteArray, offset:UInt=0, length:UInt=0)
     {
         data.writeBytes(bytes, offset, length);
-        #if !flash
+        #if js
         createInt16ArrayIfNeeded();
         #end
     }
     
     public function writeShort(value:Int):Void
     {
-        #if flash
-        data.writeShort(value);
-        #else
+        #if js
         @:privateAccess (data : ByteArrayData).__resize(data.position + 2);
         createInt16ArrayIfNeeded();
         int16Array[Std.int(data.position / 2)] = value;
         data.position += 2;
+        #else
+        data.writeShort(value);
         #end
     }
     
@@ -90,7 +90,7 @@ class Int16ArrayWrappedData
     
     private function createInt16ArrayIfNeeded():Void
     {
-        #if !flash
+        #if js
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (buffer != int16Array.buffer)
             int16Array = new Int16Array(buffer);
@@ -108,12 +108,12 @@ class Int16ArrayWrappedData
     @:noCompletion private inline function get_length():UInt { return data.length; }
     @:noCompletion private inline function set_length(value:Int):UInt
     {
-        #if flash
-        return data.length = value;
-        #else
+        #if js
         data.length = value;
         createInt16ArrayIfNeeded();
         return value;
+        #else
+        return data.length = value;
         #end
     }
     
