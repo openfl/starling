@@ -170,7 +170,11 @@ class MeshStyle extends EventDispatcher
      */
     public function canBatchWith(meshStyle:MeshStyle):Bool
     {
-        if (_type == meshStyle._type)
+        #if cs
+        if (untyped __cs__("meshStyle.GetType() == typeof(MeshStyle)"))
+        #else
+        if (Std.instance(meshStyle, MeshStyle) != null)
+        #end
         {
             var newTexture:Texture = meshStyle._texture;
 
