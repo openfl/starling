@@ -32,7 +32,13 @@ class MiniBitmapFont
 {
     inline private static var BITMAP_WIDTH:Int = 128;
     inline private static var BITMAP_HEIGHT:Int = 64;
-    private static var BITMAP_DATA:Array<UInt> = [ 
+    private static var BITMAP_DATA:Array<UInt>;
+    private static function __init__()
+    {
+        #if cs
+        untyped __cs__("unchecked{");
+        #end
+        BITMAP_DATA = [
 0x78daed5d, 0xcb6edb40, 0xc0c8aa2, 0x871e8a1e, 0xfabffe34, 0xff842ffd, 0x1f0d03, 
 0xbee56027, 0x150a0182, 0xb04bce0c, 0xb9969290, 0x80a18492, 0x578ab924, 0x872fe7e5, 
 0xa5a8e83f, 0x7d3b1c0e, 0xcba3ca7f, 0xfb47eb6b, 0xd6b4bc06, 0x3ddf7b0f, 0x732dfb9e, 
@@ -79,6 +85,10 @@ class MiniBitmapFont
 0x5e8ed923, 0x45f9f267, 0xf22c4545, 0x45454545, 0x45454545, 0x45454545, 0x45454545, 
 0x45fba577, 0x2eecdb70, 
     ];
+        #if cs
+        untyped __cs__("}");
+        #end
+    }
     
     private static var XML_DATA:Xml = Xml.parse('
       <font>
