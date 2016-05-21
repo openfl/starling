@@ -173,7 +173,7 @@ class MeshStyle extends EventDispatcher
         #if cs
         if (untyped __cs__("meshStyle.GetType() == typeof(MeshStyle)"))
         #else
-        if (Std.instance(meshStyle, MeshStyle) != null)
+        if (_type == meshStyle._type)
         #end
         {
             var newTexture:Texture = meshStyle._texture;
