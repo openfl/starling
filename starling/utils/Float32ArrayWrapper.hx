@@ -55,6 +55,9 @@ class Float32ArrayWrappedData
         return float32Array[Std.int((data.position - 4) / 4)];
         #elseif flash
         return data.readFloat();
+        #elseif cpp
+        data.position += 4;
+        return untyped __global__.__hxcpp_memory_get_float(data.b, data.position - 4);
         #else
         data.position += 4;
         return (data:ByteArrayData).getFloat(data.position - 4);
@@ -81,6 +84,9 @@ class Float32ArrayWrappedData
         data.position += 4;
         #elseif flash
         data.writeFloat(value);
+        #elseif cpp
+        untyped __global__.__hxcpp_memory_set_float(data.b, data.position, value);
+        data.position += 4;
         #else
         (data:ByteArrayData).setFloat (data.position, value);
         data.position += 4;
