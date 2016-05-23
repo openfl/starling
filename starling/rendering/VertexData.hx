@@ -224,7 +224,7 @@ class VertexData
 
             var targetRawData:Float32ArrayWrapper = target._rawData;
             targetRawData.position = targetVertexID * _vertexSize;
-            targetRawData.writeBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
+            targetRawData.fastWriteBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
 
             if (matrix != null)
             {
