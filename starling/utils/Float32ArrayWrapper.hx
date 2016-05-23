@@ -6,7 +6,13 @@ import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
 
-@:forward(clear, readFloat, readUnsignedInt, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
+#if (cs && unsafe)
+typedef UInt8Ptr = cs.Pointer<cs.types.UInt8>;
+#else
+typedef UInt8Ptr = Dynamic;
+#end
+
+@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, readFloat, readUnsignedInt, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
 {
     public function new()
@@ -69,11 +75,27 @@ class Float32ArrayWrappedData
         return data.readUnsignedInt();
     }
     
-    public inline function writeBytes(bytes:ByteArray, offset:UInt=0, length:UInt=0)
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public #if (!cs && !unsafe) inline #end function writeBytes(bytes:ByteArray, offset:UInt=0, length:UInt=0)
     {
+        #if (cs && unsafe)
+        @:privateAccess (data:ByteArrayData).__resize (data.position + length);
+        untyped __cs__("fixed(byte *dst = this.data.b, src = bytes.b){");
+        untyped __cs__("byte *d = dst + this.data.position, s = src + offset.@value");
+        for (i in 0 ... length)
+        {
+            untyped __cs__("*d = *s");
+            untyped __cs__("d++;s++");
+        }
+        untyped __cs__("}");
+        this.data.position += length;
+        #else
         data.writeBytes(bytes, offset, length);
         #if js
         createFloat32ArrayIfNeeded();
+        #end
         #end
     }
 
@@ -90,6 +112,38 @@ class Float32ArrayWrappedData
         #else
         (data:ByteArrayData).setFloat (data.position, value);
         data.position += 4;
+        #end
+    }
+    
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public #if (!cs && !unsafe) inline #end function fastReadFloat(ptr:UInt8Ptr):Float
+    {
+        #if (cs && unsafe)
+        var r:Float = untyped __cs__("*(float*)&ptr[data.position]");
+        data.position += 4;
+        return r;
+        #else
+        return readFloat();
+        #end
+    }
+    
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public #if (!cs && !unsafe) inline #end function fastWriteFloat(ptr:UInt8Ptr, v:Float):Void
+    {
+        #if (cs && unsafe)
+        untyped __cs__("float fv = (float)v"); 
+        var value:UInt = untyped __cs__("*(uint*)&fv");
+        ptr[data.position] = (value & 0xFF);
+        ptr[data.position + 1] = ((value >> 8) & 0xFF);
+        ptr[data.position + 2] = ((value >> 16) & 0xFF);
+        ptr[data.position + 3] = ((value >> 24) & 0xFF);
+        data.position += 4;
+        #else
+        writeFloat(v);
         #end
     }
     

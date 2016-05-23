@@ -203,6 +203,9 @@ class VertexData
      *  Beware, though, that the copy-operation becomes much more expensive when the formats
      *  differ.</p>
      */
+	#if (cs && unsafe)
+	@:unsafe
+	#end
     public function copyTo(target:VertexData, targetVertexID:Int=0, matrix:Matrix=null,
                            vertexID:Int=0, numVertices:Int=-1):Void
     {
@@ -229,18 +232,26 @@ class VertexData
                 var pos:Int = targetVertexID * _vertexSize + _posOffset;
                 var endPos:Int = pos + (numVertices * _vertexSize);
 
+				#if (cs && unsafe)
+				untyped __cs__("fixed(byte *dst = targetRawData.data.b){");
+				#else
+				var dst:Dynamic = null;
+				#end
                 while (pos < endPos)
                 {
                     targetRawData.position = pos;
-                    x = targetRawData.readFloat();
-                    y = targetRawData.readFloat();
+                    x = targetRawData.fastReadFloat(untyped dst);
+                    y = targetRawData.fastReadFloat(untyped dst);
 
                     targetRawData.position = pos;
-                    targetRawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
-                    targetRawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);
+                    targetRawData.fastWriteFloat(untyped dst, matrix.a * x + matrix.c * y + matrix.tx);
+                    targetRawData.fastWriteFloat(untyped dst, matrix.d * y + matrix.b * x + matrix.ty);
 
                     pos += _vertexSize;
                 }
+				#if (cs && unsafe)
+				untyped __cs__("}");
+				#end
             }
         }
         else
