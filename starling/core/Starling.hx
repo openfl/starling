@@ -266,11 +266,10 @@ class Starling extends EventDispatcher
         super();
         if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
+
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (stage3D == null) stage3D = stage.stage3Ds[0];
-        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
 
         SystemUtil.initialize();
         sAll.push(this);
