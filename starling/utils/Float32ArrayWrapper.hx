@@ -144,8 +144,14 @@ class Float32ArrayWrappedData
         }
         untyped __cs__("}");
         this.data.position += length;
-        #else
+        #elseif flash
         writeBytes(bytes, offset, length);
+        #elseif js
+        @:privateAccess (data:ByteArrayData).b.set(@:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length), length);
+        this.data.position += length;
+        #else
+        (data:ByteArrayData).blit(position, (bytes:ByteArrayData), offset, length);
+        this.data.position += length;
         #end
     }
     
