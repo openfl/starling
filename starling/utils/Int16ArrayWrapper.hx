@@ -33,7 +33,9 @@ abstract Int16ArrayWrapper(Int16ArrayWrappedData) from Int16ArrayWrappedData to 
 class Int16ArrayWrappedData
 {
     public var data(default, null):ByteArray;
+    #if js
     private var int16Array:Int16Array;
+    #end
 
     public function new()
     {
