@@ -73,7 +73,7 @@ class Int16ArrayWrappedData
         #end
     }
     
-    public function writeShort(value:Int):Void
+    public #if !js inline #end function writeShort(value:Int):Void
     {
         #if js
         @:privateAccess (data : ByteArrayData).__resize(data.position + 2);
