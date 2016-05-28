@@ -163,11 +163,8 @@ class Float32ArrayWrappedData
     {
         #if (cs && unsafe)
         untyped __cs__("float fv = (float)v"); 
-        var value:UInt = untyped __cs__("*(uint*)&fv");
-        ptr[data.position] = (value & 0xFF);
-        ptr[data.position + 1] = ((value >> 8) & 0xFF);
-        ptr[data.position + 2] = ((value >> 16) & 0xFF);
-        ptr[data.position + 3] = ((value >> 24) & 0xFF);
+        untyped __cs__("float *fptr = (float*)(ptr + this.data.position)");
+        untyped __cs__("*fptr = fv");
         data.position += 4;
         #else
         writeFloat(v);
