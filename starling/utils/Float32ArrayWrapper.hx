@@ -156,9 +156,8 @@ class Float32ArrayWrappedData
     public #if (!cs && !unsafe) inline #end function fastWriteFloat(ptr:UInt8Ptr, v:Float):Void
     {
         #if (cs && unsafe)
-        untyped __cs__("float fv = (float)v"); 
         untyped __cs__("float *fptr = (float*)(ptr + this.data.position)");
-        untyped __cs__("*fptr = fv");
+        untyped __cs__("*fptr = (float)v");
         data.position += 4;
         #else
         writeFloat(v);
