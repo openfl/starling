@@ -225,7 +225,7 @@ class VertexData
             var targetRawData:Float32ArrayWrapper = target._rawData;
             targetRawData.position = targetVertexID * _vertexSize;
             var length:UInt = numVertices * _vertexSize;
-            targetRawData.length = targetRawData.position + length;
+            targetRawData.resize(targetRawData.position + length);
             #if (cs && unsafe)
             untyped __cs__("fixed(byte *dst = targetRawData.data.b){");
             #else

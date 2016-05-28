@@ -6,7 +6,7 @@ import openfl.utils.Endian;
 import openfl.utils.Float32Array;
 import openfl.utils.Int16Array;
 
-@:forward(clear, fastWriteShort, readUnsignedInt, readUnsignedShort, writeBytes, writeShort, writeUnsignedInt, bytesAvailable, endian, length, position)
+@:forward(clear, fastWriteShort, readUnsignedInt, readUnsignedShort, resize, writeBytes, writeShort, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Int16ArrayWrapper(Int16ArrayWrappedData) from Int16ArrayWrappedData to Int16ArrayWrappedData
 {
     public function new()
@@ -101,6 +101,15 @@ class Int16ArrayWrappedData
         data.position += 2;
         #else
         writeShort(v);
+        #end
+    }
+    
+    public inline function resize(value:UInt):Void
+    {
+        #if flash
+        length = value;
+        #else
+        @:privateAccess (data:ByteArrayData).__resize(value);
         #end
     }
     

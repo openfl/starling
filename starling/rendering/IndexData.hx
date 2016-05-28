@@ -412,7 +412,7 @@ class IndexData
         sQuadData.endian = Endian.LITTLE_ENDIAN;
         sQuadData.position = sQuadData.length;
         sQuadDataNumIndices = newNumQuads * 6;
-        sQuadData.length = numIndices * 2;
+        sQuadData.resize(numIndices * 2);
         
         #if (cs && unsafe)
         untyped __cs__("fixed(byte *dst = sQuadData.data.b){");

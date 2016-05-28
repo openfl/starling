@@ -6,7 +6,7 @@ import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
 
-@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, readFloat, readUnsignedInt, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
+@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, readFloat, readUnsignedInt, resize, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
 {
     public function new()
@@ -166,6 +166,15 @@ class Float32ArrayWrappedData
     public inline function writeUnsignedInt(value:Int):Void
     {
         data.writeUnsignedInt(value);
+    }
+    
+    public inline function resize(value:UInt):Void
+    {
+        #if flash
+        length = value;
+        #else
+        @:privateAccess (data:ByteArrayData).__resize(value);
+        #end
     }
     
     private function createFloat32ArrayIfNeeded():Void
