@@ -186,7 +186,7 @@ class Float32ArrayWrappedData
     
     public var length(get, set):UInt;
     @:noCompletion private inline function get_length():UInt { return data.length; }
-    @:noCompletion private inline function set_length(value:Int):UInt
+    @:noCompletion private inline function set_length(value:UInt):UInt
     {
         #if js
         data.length = value;
