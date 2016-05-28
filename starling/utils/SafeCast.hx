@@ -1,4 +1,5 @@
 package starling.utils;
+import haxe.macro.Context;
 import haxe.macro.Expr;
 
 class SafeCast
@@ -6,6 +7,9 @@ class SafeCast
 
 	macro public static function safe_cast(value:Expr, type:Expr)
 	{
+		if (Context.defined ("cs"))
+			return macro cs.Lib.as($value, $type);
+		
 		switch(value.expr)
 		{
 		case EConst(c):
