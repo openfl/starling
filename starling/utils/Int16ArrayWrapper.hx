@@ -85,7 +85,7 @@ class Int16ArrayWrappedData
         #end
     }
     
-    public inline function writeUnsignedInt(value:UInt):Void
+    public inline function writeUnsignedInt(value:Int):Void
     {
         data.writeUnsignedInt(value);
     }
