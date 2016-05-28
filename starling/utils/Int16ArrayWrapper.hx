@@ -110,6 +110,7 @@ class Int16ArrayWrappedData
         length = value;
         #else
         @:privateAccess (data:ByteArrayData).__resize(value);
+        createInt16ArrayIfNeeded();
         #end
     }
     
@@ -118,7 +119,7 @@ class Int16ArrayWrappedData
         #if js
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (buffer != int16Array.buffer)
-            int16Array = new Int16Array(buffer);
+            int16Array = new Int16Array(buffer, 0, Std.int(buffer.byteLength / 2));
         #end
     }
     

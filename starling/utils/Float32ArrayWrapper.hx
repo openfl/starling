@@ -147,7 +147,7 @@ class Float32ArrayWrappedData
         #elseif flash
         writeBytes(bytes, offset, length);
         #elseif js
-        @:privateAccess (data:ByteArrayData).b.set(@:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length), length);
+        @:privateAccess (data:ByteArrayData).b.set(@:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length), this.data.position);
         this.data.position += length;
         #else
         (data:ByteArrayData).blit(position, (bytes:ByteArrayData), offset, length);
@@ -180,6 +180,7 @@ class Float32ArrayWrappedData
         length = value;
         #else
         @:privateAccess (data:ByteArrayData).__resize(value);
+        createFloat32ArrayIfNeeded();
         #end
     }
     
@@ -187,8 +188,8 @@ class Float32ArrayWrappedData
     {
         #if js
         var buffer:ArrayBuffer = data.toArrayBuffer();
-        if (data.toArrayBuffer() != float32Array.buffer)
-            float32Array = new Float32Array(buffer);
+        if (buffer != float32Array.buffer)
+            float32Array = new Float32Array(buffer, 0, Std.int(buffer.byteLength / 4));
         #end
     }
     
