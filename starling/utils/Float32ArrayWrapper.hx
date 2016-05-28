@@ -58,6 +58,9 @@ class Float32ArrayWrappedData
         #elseif cpp
         data.position += 4;
         return untyped __global__.__hxcpp_memory_get_float(data.b, data.position - 4);
+        #elseif js
+        data.position += 4;
+        return float32Array[Std.int((data.position - 4) / 4)];
         #else
         data.position += 4;
         return (data:ByteArrayData).getFloat(data.position - 4);
@@ -103,6 +106,9 @@ class Float32ArrayWrappedData
         #elseif cpp
         untyped __global__.__hxcpp_memory_set_float(data.b, data.position, value);
         data.position += 4;
+        #elseif js
+        float32Array[Std.int(data.position / 4)] = value;
+        data.position += 4;
         #else
         (data:ByteArrayData).setFloat (data.position, value);
         data.position += 4;
@@ -146,9 +152,6 @@ class Float32ArrayWrappedData
         this.data.position += length;
         #elseif flash
         writeBytes(bytes, offset, length);
-        #elseif js
-        @:privateAccess (data:ByteArrayData).b.set(@:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length), this.data.position);
-        this.data.position += length;
         #else
         (data:ByteArrayData).blit(position, (bytes:ByteArrayData), offset, length);
         this.data.position += length;

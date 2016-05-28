@@ -242,12 +242,22 @@ class VertexData
                 while (pos < endPos)
                 {
                     targetRawData.position = pos;
-                    x = targetRawData.fastReadFloat(untyped dst);
-                    y = targetRawData.fastReadFloat(untyped dst);
+                    #if (cs && unsafe)
+                    x = targetRawData.fastReadFloat(dst);
+                    y = targetRawData.fastReadFloat(dst);
+                    #else
+                    x = targetRawData.readFloat();
+                    y = targetRawData.readFloat();
+                    #end
 
                     targetRawData.position = pos;
-                    targetRawData.fastWriteFloat(untyped dst, matrix.a * x + matrix.c * y + matrix.tx);
-                    targetRawData.fastWriteFloat(untyped dst, matrix.d * y + matrix.b * x + matrix.ty);
+                    #if (cs && unsafe)
+                    targetRawData.fastWriteFloat(dst, matrix.a * x + matrix.c * y + matrix.tx);
+                    targetRawData.fastWriteFloat(dst, matrix.d * y + matrix.b * x + matrix.ty);
+                    #else
+                    targetRawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
+                    targetRawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);
+                    #end
 
                     pos += _vertexSize;
                 }
