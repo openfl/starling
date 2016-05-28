@@ -416,8 +416,6 @@ class IndexData
         
         #if (cs && unsafe)
         untyped __cs__("fixed(byte *dst = sQuadData.data.b){");
-        #else
-        var dst:Dynamic = null;
         #end
 
         for (i in oldNumQuads ... newNumQuads)
