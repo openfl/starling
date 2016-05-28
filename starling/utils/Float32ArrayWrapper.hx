@@ -132,7 +132,7 @@ class Float32ArrayWrappedData
     #if (cs && unsafe)
     @:unsafe @:skipReflection
     #end
-    public #if (!cs && !unsafe) inline #end function fastWriteBytes(ptr:UInt8Ptr, bytes:ByteArray, offset:UInt, length:UInt)
+    public #if flash inline #end function fastWriteBytes(ptr:UInt8Ptr, bytes:ByteArray, offset:UInt, length:UInt)
     {
         #if (cs && unsafe)
         
@@ -151,7 +151,12 @@ class Float32ArrayWrappedData
         untyped __cs__("}");
         this.data.position += length;
         #elseif flash
-        writeBytes(bytes, offset, length);
+        data.writeBytes(bytes, offset, length);
+        #elseif js
+        @:privateAccess (data:ByteArrayData).b.set(
+            (offset == 0 && length == (bytes:ByteArrayData).b.length) ? (bytes:ByteArrayData).b : @:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length),
+            this.data.position);
+        this.data.position += length;
         #else
         (data:ByteArrayData).blit(position, (bytes:ByteArrayData), offset, length);
         this.data.position += length;
