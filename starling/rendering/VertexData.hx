@@ -243,8 +243,8 @@ class VertexData
                 {
                     targetRawData.position = pos;
                     #if (cs && unsafe)
-                    x = targetRawData.fastReadFloat(dst);
-                    y = targetRawData.fastReadFloat(dst);
+                    x = targetRawData.fastReadFloat(untyped dst);
+                    y = targetRawData.fastReadFloat(untyped dst);
                     #else
                     x = targetRawData.readFloat();
                     y = targetRawData.readFloat();
@@ -252,8 +252,8 @@ class VertexData
 
                     targetRawData.position = pos;
                     #if (cs && unsafe)
-                    targetRawData.fastWriteFloat(dst, matrix.a * x + matrix.c * y + matrix.tx);
-                    targetRawData.fastWriteFloat(dst, matrix.d * y + matrix.b * x + matrix.ty);
+                    targetRawData.fastWriteFloat(untyped dst, matrix.a * x + matrix.c * y + matrix.tx);
+                    targetRawData.fastWriteFloat(untyped dst, matrix.d * y + matrix.b * x + matrix.ty);
                     #else
                     targetRawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
                     targetRawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);

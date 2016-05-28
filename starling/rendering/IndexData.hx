@@ -421,12 +421,12 @@ class IndexData
         for (i in oldNumQuads ... newNumQuads)
         {
             #if (cs && unsafe)
-            sQuadData.fastWriteShort(dst, 4 * i);
-            sQuadData.fastWriteShort(dst, 4 * i + 1);
-            sQuadData.fastWriteShort(dst, 4 * i + 2);
-            sQuadData.fastWriteShort(dst, 4 * i + 1);
-            sQuadData.fastWriteShort(dst, 4 * i + 3);
-            sQuadData.fastWriteShort(dst, 4 * i + 2);
+            sQuadData.fastWriteShort(untyped dst, 4 * i);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 1);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 2);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 1);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 3);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 2);
             #else
             sQuadData.writeShort(4 * i);
             sQuadData.writeShort(4 * i + 1);
