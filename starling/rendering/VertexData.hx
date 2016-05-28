@@ -224,19 +224,21 @@ class VertexData
 
             var targetRawData:Float32ArrayWrapper = target._rawData;
             targetRawData.position = targetVertexID * _vertexSize;
-            targetRawData.fastWriteBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
+            var length:UInt = numVertices * _vertexSize;
+            targetRawData.length = targetRawData.position + length;
+            #if (cs && unsafe)
+            untyped __cs__("fixed(byte *dst = targetRawData.data.b){");
+            #else
+            var dst:Dynamic = null;
+            #end
+            targetRawData.fastWriteBytes(untyped dst, _rawData, vertexID * _vertexSize, length);
 
             if (matrix != null)
             {
                 var x:Float, y:Float;
                 var pos:Int = targetVertexID * _vertexSize + _posOffset;
                 var endPos:Int = pos + (numVertices * _vertexSize);
-
-                #if (cs && unsafe)
-                untyped __cs__("fixed(byte *dst = targetRawData.data.b){");
-                #else
-                var dst:Dynamic = null;
-                #end
+                
                 while (pos < endPos)
                 {
                     targetRawData.position = pos;
@@ -249,10 +251,11 @@ class VertexData
 
                     pos += _vertexSize;
                 }
-                #if (cs && unsafe)
-                untyped __cs__("}");
-                #end
             }
+            
+            #if (cs && unsafe)
+            untyped __cs__("}");
+            #end
         }
         else
         {

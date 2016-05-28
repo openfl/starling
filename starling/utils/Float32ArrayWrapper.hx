@@ -126,7 +126,7 @@ class Float32ArrayWrappedData
     #if (cs && unsafe)
     @:unsafe @:skipReflection
     #end
-    public #if (!cs && !unsafe) inline #end function fastWriteBytes(bytes:ByteArray, offset:UInt, length:UInt)
+    public #if (!cs && !unsafe) inline #end function fastWriteBytes(ptr:UInt8Ptr, bytes:ByteArray, offset:UInt, length:UInt)
     {
         #if (cs && unsafe)
         
@@ -135,9 +135,8 @@ class Float32ArrayWrappedData
             throw "length should be multiple of 4";
         #end
         
-        @:privateAccess (data:ByteArrayData).__resize (data.position + length);
-        untyped __cs__("fixed(byte *dst = this.data.b, src = bytes.b){");
-        untyped __cs__("uint *d = (uint*)(dst + this.data.position), s = (uint*)(src + offset)");
+        untyped __cs__("fixed(byte *src = bytes.b){");
+        untyped __cs__("uint *d = (uint*)(ptr + this.data.position), s = (uint*)(src + offset)");
         for (i in 0 ... untyped __cs__("(int)(length / 4)"))
         {
             untyped __cs__("*d = *s");
