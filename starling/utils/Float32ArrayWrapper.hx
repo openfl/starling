@@ -6,12 +6,6 @@ import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
 
-#if (cs && unsafe)
-typedef UInt8Ptr = cs.Pointer<cs.types.UInt8>;
-#else
-typedef UInt8Ptr = Dynamic;
-#end
-
 @:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, readFloat, readUnsignedInt, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
 {

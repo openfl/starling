@@ -6,7 +6,7 @@ import openfl.utils.Endian;
 import openfl.utils.Float32Array;
 import openfl.utils.Int16Array;
 
-@:forward(clear, readUnsignedInt, readUnsignedShort, writeBytes, writeShort, writeUnsignedInt, bytesAvailable, endian, length, position)
+@:forward(clear, fastWriteShort, readUnsignedInt, readUnsignedShort, writeBytes, writeShort, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Int16ArrayWrapper(Int16ArrayWrappedData) from Int16ArrayWrappedData to Int16ArrayWrappedData
 {
     public function new()
@@ -88,6 +88,20 @@ class Int16ArrayWrappedData
     public inline function writeUnsignedInt(value:UInt):Void
     {
         data.writeUnsignedInt(value);
+    }
+    
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public #if (!cs && !unsafe) inline #end function fastWriteShort(ptr:UInt8Ptr, v:Int):Void
+    {
+        #if (cs && unsafe)
+        untyped __cs__("short *sptr = (short*)(ptr + this.data.position)");
+        untyped __cs__("*sptr = (short)v");
+        data.position += 2;
+        #else
+        writeShort(v);
+        #end
     }
     
     private function createInt16ArrayIfNeeded():Void

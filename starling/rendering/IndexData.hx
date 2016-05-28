@@ -396,6 +396,9 @@ class IndexData
     /** Makes sure that the ByteArray containing the normalized, basic quad data contains at
      *  least <code>numIndices</code> indices. The array might grow, but it will never be
      *  made smaller. */
+    #if (cs && unsafe)
+    @:unsafe
+    #end
     private function ensureQuadDataCapacity(numIndices:Int):Void
     {
         if (sQuadDataNumIndices >= (cast numIndices : UInt)) return;
@@ -409,16 +412,27 @@ class IndexData
         sQuadData.endian = Endian.LITTLE_ENDIAN;
         sQuadData.position = sQuadData.length;
         sQuadDataNumIndices = newNumQuads * 6;
+        sQuadData.length = numIndices * 2;
+        
+        #if (cs && unsafe)
+        untyped __cs__("fixed(byte *dst = sQuadData.data.b){");
+        #else
+        var dst:Dynamic = null;
+        #end
 
         for (i in oldNumQuads ... newNumQuads)
         {
-            sQuadData.writeShort(4 * i);
-            sQuadData.writeShort(4 * i + 1);
-            sQuadData.writeShort(4 * i + 2);
-            sQuadData.writeShort(4 * i + 1);
-            sQuadData.writeShort(4 * i + 3);
-            sQuadData.writeShort(4 * i + 2);
+            sQuadData.fastWriteShort(untyped dst, 4 * i);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 1);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 2);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 1);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 3);
+            sQuadData.fastWriteShort(untyped dst, 4 * i + 2);
         }
+        
+        #if (cs && unsafe)
+        untyped __cs__("}");
+        #end
     }
 
     /** Returns the index that's expected at this position if following basic quad layout. */
