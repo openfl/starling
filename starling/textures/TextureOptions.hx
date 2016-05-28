@@ -22,7 +22,7 @@ class TextureOptions
     private var _optimizeForRenderToTexture:Bool = false;
     private var _premultipliedAlpha:Bool;
     private var _forcePotTexture:Bool;
-    private var _onReady:Dynamic = null;
+    private var _onReady:Void->Void = null;
 
     /** Creates a new instance with the given options. */
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
