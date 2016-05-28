@@ -208,9 +208,9 @@ class Float32ArrayWrappedData
     @:noCompletion private inline function get_endian():Endian { return data.endian; }
     @:noCompletion private inline function set_endian(value:Endian):Endian { return data.endian = value; }
     
-    public var length(get, set):UInt;
-    @:noCompletion private inline function get_length():UInt { return data.length; }
-    @:noCompletion private inline function set_length(value:UInt):UInt
+    public var length(get, set):Int;
+    @:noCompletion private inline function get_length():Int { return data.length; }
+    @:noCompletion private inline function set_length(value:Int):Int
     {
         #if js
         data.length = value;

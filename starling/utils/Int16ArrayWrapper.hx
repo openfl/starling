@@ -131,8 +131,8 @@ class Int16ArrayWrappedData
 	@:noCompletion private inline function set_endian(value:Endian):Endian { return data.endian = value; }
     
     public var length(get, set):UInt;
-    @:noCompletion private inline function get_length():UInt { return data.length; }
-    @:noCompletion private inline function set_length(value:UInt):UInt
+    @:noCompletion private inline function get_length():Int { return data.length; }
+    @:noCompletion private inline function set_length(value:Int):Int
     {
         #if js
         data.length = value;
