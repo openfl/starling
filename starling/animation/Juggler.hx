@@ -179,7 +179,7 @@ class Juggler implements IAnimatable
     }
 
     /** Removes all delayed and repeated calls with a certain callback. */
-    public function removeDelayedCalls(callback:Dynamic):Void
+    public function removeDelayedCalls(callback:Array<Dynamic>->Void):Void
     {
         if (callback == null) return;
 
@@ -215,7 +215,7 @@ class Juggler implements IAnimatable
     }
 
     /** Figures out if the juggler contains one or more delayed calls with a certain callback. */
-    public function containsDelayedCalls(callback:Dynamic):Bool
+    public function containsDelayedCalls(callback:Array<Dynamic>->Void):Bool
     {
         if (callback != null)
         {
@@ -273,7 +273,7 @@ class Juggler implements IAnimatable
      *  @return Unique numeric identifier for the delayed call. This identifier may be used
      *          to remove the object via <code>removeByID()</code>.
      */
-    public function repeatCall(call:Dynamic, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):UInt
+    public function repeatCall(call:Array<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):UInt
     {
         if (call == null) throw new ArgumentError("call must not be null");
         
