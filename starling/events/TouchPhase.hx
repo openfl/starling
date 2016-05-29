@@ -30,7 +30,7 @@ import starling.errors.AbstractClassError;
 class TouchPhase
 {
     /** @private */
-    public function TouchPhase() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** Only available for mouse input: the cursor hovers over an object <em>without</em> a 
      *  pressed button. */
