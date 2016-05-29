@@ -33,7 +33,9 @@ abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedDa
 class Float32ArrayWrappedData
 {
     public var data(default, null):ByteArray;
+    #if js
     private var float32Array:Float32Array;
+    #end
 
     public function new()
     {
