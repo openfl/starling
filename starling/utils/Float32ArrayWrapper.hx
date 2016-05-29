@@ -7,7 +7,7 @@ import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
 
-@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, readFloat, readUnsignedInt, resize, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
+@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, fastWriteUnsignedInt, readFloat, readUnsignedInt, resize, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
 {
     public function new()
@@ -18,6 +18,11 @@ abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedDa
     @:noCompletion @:to public inline function toByteArray():ByteArray
     {
         return this.data;
+    }
+    
+    @:noCompletion @:to public inline function toBytes():Bytes
+    {
+        return @:privateAccess this.data.toBytes();
     }
     
     @:noCompletion @:arrayAccess private inline function get(index:Int):Int
@@ -184,6 +189,20 @@ class Float32ArrayWrappedData
         data.position += 4;
         #else
         writeFloat(v);
+        #end
+    }
+    
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public #if (!cs && !unsafe) inline #end function fastWriteUnsignedInt(ptr:UInt8Ptr, v:Int):Void
+    {
+        #if (cs && unsafe)
+        untyped __cs__("uint *uiptr = (uint*)(ptr + this.data.position)");
+        untyped __cs__("*uiptr = (uint)v");
+        data.position += 4;
+        #else
+        writeUnsignedInt(v);
         #end
     }
     

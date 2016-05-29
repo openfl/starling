@@ -21,6 +21,7 @@ import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
+import haxe.io.BytesData;
 import openfl.errors.ArgumentError;
 import starling.utils.Float32ArrayWrapper;
 import starling.utils.Max;
@@ -835,6 +836,9 @@ class VertexData
     }
 
     /** Writes the given RGB and alpha values to the specified vertices. */
+    #if (cs && unsafe)
+    @:unsafe
+    #end
     public function colorize(attrName:String="color", color:UInt=0xffffff, alpha:Float=1.0,
                              vertexID:Int=0, numVertices:Int=-1):Void
     {
@@ -858,12 +862,27 @@ class VertexData
         _rawData.position = vertexID * _vertexSize + offset;
         _rawData.writeUnsignedInt(switchEndian(rgba));
 
-        while (pos < endPos)
+        #if (cs && unsafe)
+        var bytesData:BytesData = @:privateAccess _rawData.toBytes().b;
+        cs.Lib.fixed(
         {
-            _rawData.position = pos;
-            _rawData.writeUnsignedInt(switchEndian(rgba));
-            pos += _vertexSize;
-        }
+            var ptr = cs.Lib.pointerOfArray(bytesData);
+        #end
+            
+            while (pos < endPos)
+            {
+                _rawData.position = pos;
+                #if (cs && unsafe)
+                _rawData.fastWriteUnsignedInt(ptr, switchEndian(rgba));
+                #else
+                _rawData.writeUnsignedInt(switchEndian(rgba));
+                #end
+                pos += _vertexSize;
+            }
+            
+        #if (cs && unsafe)
+        });
+        #end
     }
 
     // format helpers
