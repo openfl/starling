@@ -2,6 +2,7 @@ package starling.utils;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
 import haxe.io.Bytes;
+import lime.utils.UInt32Array;
 import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
@@ -35,13 +36,16 @@ class Float32ArrayWrappedData
     public var data(default, null):ByteArray;
     #if js
     private var float32Array:Float32Array;
+    private var uint32Array:UInt32Array;
     #end
 
     public function new()
     {
         data = new ByteArray();
         #if js
-        float32Array = new Float32Array(data.toArrayBuffer());
+        var buffer:ArrayBuffer = data.toArrayBuffer();
+        float32Array = new Float32Array(buffer);
+        uint32Array = new UInt32Array(buffer);
         #end
     }
     
@@ -69,9 +73,13 @@ class Float32ArrayWrappedData
         #end
     }
     
-    public inline function readUnsignedInt():UInt
+    public inline function readUnsignedInt():Int
     {
+        #if js
+        return uint32Array[Std.int(data.position / 4)];
+        #else
         return data.readUnsignedInt();
+        #end
     }
     
     #if (cs && unsafe)
@@ -93,7 +101,7 @@ class Float32ArrayWrappedData
         #else
         data.writeBytes(bytes, offset, length);
         #if js
-        createFloat32ArrayIfNeeded();
+        createTypedArrays();
         #end
         #end
     }
@@ -181,7 +189,12 @@ class Float32ArrayWrappedData
     
     public inline function writeUnsignedInt(value:Int):Void
     {
+        #if js
+        uint32Array[Std.int(data.position / 4)] = value;
+        data.position += 4;
+        #else
         data.writeUnsignedInt(value);
+        #end
     }
     
     public inline function resize(value:UInt):Void
@@ -190,16 +203,19 @@ class Float32ArrayWrappedData
         length = value;
         #else
         @:privateAccess (data:ByteArrayData).__resize(value);
-        createFloat32ArrayIfNeeded();
+        createTypedArrays();
         #end
     }
     
-    private function createFloat32ArrayIfNeeded():Void
+    private function createTypedArrays():Void
     {
         #if js
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (buffer != float32Array.buffer)
+        {
             float32Array = new Float32Array(buffer, 0, Std.int(buffer.byteLength / 4));
+            uint32Array = new UInt32Array(buffer, 0, Std.int(buffer.byteLength / 4));
+        }
         #end
     }
     
@@ -216,7 +232,7 @@ class Float32ArrayWrappedData
     {
         #if js
         data.length = value;
-        createFloat32ArrayIfNeeded();
+        createTypedArrays();
         return value;
         #else
         return data.length = value;
