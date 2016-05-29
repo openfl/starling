@@ -51,7 +51,7 @@ class Transitions
     private static var sTransitions:Map<String, Float->Float>;
     
     /** @private */
-    public function Transitions() { throw new AbstractClassError(); }
+    public function new() { throw new AbstractClassError(); }
     
     /** Returns the transition function that was registered under a certain name. */ 
     public static function getTransition(name:String):Float->Float
