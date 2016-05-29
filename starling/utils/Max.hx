@@ -18,5 +18,12 @@ class Max
 	inline public static var INT_MIN_VALUE:Int = -2147483647;
 
     /** he largest representable 32-bit unsigned integer. */
-    inline public static var UINT_MAX_VALUE:UInt = 0xffffffff;
+    public static var UINT_MAX_VALUE:UInt;
+    
+    private static function __init()
+    {
+        untyped __cs__("unchecked{");
+        UINT_MAX_VALUE = 0xffffffff;
+        untyped __cs__("}");
+    }
 }
