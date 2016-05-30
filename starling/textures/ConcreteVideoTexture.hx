@@ -13,6 +13,7 @@ import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
 import flash.display3D.textures.VideoTexture;
 import flash.events.Event;
+import haxe.Constraints.Function;
 
 import starling.core.Starling;
 #if 0
@@ -25,7 +26,7 @@ import starling.utils.execute;
  *  For internal use only. */
 class ConcreteVideoTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:Dynamic;
+    private var _textureReadyCallback:Function;
 
     /** Creates a new instance with the given parameters.
      *  <code>base</code> must be of type <code>flash.display3D.textures.VideoTexture</code>.
@@ -51,7 +52,7 @@ class ConcreteVideoTexture extends ConcreteTexture
 
     /** @private */
     override public function attachVideo(type:String, attachment:Dynamic,
-                                           onComplete:Dynamic=null):Void
+                                           onComplete:Function=null):Void
     {
         _textureReadyCallback = onComplete;
         Reflect.setProperty(base, "attach" + type, attachment);

@@ -12,6 +12,7 @@ package starling.styles;
 import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Point;
+import haxe.Constraints.Function;
 
 #if 0
 import starling.core.starling_internal;
@@ -229,7 +230,7 @@ class MeshStyle extends EventDispatcher
 
     // enter frame event
 
-    override public function addEventListener(type:String, listener:ListenerTypes):Void
+    override public function addEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null)
             _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -237,7 +238,7 @@ class MeshStyle extends EventDispatcher
         super.addEventListener(type, listener);
     }
 
-    override public function removeEventListener(type:String, listener:ListenerTypes):Void
+    override public function removeEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null)
             _target.removeEventListener(type, onEnterFrame);

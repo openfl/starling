@@ -12,13 +12,11 @@ package starling.events;
 //import flash.utils.Dictionary;
 
 //import starling.core.starling_internal;
+import haxe.Constraints.Function;
 import openfl.Vector;
 import starling.display.DisplayObject;
-import starling.utils.AcceptEither;
 
 //use namespace starling_internal;
-
-typedef ListenerTypes = AcceptEither<Void->Void, Event->Void, Event->Dynamic->Void, KeyboardEvent->Void, TouchEvent->Void, EnterFrameEvent->Float->Void, EnterFrameEvent->Void>;
 
 /** The EventDispatcher class is the base class for all classes that dispatch events. 
  *  This is the Starling version of the Flash class with the same name. 
@@ -40,7 +38,7 @@ typedef ListenerTypes = AcceptEither<Void->Void, Event->Void, Event->Dynamic->Vo
  */
 class EventDispatcher
 {
-    private var _eventListeners:Map<String, Array<ListenerTypes>>;
+    private var _eventListeners:Map<String, Array<Function>>;
     
     /** Helper object. */
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
@@ -50,12 +48,12 @@ class EventDispatcher
     {  }
     
     /** Registers an event listener at a certain object. */
-    public function addEventListener(type:String, listener:ListenerTypes):Void
+    public function addEventListener(type:String, listener:Function):Void
     {
         if (_eventListeners == null)
             _eventListeners = new Map();
         
-        var listeners:Array<ListenerTypes> = _eventListeners[type];
+        var listeners:Array<Function> = _eventListeners[type];
         if (listeners == null)
             _eventListeners[type] = [listener];
         else if (listeners.indexOf(listener) == -1) // check for duplicates
@@ -63,11 +61,11 @@ class EventDispatcher
     }
     
     /** Removes an event listener from the object. */
-    public function removeEventListener(type:String, listener:ListenerTypes):Void
+    public function removeEventListener(type:String, listener:Function):Void
     {
         if (_eventListeners != null)
         {
-            var listeners:Array<ListenerTypes> = _eventListeners[type];
+            var listeners:Array<Function> = _eventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -144,24 +142,28 @@ class EventDispatcher
             
             for (i in 0 ... numListeners)
             {
-                var listener:ListenerTypes = listeners[i];
-                switch(listener.type)
+                var listener:Function = listeners[i];
+                #if flash
+                var numArgs:Int = untyped listener.length;
+                if (numArgs == 0) listener();
+                else if (numArgs == 1) listener(event);
+                else listener(event, event.data);
+                #elseif cs
+                var numArgs:Int = untyped cs.Lib.as(listener, cs.internal.Function).__hx_arity;
+                switch (numArgs)
                 {
-                    case TypeA(v):
-                        v();
-                    case TypeB(v):
-                        v(event);
-                    case TypeC(v):
-                        v(event, event.data);
-                    case TypeD(v):
-                        v(cast event);
-                    case TypeE(v):
-                        v(cast event);
-                    case TypeF(v):
-                        v(cast event, event.data);
-                    case TypeG(v):
-                        v(cast event);
+                    case 0:
+                        listener();
+                    case 1:
+                        listener(event);
+                    case 2:
+                        listener(event, event.data);
+                    default:
+                        Reflect.callMethod(null, listener, [event, event.data]);
                 }
+				#else
+				listener(event, event.data);
+                #end
                 
                 if (event.stopsImmediatePropagation)
                     return true;
@@ -217,9 +219,9 @@ class EventDispatcher
     /** If called with one argument, figures out if there are any listeners registered for
      *  the given event type. If called with two arguments, also determines if a specific
      *  listener is registered. */
-    public function hasEventListener(type:String, listener:ListenerTypes=null):Bool
+    public function hasEventListener(type:String, listener:Function=null):Bool
     {
-        var listeners:Array<ListenerTypes> = _eventListeners != null ? _eventListeners[type] : null;
+        var listeners:Array<Function> = _eventListeners != null ? _eventListeners[type] : null;
         if (listeners == null) return false;
         else
         {

@@ -31,6 +31,7 @@ import flash.utils.ByteArray;
 import flash.utils.getQualifiedClassName;
 #end
 import flash.display3D.Context3DProfile;
+import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
 import openfl.utils.Float32Array;
 
@@ -367,7 +368,7 @@ class Texture
      *                    tools.
      */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
-                                       async:Dynamic=null, premultipliedAlpha:Bool=false):Texture
+                                       async:Function=null, premultipliedAlpha:Bool=false):Texture
     {
         var context:Context3D = Starling.sContext;
         if (context == null) throw new MissingContextError();
@@ -417,7 +418,7 @@ class Texture
      *                 of type 'Texture'.
      */
     public static function fromNetStream(stream:NetStream, scale:Float=1,
-                                         onComplete:Dynamic=null):Texture
+                                         onComplete:Function=null):Texture
     {
         // workaround for bug in NetStream class:
         if (stream.client == stream && !(Reflect.hasField(stream, "onMetaData")))
@@ -447,14 +448,14 @@ class Texture
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
-                                      onComplete:Dynamic=null):Texture
+                                      onComplete:Function=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }
     #end
 
     private static function fromVideoAttachment(type:String, attachment:Dynamic,
-                                                scale:Float, onComplete:Dynamic):Texture
+                                                scale:Float, onComplete:Function):Texture
     {
         #if flash
         if (!SystemUtil.supportsVideoTexture)

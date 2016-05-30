@@ -14,6 +14,7 @@ import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
 import flash.media.SoundTransform;
+import haxe.Constraints.Function;
 import openfl.errors.Error;
 import starling.utils.ArrayUtil;
 
@@ -168,14 +169,14 @@ class MovieClip extends Image implements IAnimatable
     }
 
     /** Returns the method that is executed at a certain frame. */
-    public function getFrameAction(frameID:Int):Dynamic
+    public function getFrameAction(frameID:Int):Function
     {
         if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
         return _frames[frameID].action;
     }
 
     /** Sets an action that will be executed whenever a certain frame is reached. */
-    public function setFrameAction(frameID:Int, action:Dynamic):Void
+    public function setFrameAction(frameID:Int, action:Function):Void
     {
         if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
         _frames[frameID].action = action;
@@ -295,7 +296,7 @@ class MovieClip extends Image implements IAnimatable
         var finalFrameID:Int = _frames.length - 1;
         var restTimeInFrame:Float = frame.duration - _currentTime + frame.startTime;
         var dispatchCompleteEvent:Bool = false;
-        var frameAction:Dynamic = null;
+        var frameAction:Function = null;
         var previousFrameID:Int = _currentFrameID;
         var changedFrame:Bool;
 
@@ -471,7 +472,7 @@ class MovieClipFrame
     public var sound:Sound;
     public var duration:Float;
     public var startTime:Float;
-    public var action:Dynamic;
+    public var action:Function;
 
     public function playSound(transform:SoundTransform):Void
     {
@@ -482,13 +483,17 @@ class MovieClipFrame
     {
         if (action != null)
         {
+            #if 0
             var numArgs:Int = action.length;
-
+            
             if (numArgs == 0) action();
             else if (numArgs == 1) action(movie);
             else if (numArgs == 2) action(movie, frameID);
             else throw new Error("Frame actions support zero, one or two parameters: " +
                     "movie:MovieClip, frameID:int");
+            #else
+            Reflect.callMethod (null, action, [movie, frameID]);
+            #end
         }
     }
 }

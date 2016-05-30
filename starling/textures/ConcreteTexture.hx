@@ -21,6 +21,7 @@ import flash.utils.ByteArray;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
+import haxe.Constraints.Function;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.Error;
 
@@ -55,7 +56,7 @@ class ConcreteTexture extends Texture
     private var _premultipliedAlpha:Bool;
     private var _optimizedForRenderTexture:Bool;
     private var _scale:Float;
-    private var _onRestore:Dynamic;
+    private var _onRestore:Function;
     private var _dataUploaded:Bool;
 
     /** @private
@@ -232,9 +233,9 @@ class ConcreteTexture extends Texture
      *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
      *  };</listing>
      */
-    public var onRestore(get, set):Dynamic;
-    @:noCompletion private function get_onRestore():Dynamic { return _onRestore; }
-    @:noCompletion private function set_onRestore(value:Dynamic):Dynamic
+    public var onRestore(get, set):Function;
+    @:noCompletion private function get_onRestore():Function { return _onRestore; }
+    @:noCompletion private function set_onRestore(value:Function):Function
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         

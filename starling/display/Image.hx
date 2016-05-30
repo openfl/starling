@@ -10,6 +10,7 @@
 
 package starling.display;
 import flash.geom.Rectangle;
+import haxe.Constraints.Function;
 import openfl.Vector;
 
 import starling.rendering.IndexData;
@@ -343,7 +344,7 @@ class Image extends Quad
     private function setupScale9GridAttributes(startX:Float, startY:Float,
                                                colWidths:Vector<Float>,
                                                rowHeights:Vector<Float>,
-                                               callback:Dynamic):Int
+                                               callback:Function):Int
     {
         var row:Int, col:Int, colWidth:Float, rowHeight:Float;
         var vertexData:VertexData = this.vertexData;

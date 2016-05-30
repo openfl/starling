@@ -15,6 +15,7 @@ import flash.errors.Error;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
+import haxe.Constraints.Function;
 
 import starling.core.Starling;
 //import starling.core.starling_internal;
@@ -393,7 +394,7 @@ class FragmentFilter extends EventDispatcher
     // enter frame event
 
     /** @private */
-    override public function addEventListener(type:String, listener:ListenerTypes):Void
+    override public function addEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null)
             _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -402,7 +403,7 @@ class FragmentFilter extends EventDispatcher
     }
 
     /** @private */
-    override public function removeEventListener(type:String, listener:ListenerTypes):Void
+    override public function removeEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null)
             _target.removeEventListener(type, onEnterFrame);

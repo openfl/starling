@@ -17,6 +17,7 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
+import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
 
 import starling.core.Starling;
@@ -31,7 +32,7 @@ import starling.utils.execute;
  *  For internal use only. */
 class ConcretePotTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:Dynamic;
+    private var _textureReadyCallback:Function;
 
     private static var sMatrix:Matrix = new Matrix();
     private static var sRectangle:Rectangle = new Rectangle();
@@ -116,7 +117,7 @@ class ConcretePotTexture extends ConcreteTexture
     @:noCompletion override private function get_isPotTexture():Bool { return true; }
 
     /** @inheritDoc */
-    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
+    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Function = null):Void
     {
         #if 0
         var isAsync:Bool = async is Function || async === true;
