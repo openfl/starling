@@ -217,9 +217,9 @@ class EventDispatcher
     /** If called with one argument, figures out if there are any listeners registered for
      *  the given event type. If called with two arguments, also determines if a specific
      *  listener is registered. */
-    public function hasEventListener(type:String, listener:Dynamic=null):Bool
+    public function hasEventListener(type:String, listener:ListenerTypes=null):Bool
     {
-        var listeners:Array<Dynamic> = _eventListeners != null ? _eventListeners[type] : null;
+        var listeners:Array<ListenerTypes> = _eventListeners != null ? _eventListeners[type] : null;
         if (listeners == null) return false;
         else
         {
