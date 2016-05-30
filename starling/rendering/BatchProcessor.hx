@@ -192,9 +192,9 @@ class BatchProcessor
     /** This callback is executed whenever a batch is finished and replaced by a new one.
      *  The finished MeshBatch is passed to the callback. Typically, this callback is used
      *  to actually render it. */
-    public var onBatchComplete(get, set):Dynamic;
-    @:noCompletion private function get_onBatchComplete():Dynamic { return _onBatchComplete; }
-    @:noCompletion private function set_onBatchComplete(value:Dynamic):Dynamic { return _onBatchComplete = value; }
+    public var onBatchComplete(get, set):MeshBatch->Void;
+    @:noCompletion private function get_onBatchComplete():MeshBatch->Void { return _onBatchComplete; }
+    @:noCompletion private function set_onBatchComplete(value:MeshBatch->Void):MeshBatch->Void { return _onBatchComplete = value; }
 }
 
 class BatchPool
