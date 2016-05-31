@@ -12,6 +12,7 @@ package starling.events;
 //import flash.utils.Dictionary;
 
 //import starling.core.starling_internal;
+import haxe.Constraints.Function;
 import openfl.Vector;
 import starling.display.DisplayObject;
 
@@ -37,7 +38,7 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var mEventListeners:Map<String, Array<Dynamic>>;
+    private var mEventListeners:Map<String, Array<Function>>;
     
     /** Helper object. */
     private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
@@ -47,15 +48,15 @@ class EventDispatcher
     {  }
     
     /** Registers an event listener at a certain object. */
-    public function addEventListener(type:String, listener:Dynamic):Void
+    public function addEventListener(type:String, listener:Function):Void
     {
         if (mEventListeners == null)
-            mEventListeners = new Map<String, Array<Dynamic>>();
+            mEventListeners = new Map<String, Array<Function>>();
         
         var listeners:Array<Dynamic> = mEventListeners[type];
         if (listeners == null)
         {
-            mEventListeners[type] = new Array<Dynamic>();
+            mEventListeners[type] = new Array<Function>();
             mEventListeners[type].push(listener);
         }
         else if (listeners.indexOf(listener) == -1) // check for duplicates
@@ -63,11 +64,11 @@ class EventDispatcher
     }
     
     /** Removes an event listener from the object. */
-    public function removeEventListener(type:String, listener:Dynamic):Void
+    public function removeEventListener(type:String, listener:Function):Void
     {
         if (mEventListeners != null)
         {
-            var listeners:Array < Dynamic > = mEventListeners[type];
+            var listeners:Array<Function> = mEventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -79,7 +80,7 @@ class EventDispatcher
 
                 if (index != -1)
                 {
-                    var restListeners:Array<Dynamic> = listeners.slice(0, index);
+                    var restListeners:Array<Function> = listeners.slice(0, index);
 
                     //for (var i:Int=index+1; i<numListeners; ++i)
                     for (i in index + 1 ... numListeners)
@@ -130,7 +131,7 @@ class EventDispatcher
      *  method uses this method internally. */
     public function invokeEvent(event:Event):Bool
     {
-        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Array<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)
@@ -143,7 +144,7 @@ class EventDispatcher
             
             for (i in 0 ... numListeners)
             {
-                var listener:Dynamic = listeners[i];
+                var listener:Function = listeners[i];
                 #if flash
                 var numArgs:Int = untyped listener.length;
                 if (numArgs == 0) listener();
@@ -207,7 +208,7 @@ class EventDispatcher
     /** Returns if there are listeners registered for a certain event type. */
     public function hasEventListener(type:String):Bool
     {
-        var listeners:Array<Dynamic> = mEventListeners != null ? mEventListeners[type] : null;
+        var listeners:Array<Function> = mEventListeners != null ? mEventListeners[type] : null;
         return listeners != null ? listeners.length != 0 : false;
     }
 }

@@ -269,7 +269,7 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Sorts the children according to a given function (that works just like the sort function
      *  of the Vector class). */
-    public function sortChildren(compareFunction:Dynamic):Void
+    public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void
     {
         ArrayUtil.resize(sSortBuffer, mChildren.length);
         mergeSort(mChildren, compareFunction, 0, mChildren.length, sSortBuffer);

@@ -24,6 +24,7 @@ import flash.utils.ByteArray;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
+import haxe.Constraints.Function;
 import openfl.display3D.Context3DProfile;
 import openfl.errors.ArgumentError;
 import openfl.utils.Float32Array;
@@ -345,7 +346,7 @@ class Texture
      *                 of type 'Texture'.
      */
     public static function fromNetStream(stream:NetStream, scale:Float=1,
-                                         onComplete:Dynamic=null):Texture
+                                         onComplete:Function=null):Texture
     {
         // workaround for bug in NetStream class:
         if (stream.client == stream && !(Reflect.hasField(stream, "onMetaData")))
@@ -375,14 +376,14 @@ class Texture
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
-                                      onComplete:Dynamic=null):Texture
+                                      onComplete:Function=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }
     #end
 
     private static function fromVideoAttachment(type:String, attachment:Dynamic,
-                                                scale:Float, onComplete:Dynamic):Texture
+                                                scale:Float, onComplete:Function):Texture
     {
         var TEXTURE_READY:String = "textureReady"; // for backwards compatibility
 

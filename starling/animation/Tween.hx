@@ -10,6 +10,7 @@
 
 
 package starling.animation;
+import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -53,10 +54,10 @@ class Tween extends EventDispatcher implements IAnimatable
     private var mEndValues:Array<Float>;
     private var mUpdateFuncs:Array<String->Float->Float->Void>;
 
-    private var mOnStart:Dynamic;
-    private var mOnUpdate:Dynamic;
-    private var mOnRepeat:Dynamic;
-    private var mOnComplete:Dynamic;  
+    private var mOnStart:Function;
+    private var mOnUpdate:Function;
+    private var mOnRepeat:Function;
+    private var mOnComplete:Function;  
     
     private var mOnStartArgs:Array<Dynamic>;
     private var mOnUpdateArgs:Array<Dynamic>;
@@ -226,7 +227,7 @@ class Tween extends EventDispatcher implements IAnimatable
             else
             {
                 // save callback & args: they might be changed through an event listener
-                var onComplete:Dynamic = mOnComplete;
+                var onComplete:Function = mOnComplete;
                 var onCompleteArgs:Array<Dynamic> = mOnCompleteArgs;
                 
                 // in the 'onComplete' callback, people might want to call "tween.reset" and
@@ -421,25 +422,25 @@ class Tween extends EventDispatcher implements IAnimatable
     private function set_roundToInt(value:Bool):Bool { return mRoundToInt = value; }        
     
     /** A function that will be called when the tween starts (after a possible delay). */
-    public var onStart(get, set):Dynamic;
-    private function get_onStart():Dynamic { return mOnStart; }
-    private function set_onStart(value:Dynamic):Dynamic { return mOnStart = value; }
+    public var onStart(get, set):Function;
+    private function get_onStart():Function { return mOnStart; }
+    private function set_onStart(value:Function):Function { return mOnStart = value; }
     
     /** A function that will be called each time the tween is advanced. */
-    public var onUpdate(get, set):Dynamic;
-    private function get_onUpdate():Dynamic { return mOnUpdate; }
-    private function set_onUpdate(value:Dynamic):Dynamic { return mOnUpdate = value; }
+    public var onUpdate(get, set):Function;
+    private function get_onUpdate():Function { return mOnUpdate; }
+    private function set_onUpdate(value:Function):Function { return mOnUpdate = value; }
     
     /** A function that will be called each time the tween finishes one repetition
      *  (except the last, which will trigger 'onComplete'). */
-    public var onRepeat(get, set):Dynamic;
-    private function get_onRepeat():Dynamic { return mOnRepeat; }
-    private function set_onRepeat(value:Dynamic):Dynamic { return mOnRepeat = value; }
+    public var onRepeat(get, set):Function;
+    private function get_onRepeat():Function { return mOnRepeat; }
+    private function set_onRepeat(value:Function):Function { return mOnRepeat = value; }
     
     /** A function that will be called when the tween is complete. */
-    public var onComplete(get, set):Dynamic;
-    private function get_onComplete():Dynamic { return mOnComplete; }
-    private function set_onComplete(value:Dynamic):Dynamic { return mOnComplete = value; }
+    public var onComplete(get, set):Function;
+    private function get_onComplete():Function { return mOnComplete; }
+    private function set_onComplete(value:Function):Function { return mOnComplete = value; }
     
     /** The arguments that will be passed to the 'onStart' function. */
     public var onStartArgs(get, set):Array<Dynamic>;

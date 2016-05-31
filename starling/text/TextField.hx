@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.text;
+import haxe.Constraints.Function;
 #if !flash
 import openfl._internal.text.TextEngine;
 #end
@@ -363,7 +364,7 @@ class TextField extends DisplayObjectContainer
             filterOffset.x, filterOffset.y + Std.int(textOffsetY)-2);
         
         #if flash
-        var drawWithQualityFunc:Dynamic =
+        var drawWithQualityFunc:Function =
             Reflect.getProperty(bitmapData, "drawWithQuality");
         
         // Beginning with AIR 3.3, we can force a drawing quality. Since "LOW" produces

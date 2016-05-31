@@ -24,6 +24,7 @@ import flash.utils.ByteArray;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
+import haxe.Constraints.Function;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.Error;
 
@@ -52,9 +53,9 @@ class ConcreteTexture extends Texture
     private var mOptimizedForRenderTexture:Bool;
     private var mScale:Float;
     private var mRepeat:Bool;
-    private var mOnRestore:Void -> Void;
+    private var mOnRestore:Function;
     private var mDataUploaded:Bool;
-    private var mTextureReadyCallback:Dynamic;
+    private var mTextureReadyCallback:Function;
     
     /** helper object */
     private static var sOrigin:Point = new Point();
@@ -187,19 +188,19 @@ class ConcreteTexture extends Texture
         mDataUploaded = true;
     }
 
-    public function attachNetStream(netStream:NetStream, onComplete:Dynamic=null):Void
+    public function attachNetStream(netStream:NetStream, onComplete:Function=null):Void
     {
         attachVideo("NetStream", netStream, onComplete);
     }
 
     #if flash
-    public function attachCamera(camera:Camera, onComplete:Dynamic=null):Void
+    public function attachCamera(camera:Camera, onComplete:Function=null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }
     #end
 
-    private function attachVideo(type:String, attachment:Dynamic, onComplete:Dynamic=null):Void
+    private function attachVideo(type:String, attachment:Dynamic, onComplete:Function=null):Void
     {
         var className:String = Type.getClassName(Type.getClass(mBase));
 
@@ -295,9 +296,9 @@ class ConcreteTexture extends Texture
      *  here will be called after a context loss. On execution, a new base texture will
      *  already have been created; however, it will be empty. Call one of the "upload..."
      *  methods from within the callbacks to restore the actual texture data. */
-    public var onRestore(get, set):Dynamic;
-    private function get_onRestore():Dynamic { return mOnRestore; }
-    private function set_onRestore(value:Dynamic):Dynamic
+    public var onRestore(get, set):Function;
+    private function get_onRestore():Function { return mOnRestore; }
+    private function set_onRestore(value:Function):Function
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
