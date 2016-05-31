@@ -22,7 +22,6 @@ import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
-import openfl.display3D._shaders.Shader;
 import flash.errors.IllegalOperationError;
 import flash.events.ErrorEvent;
 import flash.events.Event;
@@ -897,8 +896,8 @@ class Starling extends EventDispatcher
     
     /** Registers a compiled shader-program under a certain name.
      *  If the name was already used, the previous program is overwritten. */
-    public function registerProgram(name:String, vertexShader:Shader,
-                                    fragmentShader:Shader):Program3D
+    public function registerProgram(name:String, vertexShader:Dynamic,
+                                    fragmentShader:Dynamic):Program3D
     {
         deleteProgram(name);
         

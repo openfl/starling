@@ -10,8 +10,8 @@
 
 package starling.core;
 import openfl.display3D.Context3DBlendFactor;
-import openfl.display3D._shaders.AGLSLShaderUtils;
 import openfl.display3D.Context3DProfile;
+import openfl.utils.AGALMiniAssembler;
 import starling.utils.ArrayUtil;
 
 import flash.display3D.Context3D;
@@ -708,9 +708,11 @@ class RenderSupport
             resultProgram = context.createProgram();
         }
         
+        var assembler = new AGALMiniAssembler ();
+        
         resultProgram.upload(
-            AGLSLShaderUtils.createShader(Context3DProgramType.VERTEX, vertexShader),
-            AGLSLShaderUtils.createShader(Context3DProgramType.FRAGMENT, fragmentShader));
+            assembler.assemble(Context3DProgramType.VERTEX, vertexShader),
+            assembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader));
         
         return resultProgram;
     }
