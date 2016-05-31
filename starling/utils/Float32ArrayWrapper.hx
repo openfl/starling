@@ -39,7 +39,7 @@ abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedDa
 class Float32ArrayWrappedData
 {
     public var data(default, null):ByteArray;
-    #if js
+    #if (js && bytearray_wrap)
     private var float32Array:Float32Array;
     private var uint32Array:UInt32Array;
     #end
@@ -47,7 +47,7 @@ class Float32ArrayWrappedData
     public function new()
     {
         data = new ByteArray();
-        #if js
+        #if (js && bytearray_wrap)
         var buffer:ArrayBuffer = data.toArrayBuffer();
         float32Array = new Float32Array(buffer);
         uint32Array = new UInt32Array(buffer);
@@ -61,7 +61,7 @@ class Float32ArrayWrappedData
     
     public #if (js || flash) inline #end function readFloat():Float
     {
-        #if js
+        #if (js && bytearray_wrap)
         data.position += 4;
         return float32Array[Std.int((data.position - 4) / 4)];
         #elseif flash
@@ -77,7 +77,7 @@ class Float32ArrayWrappedData
     
     public inline function readUnsignedInt():Int
     {
-        #if js
+        #if (js && bytearray_wrap)
         return uint32Array[Std.int(data.position / 4)];
         #else
         return data.readUnsignedInt();
@@ -102,7 +102,7 @@ class Float32ArrayWrappedData
         this.data.position += length;
         #else
         data.writeBytes(bytes, offset, length);
-        #if js
+        #if (js && bytearray_wrap)
         createTypedArrays();
         #end
         #end
@@ -110,7 +110,7 @@ class Float32ArrayWrappedData
 
     public #if (js || flash) inline #end function writeFloat(value:Float):Void
     {
-        #if js
+        #if (js && bytearray_wrap)
         float32Array[Std.int(data.position / 4)] = value;
         data.position += 4;
         #elseif flash
@@ -161,7 +161,7 @@ class Float32ArrayWrappedData
         this.data.position += length;
         #elseif flash
         data.writeBytes(bytes, offset, length);
-        #elseif js
+        #elseif (js && bytearray_wrap)
         @:privateAccess (data:ByteArrayData).b.set(
             (offset == 0 && length == (bytes:ByteArrayData).b.length) ? (bytes:ByteArrayData).b : @:privateAccess (bytes:ByteArrayData).b.subarray(offset, offset + length),
             this.data.position);
@@ -202,7 +202,7 @@ class Float32ArrayWrappedData
     
     public inline function writeUnsignedInt(value:Int):Void
     {
-        #if js
+        #if (js && bytearray_wrap)
         uint32Array[Std.int(data.position / 4)] = value;
         data.position += 4;
         #else
@@ -222,7 +222,7 @@ class Float32ArrayWrappedData
     
     private function createTypedArrays():Void
     {
-        #if js
+        #if (js && bytearray_wrap)
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (buffer != float32Array.buffer)
         {
@@ -243,7 +243,7 @@ class Float32ArrayWrappedData
     @:noCompletion private inline function get_length():Int { return data.length; }
     @:noCompletion private inline function set_length(value:Int):Int
     {
-        #if js
+        #if (js && bytearray_wrap)
         data.length = value;
         createTypedArrays();
         return value;

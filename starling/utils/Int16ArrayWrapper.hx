@@ -33,14 +33,14 @@ abstract Int16ArrayWrapper(Int16ArrayWrappedData) from Int16ArrayWrappedData to 
 class Int16ArrayWrappedData
 {
     public var data(default, null):ByteArray;
-    #if js
+    #if (js && bytearray_wrap)
     private var int16Array:Int16Array;
     #end
 
     public function new()
     {
         data = new ByteArray();
-        #if js
+        #if (js && bytearray_wrap)
         int16Array = new Int16Array(data.toArrayBuffer());
         #end
     }
@@ -57,7 +57,7 @@ class Int16ArrayWrappedData
     
     public inline function readUnsignedShort():UInt
     {
-        #if js
+        #if (js && bytearray_wrap)
         data.position += 2;
         return int16Array[Std.int((data.position - 2) / 2)];
         #else
@@ -68,14 +68,14 @@ class Int16ArrayWrappedData
     public inline function writeBytes(bytes:ByteArray, offset:UInt=0, length:UInt=0)
     {
         data.writeBytes(bytes, offset, length);
-        #if js
+        #if (js && bytearray_wrap)
         createInt16ArrayIfNeeded();
         #end
     }
     
     public #if !js inline #end function writeShort(value:Int):Void
     {
-        #if js
+        #if (js && bytearray_wrap)
         @:privateAccess (data : ByteArrayData).__resize(data.position + 2);
         createInt16ArrayIfNeeded();
         int16Array[Std.int(data.position / 2)] = value;
@@ -116,7 +116,7 @@ class Int16ArrayWrappedData
     
     private function createInt16ArrayIfNeeded():Void
     {
-        #if js
+        #if (js && bytearray_wrap)
         var buffer:ArrayBuffer = data.toArrayBuffer();
         if (buffer != int16Array.buffer)
             int16Array = new Int16Array(buffer, 0, Std.int(buffer.byteLength / 2));
@@ -134,7 +134,7 @@ class Int16ArrayWrappedData
     @:noCompletion private inline function get_length():Int { return data.length; }
     @:noCompletion private inline function set_length(value:Int):Int
     {
-        #if js
+        #if (js && bytearray_wrap)
         data.length = value;
         createInt16ArrayIfNeeded();
         return value;

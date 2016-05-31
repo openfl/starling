@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
+	<!-- <set name="no_bytearray_wrap" /> -->
+	
+	<haxedef name="bytearray_wrap" unless="no_bytearray_wrap" />
+	
 	<haxelib name="openfl" />
 	
 </extension>
