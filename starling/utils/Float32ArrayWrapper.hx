@@ -69,9 +69,6 @@ class Float32ArrayWrappedData
         #elseif cpp
         data.position += 4;
         return untyped __global__.__hxcpp_memory_get_float(data.b, data.position - 4);
-        #elseif js
-        data.position += 4;
-        return float32Array[Std.int((data.position - 4) / 4)];
         #else
         data.position += 4;
         return (data:ByteArrayData).getFloat(data.position - 4);
@@ -120,9 +117,6 @@ class Float32ArrayWrappedData
         data.writeFloat(value);
         #elseif cpp
         untyped __global__.__hxcpp_memory_set_float(data.b, data.position, value);
-        data.position += 4;
-        #elseif js
-        float32Array[Std.int(data.position / 4)] = value;
         data.position += 4;
         #else
         (data:ByteArrayData).setFloat (data.position, value);
