@@ -1,0 +1,10 @@
+{
+	"name": "starling",
+	"url": "https://github.com/openfl/starling",
+	"license": "BSD",
+	"tags": [],
+	"description": "An unofficial port of Starling framework",
+	"version": "2.0.0",
+	"releasenote": "",
+	"contributors": [ "vroad" ]
+}
