@@ -22,8 +22,12 @@ class Max
     
     private static function __init()
     {
+        #if cs
         untyped __cs__("unchecked{");
+        #end
         UINT_MAX_VALUE = 0xffffffff;
+        #if cs
         untyped __cs__("}");
+        #end
     }
 }
