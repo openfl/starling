@@ -64,8 +64,8 @@ class Program
                                       agalVersion:UInt=1):Program
     {
         return new Program(
-            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader/*, agalVersion*/),
-            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader/*, agalVersion*/));
+            sAssembler.assemble(vertexShader/*, agalVersion*/),
+            sAssembler.assemble(fragmentShader/*, agalVersion*/));
     }
 
     /** Activates the program on the given context. If you don't pass a context, the current
