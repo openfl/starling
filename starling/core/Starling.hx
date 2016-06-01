@@ -383,7 +383,7 @@ class Starling extends EventDispatcher
         
         if (profile == "auto")
             profiles = [/*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
-        else if (Std.is(profile, #if flash String #else Context3DProfile #end))
+        else if (Std.is(profile, #if flash String #else Int #end))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
             profiles = cast profile;
