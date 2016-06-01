@@ -101,7 +101,7 @@ class VectorUtil
 
     /** Removes the value at the specified index from the 'int'-Vector. Pass a negative
      *  index to specify a position relative to the end of the vector. */
-    public static function removeUnsignedIntAt(vector:Array<UInt>, index:Int):UInt
+    public static function removeUnsignedIntAt(vector:Array<UInt>, index:UInt):UInt
     {
         //var i:Int;
         var length:UInt = vector.length;

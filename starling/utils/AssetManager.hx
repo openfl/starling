@@ -31,7 +31,7 @@ import flash.system.ImageDecodingPolicy;
 #end
 import flash.system.LoaderContext;
 import flash.system.System;
-import flash.utils.ByteArray;
+import openfl.utils.ByteArray;
 #if 0
 import flash.utils.Dictionary;
 import flash.utils.describeType;

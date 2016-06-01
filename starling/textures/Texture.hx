@@ -20,7 +20,7 @@ import flash.media.Camera;
 #end
 import flash.net.NetStream;
 import flash.system.Capabilities;
-import flash.utils.ByteArray;
+import openfl.utils.ByteArray;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
