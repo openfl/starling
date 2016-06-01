@@ -240,8 +240,10 @@ class VertexData
                 var x:Float, y:Float;
                 var pos:Int = targetVertexID * _vertexSize + _posOffset;
                 var endPos:Int = pos + (numVertices * _vertexSize);
+                #if (cs && unsafe)
                 untyped __cs__("float *px");
                 untyped __cs__("float *py");
+                #end
                 
                 while (pos < endPos)
                 {
