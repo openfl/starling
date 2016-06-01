@@ -5,7 +5,6 @@
 	<app main="Demo_Web" file="Demo_Web" path="bin" />
 
 	<window width="320" height="480" orientation="portrait" vsync="true" fps="60" hardware="true" allow-shaders="true" require-shaders="true" depth-buffer="false" stencil-buffer="true" background="0xffffff" />
-	<window stencil-buffer="false" if="android" />
 	
 	<source path="src" />
 	<source path="../demo/src" />
