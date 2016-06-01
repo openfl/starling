@@ -14,9 +14,7 @@ class VertexBufferUtil
 		#if flash
 		vertexBuffer.uploadFromByteArray(data.buffer.getData(), data.byteOffset, startVertex, numVertices);
 		#else
-		var offset:Int = startVertex * vertexBuffer.__data32PerVertex;
-		var length:Int = numVertices * vertexBuffer.__data32PerVertex;
-		vertexBuffer.uploadFromFloat32Array(data.subarray(offset, offset + length));
+		vertexBuffer.uploadFromByteArray(data.buffer, data.byteOffset, startVertex, numVertices);
 		#end
 	}
 	
