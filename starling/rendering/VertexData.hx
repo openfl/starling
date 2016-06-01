@@ -24,7 +24,6 @@ import flash.utils.Endian;
 import haxe.io.BytesData;
 import openfl.errors.ArgumentError;
 import starling.utils.Float32ArrayWrapper;
-import starling.utils.Float32Ptr;
 import starling.utils.Max;
 
 import starling.core.Starling;
