@@ -9,9 +9,7 @@
 // =================================================================================================
 
 package starling.rendering;
-#if 0
-import com.adobe.utils.AGALMiniAssembler;
-#end
+import openfl.utils.AGALMiniAssembler;
 
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
@@ -21,9 +19,7 @@ import flash.utils.ByteArray;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
-
-import openfl.display3D._shaders.AGLSLShaderUtils;
-import openfl.display3D._shaders.Shader;
+import starling.rendering._internal.Shader;
 
 /** A Program represents a pair of a fragment- and vertex-shader.
  *
@@ -43,9 +39,7 @@ class Program
     private var _fragmentShader:Shader;
     private var _program3D:Program3D;
 
-    #if 0
     private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
-    #end
 
     /** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
     public function new(vertexShader:Shader, fragmentShader:Shader)
@@ -69,15 +63,9 @@ class Program
     public static function fromSource(vertexShader:String, fragmentShader:String,
                                       agalVersion:UInt=1):Program
     {
-        #if 0
         return new Program(
-            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion),
-            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
-        #else
-        return new Program(
-            AGLSLShaderUtils.createShader(Context3DProgramType.VERTEX, vertexShader),
-            AGLSLShaderUtils.createShader(Context3DProgramType.FRAGMENT, fragmentShader));
-        #end
+            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader/*, agalVersion*/),
+            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader/*, agalVersion*/));
     }
 
     /** Activates the program on the given context. If you don't pass a context, the current
