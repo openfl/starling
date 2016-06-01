@@ -7,7 +7,7 @@ import openfl.utils.ArrayBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray.ByteArrayData;
 
-@:forward(clear, fastReadFloat, fastWriteBytes, fastWriteFloat, fastWriteUnsignedInt, readFloat, readUnsignedInt, resize, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
+@:forward(clear, getFloatPtr, fastReadFloat, fastWriteBytes, fastWriteFloat, fastWriteUnsignedInt, readFloat, readUnsignedInt, resize, writeBytes, writeFloat, writeUnsignedInt, bytesAvailable, endian, length, position)
 abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedData to Float32ArrayWrappedData
 {
     public function new()
@@ -57,6 +57,18 @@ class Float32ArrayWrappedData
     public inline function clear()
     {
         data.clear();
+    }
+    
+    #if (cs && unsafe)
+    @:unsafe @:skipReflection
+    #end
+    public function getFloatPtr(ptr:UInt8Ptr, pos:Int):Float32Ptr
+    {
+        #if (cs && unsafe)
+        return untyped __cs__("(float*)&ptr[data.position]");
+        #else
+        return null;
+        #end
     }
     
     public #if (js || flash) inline #end function readFloat():Float

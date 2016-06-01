@@ -24,6 +24,7 @@ import flash.utils.Endian;
 import haxe.io.BytesData;
 import openfl.errors.ArgumentError;
 import starling.utils.Float32ArrayWrapper;
+import starling.utils.Float32Ptr;
 import starling.utils.Max;
 
 import starling.core.Starling;
@@ -239,23 +240,24 @@ class VertexData
                 var x:Float, y:Float;
                 var pos:Int = targetVertexID * _vertexSize + _posOffset;
                 var endPos:Int = pos + (numVertices * _vertexSize);
+                untyped __cs__("float *px");
+                untyped __cs__("float *py");
                 
                 while (pos < endPos)
                 {
-                    targetRawData.position = pos;
                     #if (cs && unsafe)
-                    x = targetRawData.fastReadFloat(untyped dst);
-                    y = targetRawData.fastReadFloat(untyped dst);
+                    untyped px = untyped __cs__("(float*)&dst[pos]");
+                    untyped py = untyped __cs__("(float*)&dst[pos + 4]");
+                    x = untyped __cs__("*px");
+                    y = untyped __cs__("*py");
+                    untyped __cs__("*px = (float)(matrix.a * x + matrix.c * y + matrix.tx)");
+                    untyped __cs__("*py = (float)(matrix.d * y + matrix.b * x + matrix.ty)");
                     #else
+                    targetRawData.position = pos;
                     x = targetRawData.readFloat();
                     y = targetRawData.readFloat();
-                    #end
 
                     targetRawData.position = pos;
-                    #if (cs && unsafe)
-                    targetRawData.fastWriteFloat(untyped dst, matrix.a * x + matrix.c * y + matrix.tx);
-                    targetRawData.fastWriteFloat(untyped dst, matrix.d * y + matrix.b * x + matrix.ty);
-                    #else
                     targetRawData.writeFloat(matrix.a * x + matrix.c * y + matrix.tx);
                     targetRawData.writeFloat(matrix.d * y + matrix.b * x + matrix.ty);
                     #end
