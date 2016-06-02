@@ -23,7 +23,7 @@ class VertexBufferUtil
 		#if flash
 		indexBuffer.uploadFromByteArray(data.buffer.getData(), data.byteOffset, startOffset, count);
 		#else
-		indexBuffer.uploadFromInt16Array(data.subarray(startOffset, startOffset + count));
+		indexBuffer.uploadFromTypedArray (data.subarray(startOffset, startOffset + count));
 		#end
 	}
 }
