@@ -729,7 +729,7 @@ class VertexData
         {
             _rawData.position = pos;
 
-            if (_rawData.readUnsignedInt() != (cast 0xffffffff : UInt))
+            if ((cast _rawData.readUnsignedInt() : UInt) != (cast 0xffffffff : UInt))
             {
                 _tinted = true;
                 break;
@@ -1033,13 +1033,13 @@ class VertexData
             var oldLength:UInt = _numVertices * vertexSize;
             var newLength:UInt = value * _vertexSize;
 
-            if (_rawData.length > oldLength)
+            if ((cast _rawData.length : UInt) > oldLength)
             {
                 _rawData.position = oldLength;
                 while (_rawData.bytesAvailable != 0) _rawData.writeUnsignedInt(0);
             }
 
-            if (_rawData.length < newLength)
+            if ((cast _rawData.length : UInt) < newLength)
                 _rawData.length = newLength;
 
             for (i in 0 ... _numAttributes)
