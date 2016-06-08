@@ -22,7 +22,7 @@ abstract Float32ArrayWrapper(Float32ArrayWrappedData) from Float32ArrayWrappedDa
     
     @:noCompletion @:to public inline function toBytes():Bytes
     {
-        return @:privateAccess this.data.toBytes();
+        return @:privateAccess Bytes.ofData(this.data);
     }
     
     @:noCompletion @:arrayAccess private inline function get(index:Int):Int
