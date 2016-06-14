@@ -25,8 +25,8 @@ Current Limitations
 starling-openfl limitations:
 
 * Does not work with openfl-legacy compile option.
-* Only works on html5, cpp, and unofficial Node.js target.
-  * Except for html5, only windows platform is tested. 
+* Only works on html5, cpp, unofficial Node.js target, and unofficial C# target.
+  * I only tested with Windows and Android devices.
 * DisplacementMapFilter don't work correctly. The filter just moves a object a little bit.
   * Noises that are used in DisplacementMapFilter example cannot be generated on OpenFL for now.
 * Mini-Bitmap Font is not supported on html5.
