@@ -447,7 +447,7 @@ class IndexData
     {
         var quadID:Int = Std.int(indexID / 6);
         var posInQuad:Int = indexID - quadID * 6; // => indexID % 6
-        var offset:Int;
+        var offset:Int = 0;
 
         if (posInQuad == 0) offset = 0;
         else if (posInQuad == 1 || posInQuad == 3) offset = 1;
