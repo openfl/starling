@@ -1,5 +1,5 @@
-starling-openfl [![Join the chat at https://gitter.im/vroad/starling-openfl](https://badges.gitter.im/vroad/starling-openfl.svg)](https://gitter.im/vroad/starling-openfl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-===============
+starling
+========
 
 An unofficial port of Starling framework. Currently based on Starling v2.0.1.
 
@@ -7,17 +7,17 @@ An unofficial port of Starling framework. Currently based on Starling v2.0.1.
 
 Install
 -------
-   haxelib git starling https://github.com/vroad/starling-openfl
+   haxelib git starling https://github.com/openfl/starling
 
 Dependencies:
 
-    haxelib git openfl https://github.com/vroad/openfl
-    haxelib git lime https://github.com/vroad/lime
+    haxelib git openfl https://github.com/openfl/openfl
+    haxelib git lime https://github.com/openfl/lime
 
-To use original version of away3d and openfl again, type these commands(If you are using openfl 3.6.1 and lime 2.9.1).
+To use original version of away3d and openfl again, type these commands.
 
-    haxelib set openfl 3.6.1
-    haxelib set lime 2.9.1
+    haxelib dev openfl
+    haxelib dev lime
 
 Current Limitations
 -------------------
