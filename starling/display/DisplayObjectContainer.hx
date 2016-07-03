@@ -350,6 +350,7 @@ class DisplayObjectContainer extends DisplayObject
         while (i >= 0) // front to back!
         {
             var child:DisplayObject = _children[i];
+			--i;
             if (child.isMask) continue;
 
             sHelperMatrix.copyFrom(child.transformationMatrix);
@@ -360,7 +361,6 @@ class DisplayObjectContainer extends DisplayObject
 
             if (target != null) return _touchGroup ? this : target;
             
-            --i;
         }
 
         return null;
