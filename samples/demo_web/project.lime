@@ -20,7 +20,7 @@
 	<assets path="../demo/assets/fonts/Ubuntu-R.ttf" rename="assets/fonts/Ubuntu-R.ttf" />
 
 	<haxedef name="source-map-content" if="html5 || nodejs" />
-	<haxedef name="dom" if="html5" />
+	<!-- <haxedef name="dom" if="html5" /> -->
 
 	<haxedef name="disable_gl_renderer" />
 
