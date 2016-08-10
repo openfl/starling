@@ -10,9 +10,6 @@
 
 package starling.display;
 import openfl.display3D.Context3DProfile;
-import openfl.utils.Int16Array;
-import starling.utils.SafeCast.safe_cast;
-import starling.utils.VertexBufferUtil;
 
 import flash.errors.Error;
 import flash.display3D.Context3D;
@@ -43,10 +40,7 @@ import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.VertexData;
 
-import starling.utils.SafeCast.safe_cast;
-#if flash
 import openfl.Vector;
-#end
 
 /** Optimizes rendering of a number of quads with an identical state.
  * 
@@ -93,7 +87,7 @@ class QuadBatch extends DisplayObject
     private var mSmoothing:String;
     
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Int16Array;
+    private var mIndexData:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
     /** The raw vertex data of the quad. After modifying its contents, call
@@ -103,7 +97,7 @@ class QuadBatch extends DisplayObject
 
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:#if flash Vector<Float> #else Array<Float> #end = [1.0, 1.0, 1.0, 1.0];
+    private static var sRenderAlpha:Vector<Float> = Vector.ofArray ([1.0, 1.0, 1.0, 1.0]);
     private static var sProgramNameCache:Map<UInt, String> = new Map<UInt, String>();
     
     /** Creates a new QuadBatch instance with empty batch data.
@@ -114,7 +108,7 @@ class QuadBatch extends DisplayObject
     {
         super();
         mVertexData = new VertexData(0, true);
-        mIndexData = new Int16Array(0);
+        mIndexData = new Vector ();
         mNumQuads = 0;
         mTinted = false;
         mSyncRequired = false;
@@ -168,7 +162,7 @@ class QuadBatch extends DisplayObject
     {
         var clone:QuadBatch = new QuadBatch();
         clone.mVertexData = mVertexData.clone(0, mNumQuads * 4);
-        clone.mIndexData = new Int16Array(mIndexData);
+        clone.mIndexData = mIndexData.slice(0, mNumQuads * 6);
         clone.mNumQuads = mNumQuads;
         clone.mTinted = mTinted;
         clone.mTexture = mTexture;
@@ -203,10 +197,10 @@ class QuadBatch extends DisplayObject
         if (context == null)  throw new MissingContextError();
         
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX, mDynamicDraw ? Context3DBufferUsage.DYNAMIC_DRAW : Context3DBufferUsage.STATIC_DRAW);
-        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, numVertices);
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
-        VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData, 0, numIndices);
+        mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
         
         mSyncRequired = false;
     }
@@ -237,7 +231,7 @@ class QuadBatch extends DisplayObject
         {
             // as last parameter, we could also use 'mNumQuads * 4', but on some
             // GPU hardware (iOS!), this is slower than updating the complete buffer.
-            VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, mNumQuads * 4);
+            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
             mSyncRequired = false;
         }
     }
@@ -568,9 +562,9 @@ class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = safe_cast(object, DisplayObjectContainer);
-        var quad:Quad = safe_cast(object, Quad);
-        var batch:QuadBatch = safe_cast(object, QuadBatch);
+        var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
+        var quad:Quad = cast(object, Quad);
+        var batch:QuadBatch = cast(object, QuadBatch);
         var filter:FragmentFilter = object.filter;
 
         if (quadBatchID == -1)
@@ -589,7 +583,7 @@ class QuadBatch extends DisplayObject
             if (object.mask != null)
                 trace("[Starling] Masks are ignored on children of a flattened sprite.");
 
-            if (Std.is(object, Sprite) && safe_cast(object, Sprite).clipRect)
+            if (Std.is(object, Sprite) && cast(object, Sprite).clipRect != null)
                 trace("[Starling] ClipRects are ignored on children of a flattened sprite.");
         }
         
@@ -642,7 +636,7 @@ class QuadBatch extends DisplayObject
             
             if (quad != null)
             {
-                var image:Image = safe_cast(quad, Image);
+                var image:Image = cast(quad, Image);
                 texture = image != null ? image.texture : null;
                 smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;
@@ -771,20 +765,7 @@ class QuadBatch extends DisplayObject
         if (mNumQuads > value) mNumQuads = value;
         
         mVertexData.numVertices = value * 4;
-        var newLength:Int = value * 6;
-        if (newLength > mIndexData.length)
-        {
-            var new_IndexData:Int16Array = new Int16Array(newLength);
-            #if !cpp
-            new_IndexData.set(mIndexData);
-            #else
-            for (i in 0 ... mIndexData.length)
-                new_IndexData[i] = mIndexData[i];
-            #end
-            mIndexData = new_IndexData;
-        }
-        else
-            mIndexData = mIndexData.subarray(0, newLength);
+        mIndexData.length = value * 6;
         
         for (i in oldCapacity ... value)
         {

@@ -17,6 +17,7 @@ import starling.utils.MathUtil;
 
 import starling.display.DisplayObject;
 import starling.display.Stage;
+import openfl.Vector;
 
 /** The TouchProcessor is used to convert mouse and touch events of the conventional
  *  Flash stage to Starling's TouchEvents.
@@ -56,7 +57,7 @@ class TouchProcessor
     private var mRoot:DisplayObject;
     private var mElapsedTime:Float;
     private var mTouchMarker:TouchMarker;
-    private var mLastTaps:Array<Touch>;
+    private var mLastTaps:Vector<Touch>;
     private var mShiftDown:Bool = false;
     private var mCtrlDown:Bool  = false;
     private var mMultitapTime:Float = 0.3;
@@ -64,14 +65,14 @@ class TouchProcessor
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
      *  method (the oldest being at the end of the vector). */
-    private var mQueue:Array<Array<Dynamic>>;
+    private var mQueue:Vector<Array<Dynamic>>;
     
     /** The list of all currently active touches. */
-    private var mCurrentTouches:Array<Touch>;
+    private var mCurrentTouches:Vector<Touch>;
     
     /** Helper objects. */
-    private static var sUpdatedTouches:Array<Touch> = new Array<Touch>();
-    private static var sHoveringTouchData:Array<Dynamic> = new Array<Dynamic>();
+    private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
+    private static var sHoveringTouchData:Vector<Dynamic> = new Vector<Dynamic>();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new TouchProcessor that will dispatch events to the given stage. */
@@ -79,9 +80,9 @@ class TouchProcessor
     {
         mRoot = mStage = stage;
         mElapsedTime = 0.0;
-        mCurrentTouches = new Array<Touch>();
-        mQueue = new Array<Array<Dynamic>>();
-        mLastTaps = new Array<Touch>();
+        mCurrentTouches = new Vector<Touch>();
+        mQueue = new Vector<Array<Dynamic>>();
+        mLastTaps = new Vector<Touch>();
 
         mStage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
         mStage.addEventListener(KeyboardEvent.KEY_UP,   onKey);
@@ -164,7 +165,7 @@ class TouchProcessor
      *  @param shiftDown  indicates if the shift key was down when the touches occurred.
      *  @param ctrlDown   indicates if the ctrl or cmd key was down when the touches occurred.
      */
-    private function processTouches(touches:Array<Touch>,
+    private function processTouches(touches:Vector<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void
     {
         sHoveringTouchData = [];
@@ -195,7 +196,7 @@ class TouchProcessor
         // if the target of a hovering touch changed, we dispatch the event to the previous
         // target to notify it that it's no longer being hovered over.
         for(touchData in sHoveringTouchData)
-            if (touchData.touch.target != touchData.target)
+            if (cast (touchData.touch, Touch).target != touchData.target)
                 touchEvent.dispatch(touchData.bubbleChain);
         
         // dispatch events for the rest of our updated touches
@@ -353,7 +354,7 @@ class TouchProcessor
         return null;
     }
     
-    private function containsTouchWithID(touches:Array<Touch>, touchID:Int):Bool
+    private function containsTouchWithID(touches:Vector<Touch>, touchID:Int):Bool
     {
         for(touch in touches)
             if (touch.id == touchID) return true;

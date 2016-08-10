@@ -16,9 +16,8 @@ import flash.display3D.IndexBuffer3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix;
 import flash.geom.Point;
-import flash.geom.Rectangle;
+
 import starling.utils.ArrayUtil;
-import starling.utils.VertexBufferUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -26,6 +25,7 @@ import starling.errors.MissingContextError;
 import starling.events.Event;
 import starling.geom.Polygon;
 import starling.utils.VertexData;
+import flash.geom.Rectangle;
 
 /** A display object supporting basic vector drawing functionality. In its current state,
  *  the main use of this class is to provide a range of forms that can be used as masks.
@@ -241,7 +241,7 @@ class Canvas extends DisplayObject
         var numIndices:Int  = mIndexData.length;
 
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
-        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, numVertices);
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
 
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);

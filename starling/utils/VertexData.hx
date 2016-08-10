@@ -9,13 +9,14 @@
 // =================================================================================================
 
 package starling.utils;
-import openfl.utils.Float32Array;
+
 import flash.errors.ArgumentError;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import openfl.Vector;
 
 /** The VertexData class manages a raw list of vertex information, allowing direct upload
  *  to Stage3D vertex buffers. <em>You only have to work with this class if you create display 
@@ -57,7 +58,7 @@ class VertexData
     /** The offset of texture coordinates (u, v) within a vertex. */
     inline public static var TEXCOORD_OFFSET:Int = 6;
 
-    private var mRawData:Float32Array;
+    private var mRawData:Vector<Float>;
     private var mPremultipliedAlpha:Bool;
     private var mNumVertices:Int;
 
@@ -68,7 +69,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = new Float32Array(0);
+        mRawData = Vector.ofArray(cast []);
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -83,9 +84,10 @@ class VertexData
         
         var clone:VertexData = new VertexData(0, mPremultipliedAlpha);
         clone.mNumVertices = numVertices;
-        clone.mRawData = new Float32Array(mRawData);
+        clone.mRawData = mRawData.slice(vertexID * ELEMENTS_PER_VERTEX,
+                        numVertices * ELEMENTS_PER_VERTEX);
 
-        //clone.mRawData.fixed = true;
+        clone.mRawData.fixed = true;
         return clone;
     }
     
@@ -109,7 +111,7 @@ class VertexData
         
         var x:Float, y:Float;
 
-        var targetRawData:Float32Array = targetData.mRawData;
+        var targetRawData:Vector<Float> = targetData.mRawData;
         var targetIndex:Int = targetVertexID * ELEMENTS_PER_VERTEX;
         var sourceIndex:Int = vertexID * ELEMENTS_PER_VERTEX;
         var sourceEnd:Int = (vertexID + numVertices) * ELEMENTS_PER_VERTEX;
@@ -144,14 +146,14 @@ class VertexData
         //mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
-        var rawData:Float32Array = data.mRawData;
+        var rawData:Vector<Float> = data.mRawData;
         var rawDataLength:Int = rawData.length;
         
         for (i in 0 ... rawDataLength)
             mRawData[targetIndex++] = rawData[i];
         
         mNumVertices += data.numVertices;
-        //mRawData.fixed = true;
+        mRawData.fixed = true;
     }
     
     // functions
@@ -526,24 +528,8 @@ class VertexData
     private function get_numVertices():Int { return mNumVertices; }
     private function set_numVertices(value:Int):Int
     {
-        //mRawData.fixed = false;
-
-        var totalSize:Int = value * ELEMENTS_PER_VERTEX;
-        if (totalSize < 0)
-            totalSize = 1;
-        if (value * ELEMENTS_PER_VERTEX > mRawData.length)
-        {
-            var new_rawData:Float32Array = new Float32Array(totalSize);
-            #if !cpp
-            new_rawData.set(mRawData);
-            #else
-            for (i in 0 ... mRawData.length)
-                new_rawData[i] = mRawData[i];
-            #end
-            mRawData = new_rawData;
-        }
-        else if(totalSize != mRawData.length)
-            mRawData = mRawData.subarray(0, totalSize);
+        mRawData.fixed = false;
+        mRawData.length = value * ELEMENTS_PER_VERTEX;
         
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
@@ -557,11 +543,11 @@ class VertexData
         }
         
         mNumVertices = value;
-        //mRawData.fixed = true;
+        mRawData.fixed = true;
         return mNumVertices;
     }
     
     /** The raw vertex data; not a copy! */
-    public var rawData(get, never):Float32Array;
-    private function get_rawData():Float32Array { return mRawData; }
+    public var rawData(get, never):Vector<Float>;
+    private function get_rawData():Vector<Float> { return mRawData; }
 }

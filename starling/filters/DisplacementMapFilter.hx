@@ -21,12 +21,8 @@ import flash.geom.Point;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
-import openfl.utils.Float32Array;
-#if flash
 import openfl.Vector;
-#end
 import starling.utils.ArrayUtil;
-import starling.utils.VertexBufferUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -60,12 +56,12 @@ class DisplacementMapFilter extends FragmentFilter
     private var mMapTexCoordBuffer:VertexBuffer3D;
     
     /** Helper objects */
-    private static var sOneHalf:#if flash Vector<Float> #else Array<Float> #end = [0.5, 0.5, 0.5, 0.5];
-    private static var sMapTexCoords:Float32Array = new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]);
+    private static var sOneHalf:Vector<Float> = Vector.ofArray ([0.5, 0.5, 0.5, 0.5]);
+    private static var sMapTexCoords:Vector<Float> = Vector.ofArray ([0, 0, 1, 0, 0, 1, 1, 1]);
 
     private static var sMatrix:Matrix3D = new Matrix3D();
-    private static var sMatrixData:Array<Float> = 
-        [0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0];
+    private static var sMatrixData:Vector<Float> = 
+        Vector.ofArray ([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
     
     /** Creates a new displacement map filter that uses the provided map texture. */
     public function new(mapTexture:Texture, mapPoint:Point=null, 
@@ -209,7 +205,7 @@ class DisplacementMapFilter extends FragmentFilter
         sMapTexCoords[6] = -mapX + maxU; sMapTexCoords[7] = -mapY + maxV;
         
         mMapTexture.adjustTexCoords(sMapTexCoords);
-		VertexBufferUtil.uploadVertexBufferFromFloat32Array(mMapTexCoordBuffer, sMapTexCoords, 0, 4);
+        mMapTexCoordBuffer.uploadFromVector(sMapTexCoords, 0, 4);
     }
     
     // properties

@@ -25,9 +25,7 @@ import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
-import openfl.utils.Int16Array;
 import starling.utils.ArrayUtil;
-import starling.utils.VertexBufferUtil;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -46,6 +44,7 @@ import starling.utils.RectangleUtil;
 import starling.utils.SystemUtil;
 import starling.utils.VertexData;
 import starling.utils.PowerOfTwo;
+import openfl.Vector;
 
 /** The FragmentFilter class is the base class for all filter effects in Starling.
  *  All other filters of this package extend this class. You can attach them to any display
@@ -107,7 +106,7 @@ class FragmentFilter
     
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Int16Array;
+    private var mIndexData:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
     private var mCacheRequested:Bool;
@@ -148,7 +147,7 @@ class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        mIndexData = new Int16Array([0, 1, 2, 1, 3, 2]);
+        mIndexData = Vector.ofArray ([0, 1, 2, 1, 3, 2]);
         //mIndexData.fixed = true;
 
         if (Starling.current.contextValid)
@@ -380,10 +379,10 @@ class FragmentFilter
         {
             mVertexBuffer = context.createVertexBuffer(4, VertexData.ELEMENTS_PER_VERTEX);
             mIndexBuffer  = context.createIndexBuffer(6);
-            VertexBufferUtil.uploadIndexBufferFromInt16Array(mIndexBuffer, mIndexData, 0, 6);
+            mIndexBuffer.uploadFromVector(mIndexData, 0, 6);
         }
         
-        VertexBufferUtil.uploadVertexBufferFromFloat32Array(mVertexBuffer, mVertexData.rawData, 0, 4);
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, 4);
     }
     
     private function updatePassTextures(width:Float, height:Float, scale:Float):Void

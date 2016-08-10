@@ -11,7 +11,7 @@
 package starling.events;
 //import flash.utils.getQualifiedClassName;
 
-import starling.core.Starling_internal;
+//import starling.core.Starling_internal;
 import starling.utils.StringUtil;
 
 //use namespace public;
@@ -92,79 +92,64 @@ class Event
     
     private static var sEventPool:Array<Event> = new Array<Event>();
     
-    private var mTarget:EventDispatcher;
-    private var mCurrentTarget:EventDispatcher;
-    private var mType:String;
-    private var mBubbles:Bool;
-    private var mStopsPropagation:Bool;
-    private var mStopsImmediatePropagation:Bool;
-    private var mData:Dynamic;
-    
     /** Creates an event object that can be passed to listeners. */
     public function new(type:String, bubbles:Bool=false, data:Dynamic=null)
     {
-        mType = type;
-        mBubbles = bubbles;
-        mData = data;
+        this.type = type;
+        this.bubbles = bubbles;
+        this.data = data;
     }
     
     /** Prevents listeners at the next bubble stage from receiving the event. */
     public function stopPropagation():Void
     {
-        mStopsPropagation = true;            
+        this.stopsPropagation = true;            
     }
     
     /** Prevents any other listeners from receiving the event. */
     public function stopImmediatePropagation():Void
     {
-        mStopsPropagation = mStopsImmediatePropagation = true;
+        this.stopsPropagation = this.stopsImmediatePropagation = true;
     }
     
     /** Returns a description of the event, containing type and bubble information. */
     public function toString():String
     {
         return StringUtil.formatString("[{0} type=\"{1}\" bubbles={2}]", 
-            [Type.getClassName(Type.getClass(this)).split("::").pop(), mType, mBubbles]);
+            [Type.getClassName(Type.getClass(this)).split("::").pop(), type, bubbles]);
     }
     
     /** Indicates if event will bubble. */
-    public var bubbles(get, never):Bool;
-    private function get_bubbles():Bool { return mBubbles; }
+    public var bubbles(default, null):Bool;
     
     /** The object that dispatched the event. */
-    public var target(get, never):EventDispatcher;
-    private function get_target():EventDispatcher { return mTarget; }
+    public var target(default, null):EventDispatcher;
     
     /** The object the event is currently bubbling at. */
-    public var currentTarget(get, never):EventDispatcher;
-    private function get_currentTarget():EventDispatcher { return mCurrentTarget; }
+    public var currentTarget(default, null):EventDispatcher;
     
     /** A string that identifies the event. */
-    public var type(get, never):String;
-    private function get_type():String { return mType; }
+    public var type(default, null):String;
     
     /** Arbitrary data that is attached to the event. */
-    public var data(get, never):Dynamic;
-    private function get_data():Dynamic { return mData; }
+    public var data(default, null):Dynamic;
     
     // properties for public use
     
     /** @private */
-    public function setTarget(value:EventDispatcher):Void { mTarget = value; }
+    public function setTarget(value:EventDispatcher):Void { target = value; }
     
     /** @private */
-    public function setCurrentTarget(value:EventDispatcher):Void { mCurrentTarget = value; } 
+    public function setCurrentTarget(value:EventDispatcher):Void { currentTarget = value; } 
     
     /** @private */
-    public function setData(value:Dynamic):Void { mData = value; }
+    public function setData(value:Dynamic):Void { data = value; }
     
     /** @private */
-    public var stopsPropagation(get, never):Bool;
-    private function get_stopsPropagation():Bool { return mStopsPropagation; }
+    public var stopsPropagation(default, null):Bool;
     
     /** @private */
-    public var stopsImmediatePropagation(get, never):Bool;
-    private function get_stopsImmediatePropagation():Bool { return mStopsImmediatePropagation; }
+    public var stopsImmediatePropagation(default, null):Bool;
     
     // event pooling
     
@@ -178,18 +163,18 @@ class Event
     /** @private */
     public static function toPool(event:Event):Void
     {
-        event.mData = event.mTarget = event.mCurrentTarget = null;
+        event.data = event.target = event.currentTarget = null;
         sEventPool[sEventPool.length] = event; // avoiding 'push'
     }
     
     /** @private */
     public function reset(type:String, bubbles:Bool=false, data:Dynamic=null):Event
     {
-        mType = type;
-        mBubbles = bubbles;
-        mData = data;
-        mTarget = mCurrentTarget = null;
-        mStopsPropagation = mStopsImmediatePropagation = false;
+        this.type = type;
+        this.bubbles = bubbles;
+        this.data = data;
+        this.target = this.currentTarget = null;
+        this.stopsPropagation = this.stopsImmediatePropagation = false;
         return this;
     }
 }

@@ -13,9 +13,9 @@ import flash.geom.Point;
 #if 0
 import flash.utils.getQualifiedClassName;
 #end
+import openfl.Vector;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
-import openfl.utils.Float32Array;
 import starling.utils.ArrayUtil;
 
 import starling.utils.VectorUtil;
@@ -266,7 +266,7 @@ class Polygon
 
     /** Copies all vertices to a 'Vector', beginning at a certain target index and skipping
      *  'stride' coordinates between each 'x, y' pair. */
-    public function copyToVector(target:Float32Array, targetIndex:Int=0,
+    public function copyToVector(target:Vector<Float>, targetIndex:Int=0,
                                  stride:Int=0):Void
     {
         var numVertices:Int = this.numVertices;

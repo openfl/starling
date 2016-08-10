@@ -55,7 +55,6 @@ import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 import starling.textures.TextureOptions;
 
-import starling.utils.SafeCast.safe_cast;
 
 /** Dispatched when all textures have been restored after a context loss. */
 //[Event(name="texturesRestored", type="starling.events.Event")]
@@ -877,7 +876,7 @@ class AssetManager extends EventDispatcher
                         try
                         {
                             if (asset == null) throw new Error("Reload failed");
-                            texture.root.uploadBitmap(safe_cast(asset, Bitmap));
+                            texture.root.uploadBitmap(cast(asset, Bitmap));
                             asset.bitmapData.dispose();
                         }
                         catch (e:Error)
@@ -917,7 +916,7 @@ class AssetManager extends EventDispatcher
                             try
                             {
                                 if (asset == null) throw new Error("Reload failed");
-                                texture.root.uploadAtfData(safe_cast(asset, ByteArrayData), 0, true);
+                                texture.root.uploadAtfData(cast(asset, ByteArrayData), 0, true);
                                 asset.clear();
                             }
                             catch (e:Error)
@@ -1138,9 +1137,9 @@ class AssetManager extends EventDispatcher
         }
         else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
         {
-            urlRequest = safe_cast(rawAsset, URLRequest);
+            urlRequest = cast(rawAsset, URLRequest);
             if (urlRequest == null)
-                urlRequest = new URLRequest(safe_cast(rawAsset, String));
+                urlRequest = new URLRequest(cast(rawAsset, String));
             url = urlRequest.url;
             extension = getExtensionFromUrl(url);
 
@@ -1167,10 +1166,10 @@ class AssetManager extends EventDispatcher
     {
         var name:String = null;
 
-        if      (Std.is(rawAsset, String))        name =  safe_cast(rawAsset, String);
-        else if (Std.is(rawAsset, URLRequest))    name = safe_cast(rawAsset, URLRequest).url;
+        if      (Std.is(rawAsset, String))        name =  cast(rawAsset, String);
+        else if (Std.is(rawAsset, URLRequest))    name = cast(rawAsset, URLRequest).url;
         #if flash
-        else if (Std.is(rawAsset, FileReference)) name = safe_cast(rawAsset, FileReference).name;
+        else if (Std.is(rawAsset, FileReference)) name = cast(rawAsset, FileReference).name;
         #end
 
         if (name != null)

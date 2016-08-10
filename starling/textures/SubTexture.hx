@@ -13,8 +13,7 @@ import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
-import haxe.ds.Vector;
-import openfl.utils.Float32Array;
+import openfl.Vector;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.ArgumentError;
 
@@ -120,7 +119,7 @@ class SubTexture extends Texture
     }
 
     /** @inheritDoc */
-    public override function adjustTexCoords(texCoords:Float32Array,
+    public override function adjustTexCoords(texCoords:Vector<Float>,
                                              startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         if (count < 0)

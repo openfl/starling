@@ -37,7 +37,6 @@ import starling.utils.HAlign;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.VAlign;
-import starling.utils.SafeCast.safe_cast;
 
 /** Dispatched when an object is added to a parent. */
 //[Event(name="added", type="starling.events.Event")]
@@ -1056,5 +1055,14 @@ class DisplayObject extends EventDispatcher
     /** The stage the display object is connected to, or null if it is not connected 
      *  to the stage. */
     public var stage(get ,never):Stage;
-    private function get_stage():Stage {return safe_cast(this.base, Stage); }
+    private function get_stage():Stage {
+        if (Std.is (this.base, Stage))
+        {
+            return cast this.base;
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

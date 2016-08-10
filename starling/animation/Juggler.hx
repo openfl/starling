@@ -13,7 +13,6 @@ import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.utils.ArrayUtil;
-import starling.utils.SafeCast.safe_cast;
 
 /** The Juggler takes objects that implement IAnimatable (like Tweens) and executes them.
  * 
@@ -64,7 +63,7 @@ class Juggler implements IAnimatable
         {
             mObjects[mObjects.length] = object;
         
-            var dispatcher:EventDispatcher = safe_cast(object, EventDispatcher);
+            var dispatcher:EventDispatcher = cast(object, EventDispatcher);
             if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
         }
     }
@@ -80,7 +79,7 @@ class Juggler implements IAnimatable
     {
         if (object == null) return;
         
-        var dispatcher:EventDispatcher = safe_cast(object, EventDispatcher);
+        var dispatcher:EventDispatcher = cast(object, EventDispatcher);
         if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 
         var index:Int = mObjects.indexOf(object);
@@ -95,7 +94,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var tween:Tween = safe_cast(mObjects[i], Tween);
+            var tween:Tween = cast(mObjects[i], Tween);
             if (tween != null && tween.target == target)
             {
                 tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
@@ -113,7 +112,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var tween:Tween = safe_cast(mObjects[i], Tween);
+            var tween:Tween = cast(mObjects[i], Tween);
             if (tween != null && tween.target == target) return true;
             --i;
         }
@@ -132,7 +131,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var dispatcher:EventDispatcher = safe_cast(mObjects[i], EventDispatcher);
+            var dispatcher:EventDispatcher = cast(mObjects[i], EventDispatcher);
             if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
             mObjects[i] = null;
             --i;
@@ -178,7 +177,7 @@ class Juggler implements IAnimatable
     
     private function onPooledDelayedCallComplete(event:Event):Void
     {
-        DelayedCall.toPool(safe_cast(event.target, DelayedCall));
+        DelayedCall.toPool(cast(event.target, DelayedCall));
     }
     
     /** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
@@ -290,7 +289,7 @@ class Juggler implements IAnimatable
     {
         remove(cast(event.target, IAnimatable));
         
-        var tween:Tween = safe_cast(event.target, Tween);
+        var tween:Tween = cast(event.target, Tween);
         if (tween != null && tween.isComplete)
             add(tween.nextTween);
     }

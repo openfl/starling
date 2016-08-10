@@ -14,7 +14,6 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
 import flash.Vector;
-import openfl.utils.Float32Array;
 
 import starling.errors.AbstractClassError;
 

@@ -34,7 +34,6 @@ import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.events.Event;
 import starling.utils.Color;
-import starling.utils.SafeCast.safe_cast;
 //import starling.utils.execute;
 
 //use namespace starling_internal;
@@ -173,7 +172,7 @@ class ConcreteTexture extends Texture
     {
         var isAsync:Bool = Reflect.isFunction(async) || async == true;
         var potTexture:flash.display3D.textures.Texture = 
-              safe_cast(mBase, flash.display3D.textures.Texture);
+              cast(mBase, flash.display3D.textures.Texture);
         
         if (potTexture == null)
             throw new Error("This texture type does not support ATF data");

@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display3D.Context3D;
@@ -27,7 +28,6 @@ import flash.utils.getQualifiedClassName;
 import haxe.Constraints.Function;
 import openfl.display3D.Context3DProfile;
 import openfl.errors.ArgumentError;
-import openfl.utils.Float32Array;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -40,6 +40,8 @@ import starling.utils.VertexData;
 import starling.utils.execute;
 #end
 import starling.utils.PowerOfTwo.getNextPowerOfTwo;
+
+import openfl.Vector;
 
 /** <p>A texture stores the information that represents an image. It cannot be added to the
  *  display list directly; instead it has to be mapped onto a display object. In Starling,
@@ -548,7 +550,7 @@ class Texture
      *  @param stride     the distance (in vector elements) of consecutive UV pairs.
      *  @param count      the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
-    public function adjustTexCoords(texCoords:Float32Array,
+    public function adjustTexCoords(texCoords:Vector<Float>,
                                     startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         // override in subclasses
