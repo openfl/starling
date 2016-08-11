@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.geom;
+
 import flash.geom.Point;
 #if 0
 import flash.utils.getQualifiedClassName;
@@ -16,7 +17,6 @@ import flash.utils.getQualifiedClassName;
 import openfl.Vector;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
-import starling.utils.ArrayUtil;
 
 import starling.utils.VectorUtil;
 import starling.utils.VertexData;
@@ -31,10 +31,10 @@ import starling.utils.VertexData;
  */
 class Polygon
 {
-    private var mCoords:Array<Float>;
+    private var mCoords:Vector<Float>;
 
     // Helper object
-    private static var sRestIndices:Array<UInt> = new Array<UInt>();
+    private static var sRestIndices:Vector<UInt> = new Vector<UInt>();
 
     /** Creates a Polygon with the given coordinates.
      *  @param vertices an array that contains either 'Point' instances or
@@ -42,7 +42,7 @@ class Polygon
      */
     public function new(vertices:Array<Dynamic>=null)
     {
-        mCoords = new Array<Float>();
+        mCoords = new Vector<Float>();
         addVertices(vertices);
     }
 
@@ -170,7 +170,7 @@ class Polygon
     /** Calculates a possible representation of the polygon via triangles. The resulting
      *  vector contains a list of vertex indices, where every three indices describe a triangle
      *  referencing the vertices of the polygon. */
-    public function triangulate(result:Array<UInt>=null):Array<UInt>
+    public function triangulate(result:Vector<UInt>=null):Vector<UInt>
     {
         // Algorithm "Ear clipping method" described here:
         // -> https://en.wikipedia.org/wiki/Polygon_triangulation
@@ -178,14 +178,14 @@ class Polygon
         // Implementation inspired by:
         // -> http://polyk.ivank.net
 
-        if (result == null) result = new Array<UInt>();
+        if (result == null) result = new Vector<UInt>();
 
         var numVertices:Int = this.numVertices;
         var i:Int, restIndexPos:Int, numRestIndices:Int, resultPos:Int;
 
         if (numVertices < 3) return result;
 
-        ArrayUtil.resize(sRestIndices, numVertices);
+        sRestIndices.length = numVertices;
         //for (i=0; i<numVertices; ++i)
         for(i in 0 ... numVertices) sRestIndices[i] = i;
 

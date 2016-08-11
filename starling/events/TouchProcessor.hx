@@ -9,10 +9,10 @@
 // =================================================================================================
 
 package starling.events;
+
 import openfl.errors.Error;
 import openfl.geom.Point;
 import openfl.Lib;
-import starling.utils.ArrayUtil;
 import starling.utils.MathUtil;
 
 import starling.display.DisplayObject;
@@ -106,7 +106,7 @@ class TouchProcessor
         var touch:Touch;
         
         mElapsedTime += passedTime;
-        ArrayUtil.clear(sUpdatedTouches);
+        sUpdatedTouches.length = 0;
         
         // remove old taps
         if (mLastTaps.length > 0)
@@ -272,8 +272,8 @@ class TouchProcessor
         }
 
         // purge touches
-        ArrayUtil.clear(mCurrentTouches);
-        ArrayUtil.clear(mQueue);
+        mCurrentTouches.length = 0;
+        mQueue.length = 0;
     }
     
     private function createOrUpdateTouch(touchID:Int, phase:String,

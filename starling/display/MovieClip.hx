@@ -9,12 +9,12 @@
 // =================================================================================================
 
 package starling.display;
-//import away3d.utils.ArrayUtils;
+
 import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
 import flash.media.SoundTransform;
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 import starling.animation.IAnimatable;
 import starling.events.Event;
@@ -46,10 +46,10 @@ import starling.textures.Texture;
  */    
 class MovieClip extends Image implements IAnimatable
 {
-    private var mTextures:Array<Texture>;
-    private var mSounds:Array<Sound>;
-    private var mDurations:Array<Float>;
-    private var mStartTimes:Array<Float>;
+    private var mTextures:Vector<Texture>;
+    private var mSounds:Vector<Sound>;
+    private var mDurations:Vector<Float>;
+    private var mStartTimes:Vector<Float>;
 
     private var mDefaultFrameDuration:Float;
     private var mCurrentTime:Float;
@@ -62,7 +62,7 @@ class MovieClip extends Image implements IAnimatable
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
      *  The movie will have the size of the first frame. */  
-    public function new(textures:Array<Texture>, fps:Float=12)
+    public function new(textures:Vector<Texture>, fps:Float=12)
     {
         if (textures.length > 0)
         {
@@ -75,7 +75,7 @@ class MovieClip extends Image implements IAnimatable
         }
     }
     
-    private function init(textures:Array<Texture>, fps:Float):Void
+    private function init(textures:Vector<Texture>, fps:Float):Void
     {
         if (fps <= 0) throw new ArgumentError("Invalid fps: " + fps);
         var numFrames:Int = textures.length;
@@ -87,9 +87,9 @@ class MovieClip extends Image implements IAnimatable
         mCurrentFrame = 0;
         mWasStopped = true;
         mTextures = textures.copy();
-        mSounds = new Array<Sound>();
-        mDurations = new Array<Float>();
-        mStartTimes = new Array<Float>();
+        mSounds = new Vector<Sound>();
+        mDurations = new Vector<Float>();
+        mStartTimes = new Vector<Float>();
         
         for (i in 0 ... numFrames)
         {
@@ -114,9 +114,15 @@ class MovieClip extends Image implements IAnimatable
         if (frameID < 0 || frameID > numFrames) throw new ArgumentError("Invalid frame id");
         if (duration < 0) duration = mDefaultFrameDuration;
         
-        mTextures.insert(frameID, texture);
-        mSounds.insert(frameID, sound);
-        mDurations.insert(frameID, duration);
+        //#if flash
+        //mTextures.splice(frameID, 0, texture);
+        //mSounds.splice(frameID, 0, sound);
+        //mDurations.splice(frameID, 0, duration);
+        //#else
+        mTextures.insertAt(frameID, texture);
+        mSounds.insertAt(frameID, sound);
+        mDurations.insertAt(frameID, duration);
+        //#end
         
         if (frameID > 0 && frameID == numFrames) 
             mStartTimes[frameID] = mStartTimes[frameID-1] + mDurations[frameID-1];
@@ -223,7 +229,7 @@ class MovieClip extends Image implements IAnimatable
     {
         var numFrames:Int = this.numFrames;
         
-        ArrayUtil.clear(mStartTimes);
+        mStartTimes.length = 0;
         mStartTimes[0] = 0;
         
         for (i in 1 ... numFrames)

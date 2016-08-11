@@ -9,10 +9,10 @@
 // =================================================================================================
 
 package starling.core;
+
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
 import openfl.utils.AGALMiniAssembler;
-import starling.utils.ArrayUtil;
 
 import flash.display3D.Context3D;
 import flash.display3D.Context3DCompareMode;
@@ -26,6 +26,7 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import openfl.Vector;
 
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
@@ -56,23 +57,23 @@ class RenderSupport
     private var mModelViewMatrix:Matrix;
     private var mMvpMatrix:Matrix;
     
-    private var mMatrixStack:Array<Matrix>;
+    private var mMatrixStack:Vector<Matrix>;
     private var mMatrixStackSize:Int;
     
     private var mProjectionMatrix3D:Matrix3D;
     private var mModelViewMatrix3D:Matrix3D;
     private var mMvpMatrix3D:Matrix3D;
     
-    private var mMatrixStack3D:Array<Matrix3D>;
+    private var mMatrixStack3D:Vector<Matrix3D>;
     private var mMatrixStack3DSize:Int;
 
     private var mDrawCount:Int;
     private var mBlendMode:String;
 
-    private var mClipRectStack:Array<Rectangle>;
+    private var mClipRectStack:Vector<Rectangle>;
     private var mClipRectStackSize:Int;
     
-    private var mQuadBatches:Array<QuadBatch>;
+    private var mQuadBatches:Vector<QuadBatch>;
     private var mCurrentQuadBatchID:Int;
 
     /** helper objects */
@@ -82,8 +83,8 @@ class RenderSupport
     private static var sBufferRect:Rectangle = new Rectangle();
     private static var sScissorRect:Rectangle = new Rectangle();
     private static var sMatrix3D:Matrix3D = new Matrix3D();
-    private static var sMatrixData:Array<Float> = 
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static var sMatrixData:Vector<Float> = 
+        Vector.ofArray ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     
     // construction
     
@@ -93,18 +94,18 @@ class RenderSupport
         mProjectionMatrix = new Matrix();
         mModelViewMatrix = new Matrix();
         mMvpMatrix = new Matrix();
-        mMatrixStack = new Array<Matrix>();
+        mMatrixStack = new Vector<Matrix>();
         mMatrixStackSize = 0;
         
         mProjectionMatrix3D = new Matrix3D();
         mModelViewMatrix3D = new Matrix3D();
         mMvpMatrix3D = new Matrix3D();
-        mMatrixStack3D = new Array<Matrix3D>();
+        mMatrixStack3D = new Vector<Matrix3D>();
         mMatrixStack3DSize = 0;
         
         mDrawCount = 0;
         mBlendMode = BlendMode.NORMAL;
-        mClipRectStack = new Array<Rectangle>();
+        mClipRectStack = new Vector<Rectangle>();
         mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
@@ -482,7 +483,7 @@ class RenderSupport
 
     // stencil masks
 
-    private var mMasks:Array<DisplayObject> = new Array<DisplayObject>();
+    private var mMasks:Vector<DisplayObject> = new Vector<DisplayObject>();
     private var mStencilReferenceValue:UInt = 0;
 
     /** Draws a display object into the stencil buffer, incrementing the buffer on each
@@ -643,7 +644,7 @@ class RenderSupport
         resetMatrix();
         trimQuadBatches();
 
-        ArrayUtil.clear(mMasks);
+        mMasks.length = 0;
         mCurrentQuadBatchID = 0;
         mBlendMode = BlendMode.NORMAL;
         mDrawCount = 0;

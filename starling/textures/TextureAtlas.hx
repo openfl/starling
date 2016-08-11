@@ -9,8 +9,9 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.geom.Rectangle;
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 //import starling.utils.cleanMasterString;
 
@@ -72,10 +73,10 @@ class TextureAtlas
 {
     private var mAtlasTexture:Texture;
     private var mSubTextures:Map<String, SubTexture>;
-    private var mSubTextureNames:Array<String>;
+    private var mSubTextureNames:Vector<String>;
     
     /** helper objects */
-    private static var sNames:Array<String> = new Array<String>();
+    private static var sNames:Vector<String> = new Vector<String>();
     
     /** Create a texture atlas from a texture by parsing the regions from an XML file. */
     public function new(texture:Texture, atlasXml:Xml=null)
@@ -133,27 +134,27 @@ class TextureAtlas
     
     /** Returns all textures that start with a certain string, sorted alphabetically
      *  (especially useful for "MovieClip"). */
-    public function getTextures(prefix:String="", result:Array<Texture>=null):Array<Texture>
+    public function getTextures(prefix:String="", result:Vector<Texture>=null):Vector<Texture>
     {
-        if (result == null) result = new Array<Texture>();
+        if (result == null) result = new Vector<Texture>();
         
         for (name in getNames(prefix, sNames)) 
             result[result.length] = getTexture(name); // avoid 'push'
 
-        ArrayUtil.clear(sNames);
+        sNames.length = 0;
         return result;
     }
     
     /** Returns all texture names that start with a certain string, sorted alphabetically. */
-    public function getNames(prefix:String="", result:Array<String>=null):Array<String>
+    public function getNames(prefix:String="", result:Vector<String>=null):Vector<String>
     {
         var name:String;
-        if (result == null) result = new Array<String>();
+        if (result == null) result = new Vector<String>();
         
         if (mSubTextureNames == null)
         {
             // optimization: store sorted list of texture names
-            mSubTextureNames = new Array<String>();
+            mSubTextureNames = new Vector<String>();
             for (name in mSubTextures.keys()) mSubTextureNames[mSubTextureNames.length] = name;
             mSubTextureNames.sort(compare);
         }

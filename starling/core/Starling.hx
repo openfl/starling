@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.core;
+
 import flash.errors.Error;
 import flash.errors.ArgumentError;
 import flash.display.Shape;
@@ -44,6 +45,7 @@ import flash.utils.Dictionary;
 #end
 import flash.Lib;
 import haxe.Timer;
+import openfl.Vector;
 
 import starling.animation.Juggler;
 import starling.display.DisplayObject;
@@ -230,7 +232,7 @@ class Starling extends EventDispatcher
     private static var sCurrent:Starling;
     private static var sHandleLostContext:Bool = true;
     private static var sContextData:Map<Stage3D, Map<String, Dynamic>> = new Map<Stage3D, Map<String, Dynamic>>();
-    private static var sAll:Array<Starling> = new Array<Starling>();
+    private static var sAll:Vector<Starling> = new Vector<Starling>();
     
     // construction
     
@@ -870,10 +872,10 @@ class Starling extends EventDispatcher
             mTouchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
     
-    private var touchEventTypes(get, never):Array<String>;
-    private function get_touchEventTypes():Array<String>
+    private var touchEventTypes(get, never):Vector<String>;
+    private function get_touchEventTypes():Vector<String>
     {
-        var types:Array<String> = [];
+        var types:Vector<String> = [];
         
         if (multitouchEnabled)
         {
@@ -1243,8 +1245,8 @@ class Starling extends EventDispatcher
     public static function get_current():Starling { return sCurrent; }
 
     /** All Starling instances. <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    public static var all(get, never):Array<Starling>;
-    public static function get_all():Array<Starling> { return sAll; }
+    public static var all(get, never):Vector<Starling>;
+    public static function get_all():Vector<Starling> { return sAll; }
     
     /** The render context of the currently active Starling instance. */
     /*

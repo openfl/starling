@@ -172,7 +172,7 @@ class ConcreteTexture extends Texture
     {
         var isAsync:Bool = Reflect.isFunction(async) || async == true;
         var potTexture:flash.display3D.textures.Texture = 
-              cast(mBase, flash.display3D.textures.Texture);
+              Std.is(mBase, flash.display3D.textures.Texture) ? cast mBase : null;
         
         if (potTexture == null)
             throw new Error("This texture type does not support ATF data");

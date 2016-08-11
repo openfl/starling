@@ -9,11 +9,13 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.display.BitmapData;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -60,7 +62,7 @@ class Stage extends DisplayObjectContainer
     private var mProjectionOffset:Point;
     private var mCameraPosition:Vector3D;
     private var mEnterFrameEvent:EnterFrameEvent;
-    private var mEnterFrameListeners:Array<DisplayObject>;
+    private var mEnterFrameListeners:Vector<DisplayObject>;
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix3D = new Matrix3D();
@@ -76,7 +78,7 @@ class Stage extends DisplayObjectContainer
         mProjectionOffset = new Point();
         mCameraPosition = new Vector3D();
         mEnterFrameEvent = new EnterFrameEvent(Event.ENTER_FRAME, 0.0);
-        mEnterFrameListeners = new Array<DisplayObject>();
+        mEnterFrameListeners = new Vector<DisplayObject>();
     }
     
     /** @inheritDoc */
@@ -179,7 +181,7 @@ class Stage extends DisplayObjectContainer
     
     /** @private */
     private override function getChildEventListeners(object:DisplayObject, eventType:String, 
-                                                      listeners:Array<DisplayObject>):Void
+                                                      listeners:Vector<DisplayObject>):Void
     {
         if (eventType == Event.ENTER_FRAME && object == this)
         {

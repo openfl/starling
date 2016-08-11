@@ -9,10 +9,12 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.events.Event;
@@ -52,7 +54,7 @@ import starling.utils.Max;
  */
 class Sprite extends DisplayObjectContainer
 {
-    private var mFlattenedContents:Array<QuadBatch>;
+    private var mFlattenedContents:Vector<QuadBatch>;
     private var mFlattenRequested:Bool;
     private var mFlattenOptimized:Bool;
     private var mClipRect:Rectangle;

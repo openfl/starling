@@ -9,10 +9,12 @@
 // =================================================================================================
 
 package starling.text;
+
 import flash.geom.Rectangle;
 import openfl.errors.ArgumentError;
 import starling.textures.ConcreteTexture;
 import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 import starling.display.Image;
 import starling.display.QuadBatch;
@@ -80,7 +82,7 @@ class BitmapFont
     private var mHelperImage:Image;
 
     /** Helper objects. */
-    private static var sLines:Array<Array<CharLocation>> = [];
+    private static var sLines:Array<Vector<CharLocation>> = [];
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
      *  If you don't pass any data, the "mini" font will be created. */
@@ -181,9 +183,9 @@ class BitmapFont
     }
     
     /** Returns a vector containing all the character IDs that are contained in this font. */
-    public function getCharIDs(result:Array<Int>=null):Array<Int>
+    public function getCharIDs(result:Vector<Int>=null):Vector<Int>
     {
-        if (result == null) result = new Array<Int>();
+        if (result == null) result = new Vector<Int>();
 
         for(key in mChars.keys())
             result[result.length] = key;
@@ -221,7 +223,7 @@ class BitmapFont
                                  autoScale:Bool=true, 
                                  kerning:Bool=true):Sprite
     {
-        var charLocations:Array<CharLocation> = arrangeChars(width, height, text, fontSize, 
+        var charLocations:Vector<CharLocation> = arrangeChars(width, height, text, fontSize, 
                                                                hAlign, vAlign, autoScale, kerning);
         var numChars:Int = charLocations.length;
         var sprite:Sprite = new Sprite();
@@ -249,7 +251,7 @@ class BitmapFont
                                   autoScale:Bool=true, 
                                   kerning:Bool=true, leading:Float=0):Void
     {
-        var charLocations:Array<CharLocation> = arrangeChars(
+        var charLocations:Vector<CharLocation> = arrangeChars(
                 width, height, text, fontSize, hAlign, vAlign, autoScale, kerning, leading);
         var numChars:Int = charLocations.length;
         mHelperImage.color = color;
@@ -273,7 +275,7 @@ class BitmapFont
     private function arrangeChars(width:Float, height:Float, text:String, fontSize:Float=-1,
                                   hAlign:String="center", vAlign:String="center",
                                   autoScale:Bool=true, kerning:Bool=true,
-                                  leading:Float=0):Array<CharLocation>
+                                  leading:Float=0):Vector<CharLocation>
     {
         if (text == null || text.length == 0) return CharLocation.vectorFromPool();
         if (fontSize < 0) fontSize *= -mSize;
@@ -299,7 +301,7 @@ class BitmapFont
             {
                 var lastWhiteSpace:Int = -1;
                 var lastCharID:Int = -1;
-                var currentLine:Array<CharLocation> = CharLocation.vectorFromPool();
+                var currentLine:Vector<CharLocation> = CharLocation.vectorFromPool();
                 
                 numChars = text.length;
                 var i:Int = 0;
@@ -389,7 +391,7 @@ class BitmapFont
                 finished = true; 
         } // while (!finished)
         
-        var finalLocations:Array<CharLocation> = CharLocation.vectorFromPool();
+        var finalLocations:Vector<CharLocation> = CharLocation.vectorFromPool();
         var numLines:Int = sLines.length;
         var bottom:Float = currentY + mLineHeight;
         var yOffset:Int = 0;
@@ -399,7 +401,7 @@ class BitmapFont
         
         for (lineID in 0 ... numLines)
         {
-            var line:Array<CharLocation> = sLines[lineID];
+            var line:Vector<CharLocation> = sLines[lineID];
             numChars = line.length;
             
             if (numChars == 0) continue;
@@ -486,11 +488,11 @@ private function reset(char:BitmapChar):CharLocation
 
 // pooling
 
-private static var sInstancePool:Array<CharLocation> = new Array<CharLocation>();
-private static var sVectorPool:Array<Array<CharLocation>> = [];
+private static var sInstancePool:Vector<CharLocation> = new Vector<CharLocation>();
+private static var sVectorPool:Array<Vector<CharLocation>> = [];
 
-private static var sInstanceLoan:Array<CharLocation> = new Array<CharLocation>();
-private static var sVectorLoan:Array<Array<CharLocation>> = [];
+private static var sInstanceLoan:Vector<CharLocation> = new Vector<CharLocation>();
+private static var sVectorLoan:Array<Vector<CharLocation>> = [];
 
 public static function instanceFromPool(char:BitmapChar):CharLocation
 {
@@ -503,12 +505,12 @@ public static function instanceFromPool(char:BitmapChar):CharLocation
     return instance;
 }
 
-public static function vectorFromPool():Array<CharLocation>
+public static function vectorFromPool():Vector<CharLocation>
 {
-    var vector:Array<CharLocation> = sVectorPool.length > 0 ?
-        sVectorPool.pop() : new Array<CharLocation>();
+    var vector:Vector<CharLocation> = sVectorPool.length > 0 ?
+        sVectorPool.pop() : new Vector<CharLocation>();
 
-    ArrayUtil.clear(vector);
+    vector.length = 0;
     sVectorLoan[sVectorLoan.length] = vector;
 
     return vector;
@@ -517,7 +519,7 @@ public static function vectorFromPool():Array<CharLocation>
 public static function rechargePool():Void
 {
     var instance:CharLocation;
-    var vector:Array<CharLocation>;
+    var vector:Vector<CharLocation>;
 
     while (sInstanceLoan.length > 0)
     {
@@ -529,7 +531,7 @@ public static function rechargePool():Void
     while (sVectorLoan.length > 0)
     {
         vector = sVectorLoan.pop();
-        ArrayUtil.clear(vector);
+        vector.length = 0;
         sVectorPool[sVectorPool.length] = vector;
     }
 }

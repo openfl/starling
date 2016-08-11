@@ -9,10 +9,11 @@
 // =================================================================================================
 
 package starling.animation;
+
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 /** The Juggler takes objects that implement IAnimatable (like Tweens) and executes them.
  * 
@@ -46,14 +47,14 @@ import starling.utils.ArrayUtil;
  */
 class Juggler implements IAnimatable
 {
-    private var mObjects:Array<IAnimatable>;
+    private var mObjects:Vector<IAnimatable>;
     private var mElapsedTime:Float;
     
     /** Create an empty juggler. */
     public function new()
     {
         mElapsedTime = 0;
-        mObjects = new Array<IAnimatable>();
+        mObjects = new Vector<IAnimatable>();
     }
 
     /** Adds an object to the juggler. */
@@ -63,7 +64,7 @@ class Juggler implements IAnimatable
         {
             mObjects[mObjects.length] = object;
         
-            var dispatcher:EventDispatcher = cast(object, EventDispatcher);
+            var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
             if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
         }
     }
@@ -79,7 +80,7 @@ class Juggler implements IAnimatable
     {
         if (object == null) return;
         
-        var dispatcher:EventDispatcher = cast(object, EventDispatcher);
+        var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
         if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 
         var index:Int = mObjects.indexOf(object);
@@ -94,7 +95,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var tween:Tween = cast(mObjects[i], Tween);
+            var tween:Tween = Std.is(mObjects[i], Tween) ? cast mObjects[i] : null;
             if (tween != null && tween.target == target)
             {
                 tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
@@ -112,7 +113,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var tween:Tween = cast(mObjects[i], Tween);
+            var tween:Tween = Std.is(mObjects[i], Tween) ? cast mObjects[i] : null;
             if (tween != null && tween.target == target) return true;
             --i;
         }
@@ -131,7 +132,7 @@ class Juggler implements IAnimatable
         var i:Int = mObjects.length - 1;
         while(i >= 0)
         {
-            var dispatcher:EventDispatcher = cast(mObjects[i], EventDispatcher);
+            var dispatcher:EventDispatcher = Std.is(mObjects[i], EventDispatcher) ? cast mObjects[i] : null;
             if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
             mObjects[i] = null;
             --i;
@@ -145,7 +146,7 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic> = null):IAnimatable
+    public function delayCall(call:Vector<Dynamic>->Void, delay:Float, args:Vector<Dynamic> = null):IAnimatable
     {
         if (call == null) return null;
         if (args == null) args = [];
@@ -163,7 +164,7 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function repeatCall(call:Array<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):IAnimatable
+    public function repeatCall(call:Vector<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Vector<Dynamic>):IAnimatable
     {
         if (call == null) return null;
         
@@ -225,7 +226,7 @@ class Juggler implements IAnimatable
             if (Reflect.getProperty(tween, property) != null)
                 Reflect.setProperty(tween, property, value);
             else if (Reflect.getProperty(target, property) != null)
-                tween.animate(property, cast(value, Float));
+                tween.animate(property, value);
             else
                 throw new ArgumentError("Invalid property: " + property);
         }
@@ -281,7 +282,7 @@ class Juggler implements IAnimatable
             while (i < numObjects)
                 mObjects[currentIndex++] = mObjects[i++];
 
-            ArrayUtil.resize(mObjects, currentIndex);
+            mObjects.length = currentIndex;
         }
     }
     
@@ -289,7 +290,7 @@ class Juggler implements IAnimatable
     {
         remove(cast(event.target, IAnimatable));
         
-        var tween:Tween = cast(event.target, Tween);
+        var tween:Tween = Std.is(event.target, Tween) ? cast event.target : null;
         if (tween != null && tween.isComplete)
             add(tween.nextTween);
     }
@@ -299,6 +300,6 @@ class Juggler implements IAnimatable
     private function get_elapsedTime():Float { return mElapsedTime; }
  
     /** The actual vector that contains all objects that are currently being animated. */
-    private var objects(get, never):Array<IAnimatable>;
-    private function get_objects():Array<IAnimatable> { return mObjects; }
+    private var objects(get, never):Vector<IAnimatable>;
+    private function get_objects():Vector<IAnimatable> { return mObjects; }
 }

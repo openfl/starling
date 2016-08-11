@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.errors.ArgumentError;
 import flash.errors.RangeError;
 import flash.geom.Matrix;
@@ -17,7 +18,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.system.Capabilities;
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -68,14 +69,14 @@ class DisplayObjectContainer extends DisplayObject
 {
     // members
 
-    private var mChildren:Array<DisplayObject>;
+    private var mChildren:Vector<DisplayObject>;
     private var mTouchGroup:Bool;
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperPoint:Point = new Point();
-    private static var sBroadcastListeners:Array<DisplayObject> = new Array<DisplayObject>();
-    private static var sSortBuffer:Array<DisplayObject> = new Array<DisplayObject>();
+    private static var sBroadcastListeners:Vector<DisplayObject> = new Vector<DisplayObject>();
+    private static var sSortBuffer:Vector<DisplayObject> = new Vector<DisplayObject>();
     
     // construction
     
@@ -91,7 +92,7 @@ class DisplayObjectContainer extends DisplayObject
         }
         */
         
-        mChildren = new Array<DisplayObject>();
+        mChildren = new Vector<DisplayObject>();
     }
     
     /** Disposes the resources of all children. */
@@ -173,7 +174,7 @@ class DisplayObjectContainer extends DisplayObject
             
             if (stage != null)
             {
-                var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+                var container:DisplayObjectContainer = Std.is(child, DisplayObjectContainer) ? cast child : null;
                 if (container != null) container.broadcastEventWith(Event.REMOVED_FROM_STAGE);
                 else           child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
             }
@@ -270,9 +271,9 @@ class DisplayObjectContainer extends DisplayObject
      *  of the Vector class). */
     public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void
     {
-        ArrayUtil.resize(sSortBuffer, mChildren.length);
+        sSortBuffer.length = mChildren.length;
         mergeSort(mChildren, compareFunction, 0, mChildren.length, sSortBuffer);
-        ArrayUtil.clear(sSortBuffer);
+        sSortBuffer.length = 0;
     }
     
     /** Determines if a certain object is a child of the container (recursively). */
@@ -409,7 +410,7 @@ class DisplayObjectContainer extends DisplayObject
         for(i in fromIndex ... toIndex)
             sBroadcastListeners[i].dispatchEvent(event);
         
-        ArrayUtil.resize(sBroadcastListeners, fromIndex);
+        sBroadcastListeners.length = fromIndex;
     }
     
     /** Dispatches an event with the given parameters on all children (recursively). 
@@ -435,9 +436,9 @@ class DisplayObjectContainer extends DisplayObject
 
     // helpers
     
-    private static function mergeSort(input:Array<DisplayObject>, compareFunc:DisplayObject->DisplayObject->Int, 
+    private static function mergeSort(input:Vector<DisplayObject>, compareFunc:DisplayObject->DisplayObject->Int, 
                                       startIndex:Int, length:Int, 
-                                      buffer:Array<DisplayObject>):Void
+                                      buffer:Vector<DisplayObject>):Void
     {
         // This is a port of the C++ merge sort algorithm shown here:
         // http://www.cprogramming.com/tutorial/computersciencetheory/mergesort.html
@@ -487,7 +488,7 @@ class DisplayObjectContainer extends DisplayObject
     private function spliceChildren(startIndex:Int, deleteCount:Int=Max.INT_MAX_VALUE,
                                     insertee:DisplayObject=null):Void
     {
-        var vector:Array<DisplayObject> = mChildren;
+        var vector:Vector<DisplayObject> = mChildren;
         var oldLength:Int  = vector.length;
 
         if (startIndex < 0) startIndex += oldLength;
@@ -508,7 +509,7 @@ class DisplayObjectContainer extends DisplayObject
                 vector[i] = vector[i - deltaLength];
                 --shiftCount; ++i;
             }
-            ArrayUtil.resize(vector, newLength);
+            vector.length = newLength;
         }
         else if (deltaLength > 0)
         {
@@ -518,7 +519,7 @@ class DisplayObjectContainer extends DisplayObject
                 vector[newLength - i] = vector[oldLength - i];
                 --shiftCount; ++i;
             }
-            ArrayUtil.resize(vector, newLength);
+            vector.length = newLength;
         }
 
         if (insertee != null)
@@ -527,7 +528,7 @@ class DisplayObjectContainer extends DisplayObject
 
     /** @private */
     private function getChildEventListeners(object:DisplayObject, eventType:String, 
-                                             listeners:Array<DisplayObject>):Void
+                                             listeners:Vector<DisplayObject>):Void
     {
         var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
         
@@ -536,7 +537,7 @@ class DisplayObjectContainer extends DisplayObject
         
         if (container != null)
         {
-            var children:Array<DisplayObject> = container.mChildren;
+            var children:Vector<DisplayObject> = container.mChildren;
             var numChildren:Int = children.length;
             
             for (i in 0 ... numChildren)

@@ -1,5 +1,7 @@
 package starling.geom;
 
+import openfl.Vector;
+
 class Ellipse extends ImmutablePolygon
 {
     private var mX:Float;
@@ -37,9 +39,9 @@ class Ellipse extends ImmutablePolygon
         return vertices;
     }
 
-    override public function triangulate(result:Array<UInt> = null):Array<UInt>
+    override public function triangulate(result:Vector<UInt> = null):Vector<UInt>
     {
-        if (result == null) result = new Array<UInt>();
+        if (result == null) result = new Vector<UInt>();
 
         var from:UInt = 1;
         var to:UInt = numVertices - 1;

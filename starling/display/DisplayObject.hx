@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix;
@@ -23,6 +24,7 @@ import flash.ui.MouseCursor;
 #end
 import haxe.Constraints.Function;
 import starling.utils.ArrayUtil;
+import openfl.Vector;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -159,7 +161,7 @@ class DisplayObject extends EventDispatcher
     private var mIsMask:Bool;
     
     /** Helper objects. */
-    private static var sAncestors:Array<DisplayObject> = new Array<DisplayObject>();
+    private static var sAncestors:Vector<DisplayObject> = new Vector<DisplayObject>();
     private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperPointAlt3D:Vector3D = new Vector3D();

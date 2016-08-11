@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.utils;
+
 import starling.errors.AbstractClassError;
+import openfl.Vector;
 
 /** A utility class containing methods related to the Vector class.
  *
@@ -23,9 +25,9 @@ class VectorUtil
 
     /** Inserts a value into the 'int'-Vector at the specified index. Supports negative
      *  indices (counting from the end); gaps will be filled up with zeroes. */
-    public static function insertIntAt(vector:Array<Int>, index:Int, value:Int):Void
+    public static function insertIntAt(vector:Vector<Int>, index:UInt, value:Int):Void
     {
-        var i:Int;
+        var i:UInt;
         var length:UInt = vector.length;
 
         if (index < 0) index += length + 1;
@@ -52,7 +54,7 @@ class VectorUtil
 
     /** Removes the value at the specified index from the 'int'-Vector. Pass a negative
      *  index to specify a position relative to the end of the vector. */
-    public static function removeIntAt(vector:Array<Int>, index:Int):Int
+    public static function removeIntAt(vector:Vector<Int>, index:UInt):Int
     {
         //var i:Int;
         var length:UInt = vector.length;
@@ -66,15 +68,15 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        ArrayUtil.resize(vector, vector.length - 1, 0);
+        vector.length = vector.length - 1;
         return value;
     }
 
     /** Inserts a value into the 'uint'-Vector at the specified index. Supports negative
      *  indices (counting from the end); gaps will be filled up with zeroes. */
-    public static function insertUnsignedIntAt(vector:Array<UInt>, index:Int, value:UInt):Void
+    public static function insertUnsignedIntAt(vector:Vector<UInt>, index:UInt, value:UInt):Void
     {
-        var i:Int;
+        var i:UInt;
         var length:UInt = vector.length;
 
         if (index < 0) index += length + 1;
@@ -101,7 +103,7 @@ class VectorUtil
 
     /** Removes the value at the specified index from the 'int'-Vector. Pass a negative
      *  index to specify a position relative to the end of the vector. */
-    public static function removeUnsignedIntAt(vector:Array<UInt>, index:UInt):UInt
+    public static function removeUnsignedIntAt(vector:Vector<UInt>, index:UInt):UInt
     {
         //var i:Int;
         var length:UInt = vector.length;
@@ -121,9 +123,9 @@ class VectorUtil
 
     /** Inserts a value into the 'Number'-Vector at the specified index. Supports negative
      *  indices (counting from the end); gaps will be filled up with <code>NaN</code> values. */
-    public static function insertNumberAt(vector:Array<Float>, index:Int, value:Float):Void
+    public static function insertNumberAt(vector:Vector<Float>, index:UInt, value:Float):Void
     {
-        var i:Int;
+        var i:UInt;
         var length:UInt = vector.length;
 
         if (index < 0) index += length + 1;
@@ -150,7 +152,7 @@ class VectorUtil
 
     /** Removes the value at the specified index from the 'Number'-Vector. Pass a negative
      *  index to specify a position relative to the end of the vector. */
-    public static function removeNumberAt(vector:Array<Float>, index:Int):Float
+    public static function removeNumberAt(vector:Vector<Float>, index:UInt):Float
     {
         //var i:Int;
         var length:UInt = vector.length;
@@ -164,7 +166,7 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        ArrayUtil.resize(vector, vector.length - 1, 0);
+        vector.length = length - 1;
         return value;
     }
 }

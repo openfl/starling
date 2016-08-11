@@ -1,4 +1,5 @@
 package scenes;
+
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
@@ -9,6 +10,7 @@ import starling.text.TextField;
 import starling.textures.Texture;
 import starling.utils.Color;
 import starling.utils.MathUtil.deg2rad;
+import openfl.Vector;
 
 @:keep class AnimationScene extends Scene
 {
@@ -110,7 +112,7 @@ import starling.utils.MathUtil.deg2rad;
         Starling.current.juggler.delayCall(function(unused):Void { mDelayButton.enabled = true; }, 2.0);
     }
     
-    private function colorizeEgg(args:Array<Dynamic>):Void
+    private function colorizeEgg(args:Vector<Dynamic>):Void
     {
         var colorize:Bool = args[0];
         mEgg.color = colorize ? Color.RED : Color.WHITE;

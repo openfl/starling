@@ -28,12 +28,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling=0.0.0&#xA;openfl=4.0.4&#xA;lime=3.0.3&#xA;tools=3.0.3&#xA;no-compilation&#xA;openfl-flash&#xA;disable_gl_renderer&#xA;web&#xA;display" />
+    <option directives="starling=0.0.0&#xA;openfl=4.0.4&#xA;lime=3.0.3&#xA;tools=3.0.3&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 11.8&#xA;#--macro keep('starling.display.Sprite3D')&#xA;#--macro keep('starling.animation.Tween')&#xA;#--macro keep('Xml')&#xA;-dce full&#xA;-swf-version 11.2" />
+    <option additional="-swf-version 12" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

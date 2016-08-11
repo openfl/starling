@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.events;
+
 //import flash.utils.getQualifiedClassName;
+import openfl.Vector;
 
 //import starling.core.Starling_internal;
 import starling.utils.StringUtil;
@@ -90,7 +92,7 @@ class Event
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     inline public static var READY:String = "ready";
     
-    private static var sEventPool:Array<Event> = new Array<Event>();
+    private static var sEventPool:Vector<Event> = new Vector<Event>();
     
     /** Creates an event object that can be passed to listeners. */
     public function new(type:String, bubbles:Bool=false, data:Dynamic=null)

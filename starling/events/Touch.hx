@@ -14,6 +14,7 @@ import flash.geom.Point;
 
 import starling.display.DisplayObject;
 import starling.utils.StringUtil;
+import openfl.Vector;
 
 /** A Touch object contains information about the presence or movement of a finger 
  *  or the mouse on the screen.
@@ -48,7 +49,7 @@ class Touch
     private var mWidth:Float;
     private var mHeight:Float;
     private var mCancelled:Bool;
-    private var mBubbleChain:Array<EventDispatcher>;
+    private var mBubbleChain:Vector<EventDispatcher>;
     
     /** Helper object. */
     private static var sHelperPoint:Point = new Point();
@@ -60,7 +61,7 @@ class Touch
         mTapCount = 0;
         mPhase = TouchPhase.HOVER;
         mPressure = mWidth = mHeight = 1.0;
-        mBubbleChain = new Array<EventDispatcher>();
+        mBubbleChain = new Vector<EventDispatcher>();
     }
     
     /** Converts the current location of a touch to the local coordinate system of a display 
@@ -136,7 +137,7 @@ class Touch
             var length:Int = 1;
             var element:DisplayObject = mTarget;
             
-            mBubbleChain = [element];
+            mBubbleChain = Vector.ofArray ([element]);
             
             while ((element = element.parent) != null)
                 mBubbleChain[length++] = element;
@@ -245,8 +246,8 @@ class Touch
     }
     
     /** @private */
-    public var bubbleChain(get, never):Array<EventDispatcher>;
-    private function get_bubbleChain():Array<EventDispatcher>
+    public var bubbleChain(get, never):Vector<EventDispatcher>;
+    private function get_bubbleChain():Vector<EventDispatcher>
     {
         return mBubbleChain.copy();
     }

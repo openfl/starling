@@ -1137,7 +1137,7 @@ class AssetManager extends EventDispatcher
         }
         else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
         {
-            urlRequest = cast(rawAsset, URLRequest);
+            urlRequest = Std.is(rawAsset, URLRequest) ? cast rawAsset : null;
             if (urlRequest == null)
                 urlRequest = new URLRequest(cast(rawAsset, String));
             url = urlRequest.url;

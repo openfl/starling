@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.filters;
+
 import flash.errors.ArgumentError;
 import flash.errors.Error;
 import flash.display3D.Context3D;
@@ -25,7 +26,6 @@ import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
-import starling.utils.ArrayUtil;
 //import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
@@ -95,7 +95,7 @@ class FragmentFilter
     private var mMvpConstantID:Int = 0;
     
     private var mNumPasses:Int;
-    private var mPassTextures:Array<Texture>;
+    private var mPassTextures:Vector<Texture>;
 
     private var mMode:String;
     private var mResolution:Float;
@@ -138,7 +138,7 @@ class FragmentFilter
         mMarginX = mMarginY = 0.0;
         mOffsetX = mOffsetY = 0;
         mResolution = resolution;
-        mPassTextures = new Array<Texture>();
+        mPassTextures = new Vector<Texture>();
         mMode = FragmentFilterMode.REPLACE;
 
         mVertexData = new VertexData(4);
@@ -468,7 +468,7 @@ class FragmentFilter
         for(texture in mPassTextures)
             texture.dispose();
         
-        ArrayUtil.clear(mPassTextures);
+        mPassTextures.length = 0;
     }
     
     private function disposeCache():Void

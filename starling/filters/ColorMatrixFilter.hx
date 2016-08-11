@@ -12,13 +12,12 @@
 // Mario Klingemann: http://www.quasimondo.com/archives/000565.php -- THANKS!!!
 
 package starling.filters;
+
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
 import openfl.errors.ArgumentError;
-#if flash
 import openfl.Vector;
-#end
 
 import starling.core.Starling;
 import starling.textures.Texture;
@@ -47,28 +46,28 @@ import starling.utils.Color;
 class ColorMatrixFilter extends FragmentFilter
 {
     private var mShaderProgram:Program3D;
-    private var mUserMatrix:Array<Float>;   // offset in range 0-255
-    private var mShaderMatrix:#if flash Vector<Float> #else Array<Float> #end; // offset in range 0-1, changed order
+    private var mUserMatrix:Vector<Float>;   // offset in range 0-255
+    private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
     inline private static var PROGRAM_NAME:String = "CMF";
-    private static var MIN_COLOR:#if flash Vector<Float> #else Array<Float> #end = [0, 0, 0, 0.0001];
+    private static var MIN_COLOR:Vector<Float> = [0, 0, 0, 0.0001];
     private static var IDENTITY:Array<Float> = [1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0];
     inline private static var LUMA_R:Float = 0.299;
     inline private static var LUMA_G:Float = 0.587;
     inline private static var LUMA_B:Float = 0.114;
     
     /** helper objects */
-    private static var sTmpMatrix1:Array<Float> = new Array<Float>();
-    private static var sTmpMatrix2:Array<Float> = new Array<Float>();
+    private static var sTmpMatrix1:Vector<Float> = new Vector<Float>();
+    private static var sTmpMatrix2:Vector<Float> = new Vector<Float>();
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
      *  @param matrix a vector of 20 items arranged as a 4x5 matrix.
      */
-    public function new(matrix:Array<Float>=null)
+    public function new(matrix:Vector<Float>=null)
     {
         super();
-        mUserMatrix   = new Array<Float>();
-        mShaderMatrix = new #if flash Vector<Float> #else Array<Float> #end ();
+        mUserMatrix   = new Vector<Float>();
+        mShaderMatrix = new Vector<Float>();
         
         this.matrix = matrix;
         //sTmpMatrix1.length = 20;
@@ -211,7 +210,7 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Concatenates the current matrix with another one. */
-    public function concat(matrix:Array<Float>):ColorMatrixFilter
+    public function concat(matrix:Vector<Float>):ColorMatrixFilter
     {
         var i:Int = 0;
 
@@ -249,7 +248,7 @@ class ColorMatrixFilter extends FragmentFilter
         return this;
     }
 
-    private function copyMatrix(from:Array<Float>, to:Array<Float>):Void
+    private function copyMatrix(from:Vector<Float>, to:Vector<Float>):Void
     {
         for (i in 0 ... 20)
             to[i] = from[i];
@@ -273,9 +272,9 @@ class ColorMatrixFilter extends FragmentFilter
     // properties
     
     /** A vector of 20 items arranged as a 4x5 matrix. */
-    public var matrix(get, set):Array<Float>;
-    private function get_matrix():Array<Float> { return mUserMatrix; }
-    private function set_matrix(value:Array<Float>):Array<Float>
+    public var matrix(get, set):Vector<Float>;
+    private function get_matrix():Vector<Float> { return mUserMatrix; }
+    private function set_matrix(value:Vector<Float>):Vector<Float>
     {
         if (value != null && value.length != 20) 
             throw new ArgumentError("Invalid matrix length: must be 20");

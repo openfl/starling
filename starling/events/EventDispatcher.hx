@@ -38,10 +38,10 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var mEventListeners:Map<String, Array<Function>>;
+    private var mEventListeners:Map<String, Vector<Function>>;
     
     /** Helper object. */
-    private static var sBubbleChains:Array<Array<EventDispatcher>> = new Array<Array<EventDispatcher>>();
+    private static var sBubbleChains:Array<Vector<EventDispatcher>> = new Array<Vector<EventDispatcher>>();
     
     /** Creates an EventDispatcher. */
     public function new()
@@ -51,12 +51,12 @@ class EventDispatcher
     public function addEventListener(type:String, listener:Function):Void
     {
         if (mEventListeners == null)
-            mEventListeners = new Map<String, Array<Function>>();
+            mEventListeners = new Map<String, Vector<Function>>();
         
-        var listeners:Array<Dynamic> = mEventListeners[type];
+        var listeners:Vector<Dynamic> = mEventListeners[type];
         if (listeners == null)
         {
-            mEventListeners[type] = new Array<Function>();
+            mEventListeners[type] = new Vector<Function>();
             mEventListeners[type].push(listener);
         }
         else if (listeners.indexOf(listener) == -1) // check for duplicates
@@ -68,7 +68,7 @@ class EventDispatcher
     {
         if (mEventListeners != null)
         {
-            var listeners:Array<Function> = mEventListeners[type];
+            var listeners:Vector<Function> = mEventListeners[type];
             var numListeners:Int = listeners != null ? listeners.length : 0;
 
             if (numListeners > 0)
@@ -80,7 +80,7 @@ class EventDispatcher
 
                 if (index != -1)
                 {
-                    var restListeners:Array<Function> = listeners.slice(0, index);
+                    var restListeners:Vector<Function> = listeners.slice(0, index);
 
                     //for (var i:Int=index+1; i<numListeners; ++i)
                     for (i in index + 1 ... numListeners)
@@ -131,7 +131,7 @@ class EventDispatcher
      *  method uses this method internally. */
     public function invokeEvent(event:Event):Bool
     {
-        var listeners:Array<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)
@@ -147,12 +147,14 @@ class EventDispatcher
                 var listener:Function = listeners[i];
                 #if flash
                 var numArgs:Int = untyped listener.length;
+                #elseif neko
+                var numArgs:Int = untyped ($nargs)(listener);
+                #else
+                var numArgs:Int = 2;
+                #end
                 if (numArgs == 0) listener();
                 else if (numArgs == 1) listener(event);
                 else listener(event, event.data);
-                #else
-                listener(event, event.data);
-                #end
                 
                 if (event.stopsImmediatePropagation)
                     return true;
@@ -172,23 +174,24 @@ class EventDispatcher
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.
         
-        var chain:Array<EventDispatcher>;
+        var chain:Vector<EventDispatcher>;
         var element:DisplayObject = cast(this, DisplayObject);
         var length:Int = 1;
         
         if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
-        else chain = [element];
+        else chain = Vector.ofArray ([element]);
         
         while ((element = element.parent) != null)
             chain[length++] = element;
 
         for (i in 0 ... length)
         {
+            if (chain[i] == null) continue;
             var stopPropagation:Bool = chain[i].invokeEvent(event);
             if (stopPropagation) break;
         }
         
-        chain = [];
+        chain.length = 0;
         sBubbleChains[sBubbleChains.length] = chain; // avoid 'push'
     }
     
@@ -208,7 +211,7 @@ class EventDispatcher
     /** Returns if there are listeners registered for a certain event type. */
     public function hasEventListener(type:String):Bool
     {
-        var listeners:Array<Function> = mEventListeners != null ? mEventListeners[type] : null;
+        var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[type] : null;
         return listeners != null ? listeners.length != 0 : false;
     }
 }

@@ -16,8 +16,7 @@ import flash.display3D.IndexBuffer3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix;
 import flash.geom.Point;
-
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -35,11 +34,11 @@ class Canvas extends DisplayObject
     inline private static var PROGRAM_NAME:String = "Shape";
 
     private var mSyncRequired:Bool;
-    private var mPolygons:Array<Polygon>;
+    private var mPolygons:Vector<Polygon>;
 
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
-    private var mIndexData:Array<UInt>;
+    private var mIndexData:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
 
     private var mFillColor:UInt;
@@ -47,15 +46,15 @@ class Canvas extends DisplayObject
 
     // helper objects (to avoid temporary objects)
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:Array<Float> = [1.0, 1.0, 1.0, 1.0];
+    private static var sRenderAlpha:Vector<Float> = [1.0, 1.0, 1.0, 1.0];
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function new()
     {
         super();
-        mPolygons   = new Array<Polygon>();
+        mPolygons   = new Vector<Polygon>();
         mVertexData = new VertexData(0);
-        mIndexData  = new Array<UInt>();
+        mIndexData  = new Vector<UInt>();
         mSyncRequired = false;
 
         mFillColor = 0xffffff;
@@ -126,8 +125,8 @@ class Canvas extends DisplayObject
     public function clear():Void
     {
         mVertexData.numVertices = 0;
-        ArrayUtil.clear(mIndexData);
-        ArrayUtil.clear(mPolygons);
+        mIndexData.length = 0;
+        mPolygons.length = 0;
         destroyBuffers();
     }
 

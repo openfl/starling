@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.events;
+
 import starling.display.DisplayObject;
+import openfl.Vector;
 
 /** A TouchEvent is triggered either by touch or mouse input.  
  *  
@@ -57,13 +59,13 @@ class TouchEvent extends Event
     private var mShiftKey:Bool;
     private var mCtrlKey:Bool;
     private var mTimestamp:Float;
-    private var mVisitedObjects:Array<EventDispatcher>;
+    private var mVisitedObjects:Vector<EventDispatcher>;
     
     /** Helper object. */
-    private static var sTouches:Array<Touch> = new Array<Touch>();
+    private static var sTouches:Vector<Touch> = new Vector<Touch>();
     
     /** Creates a new TouchEvent instance. */
-    public function new(type:String, touches:Array<Touch>, shiftKey:Bool=false, 
+    public function new(type:String, touches:Vector<Touch>, shiftKey:Bool=false, 
                                ctrlKey:Bool=false, bubbles:Bool=true)
     {
         super(type, bubbles, touches);
@@ -71,7 +73,7 @@ class TouchEvent extends Event
         mShiftKey = shiftKey;
         mCtrlKey = ctrlKey;
         mTimestamp = -1.0;
-        mVisitedObjects = new Array<EventDispatcher>();
+        mVisitedObjects = new Vector<EventDispatcher>();
         
         var numTouches:Int=touches.length;
         for (i in 0 ... numTouches)
@@ -83,10 +85,10 @@ class TouchEvent extends Event
      *  'result' vector, the touches will be added to this vector instead of creating a new 
      *  object. */
     public function getTouches(target:DisplayObject, phase:String=null,
-                               result:Array<Touch>=null):Array<Touch>
+                               result:Vector<Touch>=null):Vector<Touch>
     {
-        if (result == null) result = new Array<Touch>();
-        var allTouches:Array<Dynamic> = cast(data, Array<Dynamic>);
+        if (result == null) result = new Vector<Touch>();
+        var allTouches:Vector<Touch> = cast data;
         var numTouches:Int = allTouches.length;
         
         for (i in 0 ... numTouches)
@@ -157,7 +159,7 @@ class TouchEvent extends Event
     /** @private
      *  Dispatches the event along a custom bubble chain. During the lifetime of the event,
      *  each object is visited only once. */
-    public function dispatch(chain:Array<EventDispatcher>):Void
+    public function dispatch(chain:Vector<EventDispatcher>):Void
     {
         if (chain != null && chain.length != 0)
         {
@@ -187,11 +189,11 @@ class TouchEvent extends Event
     private function get_timestamp():Float { return mTimestamp; }
     
     /** All touches that are currently available. */
-    public var touches(get, never):Array<Touch>;
-    private function get_touches():Array<Touch>
+    public var touches(get, never):Vector<Touch>;
+    private function get_touches():Vector<Touch>
     {
-        var touches:Array<Dynamic> = cast(data, Array<Dynamic>);
-        var result:Array<Touch> = [];
+        var touches:Vector<Touch> = cast data;
+        var result:Vector<Touch> = [];
         for (i in 0 ... touches.length)
             result.push(cast(touches[i], Touch));
         return result;

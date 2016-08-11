@@ -514,7 +514,7 @@ class QuadBatch extends DisplayObject
      *  used to render the container very efficiently. The 'flatten'-method of the Sprite 
      *  class uses this method internally. */
     public static function compile(object:DisplayObject, 
-                                   quadBatches:Array<QuadBatch>):Void
+                                   quadBatches:Vector<QuadBatch>):Void
     {
         compileObject(object, quadBatches, -1, new Matrix());
     }
@@ -522,7 +522,7 @@ class QuadBatch extends DisplayObject
     /** Naively optimizes a list of batches by merging all that have an identical state.
      *  Naturally, this will change the z-order of some of the batches, so this method is
      *  useful only for specific use-cases. */
-    public static function optimize(quadBatches:Array<QuadBatch>):Void
+    public static function optimize(quadBatches:Vector<QuadBatch>):Void
     {
         var batch1:QuadBatch, batch2:QuadBatch;
         //for (var i:Int=0; i<quadBatches.length; ++i)
@@ -547,7 +547,7 @@ class QuadBatch extends DisplayObject
     }
 
     private static function compileObject(object:DisplayObject, 
-                                          quadBatches:Array<QuadBatch>,
+                                          quadBatches:Vector<QuadBatch>,
                                           quadBatchID:Int,
                                           transformationMatrix:Matrix,
                                           alpha:Float=1.0,
@@ -562,9 +562,9 @@ class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
-        var quad:Quad = cast(object, Quad);
-        var batch:QuadBatch = cast(object, QuadBatch);
+        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
+        var quad:Quad = Std.is(object, Quad) ? cast object : null;
+        var batch:QuadBatch = Std.is(object, QuadBatch) ? cast object : null;
         var filter:FragmentFilter = object.filter;
 
         if (quadBatchID == -1)
@@ -636,7 +636,7 @@ class QuadBatch extends DisplayObject
             
             if (quad != null)
             {
-                var image:Image = cast(quad, Image);
+                var image:Image = Std.is(quad, Image) ? cast quad : null;
                 texture = image != null ? image.texture : null;
                 smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;

@@ -10,11 +10,12 @@
 
 
 package starling.animation;
+
 import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
-import starling.utils.ArrayUtil;
+import openfl.Vector;
 
 /** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
@@ -49,10 +50,10 @@ class Tween extends EventDispatcher implements IAnimatable
     private var mTransitionFunc:Float->Float;
     private var mTransitionName:String;
     
-    private var mProperties:Array<String>;
-    private var mStartValues:Array<Float>;
-    private var mEndValues:Array<Float>;
-    private var mUpdateFuncs:Array<String->Float->Float->Void>;
+    private var mProperties:Vector<String>;
+    private var mStartValues:Vector<Float>;
+    private var mEndValues:Vector<Float>;
+    private var mUpdateFuncs:Vector<String->Float->Float->Void>;
 
     private var mOnStart:Function;
     private var mOnUpdate:Function;
@@ -109,10 +110,10 @@ class Tween extends EventDispatcher implements IAnimatable
         else 
             throw new ArgumentError("Transition must be either a string or a function");
         
-        if (mProperties != null)  ArrayUtil.clear(mProperties); else mProperties  = new Array<String>();
-        if (mStartValues != null) ArrayUtil.clear(mStartValues); else mStartValues = new Array<Float>();
-        if (mEndValues != null)   ArrayUtil.clear(mEndValues); else mEndValues   = new Array<Float>();
-        if (mUpdateFuncs != null) ArrayUtil.clear(mUpdateFuncs); else mUpdateFuncs = new Array<String->Float->Float->Void>();
+        if (mProperties != null)  mProperties.length = 0; else mProperties  = new Vector<String>();
+        if (mStartValues != null) mStartValues.length = 0; else mStartValues = new Vector<Float>();
+        if (mEndValues != null)   mEndValues.length = 0; else mEndValues   = new Vector<Float>();
+        if (mUpdateFuncs != null) mUpdateFuncs.length = 0; else mUpdateFuncs = new Vector<String->Float->Float->Void>();
         
         return this;
     }
@@ -470,7 +471,7 @@ class Tween extends EventDispatcher implements IAnimatable
     
     // tween pooling
     
-    private static var sTweenPool:Array<Tween> = new Array<Tween>();
+    private static var sTweenPool:Vector<Tween> = new Vector<Tween>();
     
     /** @private */
     public static function fromPool(target:Dynamic, time:Float, 

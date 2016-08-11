@@ -1,5 +1,7 @@
 package starling.geom;
 
+import openfl.Vector;
+
 class Rectangle extends ImmutablePolygon
 {
     private var mX:Float;
@@ -17,9 +19,9 @@ class Rectangle extends ImmutablePolygon
         super([x, y, x + width, y, x + width, y + height, x, y + height]);
     }
 
-    override public function triangulate(result:Array<UInt> = null):Array<UInt>
+    override public function triangulate(result:Vector<UInt> = null):Vector<UInt>
     {
-        if (result == null) result = new Array<UInt>();
+        if (result == null) result = new Vector<UInt>();
         result.push(0);
         result.push(1);
         result.push(3);

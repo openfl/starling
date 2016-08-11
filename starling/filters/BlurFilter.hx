@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.filters;
+
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
@@ -32,16 +33,16 @@ class BlurFilter extends FragmentFilter
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:#if flash Vector<Float> #else Array<Float> #end = [0.0, 0, 0, 0];
-    private var mWeights:#if flash Vector<Float> #else Array<Float> #end = [0.0, 0, 0, 0];
-    private var mColor:#if flash Vector<Float> #else Array<Float> #end   = [1.0, 1, 1, 1];
+    private var mOffsets:Vector<Float> = [0.0, 0, 0, 0];
+    private var mWeights:Vector<Float> = [0.0, 0, 0, 0];
+    private var mColor:Vector<Float>   = [1.0, 1, 1, 1];
     
     private var mBlurX:Float;
     private var mBlurY:Float;
     private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Array<Float> = [0, 0, 0, 0, 0];
+    private var sTmpWeights:Vector<Float> = Vector.ofArray ([0, 0, 0, 0, 0]);
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>. 
