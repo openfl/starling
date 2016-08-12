@@ -195,7 +195,13 @@ class Tween extends EventDispatcher implements IAnimatable
         if (mCurrentCycle < 0 && previousTime <= 0 && mCurrentTime > 0)
         {
             mCurrentCycle++;
-            if (mOnStart != null) mOnStart(mOnStartArgs);
+            if (mOnStart != null) {
+                if (mOnStartArgs != null) {
+                    mOnStart(mOnStartArgs);
+                } else {
+                    mOnStart();
+                }
+            }
         }
 
         var ratio:Float = mCurrentTime / mTotalTime;
@@ -213,8 +219,13 @@ class Tween extends EventDispatcher implements IAnimatable
             updateFunc(mProperties[i], mStartValues[i], mEndValues[i]);
         }
 
-        if (mOnUpdate != null) 
-            mOnUpdate(mOnUpdateArgs);
+        if (mOnUpdate != null) {
+            if (mOnUpdateArgs != null) {
+                mOnUpdate(mOnUpdateArgs);
+            } else {
+                mOnUpdate();
+            }
+        }
         
         if (previousTime < mTotalTime && mCurrentTime >= mTotalTime)
         {
@@ -223,7 +234,13 @@ class Tween extends EventDispatcher implements IAnimatable
                 mCurrentTime = -mRepeatDelay;
                 mCurrentCycle++;
                 if (mRepeatCount > 1) mRepeatCount--;
-                if (mOnRepeat != null) mOnRepeat(mOnRepeatArgs);
+                if (mOnRepeat != null) {
+                    if (mOnRepeatArgs != null) {
+                        mOnRepeat(mOnRepeatArgs);
+                    } else {
+                        mOnRepeat();
+                    }
+                }
             }
             else
             {
@@ -235,7 +252,13 @@ class Tween extends EventDispatcher implements IAnimatable
                 // add it to another juggler; so this event has to be dispatched *before*
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                if (onComplete != null) onComplete(onCompleteArgs);
+                if (mOnComplete != null) {
+                    if (mOnCompleteArgs != null) {
+                        mOnComplete(mOnCompleteArgs);
+                    } else {
+                        mOnComplete();
+                    }
+                }
             }
         }
         
