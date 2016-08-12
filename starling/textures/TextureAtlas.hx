@@ -94,6 +94,15 @@ class TextureAtlas
         mAtlasTexture.dispose();
     }
     
+    private function getXmlFloat(xml:Xml, attributeName:String):Float
+    {
+        var value:String = xml.get (attributeName);
+        if (value != null)
+            return Std.parseFloat(value);
+        else
+            return 0;
+    }
+    
     /** This function is called by the constructor and will parse an XML in Starling's 
      *  default atlas file format. Override this method to create custom parsing logic
      *  (e.g. to support a different file format). */
@@ -106,14 +115,14 @@ class TextureAtlas
         for(subTexture in atlasXml.elementsNamed("SubTexture"))
         {
             var name:String        = subTexture.get("name");
-            var x:Float           = Std.parseFloat(subTexture.get("x")) / scale;
-            var y:Float           = Std.parseFloat(subTexture.get("y")) / scale;
-            var width:Float       = Std.parseFloat(subTexture.get("width")) / scale;
-            var height:Float      = Std.parseFloat(subTexture.get("height")) / scale;
-            var frameX:Float      = Std.parseFloat(subTexture.get("frameX")) / scale;
-            var frameY:Float      = Std.parseFloat(subTexture.get("frameY")) / scale;
-            var frameWidth:Float  = Std.parseFloat(subTexture.get("frameWidth")) / scale;
-            var frameHeight:Float = Std.parseFloat(subTexture.get("frameHeight")) / scale;
+            var x:Float           = getXmlFloat(subTexture, "x") / scale;
+            var y:Float           = getXmlFloat(subTexture, "y") / scale;
+            var width:Float       = getXmlFloat(subTexture, "width") / scale;
+            var height:Float      = getXmlFloat(subTexture, "height") / scale;
+            var frameX:Float      = getXmlFloat(subTexture, "frameX") / scale;
+            var frameY:Float      = getXmlFloat(subTexture, "frameY") / scale;
+            var frameWidth:Float  = getXmlFloat(subTexture, "frameWidth") / scale;
+            var frameHeight:Float = getXmlFloat(subTexture, "frameHeight") / scale;
             var rotated:Bool    = parseBool(subTexture.get("rotated"));
 
             region.setTo(x, y, width, height);
