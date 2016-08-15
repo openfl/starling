@@ -398,16 +398,12 @@ class Starling extends EventDispatcher
         {
             currentProfile = profiles.shift();
 
-            #if flash
             try { mStage3D.requestContext3D(renderMode, currentProfile); }
             catch (error:Error)
             {
                 if (profiles.length != 0) Timer.delay(requestNextProfile, 1);
                 else throw error;
             }
-            #else
-            mStage3D.requestContext3D();
-            #end
         }
         
         function onCreated(event:Event):Void
@@ -583,10 +579,8 @@ class Starling extends EventDispatcher
                 // the size happens in a separate operation) -- so we have no choice but to
                 // set the backbuffer to a very small size first, to be on the safe side.
                 
-                #if flash
                 if (mProfile == Context3DProfile.BASELINE_CONSTRAINED)
                     configureBackBuffer(32, 32, mAntiAliasing, true);
-                #end
                 
                 mStage3D.x = mClippedViewPort.x;
                 mStage3D.y = mClippedViewPort.y;
@@ -594,11 +588,9 @@ class Starling extends EventDispatcher
                 configureBackBuffer(Std.int(mClippedViewPort.width), Std.int(mClippedViewPort.height),
                     mAntiAliasing, true, mSupportHighResolutions);
                 
-                #if flash
                 if (mSupportHighResolutions && Reflect.getProperty(mNativeStage, "contentsScaleFactor") != null)
                     mNativeStageContentScaleFactor = Reflect.getProperty(mNativeStage, "contentsScaleFactor");
                 else
-                #end
                     mNativeStageContentScaleFactor = 1.0;
             }
         }
@@ -735,29 +727,13 @@ class Starling extends EventDispatcher
 
         updateNativeOverlay();
     }
-#if html5
-    private static function convertKeyLocationToUInt(keyLocation:KeyLocation):UInt
-    {
-        switch(keyLocation)
-        {
-        case KeyLocation.STANDARD:
-            return 0;
-        case KeyLocation.LEFT:
-            return 1;
-        case KeyLocation.RIGHT:
-            return 2;
-        case KeyLocation.NUM_PAD:
-            return 3;
-        }
-    }
-#end
     
     private function onKey(event:KeyboardEvent):Void
     {
         if (!mStarted) return;
         
         var keyEvent:starling.events.KeyboardEvent = new starling.events.KeyboardEvent(
-            event.type, event.charCode, event.keyCode, 0, // TODO: convertKeyLocationToUInt
+            event.type, event.charCode, event.keyCode, event.keyLocation,
             event.ctrlKey, event.altKey, event.shiftKey);
         
         makeCurrent();
@@ -765,10 +741,8 @@ class Starling extends EventDispatcher
         if (mBroadcastKeyboardEvents) mStage.broadcastEvent(keyEvent);
         else mStage.dispatchEvent(keyEvent);
         
-        #if flash
         if (keyEvent.isDefaultPrevented())
             event.preventDefault();
-        #end
     }
     
     private function onResize(event:Event):Void
@@ -830,11 +804,7 @@ class Starling extends EventDispatcher
             // On a system that supports both mouse and touch input, the primary touch point
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
-#if flash
             var supportsCursor:Bool = Mouse.supportsCursor;
-#else
-            var supportsCursor:Bool = false;
-#end
             
             if (supportsCursor && touchEvent.isPrimaryTouchPoint) return;
             else
@@ -868,7 +838,7 @@ class Starling extends EventDispatcher
         mTouchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
         
         // allow objects that depend on mouse-over state to be updated immediately
-        if (event.type == MouseEvent.MOUSE_UP #if flash && Mouse.supportsCursor #end)
+        if (event.type == MouseEvent.MOUSE_UP && Mouse.supportsCursor)
             mTouchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
     
@@ -884,7 +854,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        //if (!multitouchEnabled #if flash || Mouse.supportsCursor #end)
+        if (!multitouchEnabled || Mouse.supportsCursor)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
@@ -1228,12 +1198,8 @@ class Starling extends EventDispatcher
     {
         if (mContext != null)
         {
-            #if flash
             var driverInfo:String = mContext.driverInfo;
             return driverInfo != null && driverInfo != "" && driverInfo != "Disposed";
-            #else
-            return true;
-            #end
         }
         else return false;
     }

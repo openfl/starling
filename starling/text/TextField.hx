@@ -9,14 +9,10 @@
 // =================================================================================================
 
 package starling.text;
+
 import haxe.Constraints.Function;
-#if !flash
-import openfl._internal.text.TextEngine;
-#end
-#if flash
 import flash.display.IBitmapDrawable;
 import flash.geom.ColorTransform;
-#end
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.StageQuality;
@@ -363,7 +359,6 @@ class TextField extends DisplayObjectContainer
         var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
             filterOffset.x, filterOffset.y + Std.int(textOffsetY)-2);
         
-        #if flash
         var drawWithQualityFunc:Function =
             Reflect.getProperty(bitmapData, "drawWithQuality");
         
@@ -374,7 +369,6 @@ class TextField extends DisplayObjectContainer
             Reflect.callMethod(bitmapData, drawWithQualityFunc, [sNativeTextField, drawMatrix, 
                                      null, null, null, false, StageQuality.MEDIUM]);
         else
-        #end
             bitmapData.draw(sNativeTextField, drawMatrix);
         
         sNativeTextField.text = "";

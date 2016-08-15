@@ -19,9 +19,7 @@ import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.system.Capabilities;
 import flash.ui.Mouse;
-#if flash
 import flash.ui.MouseCursor;
-#end
 import haxe.Constraints.Function;
 import starling.utils.ArrayUtil;
 import openfl.Vector;
@@ -774,11 +772,7 @@ class DisplayObject extends EventDispatcher
     
     private function onTouch(event:TouchEvent):Void
     {
-        #if flash
         Mouse.cursor = event.interactsWith(this) ? MouseCursor.BUTTON : MouseCursor.AUTO;
-        #else
-        event.interactsWith(this);
-        #end
     }
     
     /** The bounds of the object relative to the local coordinates of the parent. */

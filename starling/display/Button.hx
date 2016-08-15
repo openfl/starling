@@ -9,12 +9,11 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.geom.Rectangle;
 import flash.ui.Mouse;
 import openfl.errors.ArgumentError;
-#if flash
 import flash.ui.MouseCursor;
-#end
 
 import starling.events.Event;
 import starling.events.Touch;
@@ -139,10 +138,8 @@ class Button extends DisplayObjectContainer
     
     private override function onTouch(event:TouchEvent):Void
     {
-        #if flash
         Mouse.cursor = (mUseHandCursor && mEnabled && event.interactsWith(this)) ?
             MouseCursor.BUTTON : MouseCursor.AUTO;
-        #end
         
         var touch:Touch = event.getTouch(this);
         var isWithinBounds:Bool;
