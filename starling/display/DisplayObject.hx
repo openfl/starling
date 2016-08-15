@@ -649,7 +649,7 @@ class DisplayObject extends EventDispatcher
      * 
      *  <p>CAUTION: not a copy, but the actual object!</p> */
     public var transformationMatrix(get, set):Matrix;
-    private function get_transformationMatrix():Matrix
+    @:keep private function get_transformationMatrix():Matrix
     {
         if (mOrientationChanged)
         {
