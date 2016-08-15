@@ -59,8 +59,15 @@ class EventDispatcher
             mEventListeners[type] = new Vector<Function>();
             mEventListeners[type].push(listener);
         }
-        else if (listeners.indexOf(listener) == -1) // check for duplicates
+        else
+        {
+            for (i in 0...listeners.length)
+            {
+                if (Reflect.compareMethods (listeners[i], listener)) // check for duplicates
+                    return;
+            }
             listeners[listeners.length] = listener; // avoid 'push'
+        }
     }
     
     /** Removes an event listener from the object. */
