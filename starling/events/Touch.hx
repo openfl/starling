@@ -144,7 +144,7 @@ class Touch
         }
         else
         {
-            mBubbleChain = [];
+            mBubbleChain = new Vector();
         }
     }
     

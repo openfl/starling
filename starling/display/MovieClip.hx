@@ -86,10 +86,10 @@ class MovieClip extends Image implements IAnimatable
         mCurrentTime = 0.0;
         mCurrentFrame = 0;
         mWasStopped = true;
-        mTextures = textures.copy();
-        mSounds = new Vector<Sound>();
-        mDurations = new Vector<Float>();
-        mStartTimes = new Vector<Float>();
+        mTextures = textures.concat();
+        mSounds = new Vector<Sound>(numFrames);
+        mDurations = new Vector<Float>(numFrames);
+        mStartTimes = new Vector<Float>(numFrames);
         
         for (i in 0 ... numFrames)
         {

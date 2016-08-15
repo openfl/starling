@@ -109,7 +109,7 @@ class RenderSupport
         mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = [new QuadBatch(true)];
+        mQuadBatches = Vector.ofArray ([new QuadBatch(true)]);
 
         loadIdentity();
         setProjectionMatrix(0, 0, 400, 300);

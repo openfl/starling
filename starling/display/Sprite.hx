@@ -218,7 +218,7 @@ class Sprite extends DisplayObjectContainer
         if (mFlattenedContents != null || mFlattenRequested)
         {
             if (mFlattenedContents == null)
-                mFlattenedContents = new Array<QuadBatch>();
+                mFlattenedContents = new Vector<QuadBatch>();
             
             if (mFlattenRequested)
             {

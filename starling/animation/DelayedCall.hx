@@ -28,19 +28,19 @@ class DelayedCall extends EventDispatcher implements IAnimatable
 {
     private var mCurrentTime:Float;
     private var mTotalTime:Float;
-    private var mCall:Vector<Dynamic>->Void;
+    private var mCall:Array<Dynamic>->Void;
     private var mArgs:Array<Dynamic>;
     private var mRepeatCount:Int;
     
     /** Creates a delayed call. */
-    public function new(call:Vector<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null)
+    public function new(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null)
     {
         super();
         reset(call, delay, args);
     }
     
     /** Resets the delayed call to its default values, which is useful for pooling. */
-    public function reset(call:Vector<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null):DelayedCall
+    public function reset(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null):DelayedCall
     {
         mCurrentTime = 0;
         mTotalTime = Math.max(delay, 0.0001);
@@ -73,7 +73,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
             else
             {
                 // save call & args: they might be changed through an event listener
-                var call:Vector<Dynamic>->Void = mCall;
+                var call:Array<Dynamic>->Void = mCall;
                 var args:Array<Dynamic> = mArgs;
                 
                 // in the callback, people might want to call "reset" and re-add it to the
@@ -118,7 +118,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private static var sPool:Vector<DelayedCall> = new Vector<DelayedCall>();
     
     /** @private */
-    public static function fromPool(call:Vector<Dynamic>->Void, delay:Float, 
+    public static function fromPool(call:Array<Dynamic>->Void, delay:Float, 
                                                args:Array<Dynamic>=null):DelayedCall
     {
         if (sPool.length != 0) return sPool.pop().reset(call, delay, args);

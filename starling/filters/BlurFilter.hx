@@ -33,9 +33,9 @@ class BlurFilter extends FragmentFilter
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Vector<Float> = [0.0, 0, 0, 0];
-    private var mWeights:Vector<Float> = [0.0, 0, 0, 0];
-    private var mColor:Vector<Float>   = [1.0, 1, 1, 1];
+    private var mOffsets:Vector<Float> = Vector.ofArray ([0.0, 0, 0, 0]);
+    private var mWeights:Vector<Float> = Vector.ofArray ([0.0, 0, 0, 0]);
+    private var mColor:Vector<Float>   = Vector.ofArray ([1.0, 1, 1, 1]);
     
     private var mBlurX:Float;
     private var mBlurY:Float;

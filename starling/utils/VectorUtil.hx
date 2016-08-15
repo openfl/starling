@@ -117,7 +117,7 @@ class VectorUtil
         for(i in index + 1 ... length)
             vector[i-1] = vector[i];
 
-        ArrayUtil.resize(vector, vector.length - 1, 0);
+        vector.length = length - 1;
         return value;
     }
 

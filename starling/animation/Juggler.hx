@@ -146,7 +146,7 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function delayCall(call:Vector<Dynamic>->Void, delay:Float, args:Vector<Dynamic> = null):IAnimatable
+    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic> = null):IAnimatable
     {
         if (call == null) return null;
         if (args == null) args = [];
@@ -164,7 +164,7 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function repeatCall(call:Vector<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Vector<Dynamic>):IAnimatable
+    public function repeatCall(call:Array<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):IAnimatable
     {
         if (call == null) return null;
         

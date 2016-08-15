@@ -14,6 +14,7 @@ import starling.events.TouchEvent;
 import starling.events.TouchPhase;
 import starling.text.TextField;
 import starling.textures.RenderTexture;
+import openfl.Vector;
 
 @:keep class RenderTextureScene extends Scene
 {
@@ -59,7 +60,7 @@ import starling.textures.RenderTexture;
         
         mRenderTexture.drawBundled(function(unused0:DisplayObject, unused1:flash.geom.Matrix, unused2:Float):Void
         {
-            var touches:Array<Touch> = event.getTouches(mCanvas);
+            var touches:Vector<Touch> = event.getTouches(mCanvas);
         
             for (touch in touches)
             {

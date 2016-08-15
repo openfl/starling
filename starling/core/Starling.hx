@@ -845,7 +845,7 @@ class Starling extends EventDispatcher
     private var touchEventTypes(get, never):Vector<String>;
     private function get_touchEventTypes():Vector<String>
     {
-        var types:Vector<String> = [];
+        var types = new Vector<String>();
         
         if (multitouchEnabled)
         {

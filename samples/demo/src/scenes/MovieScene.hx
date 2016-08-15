@@ -1,10 +1,12 @@
 package scenes;
+
 import flash.media.Sound;
 
 import starling.core.Starling;
 import starling.display.MovieClip;
 import starling.events.Event;
 import starling.textures.Texture;
+import openfl.Vector;
 
 @:keep class MovieScene extends Scene
 {
@@ -13,7 +15,7 @@ import starling.textures.Texture;
     public function new()
     {
         super();
-        var frames:Array<Texture> = Game.assets.getTextures("flight");
+        var frames:Vector<Texture> = Game.assets.getTextures("flight");
         mMovie = new MovieClip(frames, 15);
         
         // add sounds

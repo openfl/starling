@@ -153,7 +153,7 @@ class TouchProcessor
                 --i;
             }
             
-            sUpdatedTouches = [];
+            sUpdatedTouches = new Vector();
         }
     }
     
@@ -168,7 +168,7 @@ class TouchProcessor
     private function processTouches(touches:Vector<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void
     {
-        sHoveringTouchData = [];
+        sHoveringTouchData = new Vector();
         
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method will make sure each bubble target is visited only once.

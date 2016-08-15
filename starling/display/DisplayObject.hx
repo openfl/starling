@@ -562,7 +562,7 @@ class DisplayObject extends EventDispatcher
         while (currentObject != null && sAncestors.indexOf(currentObject) == -1)
             currentObject = currentObject.mParent;
 
-        ArrayUtil.clear(sAncestors);
+        sAncestors.length = 0;
 
         if (currentObject != null) return currentObject;
         else throw new ArgumentError("Object not connected to target");

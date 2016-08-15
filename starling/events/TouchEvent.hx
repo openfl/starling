@@ -126,7 +126,7 @@ class TouchEvent extends Event
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
-            sTouches = [];
+            sTouches = new Vector();
             return touch;
         }
         else return null;
@@ -150,7 +150,7 @@ class TouchEvent extends Event
             --i;
         }
         
-        sTouches = [];
+        sTouches = new Vector();
         return result;
     }
     
@@ -193,7 +193,7 @@ class TouchEvent extends Event
     private function get_touches():Vector<Touch>
     {
         var touches:Vector<Touch> = cast data;
-        var result:Vector<Touch> = [];
+        var result = new Vector<Touch>();
         for (i in 0 ... touches.length)
             result.push(cast(touches[i], Touch));
         return result;
