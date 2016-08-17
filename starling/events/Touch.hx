@@ -137,8 +137,7 @@ class Touch
             var length:Int = 1;
             var element:DisplayObject = mTarget;
             
-            mBubbleChain = new Vector ();
-            mBubbleChain[0] = element;
+            mBubbleChain = Vector.ofArray ([element]);
             
             while ((element = element.parent) != null)
                 mBubbleChain[length++] = element;

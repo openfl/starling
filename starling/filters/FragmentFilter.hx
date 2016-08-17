@@ -147,8 +147,7 @@ class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        var data:Array<UInt> = [0, 1, 2, 1, 3, 2];
-        mIndexData = new Vector (data);
+        mIndexData = Vector.ofArray ([0, 1, 2, 1, 3, 2]);
         //mIndexData.fixed = true;
 
         if (Starling.current.contextValid)

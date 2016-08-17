@@ -46,7 +46,7 @@ class Canvas extends DisplayObject
 
     // helper objects (to avoid temporary objects)
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sRenderAlpha:Vector<Float> = new Vector ([1.0, 1.0, 1.0, 1.0]);
+    private static var sRenderAlpha:Vector<Float> = Vector.ofArray ([1.0, 1.0, 1.0, 1.0]);
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function new()

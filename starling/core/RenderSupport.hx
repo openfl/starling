@@ -84,7 +84,7 @@ class RenderSupport
     private static var sScissorRect:Rectangle = new Rectangle();
     private static var sMatrix3D:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
-        new Vector ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0]);
+        Vector.ofArray ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     
     // construction
     
@@ -109,7 +109,7 @@ class RenderSupport
         mClipRectStackSize = 0;
         
         mCurrentQuadBatchID = 0;
-        mQuadBatches = new Vector ([new QuadBatch(true)]);
+        mQuadBatches = Vector.ofArray ([new QuadBatch(true)]);
 
         loadIdentity();
         setProjectionMatrix(0, 0, 400, 300);

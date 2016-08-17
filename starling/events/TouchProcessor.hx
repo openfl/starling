@@ -72,7 +72,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
-    private static var sHoveringTouchData:Array<Dynamic> = new Array<Dynamic>();
+    private static var sHoveringTouchData:Vector<Dynamic> = new Vector<Dynamic>();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new TouchProcessor that will dispatch events to the given stage. */
@@ -168,7 +168,7 @@ class TouchProcessor
     private function processTouches(touches:Vector<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void
     {
-        sHoveringTouchData = new Array<Dynamic>();
+        sHoveringTouchData = new Vector();
         
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method will make sure each bubble target is visited only once.

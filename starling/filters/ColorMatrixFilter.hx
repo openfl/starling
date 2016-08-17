@@ -50,8 +50,8 @@ class ColorMatrixFilter extends FragmentFilter
     private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
     inline private static var PROGRAM_NAME:String = "CMF";
-    private static var MIN_COLOR:Vector<Float> = new Vector ([0, 0, 0, 0.0001]);
-    private static var IDENTITY:Vector<Float> = new Vector ([1.0,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0]);
+    private static var MIN_COLOR:Vector<Float> = Vector.ofArray ([0, 0, 0, 0.0001]);
+    private static var IDENTITY:Vector<Float> = Vector.ofArray ([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0]);
     inline private static var LUMA_R:Float = 0.299;
     inline private static var LUMA_G:Float = 0.587;
     inline private static var LUMA_B:Float = 0.114;
@@ -241,7 +241,7 @@ class ColorMatrixFilter extends FragmentFilter
                                   m15:Float, m16:Float, m17:Float, m18:Float, m19:Float
                                   ):ColorMatrixFilter
     {
-        sTmpMatrix2 = new Vector ([m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
+        sTmpMatrix2 = Vector.ofArray ([m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
             m10, m11, m12, m13, m14, m15, m16, m17, m18, m19]);
         
         concat(sTmpMatrix2);
@@ -259,7 +259,7 @@ class ColorMatrixFilter extends FragmentFilter
         // the shader needs the matrix components in a different order, 
         // and it needs the offsets in the range 0-1.
         
-        mShaderMatrix = new Vector([
+        mShaderMatrix = Vector.ofArray([
             mUserMatrix[0],  mUserMatrix[1],  mUserMatrix[2],  mUserMatrix[3],
             mUserMatrix[5],  mUserMatrix[6],  mUserMatrix[7],  mUserMatrix[8],
             mUserMatrix[10], mUserMatrix[11], mUserMatrix[12], mUserMatrix[13], 
