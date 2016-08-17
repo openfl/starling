@@ -69,7 +69,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = Vector.ofArray(cast []);
+        mRawData = new Vector<Float>();
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;

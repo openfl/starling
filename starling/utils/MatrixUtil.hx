@@ -9,11 +9,12 @@
 // =================================================================================================
 
 package starling.utils;
+
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
-import flash.Vector;
+import openfl.Vector;
 
 import starling.errors.AbstractClassError;
 
@@ -21,9 +22,9 @@ import starling.errors.AbstractClassError;
 class MatrixUtil
 {
     /** Helper object. */
-    private static var sRawData:Vector<Float> = Vector.ofArray(
+    private static var sRawData:Vector<Float> = new Vector<Float>(
         [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
-    private static var sRawData2:Vector<Float> = Vector.ofArray(
+    private static var sRawData2:Vector<Float> = new Vector<Float>(
         [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
     
     /** @private */
