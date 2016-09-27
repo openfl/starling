@@ -160,14 +160,17 @@ class BitmapFont
             var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
             addChar(id, bitmapChar);
         }
-        var kernings:Xml = fontXml.elementsNamed("kernings").next();
-        for(kerningElement in kernings.elementsNamed("kerning"))
-        {
-            var first:Int = Std.parseInt(kerningElement.get("first"));
-            var second:Int = Std.parseInt(kerningElement.get("second"));
-            var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
-            if (mChars.exists(second)) getChar(second).addKerning(first, amount);
-        }
+	
+        if (fontXml.exists("kernings")) {
+		var kernings:Xml = fontXml.elementsNamed("kernings").next();
+		for(kerningElement in kernings.elementsNamed("kerning"))
+		{
+		    var first:Int = Std.parseInt(kerningElement.get("first"));
+		    var second:Int = Std.parseInt(kerningElement.get("second"));
+		    var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
+		    if (mChars.exists(second)) getChar(second).addKerning(first, amount);
+		}
+	}
     }
     
     /** Returns a single bitmap char with a certain character ID. */
