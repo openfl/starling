@@ -27,18 +27,7 @@ import starling.utils.RectangleUtil;
 
 import utils.ProgressBar;
 
-// If you set this class as your 'default application', it will run without a preloader.
-// To use a preloader, see 'Demo_Web_Preloader.as'.
-
-// This project requires the sources of the "demo" project. Add them either by
-// referencing the "demo/src" directory as a "source path", or by copying the files.
-// The "media" folder of this project has to be added to its "source paths" as well,
-// to make sure the icon and startup images are added to the compiled mobile app.
-
-#if 0
-[SWF(width="320", height="480", frameRate="60", backgroundColor="#222222")]
-#end
-class Demo_Web extends Sprite
+class Demo extends Sprite
 {
     private var mStarling:Starling;
     private var mBackground:Bitmap;
@@ -85,28 +74,10 @@ class Demo_Web extends Sprite
 
     private function loadAssets(onComplete:AssetManager->Void):Void
     {
-        // Our assets are loaded and managed by the 'AssetManager'. To use that class,
-        // we first have to enqueue pointers to all assets we want it to load.
-
         var assets:AssetManager = new AssetManager();
 
         assets.verbose = Capabilities.isDebugger;
-        #if 0
-        assets.enqueue(EmbeddedAssets);
-        #elseif 0
-        assets.enqueue(
-        [
-            "assets/textures/1x/atlas.xml",
-            "assets/textures/1x/atlas.png",
-            "assets/textures/1x/background.jpg",
-            #if 0
-            "assets/textures/1x/compressed_texture.atf",
-            #end
-            "assets/fonts/1x/desyrel.fnt",
-            "assets/fonts/1x/desyrel.png",
-            "assets/audio/wing_flap.ogg"
-        ]);
-        #else
+
         Timer.delay(function()
         {
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
@@ -117,32 +88,14 @@ class Demo_Web extends Sprite
             assets.addTexture("atlas", atlasTexture);
             assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
+            #if flash
+            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
+            #else
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            #end
             
             onComplete(assets);
         }, 0);
-        #end
-
-        // Now, while the AssetManager now contains pointers to all the assets, it actually
-        // has not loaded them yet. This happens in the "loadQueue" method; and since this
-        // will take a while, we'll update the progress bar accordingly.
-
-        #if 0
-        assets.loadQueue(function(ratio:Float):Void
-        {
-            #if 0
-            mProgressBar.ratio = ratio;
-            #end
-            if (ratio == 1)
-            {
-                // now would be a good time for a clean-up
-                System.pauseForGCIfCollectionImminent(0);
-                System.gc();
-
-                onComplete(assets);
-            }
-        });
-        #end
     }
 
     private function startGame(assets:AssetManager):Void
@@ -156,18 +109,16 @@ class Demo_Web extends Sprite
     {
         // Add background image.
 
-        #if 0
-        mBackground = Type.createInstance(EmbeddedAssets.background, []);
+        mBackground = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
         mBackground.smoothing = true;
         addChild(mBackground);
 
         // While the assets are loaded, we will display a progress bar.
 
-        mProgressBar = new ProgressBar(175, 20);
-        mProgressBar.x = (mBackground.width - mProgressBar.width) / 2;
-        mProgressBar.y =  mBackground.height * 0.7;
-        addChild(mProgressBar);
-        #end
+        //mProgressBar = new ProgressBar(175, 20);
+        //mProgressBar.x = (mBackground.width - mProgressBar.width) / 2;
+        //mProgressBar.y =  mBackground.height * 0.7;
+        //addChild(mProgressBar);
     }
 
     private function removeElements():Void
