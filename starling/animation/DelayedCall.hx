@@ -67,7 +67,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
         {                
             if (mRepeatCount == 0 || mRepeatCount > 1)
             {
-                mCall(mArgs);
+                Reflect.callMethod(mCall, mCall, mArgs);
                 
                 if (mRepeatCount > 0) mRepeatCount -= 1;
                 mCurrentTime = 0;
