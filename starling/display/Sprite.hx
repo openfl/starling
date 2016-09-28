@@ -14,6 +14,7 @@ import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+
 import openfl.Vector;
 
 import starling.core.RenderSupport;
@@ -81,7 +82,7 @@ class Sprite extends DisplayObjectContainer
     {
         if (mFlattenedContents != null)
         {
-            for (i in 0 ... mFlattenedContents.length)
+            for (i in 0...mFlattenedContents.length)
                 mFlattenedContents[i].dispose();
             
             mFlattenedContents = null;
@@ -158,7 +159,7 @@ class Sprite extends DisplayObjectContainer
         var maxY:Float = -Max.MAX_VALUE;
         var transMatrix:Matrix = getTransformationMatrix(targetSpace, sHelperMatrix);
         
-        for (i in 0 ... 4)
+        for (i in 0...4)
         {
             switch(i)
             {
@@ -236,7 +237,7 @@ class Sprite extends DisplayObjectContainer
             support.finishQuadBatch();
             support.raiseDrawCount(numBatches);
             
-            for (i in 0 ... numBatches)
+            for (i in 0...numBatches)
             {
                 var quadBatch:QuadBatch = mFlattenedContents[i];
                 var blendMode:String = quadBatch.blendMode == BlendMode.AUTO ?

@@ -9,24 +9,26 @@
 // =================================================================================================
 
 package starling.filters;
+
 import flash.display.BitmapDataChannel;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DMipFilter;
 import flash.display3D.Context3DProgramType;
+import flash.display3D.Context3DTextureFilter;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DVertexBufferFormat;
+import flash.display3D.Context3DWrapMode;
 import flash.display3D.Program3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display3D.Context3DWrapMode;
+
 import openfl.Vector;
-import starling.utils.ArrayUtil;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
 import starling.textures.Texture;
+import starling.utils.ArrayUtil;
 import starling.utils.StringUtil.formatString;
 
 /** The DisplacementMapFilter class uses the pixel values from the specified texture (called
@@ -58,7 +60,6 @@ class DisplacementMapFilter extends FragmentFilter
     /** Helper objects */
     private static var sOneHalf:Vector<Float> = Vector.ofArray ([0.5, 0.5, 0.5, 0.5]);
     private static var sMapTexCoords:Vector<Float> = Vector.ofArray ([0, 0, 1, 0, 0, 1, 1, 1]);
-
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
         Vector.ofArray ([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
@@ -147,18 +148,17 @@ class DisplacementMapFilter extends FragmentFilter
         // vertex attribute 1:   texture coordinates (FLOAT_2)
         // texture 0:            input texture
 
-        context.setProgram(mShaderProgram);
         updateParameters(Std.int(texture.nativeWidth), Std.int(texture.nativeHeight));
         
         context.setVertexBufferAt(2, mMapTexCoordBuffer, 0, Context3DVertexBufferFormat.FLOAT_2);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, sOneHalf);
         context.setProgramConstantsFromMatrix(Context3DProgramType.FRAGMENT, 1, sMatrix, true);
-        context.setSamplerStateAt(1, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
         context.setTextureAt(1, mMapTexture.base);
+        context.setProgram(mShaderProgram);
     }
     
     /** @private */
-    override private function deactivate(pass:Int, context:Context3D, texture:Texture):Void
+    private override function deactivate(pass:Int, context:Context3D, texture:Texture):Void
     {
         context.setVertexBufferAt(2, null);
         context.setTextureAt(1, null);
@@ -172,7 +172,7 @@ class DisplacementMapFilter extends FragmentFilter
         var scale:Float = Starling.current.contentScaleFactor;
         var columnX:Int, columnY:Int;
         
-        for (i in 0 ... 16)
+        for (i in 0...16)
             sMatrixData[i] = 0;
         
         if      (mComponentX == BitmapDataChannel.RED)   columnX = 0;

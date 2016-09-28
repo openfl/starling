@@ -10,11 +10,8 @@
 
 package starling.core;
 
-import openfl.display3D.Context3DBlendFactor;
-import openfl.display3D.Context3DProfile;
-import openfl.utils.AGALMiniAssembler;
-
 import flash.display3D.Context3D;
+import flash.display3D.Context3DBlendFactor;
 import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DStencilAction;
@@ -26,6 +23,8 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+
+import openfl.utils.AGALMiniAssembler;
 import openfl.Vector;
 
 import starling.display.BlendMode;
@@ -49,7 +48,7 @@ import starling.utils.SystemUtil;
  */
 class RenderSupport
 {
-    inline private static var RENDER_TARGET_NAME:String = "Starling.renderTarget";
+    private static inline var RENDER_TARGET_NAME:String = "Starling.renderTarget";
 
     // members
     
@@ -82,6 +81,7 @@ class RenderSupport
     private static var sClipRect:Rectangle = new Rectangle();
     private static var sBufferRect:Rectangle = new Rectangle();
     private static var sScissorRect:Rectangle = new Rectangle();
+    private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
     private static var sMatrix3D:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
         Vector.ofArray ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -118,7 +118,7 @@ class RenderSupport
     /** Disposes all quad batches. */
     public function dispose():Void
     {
-        for(quadBatch in mQuadBatches)
+        for (quadBatch in mQuadBatches)
             quadBatch.dispose();
     }
     
@@ -316,7 +316,7 @@ class RenderSupport
      *  Different to 'mvpMatrix', this also takes 3D transformations into account. 
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var mvpMatrix3D(get, never):Matrix3D;
-    public function get_mvpMatrix3D():Matrix3D
+    private function get_mvpMatrix3D():Matrix3D
     {
         if (mMatrixStack3DSize == 0)
         {
@@ -335,8 +335,8 @@ class RenderSupport
     /** Returns the current 3D projection matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
     public var projectionMatrix3D(get, set):Matrix3D;
-    public function get_projectionMatrix3D():Matrix3D { return mProjectionMatrix3D; }
-    public function set_projectionMatrix3D(value:Matrix3D):Matrix3D
+    private function get_projectionMatrix3D():Matrix3D { return mProjectionMatrix3D; }
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D
     {
         mProjectionMatrix3D.copyFrom(value);
         return mProjectionMatrix3D;
@@ -365,12 +365,12 @@ class RenderSupport
     /** The texture that is currently being rendered into, or 'null' to render into the 
      *  back buffer. If you set a new target, it is immediately activated. */
     public var renderTarget(get, set):Texture;
-    public function get_renderTarget():Texture
+    private function get_renderTarget():Texture
     {
         return Starling.current.contextData[RENDER_TARGET_NAME];
     }
 
-    public function set_renderTarget(target:Texture):Texture 
+    private function set_renderTarget(target:Texture):Texture 
     {
         setRenderTarget(target);
         return target;
@@ -533,16 +533,8 @@ class RenderSupport
         drawMask(mask);
 
         context.setStencilReferenceValue(mStencilReferenceValue);
-        if (mMasks.length != 0)
-        {
-            context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
-        }
-        else
-        {
-            context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK, 
-                Context3DCompareMode.ALWAYS, Context3DStencilAction.KEEP);
-        }
+        context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                    Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
     }
 
     private function drawMask(mask:DisplayObject):Void
@@ -660,7 +652,7 @@ class RenderSupport
         if (numTotalBatches >= 16 && numTotalBatches > 2*numUsedBatches)
         {
             var numToRemove:Int = numTotalBatches - numUsedBatches;
-            for (i in 0 ... numToRemove)
+            for (i in 0...numToRemove)
                 mQuadBatches.pop().dispose();
         }
     }

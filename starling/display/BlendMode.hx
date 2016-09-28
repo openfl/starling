@@ -9,10 +9,9 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.display3D.Context3DBlendFactor;
-import openfl.errors.ArgumentError;
 
-import starling.errors.AbstractClassError;
+import flash.display3D.Context3DBlendFactor;
+import flash.errors.ArgumentError;
 
 /** A class that provides constant values for visual blend mode effects. 
  *   
@@ -63,37 +62,34 @@ class BlendMode
     
     // predifined modes
     
-    /** @private */
-    public function BlendMode() { throw new AbstractClassError(); }
-    
     /** Inherits the blend mode from this display object's parent. */
-    inline public static var AUTO:String = "auto";
+    public static inline var AUTO:String = "auto";
 
     /** Deactivates blending, i.e. disabling any transparency. */
-    inline public static var NONE:String = "none";
+    public static inline var NONE:String = "none";
     
     /** The display object appears in front of the background. */
-    inline public static var NORMAL:String = "normal";
+    public static inline var NORMAL:String = "normal";
     
     /** Adds the values of the colors of the display object to the colors of its background. */
-    inline public static var ADD:String = "add";
+    public static inline var ADD:String = "add";
     
     /** Multiplies the values of the display object colors with the the background color. */
-    inline public static var MULTIPLY:String = "multiply";
+    public static inline var MULTIPLY:String = "multiply";
     
     /** Multiplies the complement (inverse) of the display object color with the complement of 
       * the background color, resulting in a bleaching effect. */
-    inline public static var SCREEN:String = "screen";
+    public static inline var SCREEN:String = "screen";
     
     /** Erases the background when drawn on a RenderTexture. */
-    inline public static var ERASE:String = "erase";
+    public static inline var ERASE:String = "erase";
 
     /** When used on a RenderTexture, the drawn object will act as a mask for the current
      *  content, i.e. the source alpha overwrites the destination alpha. */
-    inline public static var MASK:String = "mask";
+    public static inline var MASK:String = "mask";
 
     /** Draws under/below existing objects; useful especially on RenderTextures. */
-    inline public static var BELOW:String = "below";
+    public static inline var BELOW:String = "below";
 
     // accessing modes
     

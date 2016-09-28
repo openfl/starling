@@ -9,7 +9,6 @@
 // =================================================================================================
 
 package starling.events;
-import starling.errors.AbstractClassError;
 
 /** A class that provides constant values for the phases of a touch object. 
  *  
@@ -29,23 +28,20 @@ import starling.errors.AbstractClassError;
  */
 class TouchPhase
 {
-    /** @private */
-    public function TouchPhase() { throw new AbstractClassError(); }
-    
     /** Only available for mouse input: the cursor hovers over an object <em>without</em> a 
      *  pressed button. */
-    inline public static var HOVER:String = "hover";
+    public static inline var HOVER:String = "hover";
     
     /** The finger touched the screen just now, or the mouse button was pressed. */
-    inline public static var BEGAN:String = "began";
+    public static inline var BEGAN:String = "began";
     
     /** The finger moves around on the screen, or the mouse is moved while the button is 
      *  pressed. */
-    inline public static var MOVED:String = "moved";
+    public static inline var MOVED:String = "moved";
     
     /** The finger or mouse (with pressed button) has not moved since the last frame. */
-    inline public static var STATIONARY:String = "stationary";
+    public static inline var STATIONARY:String = "stationary";
     
     /** The finger was lifted from the screen or from the mouse button. */
-    inline public static var ENDED:String = "ended";
+    public static inline var ENDED:String = "ended";
 }

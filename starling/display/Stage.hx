@@ -15,6 +15,7 @@ import flash.errors.IllegalOperationError;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
+
 import openfl.Vector;
 
 import starling.core.RenderSupport;
@@ -53,6 +54,9 @@ import starling.utils.MatrixUtil;
  *  @see starling.events.ResizeEvent  
  * 
  */
+
+@:access(starling.events.EnterFrameEvent)
+
 class Stage extends DisplayObjectContainer
 {
     private var mWidth:Int;
@@ -68,7 +72,7 @@ class Stage extends DisplayObjectContainer
     private static var sHelperMatrix:Matrix3D = new Matrix3D();
 
     /** @private */
-    public function new(width:Int, height:Int, color:UInt=0)
+    private function new(width:Int, height:Int, color:UInt=0)
     {
         super();
         mWidth = width;
@@ -167,13 +171,13 @@ class Stage extends DisplayObjectContainer
     // enter frame event optimization
     
     /** @private */
-    public function addEnterFrameListener(listener:DisplayObject):Void
+    private function addEnterFrameListener(listener:DisplayObject):Void
     {
         mEnterFrameListeners.push(listener);
     }
     
     /** @private */
-    public function removeEnterFrameListener(listener:DisplayObject):Void
+    private function removeEnterFrameListener(listener:DisplayObject):Void
     {
         var index:Int = mEnterFrameListeners.indexOf(listener);
         if (index >= 0) mEnterFrameListeners.splice(index, 1); 
@@ -186,7 +190,7 @@ class Stage extends DisplayObjectContainer
         if (eventType == Event.ENTER_FRAME && object == this)
         {
             var length:Int = mEnterFrameListeners.length;
-            for (i in 0 ... length)
+            for (i in 0...length)
                 listeners[listeners.length] = mEnterFrameListeners[i]; // avoiding 'push' 
         }
         else
@@ -196,61 +200,61 @@ class Stage extends DisplayObjectContainer
     // properties
     
     /** @private */
-    public override function set_width(value:Float):Float 
+    private override function set_width(value:Float):Float 
     { 
         throw new IllegalOperationError("Cannot set width of stage");
     }
     
     /** @private */
-    public override function set_height(value:Float):Float
+    private override function set_height(value:Float):Float
     {
         throw new IllegalOperationError("Cannot set height of stage");
     }
     
     /** @private */
-    public override function set_x(value:Float):Float
+    private override function set_x(value:Float):Float
     {
         throw new IllegalOperationError("Cannot set x-coordinate of stage");
     }
     
     /** @private */
-    public override function set_y(value:Float):Float
+    private override function set_y(value:Float):Float
     {
         throw new IllegalOperationError("Cannot set y-coordinate of stage");
     }
     
     /** @private */
-    public override function set_scaleX(value:Float):Float
+    private override function set_scaleX(value:Float):Float
     {
         throw new IllegalOperationError("Cannot scale stage");
     }
 
     /** @private */
-    public override function set_scaleY(value:Float):Float
+    private override function set_scaleY(value:Float):Float
     {
         throw new IllegalOperationError("Cannot scale stage");
     }
     
     /** @private */
-    public override function set_rotation(value:Float):Float
+    private override function set_rotation(value:Float):Float
     {
         throw new IllegalOperationError("Cannot rotate stage");
     }
     
     /** @private */
-    public override function set_skewX(value:Float):Float
+    private override function set_skewX(value:Float):Float
     {
         throw new IllegalOperationError("Cannot skew stage");
     }
     
     /** @private */
-    public override function set_skewY(value:Float):Float
+    private override function set_skewY(value:Float):Float
     {
         throw new IllegalOperationError("Cannot skew stage");
     }
     
     /** @private */
-    public override function set_filter(value:FragmentFilter):FragmentFilter
+    private override function set_filter(value:FragmentFilter):FragmentFilter
     {
         throw new IllegalOperationError("Cannot add filter to stage. Add it to 'root' instead!");
     }
@@ -269,18 +273,18 @@ class Stage extends DisplayObjectContainer
     /** The height of the stage coordinate system. Change it to scale its contents relative
      *  to the <code>viewPort</code> property of the Starling object. */
     public var stageHeight(get, set):Int;
-    public function get_stageHeight():Int { return mHeight; }
-    public function set_stageHeight(value:Int):Int { return mHeight = value; }
+    private function get_stageHeight():Int { return mHeight; }
+    private function set_stageHeight(value:Int):Int { return mHeight = value; }
 
     /** The distance between the stage and the camera. Changing this value will update the
      *  field of view accordingly. */
     public var focalLength(get, set):Float;
-    public function get_focalLength():Float
+    private function get_focalLength():Float
     {
         return mWidth / (2 * Math.tan(mFieldOfView/2));
     }
 
-    public function set_focalLength(value:Float):Float
+    private function set_focalLength(value:Float):Float
     {
         return mFieldOfView = 2 * Math.atan(stageWidth / (2*value));
     }
@@ -296,16 +300,16 @@ class Stage extends DisplayObjectContainer
      *  @default 1.0
      */
     public var fieldOfView(get, set):Float;
-    public function get_fieldOfView():Float { return mFieldOfView; }
-    public function set_fieldOfView(value:Float):Float { return mFieldOfView = value; }
+    private function get_fieldOfView():Float { return mFieldOfView; }
+    private function set_fieldOfView(value:Float):Float { return mFieldOfView = value; }
 
     /** A vector that moves the camera away from its default position in the center of the
      *  stage. Use this property to change the center of projection, i.e. the vanishing
      *  point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
      */
     public var projectionOffset(get, set):Point;
-    public function get_projectionOffset():Point { return mProjectionOffset; }
-    public function set_projectionOffset(value:Point):Point
+    private function get_projectionOffset():Point { return mProjectionOffset; }
+    private function set_projectionOffset(value:Point):Point
     {
         mProjectionOffset.setTo(value.x, value.y);
         return mProjectionOffset;
@@ -319,7 +323,7 @@ class Stage extends DisplayObjectContainer
      *  <p>CAUTION: not a copy, but the actual object!</p>
      */
     public var cameraPosition(get, never):Vector3D;
-    public function get_cameraPosition():Vector3D
+    private function get_cameraPosition():Vector3D
     {
         return getCameraPosition(null, mCameraPosition);
     }

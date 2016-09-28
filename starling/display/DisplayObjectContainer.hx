@@ -18,11 +18,10 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
 import flash.system.Capabilities;
+
 import openfl.Vector;
-//import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
-import starling.errors.AbstractClassError;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
 import starling.utils.MatrixUtil;
@@ -65,6 +64,9 @@ import starling.utils.Max;
  *  @see Sprite
  *  @see DisplayObject
  */
+
+@:access(starling.events.Event)
+
 class DisplayObjectContainer extends DisplayObject
 {
     // members
@@ -81,24 +83,16 @@ class DisplayObjectContainer extends DisplayObject
     // construction
     
     /** @private */
-    public function new()
+    private function new()
     {
         super();
-        /*
-        if (Capabilities.isDebugger &&
-            Type.getClassName(this) == "starling.display::DisplayObjectContainer")
-        {
-            throw new AbstractClassError();
-        }
-        */
-        
+
         mChildren = new Vector<DisplayObject>();
     }
     
     /** Disposes the resources of all children. */
     public override function dispose():Void
     {
-        //for (var i:Int=mChildren.length-1; i>=0; --i)
         var i:Int = mChildren.length - 1;
         while (i >= 0)
         {
@@ -200,7 +194,6 @@ class DisplayObjectContainer extends DisplayObject
             endIndex = numChildren - 1;
         
         var i:Int = beginIndex;
-        //for (var i:Int=beginIndex; i<=endIndex; ++i)
         while (i <= endIndex)
         {
             removeChildAt(beginIndex, dispose);
@@ -227,7 +220,7 @@ class DisplayObjectContainer extends DisplayObject
     public function getChildByName(name:String):DisplayObject
     {
         var numChildren:Int = mChildren.length;
-        for (i in 0 ... numChildren)
+        for (i in 0...numChildren)
             if (mChildren[i].name == name) return mChildren[i];
 
         return null;
@@ -312,7 +305,7 @@ class DisplayObjectContainer extends DisplayObject
             var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
 
             var i:Int = 0;
-            for (i in 0 ... numChildren)
+            for (i in 0...numChildren)
             {
                 mChildren[i].getBounds(targetSpace, resultRect);
 
@@ -341,7 +334,7 @@ class DisplayObjectContainer extends DisplayObject
         
         //for (var i:Int = numChildren - 1; i >= 0; --i) // front to back!
         var i:Int = numChildren - 1;
-        while(i >= 0)
+        while (i >= 0)
         {
             var child:DisplayObject = mChildren[i];
             if (child.isMask) continue;
@@ -366,7 +359,7 @@ class DisplayObjectContainer extends DisplayObject
         var numChildren:Int = mChildren.length;
         var blendMode:String = support.blendMode;
         
-        for (i in 0 ... numChildren)
+        for (i in 0...numChildren)
         {
             var child:DisplayObject = mChildren[i];
             
@@ -407,7 +400,7 @@ class DisplayObjectContainer extends DisplayObject
         getChildEventListeners(this, event.type, sBroadcastListeners);
         var toIndex:Int = sBroadcastListeners.length;
         
-        for(i in fromIndex ... toIndex)
+        for (i in fromIndex...toIndex)
             sBroadcastListeners[i].dispatchEvent(event);
         
         sBroadcastListeners.length = fromIndex;
@@ -457,7 +450,7 @@ class DisplayObjectContainer extends DisplayObject
             mergeSort(input, compareFunc, startIndex + halfLength, length - halfLength, buffer);
             
             // merge the vectors, using the buffer vector for temporary storage
-            for (i in 0 ... length)
+            for (i in 0...length)
             {
                 // Check to see if any elements remain in the left vector; 
                 // if so, we check if there are any elements left in the right vector;
@@ -477,7 +470,7 @@ class DisplayObjectContainer extends DisplayObject
             }
             
             // copy the sorted subvector back to the input
-            for (i in startIndex ... endIndex)
+            for (i in startIndex...endIndex)
                 input[i] = buffer[i - startIndex];
         }
     }
@@ -540,7 +533,7 @@ class DisplayObjectContainer extends DisplayObject
             var children:Vector<DisplayObject> = container.mChildren;
             var numChildren:Int = children.length;
             
-            for (i in 0 ... numChildren)
+            for (i in 0...numChildren)
                 getChildEventListeners(children[i], eventType, listeners);
         }
     }

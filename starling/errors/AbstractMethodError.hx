@@ -9,7 +9,8 @@
 // =================================================================================================
 
 package starling.errors;
-import openfl.errors.Error;
+
+import flash.errors.Error;
 
 /** An AbstractMethodError is thrown when you attempt to call an abstract method. */
 class AbstractMethodError extends Error

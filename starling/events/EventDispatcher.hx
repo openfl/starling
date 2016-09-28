@@ -9,14 +9,12 @@
 // =================================================================================================
 
 package starling.events;
-//import flash.utils.Dictionary;
 
-//import starling.core.starling_internal;
 import haxe.Constraints.Function;
-import openfl.Vector;
-import starling.display.DisplayObject;
 
-//use namespace starling_internal;
+import openfl.Vector;
+
+import starling.display.DisplayObject;
 
 /** The EventDispatcher class is the base class for all classes that dispatch events. 
  *  This is the Starling version of the Flash class with the same name. 
@@ -36,6 +34,9 @@ import starling.display.DisplayObject;
  *  @see Event
  *  @see starling.display.DisplayObject DisplayObject
  */
+
+@:access(starling.events.Event)
+
 class EventDispatcher
 {
     private var mEventListeners:Map<String, Vector<Function>>;
@@ -90,7 +91,7 @@ class EventDispatcher
                     var restListeners:Vector<Function> = listeners.slice(0, index);
 
                     //for (var i:Int=index+1; i<numListeners; ++i)
-                    for (i in index + 1 ... numListeners)
+                    for (i in index + 1...numListeners)
                         restListeners[i-1] = listeners[i];
 
                     mEventListeners[type] = restListeners;
@@ -136,7 +137,7 @@ class EventDispatcher
      *  Invokes an event on the current object. This method does not do any bubbling, nor
      *  does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      *  method uses this method internally. */
-    public function invokeEvent(event:Event):Bool
+    private function invokeEvent(event:Event):Bool
     {
         var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
@@ -149,7 +150,7 @@ class EventDispatcher
             // when somebody modifies the list while we're looping, "addEventListener" is not
             // problematic, and "removeEventListener" will create a new Vector, anyway.
             
-            for (i in 0 ... numListeners)
+            for (i in 0...numListeners)
             {
                 var listener:Function = listeners[i];
                 #if flash
@@ -176,7 +177,7 @@ class EventDispatcher
     }
     
     /** @private */
-    public function bubbleEvent(event:Event):Void
+    private function bubbleEvent(event:Event):Void
     {
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.
@@ -191,7 +192,7 @@ class EventDispatcher
         while ((element = element.parent) != null)
             chain[length++] = element;
 
-        for (i in 0 ... length)
+        for (i in 0...length)
         {
             if (chain[i] == null) continue;
             var stopPropagation:Bool = chain[i].invokeEvent(event);

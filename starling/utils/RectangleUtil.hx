@@ -9,12 +9,11 @@
 // =================================================================================================
 
 package starling.utils;
-import openfl.errors.ArgumentError;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
 
-import starling.errors.AbstractClassError;
+import flash.errors.ArgumentError;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 
 /** A utility class containing methods related to the Rectangle class. */
 class RectangleUtil
@@ -24,14 +23,11 @@ class RectangleUtil
     private static var sPositions:Array<Point> =
         [ new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1) ];
 
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-
-	/** The largest representable number. */
-    inline private static var MAX_VALUE:Float = 1.79e+308;
+    /** The largest representable number. */
+    private static inline var MAX_VALUE:Float = 1.79e+308;
 
     /** The largest representable number. */
-    inline private static var MIN_VALUE:Float = 5e-324;
+    private static inline var MIN_VALUE:Float = 5e-324;
     
     /** Calculates the intersection between two Rectangles. If the rectangles do not intersect,
      *  this method returns an empty Rectangle object with its properties set to 0. */
@@ -153,7 +149,7 @@ class RectangleUtil
         var minX:Float = MAX_VALUE, maxX:Float = -MAX_VALUE;
         var minY:Float = MAX_VALUE, maxY:Float = -MAX_VALUE;
         
-        for (i in 0 ... 4)
+        for (i in 0...4)
         {
             MatrixUtil.transformCoords(transformationMatrix,
                 sPositions[i].x * rectangle.width, sPositions[i].y * rectangle.height,

@@ -9,11 +9,11 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.display3D.Context3DProfile;
 
 import flash.errors.Error;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DBufferUsage;
+import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DMipFilter;
 import flash.display3D.Context3DTextureFilter;
@@ -27,8 +27,8 @@ import flash.errors.IllegalOperationError;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
-//import flash.utils.Dictionary;
-//import flash.utils.getQualifiedClassName;
+
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -39,8 +39,6 @@ import starling.filters.FragmentFilterMode;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.VertexData;
-
-import openfl.Vector;
 
 /** Optimizes rendering of a number of quads with an identical state.
  * 
@@ -67,18 +65,20 @@ import openfl.Vector;
  *  and pass appropriate values for transformation matrix, alpha and blend mode.</p>
  *
  *  @see Sprite  
- */ 
+ */
+
+@:access(starling.filters.FragmentFilter)
+
 class QuadBatch extends DisplayObject
 {
     /** The maximum number of quads that can be displayed by one QuadBatch. */
-    inline public static var MAX_NUM_QUADS:Int = 16383;
+    public static inline var MAX_NUM_QUADS:Int = 16383;
     
-    inline private static var QUAD_PROGRAM_NAME:String = "QB_q";
+    private static inline var QUAD_PROGRAM_NAME:String = "QB_q";
     
     private var mNumQuads:Int;
     private var mSyncRequired:Bool;
     private var mBatchable:Bool;
-    private var mDynamicDraw:Bool;
     private var mForceTinted:Bool;
     private var mOwnsTexture:Bool;
 
@@ -120,8 +120,6 @@ class QuadBatch extends DisplayObject
             var profile:Context3DProfile = Starling.current.profile;
             mForceTinted = profile != Context3DProfile.BASELINE_CONSTRAINED && profile != Context3DProfile.BASELINE;
         }
-
-        mDynamicDraw = true;
 
         // Handle lost context. We use the conventional event here (not the one from Starling)
         // so we're able to create a weak event listener; this avoids memory leaks when people 
@@ -171,7 +169,6 @@ class QuadBatch extends DisplayObject
         clone.mForceTinted = mForceTinted;
         clone.blendMode = blendMode;
         clone.alpha = alpha;
-        clone.dynamicDraw = mDynamicDraw;
         return clone;
     }
     
@@ -196,7 +193,7 @@ class QuadBatch extends DisplayObject
         if (numVertices == 0) return;
         if (context == null)  throw new MissingContextError();
         
-        mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX, mDynamicDraw ? Context3DBufferUsage.DYNAMIC_DRAW : Context3DBufferUsage.STATIC_DRAW);
+        mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
         mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
         
         mIndexBuffer = context.createIndexBuffer(numIndices);
@@ -267,7 +264,6 @@ class QuadBatch extends DisplayObject
         
         if (mTexture != null)
         {
-            context.setSamplerStateAt(0, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
             context.setTextureAt(0, mTexture.base);
             context.setVertexBufferAt(2, mVertexBuffer, VertexData.TEXCOORD_OFFSET, 
                                       Context3DVertexBufferFormat.FLOAT_2);
@@ -435,7 +431,7 @@ class QuadBatch extends DisplayObject
     /** Updates the color of a specific quad. */
     public function setQuadColor(quadID:Int, color:UInt):Void
     {
-        for (i in 0 ... 4)
+        for (i in 0...4)
             mVertexData.setColor(quadID * 4 + i, color);
         
         mSyncRequired = true;
@@ -450,7 +446,7 @@ class QuadBatch extends DisplayObject
     /** Updates the alpha value of a specific quad. */
     public function setQuadAlpha(quadID:Int, alpha:Float):Void
     {
-        for (i in 0 ... 4)
+        for (i in 0...4)
             mVertexData.setAlpha(quadID * 4 + i, alpha);
         
         mSyncRequired = true;
@@ -525,11 +521,9 @@ class QuadBatch extends DisplayObject
     public static function optimize(quadBatches:Vector<QuadBatch>):Void
     {
         var batch1:QuadBatch, batch2:QuadBatch;
-        //for (var i:Int=0; i<quadBatches.length; ++i)
-        for (i in 0 ... quadBatches.length)
+        for (i in 0...quadBatches.length)
         {
             batch1 = quadBatches[i];
-            //for (var j:Int=i+1; j<quadBatches.length; )
             var j:Int = i + 1;
             while (j < quadBatches.length)
             {
@@ -576,7 +570,6 @@ class QuadBatch extends DisplayObject
             ignoreCurrentFilter = true;
             if (quadBatches.length == 0) quadBatches[0] = new QuadBatch(true);
             else { quadBatches[0].reset(); quadBatches[0].ownsTexture = false; }
-            quadBatches[0].dynamicDraw = false;
         }
         else
         {
@@ -599,8 +592,7 @@ class QuadBatch extends DisplayObject
                                         transformationMatrix, alpha, blendMode);
 
             // textures of a compiled filter need to be disposed!
-            if (!filter.isCached)
-                quadBatches[quadBatchID].ownsTexture = true;
+            quadBatches[quadBatchID].ownsTexture = true;
 
             if (filter.mode == FragmentFilterMode.BELOW)
             {
@@ -613,7 +605,7 @@ class QuadBatch extends DisplayObject
             var numChildren:Int = container.numChildren;
             var childMatrix:Matrix = new Matrix();
             
-            for (i in 0 ... numChildren)
+            for (i in 0...numChildren)
             {
                 var child:DisplayObject = container.getChildAt(i);
                 if (child.hasVisibleArea)
@@ -656,12 +648,7 @@ class QuadBatch extends DisplayObject
                                         smoothing, blendMode, numQuads))
             {
                 quadBatchID++;
-                if (quadBatches.length <= quadBatchID)
-                {
-                    var qb:QuadBatch = new QuadBatch(true);
-                    qb.dynamicDraw = false;
-                    quadBatches.push(qb);
-                }
+                if (quadBatches.length <= quadBatchID) quadBatches.push(new QuadBatch(true));
                 quadBatch = quadBatches[quadBatchID];
                 quadBatch.reset();
                 quadBatch.ownsTexture = false;
@@ -680,7 +667,6 @@ class QuadBatch extends DisplayObject
         if (isRootObject)
         {
             // remove unused batches
-            //for (i=quadBatches.length-1; i>quadBatchID; --i)
             i = quadBatches.length - 1;
             while (i > quadBatchID)
             {
@@ -724,12 +710,6 @@ class QuadBatch extends DisplayObject
     private function get_batchable():Bool { return mBatchable; }
     private function set_batchable(value:Bool):Bool { return mBatchable = value; }
     
-    /*** Indicates if the batch should optimize drawing for the data that changes repeatedly.
-     * @default true */
-    public var dynamicDraw(get, set):Bool;
-    private function get_dynamicDraw():Bool { return mDynamicDraw; }
-    private function set_dynamicDraw(value:Bool):Bool { return mDynamicDraw = value; }
-    
     /** If enabled, the QuadBatch will always be rendered with a tinting-enabled fragment
      *  shader and the method 'isStateChange' won't take tinting into account. This means
      *  fewer state changes, but also a slightly more complex fragment shader for non-tinted
@@ -767,7 +747,7 @@ class QuadBatch extends DisplayObject
         mVertexData.numVertices = value * 4;
         mIndexData.length = value * 6;
         
-        for (i in oldCapacity ... value)
+        for (i in oldCapacity...value)
         {
             mIndexData[i*6] = i*4;
             mIndexData[i*6+1] = i*4 + 1;

@@ -9,12 +9,13 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display3D.Context3D;
+import flash.display3D.Context3DTextureFormat;
 import flash.display3D.VertexBuffer3D;
 import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
-import openfl.display3D.Context3DTextureFormat;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -24,7 +25,6 @@ import starling.display.Image;
 import starling.errors.MissingContextError;
 import starling.filters.FragmentFilter;
 import starling.utils.SystemUtil;
-//import starling.utils.execute;
 import starling.utils.PowerOfTwo.getNextPowerOfTwo;
 
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
@@ -70,8 +70,8 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  */
 class RenderTexture extends SubTexture
 {
-    inline private static var CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
-    inline private static var PMA:Bool = true;
+    private static inline var CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
+    private static inline var PMA:Bool = true;
     
     private var mActiveTexture:Texture;
     private var mBufferTexture:Texture;
@@ -283,7 +283,7 @@ class RenderTexture extends SubTexture
     
     /** On the iPad 1 (and maybe other hardware?) clearing a non-POT RectangleTexture causes
      *  an error in the next "createVertexBuffer" call. Thus, we're forced to make this
-     *  really ... elegant check here. */
+     *  really...elegant check here. */
     private var supportsNonPotDimensions(get, never):Bool;
     private function get_supportsNonPotDimensions():Bool
     {
@@ -340,11 +340,11 @@ class RenderTexture extends SubTexture
 
     /** Indicates if the texture is persistent over multiple draw calls. */
     public var isPersistent(get, never):Bool;
-    public function get_isPersistent():Bool { return mIsPersistent; }
+    private function get_isPersistent():Bool { return mIsPersistent; }
     
     /** @inheritDoc */
-    public override function get_base():TextureBase { return mActiveTexture.base; }
+    private override function get_base():TextureBase { return mActiveTexture.base; }
     
     /** @inheritDoc */
-    public override function get_root():ConcreteTexture { return mActiveTexture.root; }
+    private override function get_root():ConcreteTexture { return mActiveTexture.root; }
 }

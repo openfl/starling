@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.errors.ArgumentError;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -162,7 +163,7 @@ class Quad extends DisplayObject
     }
     
     /** @inheritDoc **/
-    public override function set_alpha(value:Float):Float
+    private override function set_alpha(value:Float):Float
     {
         super.set_alpha(value);
         

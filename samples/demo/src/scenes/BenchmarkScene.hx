@@ -14,8 +14,8 @@ import starling.utils.StringUtil.formatString;
 
 @:keep class BenchmarkScene extends Scene
 {
-    inline private static var FRAME_TIME_WINDOW_SIZE:Int = 10;
-    inline private static var MAX_FAIL_COUNT:Int = 100;
+    private static inline var FRAME_TIME_WINDOW_SIZE:Int = 10;
+    private static inline var MAX_FAIL_COUNT:Int = 100;
 
     private var mStartButton:Button;
     private var mResultText:TextField;
@@ -86,7 +86,7 @@ import starling.utils.StringUtil.formatString;
         mFailCount = 0;
         mPhase = 0;
 
-        for (i in 0 ... FRAME_TIME_WINDOW_SIZE)
+        for (i in 0...FRAME_TIME_WINDOW_SIZE)
             mFrameTimes[i] = 1.0 / mTargetFps;
 
         if (mResultText != null)
@@ -104,7 +104,7 @@ import starling.utils.StringUtil.formatString;
         mContainer.rotation += event.passedTime * 0.5;
         mFrameTimes[FRAME_TIME_WINDOW_SIZE] = 0.0;
 
-        for (i in 0 ... FRAME_TIME_WINDOW_SIZE)
+        for (i in 0...FRAME_TIME_WINDOW_SIZE)
             mFrameTimes[i] += passedTime;
 
         var measuredFps:Float = FRAME_TIME_WINDOW_SIZE / mFrameTimes.shift();
@@ -149,7 +149,7 @@ import starling.utils.StringUtil.formatString;
     {
         var scale:Float = 1.0 / mContainer.scale;
 
-        for (i in 0 ... count)
+        for (i in 0...count)
         {
             var egg:DisplayObject = getObjectFromPool();
             var distance:Float = (100 + Math.random() * 100) * scale;
@@ -171,7 +171,7 @@ import starling.utils.StringUtil.formatString;
         if (count >= numChildren)
             count  = numChildren;
 
-        for (i in 0 ... count)
+        for (i in 0...count)
             putObjectToPool(mContainer.removeChildAt(mContainer.numChildren-1));
     }
 

@@ -10,7 +10,6 @@
 
 package starling.utils;
 
-import starling.errors.AbstractClassError;
 import openfl.Vector;
 
 /** A utility class containing methods related to the Vector class.
@@ -20,9 +19,6 @@ import openfl.Vector;
  *  can be used to avoid that.</p> */
 class VectorUtil
 {
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-
     /** Inserts a value into the 'int'-Vector at the specified index. Supports negative
      *  indices (counting from the end); gaps will be filled up with zeroes. */
     public static function insertIntAt(vector:Vector<Int>, index:UInt, value:Int):Void
@@ -35,7 +31,7 @@ class VectorUtil
 
         //for (i = index - 1; i >= length; --i)
         i = index - 1;
-        while(i >= length)
+        while (i >= length)
         {
             vector[i] = 0;
             --i;
@@ -43,7 +39,7 @@ class VectorUtil
 
         //for (i = length; i > index; --i)
         i = length;
-        while(i > index)
+        while (i > index)
         {
             vector[i] = vector[i-1];
             --i;
@@ -65,7 +61,7 @@ class VectorUtil
         var value:Int = vector[index];
 
         //for (i = index+1; i < length; ++i)
-        for(i in index + 1 ... length)
+        for (i in index + 1...length)
             vector[i-1] = vector[i];
 
         vector.length = vector.length - 1;
@@ -84,7 +80,7 @@ class VectorUtil
 
         //for (i = index - 1; i >= length; --i)
         i = index - 1;
-        while(i >= length)
+        while (i >= length)
         {
             vector[i] = 0;
            --i;
@@ -92,7 +88,7 @@ class VectorUtil
 
         //for (i = length; i > index; --i)
         i = length;
-        while(i > index)
+        while (i > index)
         {
             vector[i] = vector[i-1];
             --i;
@@ -114,7 +110,7 @@ class VectorUtil
         var value:UInt = vector[index];
 
         //for (i = index+1; i < length; ++i)
-        for(i in index + 1 ... length)
+        for (i in index + 1...length)
             vector[i-1] = vector[i];
 
         vector.length = length - 1;
@@ -133,7 +129,7 @@ class VectorUtil
 
         //for (i = index - 1; i >= length; --i)
         i = index - 1;
-        while(i >= length)
+        while (i >= length)
         {
             vector[i] = Math.NaN;
             --i;
@@ -141,7 +137,7 @@ class VectorUtil
 
         //for (i = length; i > index; --i)
         i = length;
-        while(i > index)
+        while (i > index)
         {
             vector[i] = vector[i-1];
             --i;
@@ -163,7 +159,7 @@ class VectorUtil
         var value:Float = vector[index];
 
         //for (i = index+1; i < length; ++i)
-        for(i in index + 1 ... length)
+        for (i in index + 1...length)
             vector[i-1] = vector[i];
 
         vector.length = length - 1;

@@ -9,22 +9,18 @@
 // =================================================================================================
 
 package starling.utils;
-import starling.errors.AbstractClassError;
 
 /** A class that provides constant values for horizontal alignment of objects. */
 class HAlign
 {
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-    
     /** Left alignment. */
-    inline public static var LEFT:String   = "left";
+    public static inline var LEFT:String   = "left";
     
     /** Centered alignement. */
-    inline public static var CENTER:String = "center";
+    public static inline var CENTER:String = "center";
     
     /** Right alignment. */
-    inline public static var RIGHT:String  = "right";
+    public static inline var RIGHT:String  = "right";
     
     /** Indicates whether the given alignment string is valid. */
     public static function isValid(hAlign:String):Bool

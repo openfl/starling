@@ -14,6 +14,8 @@ import flash.display.Bitmap;
 import flash.display.Loader;
 import flash.display.LoaderInfo;
 import flash.display3D.Context3DTextureFormat;
+import flash.errors.ArgumentError;
+import flash.errors.Error;
 import flash.events.HTTPStatusEvent;
 import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
@@ -32,19 +34,11 @@ import flash.system.ImageDecodingPolicy;
 #end
 import flash.system.LoaderContext;
 import flash.system.System;
-import openfl.utils.ByteArray;
-#if 0
-import flash.utils.Dictionary;
-import flash.utils.describeType;
-import flash.utils.getQualifiedClassName;
-#end
-#if 0
-import flash.utils.setTimeout;
-#end
+
 import haxe.Json;
 import haxe.Timer;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
+
+import openfl.utils.ByteArray;
 import openfl.Vector;
 
 import starling.core.Starling;
@@ -138,7 +132,7 @@ typedef QueuedAsset = {
 class AssetManager extends EventDispatcher
 {
     // This HTTPStatusEvent is only available in AIR
-    inline private static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+    private static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
     private var mStarling:Starling;
     private var mNumLostTextures:Int;
@@ -701,8 +695,7 @@ class AssetManager extends EventDispatcher
             var sum:Float = 0.0;
             var len:Int = assetProgress.length;
 
-            //for (i=0; i<len; ++i)
-            for (i in 0 ... len)
+            for (i in 0...len)
                 sum += assetProgress[i];
 
             onProgress(sum / len * PROGRESS_PART_ASSETS);
@@ -802,12 +795,10 @@ class AssetManager extends EventDispatcher
             }, 1);
         }
         
-        //for (i=0; i<assetCount; ++i)
-        for (i in 0 ... assetCount)
+        for (i in 0...assetCount)
             assetProgress[i] = 0.0;
 
-        //for (i=0; i<mNumConnections; ++i)
-        for (i in 0 ... mNumConnections)
+        for (i in 0...mNumConnections)
             loadNextQueueElement();
 
         ArrayUtil.clear(mQueue);
@@ -1079,17 +1070,15 @@ class AssetManager extends EventDispatcher
                     bytes.clear();
                     complete(sound);
                 case "jpg", "jpeg", "png", "gif":
-                    #if 0
                     var loaderContext:LoaderContext = new LoaderContext(mCheckPolicyFile);
-                    #end
                     var loader:Loader = new Loader();
-                    #if 0
+                    #if flash
                     loaderContext.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
                     #end
                     loaderInfo = loader.contentLoaderInfo;
                     loaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIoError);
                     loaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
-                    loader.loadBytes(bytes #if 0, loaderContext #end);
+                    loader.loadBytes(bytes, loaderContext);
                 default: // any XML / JSON / binary data 
                     complete(bytes);
             }
@@ -1234,7 +1223,7 @@ class AssetManager extends EventDispatcher
         
         // find first meaningful letter
         
-        for (i in start ... length)
+        for (i in start...length)
         {
             var byte:Int = bytes[i];
             if (byte == 0 || byte == 10 || byte == 13 || byte == 32) continue; // null, \n, \r, space
@@ -1262,7 +1251,7 @@ class AssetManager extends EventDispatcher
     {
         if (headers != null)
         {
-            for(header in headers)
+            for (header in headers)
                 if (header.name == headerName) return header.value;
         }
         return null;
@@ -1319,7 +1308,7 @@ class AssetManager extends EventDispatcher
     
     /** Indicates if a queue is currently being loaded. */
     public var isLoading(get, never):Bool;
-    public function get_isLoading():Bool { return mNumLoadingQueues > 0; }
+    private function get_isLoading():Bool { return mNumLoadingQueues > 0; }
 
     /** For bitmap textures, this flag indicates if mip maps should be generated when they 
      *  are loaded; for ATF textures, it indicates if mip maps are valid and should be
@@ -1331,20 +1320,20 @@ class AssetManager extends EventDispatcher
     /** Textures that are created from Bitmaps or ATF files will have the repeat setting
      *  assigned here. @default false */
     public var textureRepeat(get, set):Bool;
-    public function get_textureRepeat():Bool { return mDefaultTextureOptions.repeat; }
-    public function set_textureRepeat(value:Bool):Bool { return mDefaultTextureOptions.repeat = value; }
+    private function get_textureRepeat():Bool { return mDefaultTextureOptions.repeat; }
+    private function set_textureRepeat(value:Bool):Bool { return mDefaultTextureOptions.repeat = value; }
 
     /** Textures that are created from Bitmaps or ATF files will have the scale factor 
      *  assigned here. @default 1 */
     public var scaleFactor(get, set):Float;
-    public function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
-    public function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
+    private function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
+    private function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
 
     /** Textures that are created from Bitmaps will be uploaded to the GPU with the
      *  <code>Context3DTextureFormat</code> assigned to this property. @default "bgra" */
     public var textureFormat(get, set):Context3DTextureFormat;
-    public function get_textureFormat():Context3DTextureFormat { return mDefaultTextureOptions.format; }
-    public function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return mDefaultTextureOptions.format = value; }
+    private function get_textureFormat():Context3DTextureFormat { return mDefaultTextureOptions.format; }
+    private function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return mDefaultTextureOptions.format = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      *  loading an object from a remote server. More information about this topic can be found 
@@ -1364,12 +1353,12 @@ class AssetManager extends EventDispatcher
      *  If true, you can access an XML under the same name as the bitmap font.
      *  If false, XMLs will be disposed when the font was created. @default false. */
     public var keepFontXmls(get, set):Bool;
-    public function get_keepFontXmls():Bool { return mKeepFontXmls; }
-    public function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
+    private function get_keepFontXmls():Bool { return mKeepFontXmls; }
+    private function set_keepFontXmls(value:Bool):Bool { return mKeepFontXmls = value; }
 
     /** The maximum number of parallel connections that are spawned when loading the queue.
      *  More connections can reduce loading times, but require more memory. @default 3. */
     public var numConnections(get, set):Int;
-    public function get_numConnections():Int { return mNumConnections; }
-    public function set_numConnections(value:Int):Int { return mNumConnections = value; }
+    private function get_numConnections():Int { return mNumConnections; }
+    private function set_numConnections(value:Int):Int { return mNumConnections = value; }
 }

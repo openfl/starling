@@ -9,7 +9,7 @@
 // =================================================================================================
 
 package starling.utils;
-import starling.errors.AbstractClassError;
+
 import openfl.Vector;
 
 /** A utility class containing methods related to the Array class.
@@ -19,9 +19,6 @@ import openfl.Vector;
  *  can be used to avoid that.</p> */
 class ArrayUtil
 {
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-    
     public static function resize<T>(arr:Array<T>, newLength:Int, defaultValue:T = null):Void
     {
         var length:Int = arr.length;
@@ -29,7 +26,7 @@ class ArrayUtil
             arr.splice(newLength, length - newLength);
         else if (newLength > length)
         {
-            for (i in length ... newLength)
+            for (i in length...newLength)
                 arr[i] = defaultValue;
         }
     }

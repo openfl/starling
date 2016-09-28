@@ -9,10 +9,13 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
+import flash.errors.Error;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
@@ -21,12 +24,8 @@ import flash.media.Camera;
 #end
 import flash.net.NetStream;
 import flash.utils.ByteArray;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
+
 import haxe.Constraints.Function;
-import openfl.display3D.Context3DTextureFormat;
-import openfl.errors.Error;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -34,14 +33,11 @@ import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.events.Event;
 import starling.utils.Color;
-//import starling.utils.execute;
-
-//use namespace starling_internal;
 
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture. */
 class ConcreteTexture extends Texture
 {
-    inline private static var TEXTURE_READY:String = "textureReady"; // defined here for backwards compatibility
+    private static inline var TEXTURE_READY:String = "textureReady"; // defined here for backwards compatibility
     
     private var mBase:TextureBase;
     private var mFormat:Context3DTextureFormat;
@@ -118,9 +114,9 @@ class ConcreteTexture extends Texture
             data = potData;
         }
         
-        if (Std.is(mBase, openfl.display3D.textures.Texture))
+        if (Std.is(mBase, flash.display3D.textures.Texture))
         {
-            var potTexture:openfl.display3D.textures.Texture = 
+            var potTexture:flash.display3D.textures.Texture = 
                 cast mBase;
             
             potTexture.uploadFromBitmapData(data);
@@ -148,10 +144,10 @@ class ConcreteTexture extends Texture
                 canvas.dispose();
             }
         }
-        else if (Std.is(mBase, openfl.display3D.textures.RectangleTexture))
+        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
         {
-            var baseTexrue:openfl.display3D.textures.RectangleTexture = cast mBase;
-            baseTexrue.uploadFromBitmapData(data);
+            var baseTexture:flash.display3D.textures.RectangleTexture = cast mBase;
+            baseTexture.uploadFromBitmapData(data);
         }
         
         if (potData != null) potData.dispose();
@@ -216,11 +212,7 @@ class ConcreteTexture extends Texture
     private function onTextureReady(event:Dynamic):Void
     {
         mBase.removeEventListener(TEXTURE_READY, onTextureReady);
-        #if 0
-        execute(mTextureReadyCallback, this);
-        #else
-        mTextureReadyCallback(this);
-        #end
+        if (mTextureReadyCallback != null) mTextureReadyCallback(this);
         mTextureReadyCallback = null;
     }
     
@@ -243,18 +235,20 @@ class ConcreteTexture extends Texture
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
-        var className:String = Type.getClassName(Type.getClass(mBase));
+        var classType = Type.getClass(mBase);
         
-        if (className == "flash.display3D.textures.Texture")
+        if (Std.is(classType, flash.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
-        else if (className == "flash.display3D.textures.RectangleTexture")
-            mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createRectangleTexture"), [mWidth, mHeight, mFormat,
-                                                      mOptimizedForRenderTexture]);
-        else if (className == "flash.display3D.textures.VideoTexture")
+        else if (Std.is(classType, flash.display3D.textures.RectangleTexture))
+            mBase = context.createRectangleTexture (mWidth, mHeight, mFormat,
+                                                      mOptimizedForRenderTexture);
+        #if flash
+        else if (Std.is(classType, flash.display3D.textures.VideoTexture))
             mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
+        #end
         else
-            throw new NotSupportedError("Texture type not supported: " + className);
+            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(classType));
 
         mDataUploaded = false;
     }
@@ -311,35 +305,35 @@ class ConcreteTexture extends Texture
     }
     
     /** @inheritDoc */
-    public override function get_base():TextureBase { return mBase; }
+    private override function get_base():TextureBase { return mBase; }
     
     /** @inheritDoc */
-    public override function get_root():ConcreteTexture { return this; }
+    private override function get_root():ConcreteTexture { return this; }
     
     /** @inheritDoc */
-    public override function get_format():Context3DTextureFormat { return mFormat; }
+    private override function get_format():Context3DTextureFormat { return mFormat; }
     
     /** @inheritDoc */
-    public override function get_width():Float  { return mWidth / mScale;  }
+    private override function get_width():Float  { return mWidth / mScale;  }
     
     /** @inheritDoc */
-    public override function get_height():Float { return mHeight / mScale; }
+    private override function get_height():Float { return mHeight / mScale; }
     
     /** @inheritDoc */
-    public override function get_nativeWidth():Float { return mWidth; }
+    private override function get_nativeWidth():Float { return mWidth; }
     
     /** @inheritDoc */
-    public override function get_nativeHeight():Float { return mHeight; }
+    private override function get_nativeHeight():Float { return mHeight; }
     
     /** The scale factor, which influences width and height properties. */
-    public override function get_scale():Float { return mScale; }
+    private override function get_scale():Float { return mScale; }
     
     /** @inheritDoc */
-    public override function get_mipMapping():Bool { return mMipMapping; }
+    private override function get_mipMapping():Bool { return mMipMapping; }
     
     /** @inheritDoc */
-    public override function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
+    private override function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
     
     /** @inheritDoc */
-    public override function get_repeat():Bool { return mRepeat; }
+    private override function get_repeat():Bool { return mRepeat; }
 }

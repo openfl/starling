@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.core;
+
 import flash.system.System;
 
 import starling.display.BlendMode;
@@ -42,7 +43,7 @@ class StatsDisplay extends Sprite
     {
         super();
         mBackground = new Quad(70, 45, 0x0);
-        mTextField = new TextField(68, 45, "", "Verdana", 12, 0xffffffff);
+        mTextField = new TextField(68, 45, "", "Verdana", 12, 0xffffff);
         mTextField.x = 2;
         mTextField.hAlign = HAlign.LEFT;
         mTextField.vAlign = VAlign.TOP;
@@ -50,7 +51,7 @@ class StatsDisplay extends Sprite
         addChild(mBackground);
         addChild(mTextField);
         
-        //blendMode = BlendMode.NONE;
+        blendMode = BlendMode.NONE;
         
         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
@@ -116,9 +117,4 @@ class StatsDisplay extends Sprite
     public var memory(get, set):Float;
     private function get_memory():Float { return mMemory; }
     private function set_memory(value:Float):Float { return mMemory = value; }
-
-    /** The font statsCounter is rendered with. */
-    public var fontName(get, set):String;
-    private function get_fontName():String { return mTextField.fontName; }
-    private function set_fontName(value:String):String { return mTextField.fontName = value; }
 }

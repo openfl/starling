@@ -10,10 +10,14 @@
 
 package starling.animation;
 
-import openfl.errors.ArgumentError;
+import flash.errors.ArgumentError;
+
+import haxe.Constraints.Function;
+
+import openfl.Vector;
+
 import starling.events.Event;
 import starling.events.EventDispatcher;
-import openfl.Vector;
 
 /** The Juggler takes objects that implement IAnimatable (like Tweens) and executes them.
  * 
@@ -45,6 +49,10 @@ import openfl.Vector;
  *  @see Tween
  *  @see DelayedCall 
  */
+
+@:access(starling.animation.DelayedCall)
+@:access(starling.animation.Tween)
+
 class Juggler implements IAnimatable
 {
     private var mObjects:Vector<IAnimatable>;
@@ -93,7 +101,7 @@ class Juggler implements IAnimatable
         if (target == null) return;
         
         var i:Int = mObjects.length - 1;
-        while(i >= 0)
+        while (i >= 0)
         {
             var tween:Tween = Std.is(mObjects[i], Tween) ? cast mObjects[i] : null;
             if (tween != null && tween.target == target)
@@ -111,7 +119,7 @@ class Juggler implements IAnimatable
         if (target == null) return false;
         
         var i:Int = mObjects.length - 1;
-        while(i >= 0)
+        while (i >= 0)
         {
             var tween:Tween = Std.is(mObjects[i], Tween) ? cast mObjects[i] : null;
             if (tween != null && tween.target == target) return true;
@@ -130,7 +138,7 @@ class Juggler implements IAnimatable
         // to 'advanceTime'.
         
         var i:Int = mObjects.length - 1;
-        while(i >= 0)
+        while (i >= 0)
         {
             var dispatcher:EventDispatcher = Std.is(mObjects[i], EventDispatcher) ? cast mObjects[i] : null;
             if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
@@ -146,7 +154,7 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function delayCall(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic> = null):IAnimatable
+    public function delayCall(call:Function, delay:Float, args:Array<Dynamic> = null):IAnimatable
     {
         if (call == null) return null;
         if (args == null) args = [];
@@ -164,9 +172,10 @@ class Juggler implements IAnimatable
      *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
      *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
      *  reused.</p> */
-    public function repeatCall(call:Array<Dynamic>->Void, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):IAnimatable
+    public function repeatCall(call:Function, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):IAnimatable
     {
         if (call == null) return null;
+        if (args == null) args = [];
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
         delayedCall.repeatCount = repeatCount;

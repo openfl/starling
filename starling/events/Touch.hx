@@ -9,12 +9,14 @@
 // =================================================================================================
 
 package starling.events;
+
 import flash.geom.Matrix;
 import flash.geom.Point;
 
+import openfl.Vector;
+
 import starling.display.DisplayObject;
 import starling.utils.StringUtil;
-import openfl.Vector;
 
 /** A Touch object contains information about the presence or movement of a finger 
  *  or the mouse on the screen.
@@ -137,14 +139,15 @@ class Touch
             var length:Int = 1;
             var element:DisplayObject = mTarget;
             
-            mBubbleChain = Vector.ofArray ([element]);
+            mBubbleChain.length = 1;
+            mBubbleChain[0] = element;
             
             while ((element = element.parent) != null)
                 mBubbleChain[length++] = element;
         }
         else
         {
-            mBubbleChain = new Vector();
+            mBubbleChain.length = 0;
         }
     }
     
@@ -240,13 +243,13 @@ class Touch
     /** @private 
      *  Dispatches a touch event along the current bubble chain (which is updated each time
      *  a target is set). */
-    public function dispatchEvent(event:TouchEvent):Void
+    private function dispatchEvent(event:TouchEvent):Void
     {
         if (mTarget != null) event.dispatch(mBubbleChain);
     }
     
     /** @private */
-    public var bubbleChain(get, never):Vector<EventDispatcher>;
+    private var bubbleChain(get, never):Vector<EventDispatcher>;
     private function get_bubbleChain():Vector<EventDispatcher>
     {
         return mBubbleChain.copy();

@@ -37,17 +37,17 @@ class Rectangle extends ImmutablePolygon
                y >= mY && y <= mY + mHeight;
     }
 
-    override public function get_area():Float
+    override private function get_area():Float
     {
         return mWidth * mHeight;
     }
 
-    override public function get_isSimple():Bool
+    override private function get_isSimple():Bool
     {
         return true;
     }
 
-    override public function get_isConvex():Bool
+    override private function get_isConvex():Bool
     {
         return true;
     }

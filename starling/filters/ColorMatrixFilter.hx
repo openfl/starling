@@ -13,10 +13,11 @@
 
 package starling.filters;
 
+import flash.errors.ArgumentError;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
-import openfl.errors.ArgumentError;
+
 import openfl.Vector;
 
 import starling.core.Starling;
@@ -49,15 +50,15 @@ class ColorMatrixFilter extends FragmentFilter
     private var mUserMatrix:Vector<Float>;   // offset in range 0-255
     private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
-    inline private static var PROGRAM_NAME:String = "CMF";
+    private static inline var PROGRAM_NAME:String = "CMF";
     private static var MIN_COLOR:Vector<Float> = Vector.ofArray ([0, 0, 0, 0.0001]);
     private static var IDENTITY:Vector<Float> = Vector.ofArray ([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0]);
-    inline private static var LUMA_R:Float = 0.299;
-    inline private static var LUMA_G:Float = 0.587;
-    inline private static var LUMA_B:Float = 0.114;
+    private static inline var LUMA_R:Float = 0.299;
+    private static inline var LUMA_G:Float = 0.587;
+    private static inline var LUMA_B:Float = 0.114;
     
     /** helper objects */
-    private static var sTmpMatrix1:Vector<Float> = new Vector<Float>();
+    private static var sTmpMatrix1:Vector<Float> = new Vector<Float>(20, true);
     private static var sTmpMatrix2:Vector<Float> = new Vector<Float>();
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
@@ -70,7 +71,6 @@ class ColorMatrixFilter extends FragmentFilter
         mShaderMatrix = new Vector<Float>();
         
         this.matrix = matrix;
-        //sTmpMatrix1.length = 20;
     }
     
     /** @private */
@@ -105,9 +105,9 @@ class ColorMatrixFilter extends FragmentFilter
     /** @private */
     private override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
-        context.setProgram(mShaderProgram);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix, 5);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
+        context.setProgram(mShaderProgram);
     }
     
     // color manipulation
@@ -214,9 +214,9 @@ class ColorMatrixFilter extends FragmentFilter
     {
         var i:Int = 0;
 
-        for (y in 0 ... 4)
+        for (y in 0...4)
         {
-            for (x in 0 ... 5)
+            for (x in 0...5)
             {
                 sTmpMatrix1[i+x] = 
                     matrix[i]        * mUserMatrix[x]           +
@@ -250,7 +250,7 @@ class ColorMatrixFilter extends FragmentFilter
 
     private function copyMatrix(from:Vector<Float>, to:Vector<Float>):Void
     {
-        for (i in 0 ... 20)
+        for (i in 0...20)
             to[i] = from[i];
     }
     

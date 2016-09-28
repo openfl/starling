@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.errors;
-import openfl.errors.Error;
+
+import flash.errors.Error;
+
 /** An AbstractClassError is thrown when you attempt to create an instance of an abstract 
  *  class. */
 class AbstractClassError extends Error

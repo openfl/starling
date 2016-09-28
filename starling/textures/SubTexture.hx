@@ -9,13 +9,15 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display3D.textures.TextureBase;
+import flash.display3D.Context3DTextureFormat;
+import flash.errors.ArgumentError;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+
 import openfl.Vector;
-import openfl.display3D.Context3DTextureFormat;
-import openfl.errors.ArgumentError;
 
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
@@ -137,9 +139,8 @@ class SubTexture extends Texture
             texture = Std.is(texture.parent, SubTexture) ? cast texture.parent : null;
         }
         
-        //for (var i:Int=startIndex; i<endIndex; i += 2 + stride)
         var i:Int = startIndex;
-        while(i<endIndex)
+        while (i < endIndex)
         {
             u = texCoords[    i   ];
             v = texCoords[i+1];
@@ -169,7 +170,7 @@ class SubTexture extends Texture
      *
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var region(get, never):Rectangle;
-    public function get_region():Rectangle { return mRegion; }
+    private function get_region():Rectangle { return mRegion; }
 
     /** The clipping rectangle, which is the region provided on initialization 
      *  scaled into [0.0, 1.0]. */
@@ -197,38 +198,38 @@ class SubTexture extends Texture
     private function get_transformationMatrix():Matrix { return mTransformationMatrix; }
     
     /** @inheritDoc */
-    public override function get_base():TextureBase { return mParent.base; }
+    private override function get_base():TextureBase { return mParent.base; }
     
     /** @inheritDoc */
-    public override function get_root():ConcreteTexture { return mParent.root; }
+    private override function get_root():ConcreteTexture { return mParent.root; }
     
     /** @inheritDoc */
-    public override function get_format():Context3DTextureFormat { return mParent.format; }
+    private override function get_format():Context3DTextureFormat { return mParent.format; }
     
     /** @inheritDoc */
-    public override function get_width():Float { return mWidth; }
+    private override function get_width():Float { return mWidth; }
     
     /** @inheritDoc */
-    public override function get_height():Float { return mHeight; }
+    private override function get_height():Float { return mHeight; }
     
     /** @inheritDoc */
-    public override function get_nativeWidth():Float { return mWidth * scale; }
+    private override function get_nativeWidth():Float { return mWidth * scale; }
     
     /** @inheritDoc */
-    public override function get_nativeHeight():Float { return mHeight * scale; }
+    private override function get_nativeHeight():Float { return mHeight * scale; }
     
     /** @inheritDoc */
-    public override function get_mipMapping():Bool { return mParent.mipMapping; }
+    private override function get_mipMapping():Bool { return mParent.mipMapping; }
     
     /** @inheritDoc */
-    public override function get_premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
+    private override function get_premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
     
     /** @inheritDoc */
-    public override function get_scale():Float { return mParent.scale; }
+    private override function get_scale():Float { return mParent.scale; }
     
     /** @inheritDoc */
-    public override function get_repeat():Bool { return mParent.repeat; }
+    private override function get_repeat():Bool { return mParent.repeat; }
     
     /** @inheritDoc */
-    public override function get_frame():Rectangle { return mFrame; }
+    private override function get_frame():Rectangle { return mFrame; }
 }

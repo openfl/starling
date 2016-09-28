@@ -9,9 +9,11 @@
 // =================================================================================================
 
 package starling.text;
+
 import flash.display.BitmapData;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
+
 import haxe.Int64;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
@@ -29,8 +31,8 @@ import starling.textures.Texture;
  *  </p> */
 class MiniBitmapFont
 {
-    inline private static var BITMAP_WIDTH:Int = 128;
-    inline private static var BITMAP_HEIGHT:Int = 64;
+    private static inline var BITMAP_WIDTH:Int = 128;
+    private static inline var BITMAP_HEIGHT:Int = 64;
     private static var BITMAP_DATA:Array<UInt> = [ 
 0x78daed5d, 0xcb6edb40, 0xc0c8aa2, 0x871e8a1e, 0xfabffe34, 0xff842ffd, 0x1f0d03, 
 0xbee56027, 0x150a0182, 0xb04bce0c, 0xb9969290, 0x80a18492, 0x578ab924, 0x872fe7e5, 
@@ -304,7 +306,7 @@ class MiniBitmapFont
         var bmpBytes:ByteArray = new ByteArray();
         var numBytes:Int = BITMAP_DATA.length;
         
-        for (var i:Int=0; i<numBytes; ++i)
+        for (i in 0...numBytes)
             bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
         
         bmpBytes.uncompress();

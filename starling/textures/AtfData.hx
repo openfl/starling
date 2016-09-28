@@ -9,10 +9,11 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display3D.Context3DTextureFormat;
+import flash.errors.ArgumentError;
+import flash.errors.Error;
 import flash.utils.ByteArray;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
 
 /** A parser for the ATF data format. */
 class AtfData
@@ -65,7 +66,7 @@ class AtfData
         else
         {
             var signature:String = "";
-            for(i in 0 ... 3)
+            for (i in 0...3)
                 signature += String.fromCharCode(data[i]);
             return signature == "ATF";
         }
@@ -73,25 +74,25 @@ class AtfData
 
     /** The texture format. @see flash.display3D.textures.Context3DTextureFormat */
     public var format(get, never):Context3DTextureFormat;
-    public function get_format():Context3DTextureFormat { return mFormat; }
+    private function get_format():Context3DTextureFormat { return mFormat; }
 
     /** The width of the texture in pixels. */
     public var width(get, never):Int;
-    public function get_width():Int { return mWidth; }
+    private function get_width():Int { return mWidth; }
 
     /** The height of the texture in pixels. */
     public var height(get, never):Int;
-    public function get_height():Int { return mHeight; }
+    private function get_height():Int { return mHeight; }
 
     /** The number of encoded textures. '1' means that there are no mip maps. */
     public var numTextures(get, never):Int;
-    public function get_numTextures():Int { return mNumTextures; }
+    private function get_numTextures():Int { return mNumTextures; }
 
     /** Indicates if the ATF data encodes a cube map. Not supported by Starling! */
     public var isCubeMap(get, never):Bool;
-    public function get_isCubeMap():Bool { return mIsCubeMap; }
+    private function get_isCubeMap():Bool { return mIsCubeMap; }
 
     /** The actual byte data, including header. */
     public var data(get, never):ByteArray;
-    public function get_data():ByteArray { return mData; }
+    private function get_data():ByteArray { return mData; }
 }

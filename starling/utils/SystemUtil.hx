@@ -9,22 +9,17 @@
 // =================================================================================================
 
 package starling.utils;
+
 import flash.display3D.Context3D;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.system.Capabilities;
-#if 0
-import flash.utils.getDefinitionByName;
-#end
 import flash.Lib;
-import openfl.errors.Error;
 
-import starling.errors.AbstractClassError;
-
-#if !flash
 import lime.app.Application;
 import lime.app.Config.WindowConfig;
-#end
+
+import openfl.errors.Error;
 
 /** A utility class with methods related to the current platform and runtime. */
 class SystemUtil
@@ -36,9 +31,6 @@ class SystemUtil
     private static var sVersion:String;
     private static var sAIR:Bool;
     private static var sSupportsDepthAndStencil:Bool = true;
-    
-    /** @private */
-    public function SystemUtil() { throw new AbstractClassError(); }
     
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
      *  application. This method is automatically called by the Starling constructor. */
@@ -132,7 +124,7 @@ class SystemUtil
     public static function get_isDesktop():Bool
     {
         initialize();
-        #if (cpp || neko)
+        #if sys
         return ~/(WIN|MAC|LNX)/.match(Sys.systemName());
         #else
         return true;
@@ -146,7 +138,7 @@ class SystemUtil
     public static function get_platform():String
     {
         initialize();
-        #if (cpp || neko)
+        #if sys
         return Sys.systemName();
         #else
         return "";
@@ -190,6 +182,10 @@ class SystemUtil
     public static var supportsVideoTexture(get, never):Bool;
     public static function get_supportsVideoTexture():Bool
     {
+        #if flash
         return Type.getInstanceFields(Context3D).indexOf("supportsVideoTexture") != -1;
+        #else
+        return Context3D.supportsVideoTexture;
+        #end
     }
 }

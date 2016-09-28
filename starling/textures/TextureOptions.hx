@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.textures;
-import openfl.display3D.Context3DTextureFormat;
+
+import flash.display3D.Context3DTextureFormat;
+
 import starling.core.Starling;
 
 /** The TextureOptions class specifies options for loading textures with the 'Texture.fromData'

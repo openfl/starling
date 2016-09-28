@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.display;
+
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Context3DVertexBufferFormat;
@@ -16,6 +17,8 @@ import flash.display3D.IndexBuffer3D;
 import flash.display3D.VertexBuffer3D;
 import flash.geom.Matrix;
 import flash.geom.Point;
+import flash.geom.Rectangle;
+
 import openfl.Vector;
 
 import starling.core.RenderSupport;
@@ -24,14 +27,13 @@ import starling.errors.MissingContextError;
 import starling.events.Event;
 import starling.geom.Polygon;
 import starling.utils.VertexData;
-import flash.geom.Rectangle;
 
 /** A display object supporting basic vector drawing functionality. In its current state,
  *  the main use of this class is to provide a range of forms that can be used as masks.
  */
 class Canvas extends DisplayObject
 {
-    inline private static var PROGRAM_NAME:String = "Shape";
+    private static inline var PROGRAM_NAME:String = "Shape";
 
     private var mSyncRequired:Bool;
     private var mPolygons:Vector<Polygon>;
@@ -177,9 +179,8 @@ class Canvas extends DisplayObject
         if (forTouch && (!visible || !touchable)) return null;
         if (!hitTestMask(localPoint)) return null;
 
-        //for (var i:Int = 0, len:Int = mPolygons.length; i < len; ++i)
         var len:Int = mPolygons.length;
-        for(i in 0 ... len)
+        for (i in 0...len)
             if (mPolygons[i].containsPoint(localPoint)) return this;
 
         return null;
@@ -196,8 +197,7 @@ class Canvas extends DisplayObject
         var newNumIndices:Int = mIndexData.length;
 
         // triangulation was done with vertex-indices of polygon only; now add correct offset.
-        //for (var i:Int=oldNumIndices; i<newNumIndices; ++i)
-        for(i in oldNumIndices ... newNumIndices)
+        for (i in oldNumIndices...newNumIndices)
             mIndexData[i] += oldNumVertices;
 
         applyFillColor(oldNumVertices, polygon.numVertices);
@@ -224,8 +224,7 @@ class Canvas extends DisplayObject
     private function applyFillColor(vertexIndex:Int, numVertices:Int):Void
     {
         var endIndex:Int = vertexIndex + numVertices;
-        //for (var i:Int=vertexIndex; i<endIndex; ++i)
-        for(i in vertexIndex ... endIndex)
+        for (i in vertexIndex...endIndex)
             mVertexData.setColorAndAlpha(i, mFillColor, mFillAlpha);
     }
 

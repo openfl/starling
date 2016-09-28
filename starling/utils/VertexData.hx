@@ -16,6 +16,7 @@ import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+
 import openfl.Vector;
 
 /** The VertexData class manages a raw list of vertex information, allowing direct upload
@@ -47,16 +48,16 @@ import openfl.Vector;
 class VertexData 
 {
     /** The total number of elements (Numbers) stored per vertex. */
-    inline public static var ELEMENTS_PER_VERTEX:Int = 8;
+    public static inline var ELEMENTS_PER_VERTEX:Int = 8;
     
     /** The offset of position data (x, y) within a vertex. */
-    inline public static var POSITION_OFFSET:Int = 0;
+    public static inline var POSITION_OFFSET:Int = 0;
     
     /** The offset of color data (r, g, b, a) within a vertex. */
-    inline public static var COLOR_OFFSET:Int = 2;
+    public static inline var COLOR_OFFSET:Int = 2;
     
     /** The offset of texture coordinates (u, v) within a vertex. */
-    inline public static var TEXCOORD_OFFSET:Int = 6;
+    public static inline var TEXCOORD_OFFSET:Int = 6;
 
     private var mRawData:Vector<Float>;
     private var mPremultipliedAlpha:Bool;
@@ -149,7 +150,7 @@ class VertexData
         var rawData:Vector<Float> = data.mRawData;
         var rawDataLength:Int = rawData.length;
         
-        for (i in 0 ... rawDataLength)
+        for (i in 0...rawDataLength)
             mRawData[targetIndex++] = rawData[i];
         
         mNumVertices += data.numVertices;
@@ -265,7 +266,7 @@ class VertexData
         var x:Float, y:Float;
         var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
         
-        for (i in 0 ... numVertices)
+        for (i in 0...numVertices)
         {
             x = mRawData[offset];
             y = mRawData[offset+1];
@@ -280,14 +281,14 @@ class VertexData
     /** Sets all vertices of the object to the same color values. */
     public function setUniformColor(color:UInt):Void
     {
-        for (i in 0 ... mNumVertices)
+        for (i in 0...mNumVertices)
             setColor(i, color);
     }
     
     /** Sets all vertices of the object to the same alpha values. */
     public function setUniformAlpha(alpha:Float):Void
     {
-        for (i in 0 ... mNumVertices)
+        for (i in 0...mNumVertices)
             setAlpha(i, alpha);
     }
     
@@ -302,13 +303,13 @@ class VertexData
         
         if (mPremultipliedAlpha)
         {
-            for (i in 0 ... numVertices)
+            for (i in 0...numVertices)
                 setAlpha(vertexID+i, getAlpha(vertexID+i) * factor);
         }
         else
         {
             var offset:Int = vertexID * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
-            for (i in 0 ... numVertices)
+            for (i in 0...numVertices)
             {
                 var idx:Int = Std.int(offset + i*ELEMENTS_PER_VERTEX);
                 mRawData[idx] = mRawData[idx] * factor;
@@ -347,7 +348,7 @@ class VertexData
             
             if (transformationMatrix == null)
             {
-                for (i in 0 ... numVertices)
+                for (i in 0...numVertices)
                 {
                     x = mRawData[offset];
                     y = mRawData[offset+1];
@@ -361,7 +362,7 @@ class VertexData
             }
             else
             {
-                for (i in 0 ... numVertices)
+                for (i in 0...numVertices)
                 {
                     x = mRawData[offset];
                     y = mRawData[offset+1];
@@ -414,8 +415,7 @@ class VertexData
             var offset:Int = vertexID * ELEMENTS_PER_VERTEX + POSITION_OFFSET;
             var x:Float, y:Float, i:Int;
 
-            //for (i=0; i<numVertices; ++i)
-            for (i in 0 ... numVertices)
+            for (i in 0...numVertices)
             {
                 x = mRawData[offset];
                 y = mRawData[offset+1];
@@ -445,7 +445,7 @@ class VertexData
         var position:Point = new Point();
         var texCoords:Point = new Point();
         
-        for (i in 0 ... numVertices)
+        for (i in 0...numVertices)
         {
             getPosition(i, position);
             getTexCoords(i, texCoords);
@@ -471,9 +471,9 @@ class VertexData
     {
         var offset:Int = COLOR_OFFSET;
         
-        for (i in 0 ... mNumVertices)
+        for (i in 0...mNumVertices)
         {
-            for (j in 0 ... 4)
+            for (j in 0...4)
                 if (mRawData[offset+j] != 1.0) return true;
 
             offset += ELEMENTS_PER_VERTEX;
@@ -493,7 +493,7 @@ class VertexData
             var dataLength:Int = mNumVertices * ELEMENTS_PER_VERTEX;
             
             var i:Int = COLOR_OFFSET;
-            while(i<dataLength)
+            while (i < dataLength)
             {
                 var alpha:Float = mRawData[i+3];
                 var divisor:Float = mPremultipliedAlpha ? alpha : 1.0;
@@ -534,9 +534,8 @@ class VertexData
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
         
-        //for (var i:Int=startIndex; i<endIndex; i += ELEMENTS_PER_VERTEX)
         var i:Int = startIndex;
-        while (i<endIndex)
+        while (i < endIndex)
         {
             mRawData[i] = 1.0; // alpha should be '1' per default
             i += ELEMENTS_PER_VERTEX;

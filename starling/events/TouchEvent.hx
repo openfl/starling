@@ -10,8 +10,9 @@
 
 package starling.events;
 
-import starling.display.DisplayObject;
 import openfl.Vector;
+
+import starling.display.DisplayObject;
 
 /** A TouchEvent is triggered either by touch or mouse input.  
  *  
@@ -50,11 +51,14 @@ import openfl.Vector;
  *  
  *  @see Touch
  *  @see TouchPhase
- */ 
+ */
+
+@:access(starling.events.EventDispatcher)
+
 class TouchEvent extends Event
 {
     /** Event type for touch or mouse input. */
-    inline public static var TOUCH:String = "touch";
+    public static inline var TOUCH:String = "touch";
     
     private var mShiftKey:Bool;
     private var mCtrlKey:Bool;
@@ -76,7 +80,7 @@ class TouchEvent extends Event
         mVisitedObjects = new Vector<EventDispatcher>();
         
         var numTouches:Int=touches.length;
-        for (i in 0 ... numTouches)
+        for (i in 0...numTouches)
             if (touches[i].timestamp > mTimestamp)
                 mTimestamp = touches[i].timestamp;
     }
@@ -91,7 +95,7 @@ class TouchEvent extends Event
         var allTouches:Vector<Touch> = cast data;
         var numTouches:Int = allTouches.length;
         
-        for (i in 0 ... numTouches)
+        for (i in 0...numTouches)
         {
             var touch:Touch = cast(allTouches[i], Touch);
             var correctTarget:Bool = touch.isTouching(target);
@@ -122,11 +126,11 @@ class TouchEvent extends Event
             if (id < 0) touch = sTouches[0];
             else
             {
-                for (i in 0 ... numTouches)
+                for (i in 0...numTouches)
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
-            sTouches = new Vector();
+            sTouches.length = 0;
             return touch;
         }
         else return null;
@@ -139,8 +143,7 @@ class TouchEvent extends Event
         getTouches(target, null, sTouches);
         
         var i:Int = sTouches.length - 1;
-        //for (var i:Int=sTouches.length-1; i>=0; --i)
-        while(i>=0)
+        while (i >= 0)
         {
             if (sTouches[i].phase != TouchPhase.ENDED)
             {
@@ -150,7 +153,7 @@ class TouchEvent extends Event
             --i;
         }
         
-        sTouches = new Vector();
+        sTouches.length = 0;
         return result;
     }
     
@@ -167,7 +170,7 @@ class TouchEvent extends Event
             var previousTarget:EventDispatcher = target;
             setTarget(chain[0]);
             
-            for (i in 0 ... chainLength)
+            for (i in 0...chainLength)
             {
                 var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
                 if (mVisitedObjects.indexOf(chainElement) == -1)
@@ -193,10 +196,7 @@ class TouchEvent extends Event
     private function get_touches():Vector<Touch>
     {
         var touches:Vector<Touch> = cast data;
-        var result = new Vector<Touch>();
-        for (i in 0 ... touches.length)
-            result.push(cast(touches[i], Touch));
-        return result;
+        return touches.concat();
     }
     
     /** Indicates if the shift key was pressed when the event occurred. */

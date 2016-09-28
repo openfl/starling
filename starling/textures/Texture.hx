@@ -13,35 +13,29 @@ package starling.textures;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
+import flash.errors.ArgumentError;
 import flash.geom.Rectangle;
 #if flash
 import flash.media.Camera;
 #end
 import flash.net.NetStream;
 import flash.system.Capabilities;
-import openfl.utils.ByteArray;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
+
 import haxe.Constraints.Function;
-import openfl.display3D.Context3DProfile;
-import openfl.errors.ArgumentError;
+
+import openfl.utils.ByteArray;
+import openfl.Vector;
 
 import starling.core.Starling;
-import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.utils.Color;
 import starling.utils.SystemUtil;
 import starling.utils.VertexData;
-#if 0
-import starling.utils.execute;
-#end
 import starling.utils.PowerOfTwo.getNextPowerOfTwo;
-
-import openfl.Vector;
 
 /** <p>A texture stores the information that represents an image. It cannot be added to the
  *  display list directly; instead it has to be mapped onto a display object. In Starling,
@@ -125,15 +119,9 @@ import openfl.Vector;
 class Texture
 {
     /** @private */
-    public function new()
+    private function new()
     {
-        #if 0
-        if (Capabilities.isDebugger &&
-            getQualifiedClassName(this) == "starling.textures::Texture")
-        {
-            throw new AbstractClassError();
-        }
-        #end
+        
     }
 
     /** Disposes the underlying texture data. Note that not all textures need to be disposed:
@@ -304,7 +292,7 @@ class Texture
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);
-        var nativeTexture:openfl.display3D.textures.Texture = context.createTexture(
+        var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format,
             atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1,
@@ -401,12 +389,8 @@ class Texture
         Reflect.callMethod(base, Reflect.getProperty(base, "attach" + type), [attachment]);
         base.addEventListener(TEXTURE_READY, function onTextureReady(event:Dynamic):Void
         {
-            #if 0
-            base.removeEventListener(TEXTURE_READY, onTextureReady);
-            execute(onComplete, texture);
-            #else
-            onComplete(texture);
-            #end
+            //base.removeEventListener(TEXTURE_READY, onTextureReady);
+            if (onComplete != null) onComplete(texture);
         });
 
         texture = new ConcreteVideoTexture(base, scale);
@@ -609,7 +593,7 @@ class Texture
 
     /** Indicates if the alpha values are premultiplied into the RGB values. */
     public var premultipliedAlpha(get, never):Bool;
-    public function get_premultipliedAlpha():Bool { return false; }
+    private function get_premultipliedAlpha():Bool { return false; }
 
     /** Returns the maximum size constraint (for both width and height) for textures in the
      *  current Context3D profile. */

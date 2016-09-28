@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.events;
+
 import flash.display.BitmapData;
 import flash.display.Shape;
 import flash.geom.Point;
@@ -30,7 +31,7 @@ class TouchMarker extends Sprite
         mCenter = new Point();
         mTexture = createTexture();
         
-        for (i in 0 ... 2)
+        for (i in 0...2)
         {
             var marker:Image = new Image(mTexture);
             marker.pivotX = mTexture.width / 2;

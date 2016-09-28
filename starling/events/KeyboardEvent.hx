@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.events;
+
 /** A KeyboardEvent is dispatched in response to user input through a keyboard.
  * 
  *  <p>This is Starling's version of the Flash KeyboardEvent class. It contains the same 
@@ -22,10 +23,10 @@ package starling.events;
 class KeyboardEvent extends Event
 {
     /** Event type for a key that was released. */
-    inline public static var KEY_UP:String = "keyUp";
+    public static inline var KEY_UP:String = "keyUp";
     
     /** Event type for a key that was pressed. */
-    inline public static var KEY_DOWN:String = "keyDown";
+    public static inline var KEY_DOWN:String = "keyDown";
     
     private var mCharCode:UInt;
     private var mKeyCode:UInt;

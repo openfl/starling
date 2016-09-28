@@ -9,11 +9,12 @@
 // =================================================================================================
 
 package starling.display;
-import openfl.display.Bitmap;
-import openfl.errors.ArgumentError;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
+
+import flash.display.Bitmap;
+import flash.errors.ArgumentError;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
 
 import starling.core.RenderSupport;
 import starling.textures.Texture;

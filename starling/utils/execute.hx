@@ -19,7 +19,7 @@ public static function execute(func:Dynamic, args:Array<Dynamic>):Void
         var i:Int;
         var maxNumArgs:Int = func.length;
 
-        for(i in 0 ... maxNumArgs)
+        for (i in 0...maxNumArgs)
             args[i] = null;
 
         // In theory, the 'default' case would always work,

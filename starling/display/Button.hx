@@ -10,9 +10,9 @@
 
 package starling.display;
 
+import flash.errors.ArgumentError;
 import flash.geom.Rectangle;
 import flash.ui.Mouse;
-import openfl.errors.ArgumentError;
 import flash.ui.MouseCursor;
 
 import starling.events.Event;
@@ -42,7 +42,7 @@ import starling.utils.VAlign;
  */
 class Button extends DisplayObjectContainer
 {
-    inline private static var MAX_DRAG_DIST:Float = 50;
+    private static inline var MAX_DRAG_DIST:Float = 50;
     
     private var mUpState:Texture;
     private var mDownState:Texture;
@@ -174,7 +174,7 @@ class Button extends DisplayObjectContainer
             }
             else if (mState == ButtonState.UP && isWithinBounds)
             {
-                // ... and reactivate when the finger moves back into the bounds.
+                //...and reactivate when the finger moves back into the bounds.
                 state = ButtonState.DOWN;
             }
         }
@@ -188,8 +188,8 @@ class Button extends DisplayObjectContainer
     /** The current state of the button. The corresponding strings are found
      *  in the ButtonState class. */
     public var state(get, set):String;
-    public function get_state():String { return mState; }
-    public function set_state(value:String):String
+    private function get_state():String { return mState; }
+    private function set_state(value:String):String
     {
         mState = value;
         refreshState();
@@ -237,8 +237,8 @@ class Button extends DisplayObjectContainer
      *  texture will be made slightly smaller, while a button with a down state texture
      *  remains unscaled. */
     public var scaleWhenDown(get, set):Float;
-    public function get_scaleWhenDown():Float { return mScaleWhenDown; }
-    public function set_scaleWhenDown(value:Float):Float
+    private function get_scaleWhenDown():Float { return mScaleWhenDown; }
+    private function set_scaleWhenDown(value:Float):Float
     {
         mScaleWhenDown = value;
         if (mState == ButtonState.DOWN) refreshState();
@@ -247,8 +247,8 @@ class Button extends DisplayObjectContainer
 
     /** The scale factor of the button while the mouse cursor hovers over it. @default 1.0 */
     public var scaleWhenOver(get, set):Float;
-    public function get_scaleWhenOver():Float { return mScaleWhenOver; }
-    public function set_scaleWhenOver(value:Float):Float
+    private function get_scaleWhenOver():Float { return mScaleWhenOver; }
+    private function set_scaleWhenOver(value:Float):Float
     {
         mScaleWhenOver = value;
         if (mState == ButtonState.OVER) refreshState();
@@ -257,8 +257,8 @@ class Button extends DisplayObjectContainer
 
     /** The alpha value of the button on touch. @default 1.0 */
     public var alphaWhenDown(get, set):Float;
-    public function get_alphaWhenDown():Float { return mAlphaWhenDown; }
-    public function set_alphaWhenDown(value:Float):Float
+    private function get_alphaWhenDown():Float { return mAlphaWhenDown; }
+    private function set_alphaWhenDown(value:Float):Float
     {
         mAlphaWhenDown = value;
         if (mState == ButtonState.DOWN) refreshState();
@@ -267,8 +267,8 @@ class Button extends DisplayObjectContainer
 
     /** The alpha value of the button when it is disabled. @default 0.5 */
     public var alphaWhenDisabled(get, set):Float;
-    public function get_alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
-    public function set_alphaWhenDisabled(value:Float):Float
+    private function get_alphaWhenDisabled():Float { return mAlphaWhenDisabled; }
+    private function set_alphaWhenDisabled(value:Float):Float
     {
         mAlphaWhenDisabled = value;
         if (mState == ButtonState.DISABLED) refreshState();
@@ -390,8 +390,8 @@ class Button extends DisplayObjectContainer
 
     /** The texture that is displayed while mouse hovers over the button. */
     public var overState(get, set):Texture;
-    public function get_overState():Texture { return mOverState; }
-    public function set_overState(value:Texture):Texture
+    private function get_overState():Texture { return mOverState; }
+    private function set_overState(value:Texture):Texture
     {
         if (mOverState != value)
         {
@@ -403,8 +403,8 @@ class Button extends DisplayObjectContainer
 
     /** The texture that is displayed when the button is disabled. */
     public var disabledState(get, set):Texture;
-    public function get_disabledState():Texture { return mDisabledState; }
-    public function set_disabledState(value:Texture):Texture
+    private function get_disabledState():Texture { return mDisabledState; }
+    private function set_disabledState(value:Texture):Texture
     {
         if (mDisabledState != value)
         {
@@ -455,17 +455,17 @@ class Button extends DisplayObjectContainer
     /** The color of the button's state image. Just like every image object, each pixel's
      *  color is multiplied with this value. @default white */
     public var color(get, set):UInt;
-    public function get_color():UInt { return mBody.color; }
-    public function set_color(value:UInt):UInt { return mBody.color = value; }
+    private function get_color():UInt { return mBody.color; }
+    private function set_color(value:UInt):UInt { return mBody.color = value; }
 
     /** The smoothing type used for the button's state image. */
-    public function get_smoothing():String { return mBody.smoothing; }
-    public function set_smoothing(value:String):String { return mBody.smoothing = value; }
+    private function get_smoothing():String { return mBody.smoothing; }
+    private function set_smoothing(value:String):String { return mBody.smoothing = value; }
 
     /** The overlay sprite is displayed on top of the button contents. It scales with the
      *  button when pressed. Use it to add additional objects to the button (e.g. an icon). */
     public var overlay(get, never):Sprite;
-    public function get_overlay():Sprite
+    private function get_overlay():Sprite
     {
         if (mOverlay == null)
             mOverlay = new Sprite();
@@ -476,6 +476,6 @@ class Button extends DisplayObjectContainer
 
     /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
      *  @default true */
-    public override function get_useHandCursor():Bool { return mUseHandCursor; }
-    public override function set_useHandCursor(value:Bool):Bool { return mUseHandCursor = value; }
+    private override function get_useHandCursor():Bool { return mUseHandCursor; }
+    private override function set_useHandCursor(value:Bool):Bool { return mUseHandCursor = value; }
 }

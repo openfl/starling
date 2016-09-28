@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.events;
+
 /** An EnterFrameEvent is triggered once per frame and is dispatched to all objects in the
  *  display tree.
  *
@@ -19,7 +20,7 @@ package starling.events;
 class EnterFrameEvent extends Event
 {
     /** Event type for a display object that is entering a new frame. */
-    inline public static var ENTER_FRAME:String = "enterFrame";
+    public static inline var ENTER_FRAME:String = "enterFrame";
     
     /** Creates an enter frame event with the passed time. */
     public function new(type:String, passedTime:Float, bubbles:Bool=false)

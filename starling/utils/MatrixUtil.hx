@@ -9,13 +9,12 @@
 // =================================================================================================
 
 package starling.utils;
+
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
 import flash.Vector;
-
-import starling.errors.AbstractClassError;
 
 /** A utility class containing methods related to the Matrix class. */
 class MatrixUtil
@@ -26,9 +25,6 @@ class MatrixUtil
     private static var sRawData2:Vector<Float> = Vector.ofArray(
         [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
     
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-
     /** Converts a 2D matrix to a 3D matrix. If you pass a 'resultMatrix',
      *  the result will be stored in this matrix instead of creating a new object. */
     public static function convertTo3D(matrix:Matrix, resultMatrix:Matrix3D=null):Matrix3D

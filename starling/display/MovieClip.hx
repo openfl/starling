@@ -14,6 +14,7 @@ import flash.errors.ArgumentError;
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
 import flash.media.SoundTransform;
+
 import openfl.Vector;
 
 import starling.animation.IAnimatable;
@@ -91,7 +92,7 @@ class MovieClip extends Image implements IAnimatable
         mDurations = new Vector<Float>(numFrames);
         mStartTimes = new Vector<Float>(numFrames);
         
-        for (i in 0 ... numFrames)
+        for (i in 0...numFrames)
         {
             mDurations[i] = mDefaultFrameDuration;
             mStartTimes[i] = i * mDefaultFrameDuration;
@@ -232,7 +233,7 @@ class MovieClip extends Image implements IAnimatable
         mStartTimes.length = 0;
         mStartTimes[0] = 0;
         
-        for (i in 1 ... numFrames)
+        for (i in 1...numFrames)
             mStartTimes[i] = mStartTimes[i-1] + mDurations[i-1];
     }
 
@@ -347,8 +348,8 @@ class MovieClip extends Image implements IAnimatable
 
     /** The SoundTransform object used for playback of all frame sounds. @default null */
     public var soundTransform(get, set):SoundTransform;
-    public function get_soundTransform():SoundTransform { return mSoundTransform; }
-    public function set_soundTransform(value:SoundTransform):SoundTransform { return mSoundTransform = value; }
+    private function get_soundTransform():SoundTransform { return mSoundTransform; }
+    private function set_soundTransform(value:SoundTransform):SoundTransform { return mSoundTransform = value; }
 
     /** The index of the frame that is currently displayed. */
     public var currentFrame(get, set):Int;
@@ -358,7 +359,7 @@ class MovieClip extends Image implements IAnimatable
         mCurrentFrame = value;
         mCurrentTime = 0.0;
         
-        for (i in 0 ... value)
+        for (i in 0...value)
             mCurrentTime += getFrameDuration(i);
         
         texture = mTextures[mCurrentFrame];
@@ -380,7 +381,7 @@ class MovieClip extends Image implements IAnimatable
         mCurrentTime *= acceleration;
         mDefaultFrameDuration = newFrameDuration;
         
-        for (i in 0 ... numFrames) 
+        for (i in 0...numFrames) 
             mDurations[i] *= acceleration;
 
         updateStartTimes();

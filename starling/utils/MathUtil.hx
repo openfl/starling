@@ -9,18 +9,14 @@
 // =================================================================================================
 
 package starling.utils;
+
 import flash.geom.Point;
 import flash.geom.Vector3D;
-
-import starling.errors.AbstractClassError;
 
 /** A utility class containing methods you might need for maths problems. */
 class MathUtil
 {
     private static var TWO_PI:Float = Math.PI * 2.0;
-
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
 
     /** Calculates the intersection point between the xy-plane and an infinite line
      *  that is defined by two 3D points in the same coordinate system. */
@@ -65,7 +61,7 @@ class MathUtil
         if (values.length == 0)
             return 0.0;
         var min:Float = values[0];
-        for (i in 1 ... values.length)
+        for (i in 1...values.length)
             if (values[i] < min)
                 min = values[i];
         return min;

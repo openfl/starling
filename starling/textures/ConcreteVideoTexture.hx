@@ -9,12 +9,10 @@
 // =================================================================================================
 
 package starling.textures;
+
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.textures.TextureBase;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
-import openfl.errors.ArgumentError;
+import flash.errors.ArgumentError;
 
 /** A concrete texture that may only be used for a 'VideoTexture' base.
  *  For internal use only. */
@@ -34,30 +32,32 @@ class ConcreteVideoTexture extends ConcreteTexture
 
         super(base, format, width, height, false, false, false, scale, false);
 
-        if (Type.getClassName(Type.getClass(base)) != "flash.display3D.textures.VideoTexture")
+        #if flash
+        if (!Std.is(Type.getClass(base), flash.display3D.textures.VideoTexture))
             throw new ArgumentError("'base' must be VideoTexture");
+        #end
     }
 
     /** The actual width of the video in pixels. */
-    override public function get_nativeWidth():Float
+    override private function get_nativeWidth():Float
     {
         return Reflect.getProperty(base, "videoWidth");
     }
 
     /** The actual height of the video in pixels. */
-    override public function get_nativeHeight():Float
+    override private function get_nativeHeight():Float
     {
         return Reflect.getProperty(base, "videoHeight");
     }
 
     /** inheritDoc */
-    override public function get_width():Float
+    override private function get_width():Float
     {
         return nativeWidth / scale;
     }
 
     /** inheritDoc */
-    override public function get_height():Float
+    override private function get_height():Float
     {
         return nativeHeight / scale;
     }

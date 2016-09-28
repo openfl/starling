@@ -1,10 +1,7 @@
 package starling.geom;
 
+import flash.errors.Error;
 import flash.errors.IllegalOperationError;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
-import openfl.errors.Error;
 
 import starling.geom.Polygon;
 
@@ -36,7 +33,7 @@ class ImmutablePolygon extends Polygon
         else super.reverse();
     }
 
-    override public function set_numVertices(value:Int):Int
+    override private function set_numVertices(value:Int):Int
     {
         if (mFrozen) throw getImmutableError();
         else super.reverse();

@@ -26,7 +26,8 @@ import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
-//import flash.utils.getQualifiedClassName;
+
+import openfl.Vector;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -35,7 +36,6 @@ import starling.display.DisplayObject;
 import starling.display.Image;
 import starling.display.QuadBatch;
 import starling.display.Stage;
-import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.events.Event;
 import starling.textures.Texture;
@@ -44,7 +44,6 @@ import starling.utils.RectangleUtil;
 import starling.utils.SystemUtil;
 import starling.utils.VertexData;
 import starling.utils.PowerOfTwo;
-import openfl.Vector;
 
 /** The FragmentFilter class is the base class for all filter effects in Starling.
  *  All other filters of this package extend this class. You can attach them to any display
@@ -124,14 +123,8 @@ class FragmentFilter
 
     /** Creates a new Fragment filter with the specified number of passes and resolution.
      *  This constructor may only be called by the constructor of a subclass. */
-    public function new(numPasses:Int=1, resolution:Float=1.0)
+    private function new(numPasses:Int=1, resolution:Float=1.0)
     {
-        /*if (Capabilities.isDebugger && 
-            getQualifiedClassName(this) == "starling.filters::FragmentFilter")
-        {
-            throw new AbstractClassError();
-        }*/
-        
         if (numPasses < 1) throw new ArgumentError("At least one pass is required.");
         
         mNumPasses = numPasses;
@@ -284,7 +277,7 @@ class FragmentFilter
                                   Context3DVertexBufferFormat.FLOAT_2);
         
         // draw all passes
-        for (i in 0 ... mNumPasses)
+        for (i in 0...mNumPasses)
         {
             if (i < mNumPasses - 1) // intermediate pass  
             {
@@ -315,16 +308,11 @@ class FragmentFilter
             }
             
             passTexture = getPassTexture(i);
-            activate(i, context, passTexture);
             context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, mMvpConstantID, 
                                                   support.mvpMatrix3D, true);
-            context.setSamplerStateAt(0, Context3DWrapMode.CLAMP, Context3DTextureFilter.LINEAR, Context3DMipFilter.MIPNONE);
             context.setTextureAt(mBaseTextureID, passTexture.base);
-            context.setVertexBufferAt(mVertexPosAtID, mVertexBuffer, VertexData.POSITION_OFFSET, 
-                                  Context3DVertexBufferFormat.FLOAT_2);
-            context.setVertexBufferAt(mTexCoordsAtID, mVertexBuffer, VertexData.TEXCOORD_OFFSET,
-                                  Context3DVertexBufferFormat.FLOAT_2);
             
+            activate(i, context, passTexture);
             context.drawTriangles(mIndexBuffer, 0, 2);
             deactivate(i, context, passTexture);
         }
@@ -397,7 +385,7 @@ class FragmentFilter
         {
             disposePassTextures();
 
-            for (i in 0 ... numPassTextures)
+            for (i in 0...numPassTextures)
                 mPassTextures[i] = Texture.empty(width, height, PMA, false, true, scale);
         }
     }
@@ -465,7 +453,7 @@ class FragmentFilter
     
     private function disposePassTextures():Void
     {
-        for(texture in mPassTextures)
+        for (texture in mPassTextures)
             texture.dispose();
         
         mPassTextures.length = 0;
@@ -553,7 +541,7 @@ class FragmentFilter
     // flattening
     
     /** @private */
-    public function compile(object:DisplayObject):QuadBatch
+    private function compile(object:DisplayObject):QuadBatch
     {
         var support:RenderSupport;
         var stage:Stage = object.stage;

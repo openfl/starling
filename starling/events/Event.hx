@@ -10,13 +10,9 @@
 
 package starling.events;
 
-//import flash.utils.getQualifiedClassName;
 import openfl.Vector;
 
-//import starling.core.Starling_internal;
 import starling.utils.StringUtil;
-
-//use namespace public;
 
 /** Event objects are passed as parameters to event listeners when an event occurs.  
  *  This is Starling's version of the Flash Event class. 
@@ -39,58 +35,58 @@ import starling.utils.StringUtil;
 class Event
 {
     /** Event type for a display object that is added to a parent. */
-    inline public static var ADDED:String = "added";
+    public static inline var ADDED:String = "added";
     /** Event type for a display object that is added to the stage */
-    inline public static var ADDED_TO_STAGE:String = "addedToStage";
+    public static inline var ADDED_TO_STAGE:String = "addedToStage";
     /** Event type for a display object that is entering a new frame. */
-    inline public static var ENTER_FRAME:String = "enterFrame";
+    public static inline var ENTER_FRAME:String = "enterFrame";
     /** Event type for a display object that is removed from its parent. */
-    inline public static var REMOVED:String = "removed";
+    public static inline var REMOVED:String = "removed";
     /** Event type for a display object that is removed from the stage. */
-    inline public static var REMOVED_FROM_STAGE:String = "removedFromStage";
+    public static inline var REMOVED_FROM_STAGE:String = "removedFromStage";
     /** Event type for a triggered button. */
-    inline public static var TRIGGERED:String = "triggered";
+    public static inline var TRIGGERED:String = "triggered";
     /** Event type for a display object that is being flattened. */
-    inline public static var FLATTEN:String = "flatten";
+    public static inline var FLATTEN:String = "flatten";
     /** Event type for a resized Flash Player. */
-    inline public static var RESIZE:String = "resize";
+    public static inline var RESIZE:String = "resize";
     /** Event type that may be used whenever something finishes. */
-    inline public static var COMPLETE:String = "complete";
+    public static inline var COMPLETE:String = "complete";
     /** Event type for a (re)created stage3D rendering context. */
-    inline public static var CONTEXT3D_CREATE:String = "context3DCreate";
+    public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
     /** Event type that is dispatched by the Starling instance directly before rendering. */
-    inline public static var RENDER:String = "render";
+    public static inline var RENDER:String = "render";
     /** Event type that indicates that the root DisplayObject has been created. */
-    inline public static var ROOT_CREATED:String = "rootCreated";
+    public static inline var ROOT_CREATED:String = "rootCreated";
     /** Event type for an animated object that requests to be removed from the juggler. */
-    inline public static var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
+    public static inline var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
     /** Event type that is dispatched by the AssetManager after a context loss. */
-    inline public static var TEXTURES_RESTORED:String = "texturesRestored";
+    public static inline var TEXTURES_RESTORED:String = "texturesRestored";
     /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
-    inline public static var IO_ERROR:String = "ioError";
+    public static inline var IO_ERROR:String = "ioError";
     /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
-    inline public static var SECURITY_ERROR:String = "securityError";
+    public static inline var SECURITY_ERROR:String = "securityError";
     /** Event type that is dispatched by the AssetManager when an xml or json file couldn't
      *  be parsed. */
-    inline public static var PARSE_ERROR:String = "parseError";
+    public static inline var PARSE_ERROR:String = "parseError";
     /** Event type that is dispatched by the Starling instance when it encounters a problem
      *  from which it cannot recover, e.g. a lost device context. */
-    inline public static var FATAL_ERROR:String = "fatalError";
+    public static inline var FATAL_ERROR:String = "fatalError";
 
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var CHANGE:String = "change";
+    public static inline var CHANGE:String = "change";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var CANCEL:String = "cancel";
+    public static inline var CANCEL:String = "cancel";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var SCROLL:String = "scroll";
+    public static inline var SCROLL:String = "scroll";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var OPEN:String = "open";
+    public static inline var OPEN:String = "open";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var CLOSE:String = "close";
+    public static inline var CLOSE:String = "close";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var SELECT:String = "select";
+    public static inline var SELECT:String = "select";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
-    inline public static var READY:String = "ready";
+    public static inline var READY:String = "ready";
     
     private static var sEventPool:Vector<Event> = new Vector<Event>();
     
@@ -139,38 +135,38 @@ class Event
     // properties for public use
     
     /** @private */
-    public function setTarget(value:EventDispatcher):Void { target = value; }
+    private function setTarget(value:EventDispatcher):Void { target = value; }
     
     /** @private */
-    public function setCurrentTarget(value:EventDispatcher):Void { currentTarget = value; } 
+    private function setCurrentTarget(value:EventDispatcher):Void { currentTarget = value; } 
     
     /** @private */
-    public function setData(value:Dynamic):Void { data = value; }
+    private function setData(value:Dynamic):Void { data = value; }
     
     /** @private */
-    public var stopsPropagation(default, null):Bool;
+    private var stopsPropagation(default, null):Bool;
     
     /** @private */
-    public var stopsImmediatePropagation(default, null):Bool;
+    private var stopsImmediatePropagation(default, null):Bool;
     
     // event pooling
     
     /** @private */
-    public static function fromPool(type:String, bubbles:Bool=false, data:Dynamic=null):Event
+    private static function fromPool(type:String, bubbles:Bool=false, data:Dynamic=null):Event
     {
         if (sEventPool.length != 0) return sEventPool.pop().reset(type, bubbles, data);
         else return new Event(type, bubbles, data);
     }
     
     /** @private */
-    public static function toPool(event:Event):Void
+    private static function toPool(event:Event):Void
     {
         event.data = event.target = event.currentTarget = null;
         sEventPool[sEventPool.length] = event; // avoiding 'push'
     }
     
     /** @private */
-    public function reset(type:String, bubbles:Bool=false, data:Dynamic=null):Event
+    private function reset(type:String, bubbles:Bool=false, data:Dynamic=null):Event
     {
         this.type = type;
         this.bubbles = bubbles;

@@ -9,7 +9,9 @@
 // =================================================================================================
 
 package starling.errors;
-import openfl.errors.Error;
+
+import flash.errors.Error;
+
 /** A NotSupportedError is thrown when you attempt to use a feature that is not supported
  *  on the current platform. */
 class NotSupportedError extends Error

@@ -20,14 +20,13 @@ import flash.geom.Vector3D;
 import flash.system.Capabilities;
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
+
 import haxe.Constraints.Function;
-import starling.utils.ArrayUtil;
+
 import openfl.Vector;
-//import flash.utils.getQualifiedClassName;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
-import starling.errors.AbstractClassError;
 import starling.errors.AbstractMethodError;
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -37,6 +36,7 @@ import starling.utils.HAlign;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.VAlign;
+import starling.utils.ArrayUtil;
 
 /** Dispatched when an object is added to a parent. */
 //[Event(name="added", type="starling.events.Event")]
@@ -130,6 +130,9 @@ import starling.utils.VAlign;
  *  @see Sprite
  *  @see Stage 
  */
+
+@:access(starling.events.EventDispatcher)
+
 class DisplayObject extends EventDispatcher
 {
     // members
@@ -170,16 +173,9 @@ class DisplayObject extends EventDispatcher
     private static var sHelperMatrixAlt3D:Matrix3D  = new Matrix3D();
     
     /** @private */ 
-    public function new()
+    private function new()
     {
         super();
-        /*
-        if (Capabilities.isDebugger && 
-            getQualifiedClassName(this) == "starling.display::DisplayObject")
-        {
-            throw new AbstractClassError();
-        }
-        */
         
         mX = mY = mPivotX = mPivotY = mRotation = mSkewX = mSkewY = 0.0;
         mScaleX = mScaleY = mAlpha = 1.0;            
@@ -513,7 +509,7 @@ class DisplayObject extends EventDispatcher
     // internal methods
     
     /** @private */
-    public function setParent(value:DisplayObjectContainer):Void 
+    private function setParent(value:DisplayObjectContainer):Void 
     {
         // check for a recursion
         var ancestor:DisplayObject = value;
@@ -542,12 +538,12 @@ class DisplayObject extends EventDispatcher
 
     // helpers
     
-    private function isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
+    @:final private function isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
     {
         return (a - epsilon < b) && (a + epsilon > b);
     }
     
-    private function findCommonParent(object1:DisplayObject,
+    @:final private function findCommonParent(object1:DisplayObject,
                                             object2:DisplayObject):DisplayObject
     {
         var currentObject:DisplayObject = object1;
@@ -740,7 +736,7 @@ class DisplayObject extends EventDispatcher
      *
      *  <p>CAUTION: not a copy, but the actual object!</p> */
     public var transformationMatrix3D(get, never):Matrix3D;
-    public function get_transformationMatrix3D():Matrix3D
+    private function get_transformationMatrix3D():Matrix3D
     {
         // this method needs to be overriden in 3D-supporting subclasses (like Sprite3D).
 
@@ -752,7 +748,7 @@ class DisplayObject extends EventDispatcher
 
     /** Indicates if this object or any of its parents is a 'Sprite3D' object. */
     public var is3D(get, never):Bool;
-    public function get_is3D():Bool { return mIs3D; }
+    private function get_is3D():Bool { return mIs3D; }
 
     /** Indicates if the mouse cursor should transform into a hand while it's over the sprite. 
      *  @default false */
@@ -894,8 +890,8 @@ class DisplayObject extends EventDispatcher
     /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
      *  value of 'scaleX' (even if the scaling values are different). @default 1 */
     public var scale(get, set):Float;
-    public function get_scale():Float { return scaleX; }
-    public function set_scale(value:Float):Float { return scaleX = scaleY = value; }
+    private function get_scale():Float { return scaleX; }
+    private function set_scale(value:Float):Float { return scaleX = scaleY = value; }
     
     /** The horizontal skew angle in radians. */
     public var skewX(get, set):Float;
@@ -1006,8 +1002,8 @@ class DisplayObject extends EventDispatcher
      *  @default null
      */
     public var mask(get, set):DisplayObject;
-    public function get_mask():DisplayObject { return mMask; }
-    public function set_mask(value:DisplayObject):DisplayObject
+    private function get_mask():DisplayObject { return mMask; }
+    private function set_mask(value:DisplayObject):DisplayObject
     {
         if (mMask != value)
         {

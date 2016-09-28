@@ -2,7 +2,7 @@
 //
 //	Starling Framework
 //	Copyright Gamua GmbH. All Rights Reserved.
-//
+//BASELINE_CONSTRAINED
 //	This program is free software. You can redistribute and/or modify it
 //	in accordance with the terms of the accompanying license agreement.
 //
@@ -10,8 +10,6 @@
 
 package starling.core;
 
-import flash.errors.Error;
-import flash.errors.ArgumentError;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.display.Stage3D;
@@ -23,6 +21,8 @@ import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.display3D.Context3DTriangleFace;
 import flash.display3D.Program3D;
+import flash.errors.ArgumentError;
+import flash.errors.Error;
 import flash.errors.IllegalOperationError;
 import flash.events.ErrorEvent;
 import flash.events.Event;
@@ -40,11 +40,10 @@ import flash.ui.Mouse;
 import flash.ui.Multitouch;
 import flash.ui.MultitouchInputMode;
 import flash.utils.ByteArray;
-#if 0
-import flash.utils.Dictionary;
-#end
 import flash.Lib;
+
 import haxe.Timer;
+
 import openfl.Vector;
 
 import starling.animation.Juggler;
@@ -192,10 +191,10 @@ import starling.utils.VAlign;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    inline public static var VERSION:String = "1.8";
+    public static inline var VERSION:String = "1.8";
     
     /** The key for the shader programs stored in 'contextData' */
-    inline private static var PROGRAM_DATA_NAME:String = "Starling.programs"; 
+    private static inline var PROGRAM_DATA_NAME:String = "Starling.programs"; 
     
     // members
     
@@ -212,7 +211,6 @@ class Starling extends EventDispatcher
     private var mLastFrameTimestamp:Float;
     private var mLeftMouseDown:Bool;
     private var mStatsDisplay:StatsDisplay;
-    private var mStatsDisplayFontName:String;
     private var mShareContext:Bool;
     private var mProfile:Context3DProfile;
     private var mContext:Context3D;
@@ -262,12 +260,10 @@ class Starling extends EventDispatcher
      */
     public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
-                             renderMode:Context3DRenderMode=null, profile:Dynamic=null)
+                             renderMode:Context3DRenderMode=AUTO, profile:Dynamic=null)
     {
         super();
-        if (renderMode == null) renderMode = Context3DRenderMode.AUTO;
         if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
-
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (stage3D == null) stage3D = stage.stage3Ds[0];
@@ -294,8 +290,6 @@ class Starling extends EventDispatcher
         mBroadcastKeyboardEvents = true;
         mLastFrameTimestamp = Lib.getTimer() / 1000.0;
         mSupport  = new RenderSupport();
-        
-        mStatsDisplayFontName = "Verdana";
         
         // for context data, we actually reference by stage3D, since it survives a context loss
         sContextData[stage3D] = new Map<String, Dynamic>();
@@ -358,7 +352,7 @@ class Starling extends EventDispatcher
         mStage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false);
         mStage3D.removeEventListener(ErrorEvent.ERROR, onStage3DError, false);
         
-        for(touchEventType in touchEventTypes)
+        for (touchEventType in touchEventTypes)
             mNativeStage.removeEventListener(touchEventType, onTouch, false);
         
         if (mStage != null) mStage.dispose();
@@ -384,7 +378,7 @@ class Starling extends EventDispatcher
         var currentProfile:Context3DProfile;
         
         if (profile == "auto")
-            profiles = [/*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
+            profiles = [ /*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
         else if (Std.is(profile, #if flash String #else Int #end))
             profiles = [cast profile];
         else if (Std.is(profile, Array))
@@ -602,18 +596,7 @@ class Starling extends EventDispatcher
                                          enableDepthAndStencil:Bool,
                                          wantsBestResolution:Bool=false):Void
     {
-        #if 0
-        enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
-        #end
-        width = (width < 32) ? 32 : width;
-        height = (height < 32) ? 32 : height;
-        #if 0
-        var configureBackBuffer:Function = mContext.configureBackBuffer;
-        var methodArgs:Array = [width, height, antiAlias, enableDepthAndStencil];
-        if (configureBackBuffer.length > 4) methodArgs.push(wantsBestResolution);
-        configureBackBuffer.apply(mContext, methodArgs);
-        #end
-        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil && SystemUtil.supportsDepthAndStencil);
+        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil && SystemUtil.supportsDepthAndStencil, wantsBestResolution);
     }
 
     private function updateNativeOverlay():Void
@@ -804,9 +787,8 @@ class Starling extends EventDispatcher
             // On a system that supports both mouse and touch input, the primary touch point
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
-            var supportsCursor:Bool = Mouse.supportsCursor;
             
-            if (supportsCursor && touchEvent.isPrimaryTouchPoint) return;
+            if (Mouse.supportsCursor && touchEvent.isPrimaryTouchPoint) return;
             else
             {
                 globalX  = touchEvent.stageX;
@@ -821,13 +803,13 @@ class Starling extends EventDispatcher
         // figure out touch phase
         switch (event.type)
         {
-            case TouchEvent.TOUCH_BEGIN: phase = TouchPhase.BEGAN; //break;
-            case TouchEvent.TOUCH_MOVE:  phase = TouchPhase.MOVED; //break;
-            case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED; //break;
-            case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN; //break;
-            case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED; //break;
+            case TouchEvent.TOUCH_BEGIN: phase = TouchPhase.BEGAN;
+            case TouchEvent.TOUCH_MOVE:  phase = TouchPhase.MOVED;
+            case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED;
+            case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN;
+            case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED;
             case MouseEvent.MOUSE_MOVE: 
-                phase = (mLeftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER); //break;
+                phase = (mLeftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
         }
         
         // move position into viewport bounds
@@ -842,10 +824,10 @@ class Starling extends EventDispatcher
             mTouchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
     
-    private var touchEventTypes(get, never):Vector<String>;
-    private function get_touchEventTypes():Vector<String>
+    private var touchEventTypes(get, never):Array<String>;
+    private function get_touchEventTypes():Array<String>
     {
-        var types = new Vector<String>();
+        var types = new Array<String>();
         
         if (multitouchEnabled)
         {
@@ -860,7 +842,7 @@ class Starling extends EventDispatcher
             types.push(MouseEvent.MOUSE_MOVE);
             types.push(MouseEvent.MOUSE_UP);
         }
-            
+        
         return types;
     }
     
@@ -962,7 +944,7 @@ class Starling extends EventDispatcher
      *  Except for desktop HiDPI displays with an activated 'supportHighResolutions' setting,
      *  this will always return '1'. */
     public var backBufferPixelsPerPoint(get, never):Int;
-    public function get_backBufferPixelsPerPoint():Int
+    private function get_backBufferPixelsPerPoint():Int
     {
         return Std.int(mNativeStageContentScaleFactor);
     }
@@ -1065,8 +1047,6 @@ class Starling extends EventDispatcher
             {
                 mStatsDisplay = new StatsDisplay();
                 mStatsDisplay.touchable = false;
-                mStatsDisplay.fontName = mStatsDisplayFontName;
-                mStage.addChild(mStatsDisplay);
             }
 
             mStage.addChild(mStatsDisplay);
@@ -1088,16 +1068,6 @@ class Starling extends EventDispatcher
         }
     }
     
-    /** The font which StatsDisplay is rendered with. */
-    public var statsDisplayFontName(get, set):String;
-    public function get_statsDisplayFontName():String { return mStatsDisplayFontName; }
-    public function set_statsDisplayFontName(value:String):String
-    {
-        if (mStatsDisplay != null)
-            mStatsDisplay.fontName = value;
-        return mStatsDisplayFontName = value;
-    }
-    
     /** The Starling stage object, which is the root of the display tree that is rendered. */
     public var stage(get, never):Stage;
     private function get_stage():Stage { return mStage; }
@@ -1107,8 +1077,8 @@ class Starling extends EventDispatcher
     private function get_stage3D():Stage3D { return mStage3D; }
     
     /** The Flash (2D) stage object Starling renders beneath. */
-    public var nativeStage(get, never):openfl.display.Stage;
-    private function get_nativeStage():openfl.display.Stage { return mNativeStage; }
+    public var nativeStage(get, never):flash.display.Stage;
+    private function get_nativeStage():flash.display.Stage { return mNativeStage; }
     
     /** The instance of the root class provided in the constructor. Available as soon as 
      *  the event 'ROOT_CREATED' has been dispatched. */
@@ -1170,8 +1140,8 @@ class Starling extends EventDispatcher
     /** Indicates if keyboard events are broadcast to all display objects, or dispatched
      *  to the stage only. In some situations, it makes sense to deactivate this setting
      *  for performance reasons. @default true */
-    public function get_broadcastKeyboardEvents():Bool { return mBroadcastKeyboardEvents; }
-    public function set_broadcastKeyboardEvents(value:Bool):Bool
+    private function get_broadcastKeyboardEvents():Bool { return mBroadcastKeyboardEvents; }
+    private function set_broadcastKeyboardEvents(value:Bool):Bool
     {
         return mBroadcastKeyboardEvents = value;
     }

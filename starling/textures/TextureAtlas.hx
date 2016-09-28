@@ -11,9 +11,8 @@
 package starling.textures;
 
 import flash.geom.Rectangle;
-import openfl.Vector;
 
-//import starling.utils.cleanMasterString;
+import openfl.Vector;
 
 /** A texture atlas is a collection of many smaller textures in one big image. This class
  *  is used to access textures from such an atlas.
@@ -112,7 +111,7 @@ class TextureAtlas
         var region:Rectangle = new Rectangle();
         var frame:Rectangle  = new Rectangle();
         
-        for(subTexture in atlasXml.elementsNamed("SubTexture"))
+        for (subTexture in atlasXml.elementsNamed("SubTexture"))
         {
             var name:String        = subTexture.get("name");
             var x:Float           = getXmlFloat(subTexture, "x") / scale;

@@ -14,8 +14,6 @@
 
 package starling.animation;
 
-import starling.errors.AbstractClassError;
-
 /** The Transitions class contains static methods that define easing functions. 
  *  Those functions are used by the Tween class to execute animations.
  * 
@@ -30,28 +28,25 @@ import starling.errors.AbstractClassError;
  */
 class Transitions
 {        
-    inline public static var LINEAR:String = "linear";
-    inline public static var EASE_IN:String = "easeIn";
-    inline public static var EASE_OUT:String = "easeOut";
-    inline public static var EASE_IN_OUT:String = "easeInOut";
-    inline public static var EASE_OUT_IN:String = "easeOutIn";        
-    inline public static var EASE_IN_BACK:String = "easeInBack";
-    inline public static var EASE_OUT_BACK:String = "easeOutBack";
-    inline public static var EASE_IN_OUT_BACK:String = "easeInOutBack";
-    inline public static var EASE_OUT_IN_BACK:String = "easeOutInBack";
-    inline public static var EASE_IN_ELASTIC:String = "easeInElastic";
-    inline public static var EASE_OUT_ELASTIC:String = "easeOutElastic";
-    inline public static var EASE_IN_OUT_ELASTIC:String = "easeInOutElastic";
-    inline public static var EASE_OUT_IN_ELASTIC:String = "easeOutInElastic";  
-    inline public static var EASE_IN_BOUNCE:String = "easeInBounce";
-    inline public static var EASE_OUT_BOUNCE:String = "easeOutBounce";
-    inline public static var EASE_IN_OUT_BOUNCE:String = "easeInOutBounce";
-    inline public static var EASE_OUT_IN_BOUNCE:String = "easeOutInBounce";
+    public static inline var LINEAR:String = "linear";
+    public static inline var EASE_IN:String = "easeIn";
+    public static inline var EASE_OUT:String = "easeOut";
+    public static inline var EASE_IN_OUT:String = "easeInOut";
+    public static inline var EASE_OUT_IN:String = "easeOutIn";        
+    public static inline var EASE_IN_BACK:String = "easeInBack";
+    public static inline var EASE_OUT_BACK:String = "easeOutBack";
+    public static inline var EASE_IN_OUT_BACK:String = "easeInOutBack";
+    public static inline var EASE_OUT_IN_BACK:String = "easeOutInBack";
+    public static inline var EASE_IN_ELASTIC:String = "easeInElastic";
+    public static inline var EASE_OUT_ELASTIC:String = "easeOutElastic";
+    public static inline var EASE_IN_OUT_ELASTIC:String = "easeInOutElastic";
+    public static inline var EASE_OUT_IN_ELASTIC:String = "easeOutInElastic";  
+    public static inline var EASE_IN_BOUNCE:String = "easeInBounce";
+    public static inline var EASE_OUT_BOUNCE:String = "easeOutBounce";
+    public static inline var EASE_IN_OUT_BOUNCE:String = "easeInOutBounce";
+    public static inline var EASE_OUT_IN_BOUNCE:String = "easeOutInBounce";
     
     private static var sTransitions:Map<String, Float->Float>;
-    
-    /** @private */
-    public function Transitions() { throw new AbstractClassError(); }
     
     /** Returns the transition function that was registered under a certain name. */ 
     public static function getTransition(name:String):Float->Float

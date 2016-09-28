@@ -13,6 +13,7 @@ package starling.filters;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
+
 import openfl.Vector;
 
 import starling.core.Starling;
@@ -26,9 +27,9 @@ import starling.utils.Color;
  */
 class BlurFilter extends FragmentFilter
 {
-    inline private static var NORMAL_PROGRAM_NAME:String = "BF_n";
-    inline private static var TINTED_PROGRAM_NAME:String = "BF_t";
-    inline private static var MAX_SIGMA:Float = 2.0;
+    private static inline var NORMAL_PROGRAM_NAME:String = "BF_n";
+    private static inline var TINTED_PROGRAM_NAME:String = "BF_t";
+    private static inline var MAX_SIGMA:Float = 2.0;
     
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
@@ -164,15 +165,6 @@ class BlurFilter extends FragmentFilter
         // vertex attribute 1:   texture coordinates (FLOAT_2)
         // texture 0:            input texture
         
-        if (mUniformColor && pass == numPasses - 1)
-        {
-            context.setProgram(mTintedProgram);
-        }
-        else
-        {
-            context.setProgram(mNormalProgram);
-        }
-        
         updateParameters(pass, Std.int(texture.nativeWidth), Std.int(texture.nativeHeight));
         
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX,   4, mOffsets);
@@ -181,6 +173,11 @@ class BlurFilter extends FragmentFilter
         if (mUniformColor && pass == numPasses - 1)
         {
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, mColor);
+            context.setProgram(mTintedProgram);
+        }
+        else
+        {
+            context.setProgram(mNormalProgram);
         }
     }
     
@@ -213,7 +210,7 @@ class BlurFilter extends FragmentFilter
         
         // get weights on the exact pixels (sTmpWeights) and calculate sums (mWeights)
         
-        for (i in 0 ... 5)
+        for (i in 0...5)
             sTmpWeights[i] = multiplier * Math.exp(-i*i / twoSigmaSq);
         
         mWeights[0] = sTmpWeights[0];

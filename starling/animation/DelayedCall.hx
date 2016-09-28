@@ -10,9 +10,12 @@
 
 package starling.animation;
 
+import haxe.Constraints.Function;
+
+import openfl.Vector;
+
 import starling.events.Event;
 import starling.events.EventDispatcher;
-import openfl.Vector;
 
 /** A DelayedCall allows you to execute a method after a certain time has passed. Since it 
  *  implements the IAnimatable interface, it can be added to a juggler. In most cases, you 
@@ -28,19 +31,19 @@ class DelayedCall extends EventDispatcher implements IAnimatable
 {
     private var mCurrentTime:Float;
     private var mTotalTime:Float;
-    private var mCall:Array<Dynamic>->Void;
+    private var mCall:Function;
     private var mArgs:Array<Dynamic>;
     private var mRepeatCount:Int;
     
     /** Creates a delayed call. */
-    public function new(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null)
+    public function new(call:Function, delay:Float, args:Array<Dynamic>=null)
     {
         super();
         reset(call, delay, args);
     }
     
     /** Resets the delayed call to its default values, which is useful for pooling. */
-    public function reset(call:Array<Dynamic>->Void, delay:Float, args:Array<Dynamic>=null):DelayedCall
+    public function reset(call:Function, delay:Float, args:Array<Dynamic>=null):DelayedCall
     {
         mCurrentTime = 0;
         mTotalTime = Math.max(delay, 0.0001);
@@ -73,13 +76,13 @@ class DelayedCall extends EventDispatcher implements IAnimatable
             else
             {
                 // save call & args: they might be changed through an event listener
-                var call:Array<Dynamic>->Void = mCall;
+                var call:Function = mCall;
                 var args:Array<Dynamic> = mArgs;
                 
                 // in the callback, people might want to call "reset" and re-add it to the
                 // juggler; so this event has to be dispatched *before* executing 'call'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                call(args);
+                Reflect.callMethod(call, call, args);
             }
         }
     }
@@ -118,7 +121,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private static var sPool:Vector<DelayedCall> = new Vector<DelayedCall>();
     
     /** @private */
-    public static function fromPool(call:Array<Dynamic>->Void, delay:Float, 
+    private static function fromPool(call:Function, delay:Float, 
                                                args:Array<Dynamic>=null):DelayedCall
     {
         if (sPool.length != 0) return sPool.pop().reset(call, delay, args);
@@ -126,7 +129,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     }
     
     /** @private */
-    public static function toPool(delayedCall:DelayedCall):Void
+    private static function toPool(delayedCall:DelayedCall):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
         delayedCall.mCall = null;

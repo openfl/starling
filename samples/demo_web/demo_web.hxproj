@@ -21,19 +21,18 @@
     <class path="C:\Development\Haxe\lime" />
     <class path="src" />
     <class path="..\demo\src" />
-    <class path="C:\Development\Haxe\openfl\externs\core\flash" />
     <class path="C:\Development\Haxe\openfl\externs\core\openfl" />
     <class path="C:\Development\Haxe\openfl\externs\extras" />
-    <class path="bin\flash\release\haxe" />
+    <class path="bin\html5\release\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling=0.0.0&#xA;openfl=4.0.4&#xA;lime=3.0.3&#xA;tools=3.0.3&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;display" />
+    <option directives="starling=0.0.0&#xA;openfl=4.0.4&#xA;lime=3.0.3&#xA;tools=3.0.3&#xA;no-compilation&#xA;openfl-html5&#xA;lime-html5&#xA;html5&#xA;web&#xA;html5&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 12" />
+    <option additional="--remap flash:openfl" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

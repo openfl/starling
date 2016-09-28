@@ -28,8 +28,7 @@ class Ellipse extends ImmutablePolygon
         var angleDelta:Float = 2 * Math.PI / numSides;
         var angle:Float = 0;
 
-        //for (var i:Int=0; i<numSides; ++i)
-        for(i in 0 ... numSides)
+        for (i in 0...numSides)
         {
             vertices[i * 2    ] = Math.cos(angle) * mRadiusX + mX;
             vertices[i * 2 + 1] = Math.sin(angle) * mRadiusY + mY;
@@ -48,7 +47,7 @@ class Ellipse extends ImmutablePolygon
         var pos:UInt = result.length;
 
         //for (var i:Int=from; i<to; ++i)
-        for(i in from ... to)
+        for (i in from...to)
         {
             result[pos++] = 0;
             result[pos++] = i;
@@ -69,17 +68,17 @@ class Ellipse extends ImmutablePolygon
         return a * a + b * b <= 1;
     }
 
-    override public function get_area():Float
+    override private function get_area():Float
     {
         return Math.PI * mRadiusX * mRadiusY;
     }
 
-    override public function get_isSimple():Bool
+    override private function get_isSimple():Bool
     {
         return true;
     }
 
-    override public function get_isConvex():Bool
+    override private function get_isConvex():Bool
     {
         return true;
     }

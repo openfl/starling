@@ -9,7 +9,8 @@
 // =================================================================================================
 
 package starling.events;
-import openfl.geom.Point;
+
+import flash.geom.Point;
 
 /** A ResizeEvent is dispatched by the stage when the size of the Flash container changes.
  *  Use it to update the Starling viewport and the stage size.
@@ -26,7 +27,7 @@ import openfl.geom.Point;
 class ResizeEvent extends Event
 {
     /** Event type for a resized Flash player. */
-    inline public static var RESIZE:String = "resize";
+    public static inline var RESIZE:String = "resize";
     
     /** Creates a new ResizeEvent. */
     public function new(type:String, width:Int, height:Int, bubbles:Bool=false)

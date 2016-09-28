@@ -59,7 +59,7 @@ import starling.text.TextField;
         addEventListener(TouchEvent.TOUCH, onTouch);
     }
     
-    override private function onTouch(event:TouchEvent):Void
+    private override function onTouch(event:TouchEvent):Void
     {
         var touch:Touch = event.getTouch(this, TouchPhase.HOVER);
         if (touch == null) touch = event.getTouch(this, TouchPhase.BEGAN);

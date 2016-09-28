@@ -9,22 +9,18 @@
 // =================================================================================================
 
 package starling.utils;
-import starling.errors.AbstractClassError;
 
 /** A class that provides constant values for vertical alignment of objects. */
 class VAlign
 {
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-    
     /** Top alignment. */
-    inline public static var TOP:String    = "top";
+    public static inline var TOP:String    = "top";
     
     /** Centered alignment. */
-    inline public static var CENTER:String = "center";
+    public static inline var CENTER:String = "center";
     
     /** Bottom alignment. */
-    inline public static var BOTTOM:String = "bottom";
+    public static inline var BOTTOM:String = "bottom";
     
     /** Indicates whether the given alignment string is valid. */
     public static function isValid(vAlign:String):Bool

@@ -10,28 +10,28 @@
 
 package starling.text;
 
-import haxe.Constraints.Function;
+import flash.display.BitmapData;
 import flash.display.IBitmapDrawable;
+import flash.display.StageQuality;
+import flash.display3D.Context3DTextureFormat;
+import flash.errors.ArgumentError;
+import flash.errors.Error;
+import flash.filters.BitmapFilter;
+import flash.filters.BlurFilter;
+import flash.filters.DropShadowFilter;
 import flash.geom.ColorTransform;
+import flash.geom.Matrix;
+import flash.geom.Point;
+import flash.geom.Rectangle;
+import flash.Lib;
+import flash.text.AntiAliasType;
+import flash.text.Font;
+import flash.text.TextFormat;
+import flash.text.TextFormatAlign;
+
+import haxe.Constraints.Function;
+
 import openfl.Assets;
-import openfl.display.BitmapData;
-import openfl.display.StageQuality;
-import openfl.display3D.Context3DTextureFormat;
-import openfl.errors.ArgumentError;
-import openfl.errors.Error;
-import openfl.filters.BitmapFilter;
-import openfl.filters.BlurFilter;
-import openfl.filters.DropShadowFilter;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.Lib;
-import openfl.text.AntiAliasType;
-import openfl.text.Font;
-import openfl.text.TextFormat;
-import openfl.text.TextFormatAlign;
-import starling.utils.MathUtil;
-import starling.utils.Max;
 
 import starling.core.RenderSupport;
 import starling.core.Starling;
@@ -47,6 +47,8 @@ import starling.utils.HAlign;
 import starling.utils.RectangleUtil;
 import starling.utils.VAlign;
 import starling.utils.Deg2Rad;
+import starling.utils.MathUtil;
+import starling.utils.Max;
 
 /** A TextField displays text, either using standard true type fonts or custom bitmap fonts.
  *  
@@ -101,7 +103,7 @@ import starling.utils.Deg2Rad;
 class TextField extends DisplayObjectContainer
 {
     // the name container with the registered bitmap fonts
-    inline private static var BITMAP_FONT_DATA_NAME:String = "starling.display.TextField.BitmapFonts";
+    private static inline var BITMAP_FONT_DATA_NAME:String = "starling.display.TextField.BitmapFonts";
 
     // the texture format that is used for TTF rendering
     private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA;
@@ -134,7 +136,7 @@ class TextField extends DisplayObjectContainer
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
+    private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
     
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String, fontName:String="Verdana",
@@ -291,18 +293,9 @@ class TextField extends DisplayObjectContainer
             height = Max.INT_MAX_VALUE;
             vAlign = VAlign.TOP;
         }
-
-        var hAlign_openfl:TextFormatAlign;
-        switch(hAlign)
-        {
-        case HAlign.LEFT: hAlign_openfl = TextFormatAlign.LEFT;
-        case HAlign.CENTER: hAlign_openfl = TextFormatAlign.CENTER;
-        case HAlign.RIGHT: hAlign_openfl = TextFormatAlign.RIGHT;
-        default: hAlign_openfl = TextFormatAlign.LEFT;
-        }
-
+        
         var textFormat:TextFormat = new TextFormat(mFontName, 
-            Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign_openfl);
+            Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign);
         textFormat.kerning = mKerning;
         textFormat.leading = Std.int(mLeading);
 
@@ -357,8 +350,9 @@ class TextField extends DisplayObjectContainer
         // finally: draw text field to bitmap data
         var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
         var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
-            filterOffset.x, filterOffset.y + Std.int(textOffsetY)-2);
-        
+            filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
+
+        #if flash
         var drawWithQualityFunc:Function =
             Reflect.getProperty(bitmapData, "drawWithQuality");
         
@@ -370,6 +364,9 @@ class TextField extends DisplayObjectContainer
                                      null, null, null, false, StageQuality.MEDIUM]);
         else
             bitmapData.draw(sNativeTextField, drawMatrix);
+        #else
+        bitmapData.drawWithQuality(sNativeTextField, drawMatrix, null, null, null, false, StageQuality.MEDIUM); // skip reflection for performance
+        #end
         
         sNativeTextField.text = "";
         
@@ -381,7 +378,7 @@ class TextField extends DisplayObjectContainer
         return bitmapData;
     }
     
-    private function autoScaleNativeTextField(textField:openfl.text.TextField):Void
+    private function autoScaleNativeTextField(textField:flash.text.TextField):Void
     {
         var size:Int   = Std.int(textField.defaultTextFormat.size);
         var maxHeight:Int = Std.int(textField.height - 4);
@@ -400,7 +397,7 @@ class TextField extends DisplayObjectContainer
         }
     }
     
-    private function calculateFilterOffset(textField:openfl.text.TextField,
+    private function calculateFilterOffset(textField:flash.text.TextField,
                                            hAlign:String, vAlign:String):Point
     {
         var resultOffset:Point = new Point();
@@ -412,7 +409,7 @@ class TextField extends DisplayObjectContainer
             var textHeight:Float = textField.textHeight;
             var bounds:Rectangle  = new Rectangle();
             
-            for(filter in filters)
+            for (filter in filters)
             {
                 var blurX:Float = 0;
                 var blurY:Float = 0;
@@ -580,7 +577,7 @@ class TextField extends DisplayObjectContainer
     }
 
     /** @inheritDoc */
-    public override function set_width(value:Float):Float
+    private override function set_width(value:Float):Float
     {
         // different to ordinary display objects, changing the size of the text field should 
         // not change the scaling, but make the texture bigger/smaller, while the size 
@@ -592,7 +589,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    public override function set_height(value:Float):Float
+    private override function set_height(value:Float):Float
     {
         mHitArea.height = value;
         mRequiresRedraw = true;
@@ -701,7 +698,7 @@ class TextField extends DisplayObjectContainer
             mBorder = new Sprite();
             addChild(mBorder);
             
-            for (i in 0 ... 4)
+            for (i in 0...4)
                 mBorder.addChild(new Quad(1.0, 1.0));
             
             updateBorder();
@@ -806,7 +803,7 @@ class TextField extends DisplayObjectContainer
     { 
         mBatchable = value;
         if (mQuadBatch != null) mQuadBatch.batchable = value;
-		return mBatchable;
+        return mBatchable;
     }
 
     /** The native Flash BitmapFilters to apply to this TextField.
@@ -827,8 +824,8 @@ class TextField extends DisplayObjectContainer
      *
      *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var isHtmlText(get, set):Bool;
-    public function get_isHtmlText():Bool { return mIsHtmlText; }
-    public function set_isHtmlText(value:Bool):Bool
+    private function get_isHtmlText():Bool { return mIsHtmlText; }
+    private function set_isHtmlText(value:Bool):Bool
     {
         if (mIsHtmlText != value)
         {

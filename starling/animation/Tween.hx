@@ -11,11 +11,14 @@
 
 package starling.animation;
 
+import flash.errors.ArgumentError;
+
 import haxe.Constraints.Function;
-import openfl.errors.ArgumentError;
+
+import openfl.Vector;
+
 import starling.events.Event;
 import starling.events.EventDispatcher;
-import openfl.Vector;
 
 /** A Tween animates numeric properties of objects. It uses different transition functions
  *  to give the animations various styles.
@@ -44,7 +47,7 @@ import openfl.Vector;
  */ 
 class Tween extends EventDispatcher implements IAnimatable
 {
-    inline private static var HINT_MARKER:String = '#';
+    private static inline var HINT_MARKER:String = '#';
 
     private var mTarget:Dynamic;
     private var mTransitionFunc:Float->Float;
@@ -209,8 +212,7 @@ class Tween extends EventDispatcher implements IAnimatable
         var numProperties:Int = mStartValues.length;
         mProgress = reversed ? mTransitionFunc(1.0 - ratio) : mTransitionFunc(ratio);
 
-        //for (i=0; i<numProperties; ++i)
-        for(i in 0 ... numProperties)
+        for (i in 0...numProperties)
         {                
             if (mStartValues[i] != mStartValues[i]) // isNaN check - "isNaN" causes allocation! 
                 mStartValues[i] = Reflect.getProperty(mTarget, mProperties[i]);
@@ -497,7 +499,7 @@ class Tween extends EventDispatcher implements IAnimatable
     private static var sTweenPool:Vector<Tween> = new Vector<Tween>();
     
     /** @private */
-    public static function fromPool(target:Dynamic, time:Float, 
+    private static function fromPool(target:Dynamic, time:Float, 
                                                transition:Dynamic="linear"):Tween
     {
         if (sTweenPool.length != 0) return sTweenPool.pop().reset(target, time, transition);
@@ -505,7 +507,7 @@ class Tween extends EventDispatcher implements IAnimatable
     }
     
     /** @private */
-    public static function toPool(tween:Tween):Void
+    private static function toPool(tween:Tween):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
         tween.mOnStart = tween.mOnUpdate = tween.mOnRepeat = tween.mOnComplete = null;

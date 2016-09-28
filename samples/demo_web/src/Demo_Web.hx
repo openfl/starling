@@ -1,28 +1,29 @@
 package;
+
 import flash.display.Bitmap;
 import flash.display.Sprite;
+import flash.display3D.Context3DRenderMode;
+import flash.errors.Error;
+import flash.geom.Rectangle;
 import flash.system.Capabilities;
-#if 0
 import flash.system.System;
-import flash.utils.setTimeout;
-#end
+
 import haxe.Timer;
+
 import openfl.Assets;
-import openfl.display3D.Context3DRenderMode;
-import openfl.errors.Error;
-import openfl.geom.Rectangle;
-import starling.display.Stage;
-import starling.text.BitmapFont;
-import starling.text.TextField;
-import starling.textures.Texture;
-import starling.textures.TextureAtlas;
-import starling.utils.Max;
-import starling.utils.RectangleUtil;
+import openfl.Vector;
 
 import starling.core.Starling;
+import starling.display.Stage;
 import starling.events.Event;
+import starling.text.BitmapFont;
+import starling.text.TextField;
 import starling.textures.RenderTexture;
+import starling.textures.Texture;
+import starling.textures.TextureAtlas;
 import starling.utils.AssetManager;
+import starling.utils.Max;
+import starling.utils.RectangleUtil;
 
 import utils.ProgressBar;
 
