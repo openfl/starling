@@ -109,12 +109,11 @@ import openfl.Vector;
         
         Starling.current.juggler.delayCall(colorizeEgg, 1.0, [true]);
         Starling.current.juggler.delayCall(colorizeEgg, 2.0, [false]);
-        Starling.current.juggler.delayCall(function(unused):Void { mDelayButton.enabled = true; }, 2.0);
+        Starling.current.juggler.delayCall(function(?unused):Void { mDelayButton.enabled = true; }, 2.0);
     }
     
-    private function colorizeEgg(args:Array<Dynamic>):Void
+    private function colorizeEgg(colorize:Bool):Void
     {
-        var colorize:Bool = args[0];
         mEgg.color = colorize ? Color.RED : Color.WHITE;
     }
     
