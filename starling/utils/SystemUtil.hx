@@ -76,7 +76,7 @@ class SystemUtil
             try { Reflect.callMethod(null, call[0], call[1]); }
             catch (e:Error)
             {
-                trace("[Starling] Error in 'executeWhenApplicationIsActive' call:", e.message);
+                trace("[Starling] Error in 'executeWhenApplicationIsActive' call: " + e.message);
             }
         }
 

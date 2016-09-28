@@ -455,7 +455,7 @@ class Starling extends EventDispatcher
         mContext.enableErrorChecking = mEnableErrorChecking;
         
         trace("[Starling] Initialization complete.");
-        trace("[Starling] Display Driver:", mContext.driverInfo);
+        trace("[Starling] Display Driver: " + mContext.driverInfo);
 
         updateViewPort(true);
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, mContext);

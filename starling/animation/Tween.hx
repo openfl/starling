@@ -282,7 +282,7 @@ class Tween extends EventDispatcher implements IAnimatable
             case "rad": updateFunc = updateRad; //break;
             case "deg": updateFunc = updateDeg; //break;
             default:
-                trace("[Starling] Ignoring unknown property hint:", hint);
+                trace("[Starling] Ignoring unknown property hint: " + hint);
                 updateFunc = updateStandard;
         }
 
