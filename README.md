@@ -15,14 +15,9 @@ _This library has not been published on haxelib yet._
 Development Builds
 ------------------
 
-Clone the starling repository:
+Install the haxelib from GitHub:
 
-    git clone https://github.com/openfl/starling
-
-
-Tell haxelib where your development copy of starling is installed:
-
-    haxelib dev starling starling
+    haxelib git starling https://github.com/openfl/starling
 
 
 To return to release builds:
