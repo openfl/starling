@@ -59,17 +59,17 @@ import starling.utils.SystemUtil;
 import starling.utils.VAlign;
 
 /** Dispatched when a new render context is created. The 'data' property references the context. */
-//[Event(name="context3DCreate", type="starling.events.Event")]
+@:meta(Event(name="context3DCreate", type="starling.events.Event"))
 
 /** Dispatched when the root class has been created. The 'data' property references that object. */
-//[Event(name="rootCreated", type="starling.events.Event")]
+@:meta(Event(name="rootCreated", type="starling.events.Event"))
 
 /** Dispatched when a fatal error is encountered. The 'data' property contains an error string. */
-//[Event(name="fatalError", type="starling.events.Event")]
+@:meta(Event(name="fatalError", type="starling.events.Event"))
 
 /** Dispatched when the display list is about to be rendered. This event provides the last
  *  opportunity to make changes before the display list is rendered. */
-//[Event(name="render", type="starling.events.Event")]
+@:meta(Event(name="render", type="starling.events.Event"))
 
 /** The Starling class represents the core of the Starling framework.
  *

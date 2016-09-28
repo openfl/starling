@@ -53,25 +53,19 @@ import starling.textures.TextureOptions;
 
 
 /** Dispatched when all textures have been restored after a context loss. */
-//[Event(name="texturesRestored", type="starling.events.Event")]
+@:meta(Event(name="texturesRestored", type="starling.events.Event"))
 
 /** Dispatched when an URLLoader fails with an IO_ERROR while processing the queue.
  *  The 'data' property of the Event contains the URL-String that could not be loaded. */
-//[Event(name="ioError", type="starling.events.Event")]
+@:meta(Event(name="ioError", type="starling.events.Event"))
 
 /** Dispatched when an URLLoader fails with a SECURITY_ERROR while processing the queue.
  *  The 'data' property of the Event contains the URL-String that could not be loaded. */
-//[Event(name="securityError", type="starling.events.Event")]
+@:meta(Event(name="securityError", type="starling.events.Event"))
 
 /** Dispatched when an XML or JSON file couldn't be parsed.
  *  The 'data' property of the Event contains the name of the asset that could not be parsed. */
-//[Event(name="parseError", type="starling.events.Event")]
-
-typedef QueuedAsset = {
-    name:String,
-    asset:Dynamic,
-    options:TextureOptions
-}
+@:meta(Event(name="parseError", type="starling.events.Event"))
 
 /** The AssetManager handles loading and accessing a variety of asset types. You can 
  *  add assets directly (via the 'add...' methods) or asynchronously via a queue. This allows
@@ -1361,4 +1355,10 @@ class AssetManager extends EventDispatcher
     public var numConnections(get, set):Int;
     private function get_numConnections():Int { return mNumConnections; }
     private function set_numConnections(value:Int):Int { return mNumConnections = value; }
+}
+
+@:dox(hide) typedef QueuedAsset = {
+    name:String,
+    asset:Dynamic,
+    options:TextureOptions
 }

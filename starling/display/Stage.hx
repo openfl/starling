@@ -26,7 +26,7 @@ import starling.filters.FragmentFilter;
 import starling.utils.MatrixUtil;
 
 /** Dispatched when the Flash container is resized. */
-//[Event(name="resize", type="starling.events.ResizeEvent")]
+@:meta(Event(name="resize", type="starling.events.ResizeEvent"))
 
 /** A Stage represents the root of the display tree.  
  *  Only objects that are direct or indirect children of the stage will be rendered.

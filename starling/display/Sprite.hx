@@ -24,7 +24,7 @@ import starling.utils.RectangleUtil;
 import starling.utils.Max;
 
 /** Dispatched on all children when the object is flattened. */
-//[Event(name="flatten", type="starling.events.Event")]
+@:meta(Event(name="flatten", type="starling.events.Event"))
 
 /** A Sprite is the most lightweight, non-abstract container class.
  *  <p>Use it as a simple means of grouping objects together in one coordinate system, or

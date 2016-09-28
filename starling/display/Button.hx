@@ -25,7 +25,7 @@ import starling.utils.HAlign;
 import starling.utils.VAlign;
 
 /** Dispatched when the user triggers the button. Bubbles. */
-//[Event(name="triggered", type="starling.events.Event")]
+@:meta(Event(name="triggered", type="starling.events.Event"))
 
 /** A simple button composed of an image and, optionally, text.
  *  

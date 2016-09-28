@@ -231,7 +231,7 @@ class Sprite3D extends DisplayObjectContainer
     }
 
     /**  The 3D transformation matrix of the object relative to its parent.
-     *  CAUTION: not a copy, but the actual object! */
+     * CAUTION: not a copy, but the actual object! */
     private override function get_transformationMatrix3D():Matrix3D
     {
         if (mTransformationChanged)

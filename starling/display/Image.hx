@@ -170,8 +170,8 @@ class Image extends Quad
     }
     
     /** The smoothing filter that is used for the texture. 
-    *  @default bilinear
-    *  @see starling.textures.TextureSmoothing */ 
+    * @default bilinear
+    * @see starling.textures.TextureSmoothing */ 
     public var smoothing(get, set):String;
     private function get_smoothing():String { return mSmoothing; }
     private function set_smoothing(value:String):String 
