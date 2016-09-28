@@ -46,7 +46,6 @@ import starling.textures.Texture;
 import starling.utils.HAlign;
 import starling.utils.RectangleUtil;
 import starling.utils.VAlign;
-import starling.utils.Deg2Rad;
 import starling.utils.MathUtil;
 import starling.utils.Max;
 

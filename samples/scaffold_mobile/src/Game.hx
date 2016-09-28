@@ -6,7 +6,7 @@ import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
-import starling.utils.deg2rad;
+import starling.utils.MathUtils.deg2rad;
 
 /** The Game class represents the actual game. In this scaffold, it just displays a 
  *  Starling that moves around fast. When the user touches the Starling, the game ends. */ 
