@@ -87,7 +87,7 @@ class Image extends Quad
     }
     
     /** Readjusts the dimensions of the image according to its current texture. Call this method 
-     *  to synchronize image and texture size after assigning a texture with a different size.*/
+     * to synchronize image and texture size after assigning a texture with a different size.*/
     public function readjustSize():Void
     {
         var frame:Rectangle = texture.frame;
@@ -117,8 +117,8 @@ class Image extends Quad
     }
     
     /** Gets the texture coordinates of a vertex. Coordinates are in the range [0, 1]. 
-     *  If you pass a 'resultPoint', the result will be stored in this point instead of 
-     *  creating a new object.*/
+     * If you pass a 'resultPoint', the result will be stored in this point instead of 
+     * creating a new object.*/
     public function getTexCoords(vertexID:Int, resultPoint:Point=null):Point
     {
         if (resultPoint == null) resultPoint = new Point();
@@ -127,15 +127,15 @@ class Image extends Quad
     }
     
     /** Copies the raw vertex data to a VertexData instance.
-     *  The texture coordinates are already in the format required for rendering. */ 
+     * The texture coordinates are already in the format required for rendering. */ 
     public override function copyVertexDataTo(targetData:VertexData, targetVertexID:Int=0):Void
     {
         copyVertexDataTransformedTo(targetData, targetVertexID, null);
     }
     
     /** Transforms the vertex positions of the raw vertex data by a certain matrix
-     *  and copies the result to another VertexData instance.
-     *  The texture coordinates are already in the format required for rendering. */
+     * and copies the result to another VertexData instance.
+     * The texture coordinates are already in the format required for rendering. */
     public override function copyVertexDataTransformedTo(targetData:VertexData,
                                                          targetVertexID:Int=0,
                                                          matrix:Matrix=null):Void
@@ -170,8 +170,8 @@ class Image extends Quad
     }
     
     /** The smoothing filter that is used for the texture. 
-    *   @default bilinear
-    *   @see starling.textures.TextureSmoothing */ 
+    *  @default bilinear
+    *  @see starling.textures.TextureSmoothing */ 
     public var smoothing(get, set):String;
     private function get_smoothing():String { return mSmoothing; }
     private function set_smoothing(value:String):String 

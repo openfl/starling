@@ -91,8 +91,8 @@ class QuadBatch extends DisplayObject
     private var mIndexBuffer:IndexBuffer3D;
     
     /** The raw vertex data of the quad. After modifying its contents, call
-     *  'onVertexDataChanged' to upload the changes to the vertex buffers. Don't change the
-     *  size of this object manually; instead, use the 'capacity' property of the QuadBatch. */
+     * 'onVertexDataChanged' to upload the changes to the vertex buffers. Don't change the
+     * size of this object manually; instead, use the 'capacity' property of the QuadBatch. */
     private var mVertexData:VertexData;
 
     /** Helper objects. */
@@ -102,8 +102,8 @@ class QuadBatch extends DisplayObject
     
     /** Creates a new QuadBatch instance with empty batch data.
      *
-     *  @param optimizeForProfile  if enabled, the 'forceTinted' property will be automatically
-     *                             activated in 'baselineExtended' and better profiles. */
+     * @param optimizeForProfile  if enabled, the 'forceTinted' property will be automatically
+     *                            activated in 'baselineExtended' and better profiles. */
     public function new(optimizeForProfile:Bool=false)
     {
         super();
@@ -234,8 +234,8 @@ class QuadBatch extends DisplayObject
     }
     
     /** Renders the current batch with custom settings for model-view-projection matrix, alpha 
-     *  and blend mode. This makes it possible to render batches that are not part of the 
-     *  display list. */ 
+     * and blend mode. This makes it possible to render batches that are not part of the 
+     * display list. */ 
     public function renderCustom(mvpMatrix:Matrix3D, parentAlpha:Float=1.0,
                                  blendMode:String=null):Void
     {
@@ -282,7 +282,7 @@ class QuadBatch extends DisplayObject
     }
     
     /** Resets the batch. The vertex- and index-buffers remain their size, so that they
-     *  can be reused quickly. */
+     * can be reused quickly. */
     public function reset():Void
     {
         if (mTexture != null && mOwnsTexture)
@@ -295,7 +295,7 @@ class QuadBatch extends DisplayObject
     }
     
     /** Adds an image to the batch. This method internally calls 'addQuad' with the correct
-     *  parameters for 'texture' and 'smoothing'. */ 
+     * parameters for 'texture' and 'smoothing'. */ 
     public function addImage(image:Image, parentAlpha:Float=1.0, modelViewMatrix:Matrix=null,
                              blendMode:String=null):Void
     {
@@ -303,9 +303,9 @@ class QuadBatch extends DisplayObject
     }
     
     /** Adds a quad to the batch. The first quad determines the state of the batch,
-     *  i.e. the values for texture, smoothing and blendmode. When you add additional quads,  
-     *  make sure they share that state (e.g. with the 'isStateChange' method), or reset
-     *  the batch. */ 
+     * i.e. the values for texture, smoothing and blendmode. When you add additional quads,  
+     * make sure they share that state (e.g. with the 'isStateChange' method), or reset
+     * the batch. */ 
     public function addQuad(quad:Quad, parentAlpha:Float=1.0, texture:Texture=null, 
                             smoothing:String=null, modelViewMatrix:Matrix=null, 
                             blendMode:String=null):Void
@@ -336,7 +336,7 @@ class QuadBatch extends DisplayObject
     }
 
     /** Adds another QuadBatch to this batch. Just like the 'addQuad' method, you have to
-     *  make sure that you only add batches with an equal state. */
+     * make sure that you only add batches with an equal state. */
     public function addQuadBatch(quadBatch:QuadBatch, parentAlpha:Float=1.0, 
                                  modelViewMatrix:Matrix=null, blendMode:String=null):Void
     {
@@ -368,9 +368,9 @@ class QuadBatch extends DisplayObject
     }
     
     /** Indicates if specific quads can be added to the batch without causing a state change. 
-     *  A state change occurs if the quad uses a different base texture, has a different 
-     *  'tinted', 'smoothing', 'repeat' or 'blendMode' setting, or if the batch is full
-     *  (one batch can contain up to 16383 quads). */
+     * A state change occurs if the quad uses a different base texture, has a different 
+     * 'tinted', 'smoothing', 'repeat' or 'blendMode' setting, or if the batch is full
+     * (one batch can contain up to 16383 quads). */
     public function isStateChange(tinted:Bool, parentAlpha:Float, texture:Texture, 
                                   smoothing:String, blendMode:String, numQuads:Int=1):Bool
     {
@@ -466,8 +466,8 @@ class QuadBatch extends DisplayObject
     }
 
     /** Calculates the bounds of a specific quad, optionally transformed by a matrix.
-     *  If you pass a 'resultRect', the result will be stored in this rectangle
-     *  instead of creating a new object. */
+     * If you pass a 'resultRect', the result will be stored in this rectangle
+     * instead of creating a new object. */
     public function getQuadBounds(quadID:Int, transformationMatrix:Matrix=null,
                                   resultRect:Rectangle=null):Rectangle
     {
@@ -506,9 +506,9 @@ class QuadBatch extends DisplayObject
     // compilation (for flattened sprites)
     
     /** Analyses an object that is made up exclusively of quads (or other containers)
-     *  and creates a vector of QuadBatch objects representing it. This can be
-     *  used to render the container very efficiently. The 'flatten'-method of the Sprite 
-     *  class uses this method internally. */
+     * and creates a vector of QuadBatch objects representing it. This can be
+     * used to render the container very efficiently. The 'flatten'-method of the Sprite 
+     * class uses this method internally. */
     public static function compile(object:DisplayObject, 
                                    quadBatches:Vector<QuadBatch>):Void
     {
@@ -516,8 +516,8 @@ class QuadBatch extends DisplayObject
     }
     
     /** Naively optimizes a list of batches by merging all that have an identical state.
-     *  Naturally, this will change the z-order of some of the batches, so this method is
-     *  useful only for specific use-cases. */
+     * Naturally, this will change the z-order of some of the batches, so this method is
+     * useful only for specific use-cases. */
     public static function optimize(quadBatches:Vector<QuadBatch>):Void
     {
         var batch1:QuadBatch, batch2:QuadBatch;
@@ -689,8 +689,8 @@ class QuadBatch extends DisplayObject
     private function get_tinted():Bool { return mTinted || mForceTinted; }
     
     /** The texture that is used for rendering, or null for pure quads. Note that this is the
-     *  texture instance of the first added quad; subsequently added quads may use a different
-     *  instance, as long as the base texture is the same. */ 
+     * texture instance of the first added quad; subsequently added quads may use a different
+     * instance, as long as the base texture is the same. */ 
     public var texture(get, never):Texture;
     private function get_texture():Texture { return mTexture; }
     
@@ -703,19 +703,19 @@ class QuadBatch extends DisplayObject
     private function get_premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
     
     /** Indicates if the batch itself should be batched on rendering. This makes sense only
-     *  if it contains only a small number of quads (we recommend no more than 16). Otherwise,
-     *  the CPU costs will exceed any gains you get from avoiding the additional draw call.
-     *  @default false */
+     * if it contains only a small number of quads (we recommend no more than 16). Otherwise,
+     * the CPU costs will exceed any gains you get from avoiding the additional draw call.
+     * @default false */
     public var batchable(get, set):Bool;
     private function get_batchable():Bool { return mBatchable; }
     private function set_batchable(value:Bool):Bool { return mBatchable = value; }
     
     /** If enabled, the QuadBatch will always be rendered with a tinting-enabled fragment
-     *  shader and the method 'isStateChange' won't take tinting into account. This means
-     *  fewer state changes, but also a slightly more complex fragment shader for non-tinted
-     *  quads. On modern hardware, that's not a problem, and you'll avoid unnecessary state
-     *  changes. However, on old devices like the iPad 1, you should be careful with this
-     *  setting. @default false
+     * shader and the method 'isStateChange' won't take tinting into account. This means
+     * fewer state changes, but also a slightly more complex fragment shader for non-tinted
+     * quads. On modern hardware, that's not a problem, and you'll avoid unnecessary state
+     * changes. However, on old devices like the iPad 1, you should be careful with this
+     * setting. @default false
      */
     public var forceTinted(get, set):Bool;
     private function get_forceTinted():Bool { return mForceTinted; }
@@ -730,9 +730,9 @@ class QuadBatch extends DisplayObject
     private function set_ownsTexture(value:Bool):Bool { return mOwnsTexture = value; }
 
     /** Indicates the number of quads for which space is allocated (vertex- and index-buffers).
-     *  If you add more quads than what fits into the current capacity, the QuadBatch is
-     *  expanded automatically. However, if you know beforehand how many vertices you need,
-     *  you can manually set the right capacity with this method. */
+     * If you add more quads than what fits into the current capacity, the QuadBatch is
+     * expanded automatically. However, if you know beforehand how many vertices you need,
+     * you can manually set the right capacity with this method. */
     public var capacity(get, set):Int;
     private function get_capacity():Int { return Std.int(mVertexData.numVertices / 4); }
     private function set_capacity(value:Int):Int

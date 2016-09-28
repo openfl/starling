@@ -93,7 +93,7 @@ class Stage extends DisplayObjectContainer
     }
 
     /** Returns the object that is found topmost beneath a point in stage coordinates, or  
-     *  the stage itself if nothing else is found. */
+     * the stage itself if nothing else is found. */
     public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
         if (forTouch && (!visible || !touchable))
@@ -112,16 +112,16 @@ class Stage extends DisplayObjectContainer
     
     /** Draws the complete stage into a BitmapData object.
      *
-     *  <p>If you encounter problems with transparency, start Starling in BASELINE profile
-     *  (or higher). BASELINE_CONSTRAINED might not support transparency on all platforms.
-     *  </p>
+     * <p>If you encounter problems with transparency, start Starling in BASELINE profile
+     * (or higher). BASELINE_CONSTRAINED might not support transparency on all platforms.
+     * </p>
      *
-     *  @param destination  If you pass null, the object will be created for you.
-     *                      If you pass a BitmapData object, it should have the size of the
-     *                      back buffer (which is accessible via the respective properties
-     *                      on the Starling instance).
-     *  @param transparent  If enabled, empty areas will appear transparent; otherwise, they
-     *                      will be filled with the stage color.
+     * @param destination  If you pass null, the object will be created for you.
+     *                     If you pass a BitmapData object, it should have the size of the
+     *                     back buffer (which is accessible via the respective properties
+     *                     on the Starling instance).
+     * @param transparent  If enabled, empty areas will appear transparent; otherwise, they
+     *                     will be filled with the stage color.
      */
     public function drawToBitmapData(destination:BitmapData=null,
                                      transparent:Bool=true):BitmapData
@@ -155,9 +155,9 @@ class Stage extends DisplayObjectContainer
     // camera positioning
 
     /** Returns the position of the camera within the local coordinate system of a certain
-     *  display object. If you do not pass a space, the method returns the global position.
-     *  To change the position of the camera, you can modify the properties 'fieldOfView',
-     *  'focalDistance' and 'projectionOffset'.
+     * display object. If you do not pass a space, the method returns the global position.
+     * To change the position of the camera, you can modify the properties 'fieldOfView',
+     * 'focalDistance' and 'projectionOffset'.
      */
     public function getCameraPosition(space:DisplayObject=null, result:Vector3D=null):Vector3D
     {
@@ -265,19 +265,19 @@ class Stage extends DisplayObjectContainer
     private function set_color(value:UInt):UInt { return mColor = value; }
     
     /** The width of the stage coordinate system. Change it to scale its contents relative
-     *  to the <code>viewPort</code> property of the Starling object. */ 
+     * to the <code>viewPort</code> property of the Starling object. */ 
     public var stageWidth(get, set):Int;
     private function get_stageWidth():Int { return mWidth; }
     private function set_stageWidth(value:Int):Int { return mWidth = value; }
     
     /** The height of the stage coordinate system. Change it to scale its contents relative
-     *  to the <code>viewPort</code> property of the Starling object. */
+     * to the <code>viewPort</code> property of the Starling object. */
     public var stageHeight(get, set):Int;
     private function get_stageHeight():Int { return mHeight; }
     private function set_stageHeight(value:Int):Int { return mHeight = value; }
 
     /** The distance between the stage and the camera. Changing this value will update the
-     *  field of view accordingly. */
+     * field of view accordingly. */
     public var focalLength(get, set):Float;
     private function get_focalLength():Float
     {
@@ -290,22 +290,22 @@ class Stage extends DisplayObjectContainer
     }
 
     /** Specifies an angle (radian, between zero and PI) for the field of view. This value
-     *  determines how strong the perspective transformation and distortion apply to a Sprite3D
-     *  object.
+     * determines how strong the perspective transformation and distortion apply to a Sprite3D
+     * object.
      *
-     *  <p>A value close to zero will look similar to an orthographic projection; a value
-     *  close to PI results in a fisheye lens effect. If the field of view is set to 0 or PI,
-     *  nothing is seen on the screen.</p>
+     * <p>A value close to zero will look similar to an orthographic projection; a value
+     * close to PI results in a fisheye lens effect. If the field of view is set to 0 or PI,
+     * nothing is seen on the screen.</p>
      *
-     *  @default 1.0
+     * @default 1.0
      */
     public var fieldOfView(get, set):Float;
     private function get_fieldOfView():Float { return mFieldOfView; }
     private function set_fieldOfView(value:Float):Float { return mFieldOfView = value; }
 
     /** A vector that moves the camera away from its default position in the center of the
-     *  stage. Use this property to change the center of projection, i.e. the vanishing
-     *  point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
+     * stage. Use this property to change the center of projection, i.e. the vanishing
+     * point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
      */
     public var projectionOffset(get, set):Point;
     private function get_projectionOffset():Point { return mProjectionOffset; }
@@ -316,11 +316,11 @@ class Stage extends DisplayObjectContainer
     }
 
     /** The global position of the camera. This property can only be used to find out the
-     *  current position, but not to modify it. For that, use the 'projectionOffset',
-     *  'fieldOfView' and 'focalLength' properties. If you need the camera position in
-     *  a certain coordinate space, use 'getCameraPosition' instead.
+     * current position, but not to modify it. For that, use the 'projectionOffset',
+     * 'fieldOfView' and 'focalLength' properties. If you need the camera position in
+     * a certain coordinate space, use 'getCameraPosition' instead.
      *
-     *  <p>CAUTION: not a copy, but the actual object!</p>
+     * <p>CAUTION: not a copy, but the actual object!</p>
      */
     public var cameraPosition(get, never):Vector3D;
     private function get_cameraPosition():Vector3D

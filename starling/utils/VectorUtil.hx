@@ -20,7 +20,7 @@ import openfl.Vector;
 class VectorUtil
 {
     /** Inserts a value into the 'int'-Vector at the specified index. Supports negative
-     *  indices (counting from the end); gaps will be filled up with zeroes. */
+     * indices (counting from the end); gaps will be filled up with zeroes. */
     public static function insertIntAt(vector:Vector<Int>, index:UInt, value:Int):Void
     {
         var i:UInt;
@@ -49,7 +49,7 @@ class VectorUtil
     }
 
     /** Removes the value at the specified index from the 'int'-Vector. Pass a negative
-     *  index to specify a position relative to the end of the vector. */
+     * index to specify a position relative to the end of the vector. */
     public static function removeIntAt(vector:Vector<Int>, index:UInt):Int
     {
         //var i:Int;
@@ -69,7 +69,7 @@ class VectorUtil
     }
 
     /** Inserts a value into the 'uint'-Vector at the specified index. Supports negative
-     *  indices (counting from the end); gaps will be filled up with zeroes. */
+     * indices (counting from the end); gaps will be filled up with zeroes. */
     public static function insertUnsignedIntAt(vector:Vector<UInt>, index:UInt, value:UInt):Void
     {
         var i:UInt;
@@ -98,7 +98,7 @@ class VectorUtil
     }
 
     /** Removes the value at the specified index from the 'int'-Vector. Pass a negative
-     *  index to specify a position relative to the end of the vector. */
+     * index to specify a position relative to the end of the vector. */
     public static function removeUnsignedIntAt(vector:Vector<UInt>, index:UInt):UInt
     {
         //var i:Int;
@@ -118,7 +118,7 @@ class VectorUtil
     }
 
     /** Inserts a value into the 'Number'-Vector at the specified index. Supports negative
-     *  indices (counting from the end); gaps will be filled up with <code>NaN</code> values. */
+     * indices (counting from the end); gaps will be filled up with <code>NaN</code> values. */
     public static function insertNumberAt(vector:Vector<Float>, index:UInt, value:Float):Void
     {
         var i:UInt;
@@ -147,7 +147,7 @@ class VectorUtil
     }
 
     /** Removes the value at the specified index from the 'Number'-Vector. Pass a negative
-     *  index to specify a position relative to the end of the vector. */
+     * index to specify a position relative to the end of the vector. */
     public static function removeNumberAt(vector:Vector<Float>, index:UInt):Float
     {
         //var i:Int;

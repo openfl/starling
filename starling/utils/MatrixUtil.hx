@@ -14,7 +14,8 @@ import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
 import flash.geom.Vector3D;
-import flash.Vector;
+
+import openfl.Vector;
 
 /** A utility class containing methods related to the Matrix class. */
 class MatrixUtil
@@ -26,7 +27,7 @@ class MatrixUtil
         [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
     
     /** Converts a 2D matrix to a 3D matrix. If you pass a 'resultMatrix',
-     *  the result will be stored in this matrix instead of creating a new object. */
+     * the result will be stored in this matrix instead of creating a new object. */
     public static function convertTo3D(matrix:Matrix, resultMatrix:Matrix3D=null):Matrix3D
     {
         if (resultMatrix == null) resultMatrix = new Matrix3D();
@@ -43,7 +44,7 @@ class MatrixUtil
     }
 
     /** Converts a 3D matrix to a 2D matrix. Beware that this will work only for a 3D matrix
-     *  describing a pure 2D transformation. */
+     * describing a pure 2D transformation. */
     public static function convertTo2D(matrix3D:Matrix3D, resultMatrix:Matrix=null):Matrix
     {
         if (resultMatrix == null) resultMatrix = new Matrix();
@@ -72,8 +73,8 @@ class MatrixUtil
     }
 
     /** Uses a matrix to transform 2D coordinates into a different space. If you pass a
-     *  'resultPoint', the result will be stored in this point instead of creating a
-     *  new object. */
+     * 'resultPoint', the result will be stored in this point instead of creating a
+     * new object. */
     public static function transformCoords(matrix:Matrix, x:Float, y:Float,
                                            resultPoint:Point=null):Point
     {
@@ -86,8 +87,8 @@ class MatrixUtil
     }
 
     /** Uses a matrix to transform 3D coordinates into a different space. If you pass a
-     *  'resultVector', the result will be stored in this vector3D instead of creating a
-     *  new object. */
+     * 'resultVector', the result will be stored in this vector3D instead of creating a
+     * new object. */
     public static function transformCoords3D(matrix:Matrix3D, x:Float, y:Float, z:Float,
                                              resultPoint:Vector3D=null):Vector3D
     {
@@ -103,12 +104,12 @@ class MatrixUtil
     }
 
     /** Appends a skew transformation to a matrix (angles in radians). The skew matrix
-     *  has the following form:
-     *  <pre>
-     *  | cos(skewY)  -sin(skewX)  0 |
-     *  | sin(skewY)   cos(skewX)  0 |
-     *  |     0            0       1 |
-     *  </pre>
+     * has the following form:
+     * <pre>
+     * | cos(skewY)  -sin(skewX)  0 |
+     * | sin(skewY)   cos(skewX)  0 |
+     * |     0            0       1 |
+     * </pre>
      */
     public static function skew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {
@@ -163,12 +164,12 @@ class MatrixUtil
     }
 
     /** Prepends a skew transformation to a Matrix object (angles in radians). The skew matrix
-     *  has the following form:
-     *  <pre>
-     *  | cos(skewY)  -sin(skewX)  0 |
-     *  | sin(skewY)   cos(skewX)  0 |
-     *  |     0            0       1 |
-     *  </pre>
+     * has the following form:
+     * <pre>
+     * | cos(skewY)  -sin(skewX)  0 |
+     * | sin(skewY)   cos(skewX)  0 |
+     * |     0            0       1 |
+     * </pre>
      */
     public static function prependSkew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {

@@ -85,7 +85,7 @@ class BlendMode
     public static inline var ERASE:String = "erase";
 
     /** When used on a RenderTexture, the drawn object will act as a mask for the current
-     *  content, i.e. the source alpha overwrites the destination alpha. */
+     * content, i.e. the source alpha overwrites the destination alpha. */
     public static inline var MASK:String = "mask";
 
     /** Draws under/below existing objects; useful especially on RenderTextures. */
@@ -94,7 +94,7 @@ class BlendMode
     // accessing modes
     
     /** Returns the blend factors that correspond with a certain mode and premultiplied alpha
-     *  value. Throws an ArgumentError if the mode does not exist. */
+     * value. Throws an ArgumentError if the mode does not exist. */
     public static function getBlendFactors(mode:String, premultipliedAlpha:Bool=true):Array<Context3DBlendFactor>
     {
         var modes:Map<String, Array<Context3DBlendFactor>> = sBlendFactors[premultipliedAlpha ? 1 : 0];
@@ -105,8 +105,8 @@ class BlendMode
     }
     
     /** Registeres a blending mode under a certain name and for a certain premultiplied alpha
-     *  (pma) value. If the mode for the other pma value was not yet registered, the factors are
-     *  used for both pma settings. */
+     * (pma) value. If the mode for the other pma value was not yet registered, the factors are
+     * used for both pma settings. */
     public static function register(name:String, sourceFactor:Context3DBlendFactor, destFactor:Context3DBlendFactor,
                                     premultipliedAlpha:Bool=true):Void
     {

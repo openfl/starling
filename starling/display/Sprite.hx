@@ -90,25 +90,25 @@ class Sprite extends DisplayObjectContainer
     }
     
     /** Optimizes the sprite for optimal rendering performance. Changes in the
-     *  children of a flattened sprite will not be displayed any longer. For this to happen,
-     *  either call <code>flatten</code> again, or <code>unflatten</code> the sprite. 
-     *  Beware that the actual flattening will not happen right away, but right before the
-     *  next rendering. 
+     * children of a flattened sprite will not be displayed any longer. For this to happen,
+     * either call <code>flatten</code> again, or <code>unflatten</code> the sprite. 
+     * Beware that the actual flattening will not happen right away, but right before the
+     * next rendering. 
      * 
-     *  <p>When you flatten a sprite, the result of all matrix operations that are otherwise
-     *  executed during rendering are cached. For this reason, a flattened sprite can be
-     *  rendered with much less strain on the CPU. However, a flattened sprite will always
-     *  produce at least one draw call; if it were merged together with other objects, this
-     *  would cause additional matrix operations, and the optimization would have been in vain.
-     *  Thus, don't just blindly flatten all your sprites, but reserve flattening for sprites
-     *  with a big number of children.</p>
+     * <p>When you flatten a sprite, the result of all matrix operations that are otherwise
+     * executed during rendering are cached. For this reason, a flattened sprite can be
+     * rendered with much less strain on the CPU. However, a flattened sprite will always
+     * produce at least one draw call; if it were merged together with other objects, this
+     * would cause additional matrix operations, and the optimization would have been in vain.
+     * Thus, don't just blindly flatten all your sprites, but reserve flattening for sprites
+     * with a big number of children.</p>
      *
-     *  <p>Beware that while you can add a 'mask' or 'clipRect' to a flattened sprite, any
-     *  such property will be ignored on its children. Furthermore, while a 'Sprite3D' may
-     *  contain a flattened sprite, a flattened sprite must not contain a 'Sprite3D'.</p>
+     * <p>Beware that while you can add a 'mask' or 'clipRect' to a flattened sprite, any
+     * such property will be ignored on its children. Furthermore, while a 'Sprite3D' may
+     * contain a flattened sprite, a flattened sprite must not contain a 'Sprite3D'.</p>
      *
-     *  @param ignoreChildOrder If the child order is not important, you can further optimize
-     *           the number of draw calls. Naturally, this is not an option for all use-cases.
+     * @param ignoreChildOrder If the child order is not important, you can further optimize
+     *          the number of draw calls. Naturally, this is not an option for all use-cases.
      */
     public function flatten(ignoreChildOrder:Bool=false):Void
     {
@@ -118,7 +118,7 @@ class Sprite extends DisplayObjectContainer
     }
     
     /** Removes the rendering optimizations that were created when flattening the sprite.
-     *  Changes to the sprite's children will immediately become visible again. */ 
+     * Changes to the sprite's children will immediately become visible again. */ 
     public function unflatten():Void
     {
         mFlattenRequested = false;
@@ -133,9 +133,9 @@ class Sprite extends DisplayObjectContainer
     }
     
     /** The object's clipping rectangle in its local coordinate system.
-     *  Only pixels within that rectangle will be drawn. 
-     *  <strong>Note:</strong> clipping rectangles are axis aligned with the screen, so they
-     *  will not be rotated or skewed if the Sprite is. */
+     * Only pixels within that rectangle will be drawn. 
+     * <strong>Note:</strong> clipping rectangles are axis aligned with the screen, so they
+     * will not be rotated or skewed if the Sprite is. */
     public var clipRect(get, set):Rectangle;
     private function get_clipRect():Rectangle { return mClipRect; }
     private function set_clipRect(value:Rectangle):Rectangle 
@@ -146,7 +146,7 @@ class Sprite extends DisplayObjectContainer
     }
 
     /** Returns the bounds of the container's clipping rectangle in the given coordinate space,
-     *  or null if the sprite does not have one. */
+     * or null if the sprite does not have one. */
     public function getClipRect(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
     {
         if (mClipRect == null) return null;

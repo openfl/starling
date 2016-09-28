@@ -67,10 +67,10 @@ class Event
     /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
     public static inline var SECURITY_ERROR:String = "securityError";
     /** Event type that is dispatched by the AssetManager when an xml or json file couldn't
-     *  be parsed. */
+     * be parsed. */
     public static inline var PARSE_ERROR:String = "parseError";
     /** Event type that is dispatched by the Starling instance when it encounters a problem
-     *  from which it cannot recover, e.g. a lost device context. */
+     * from which it cannot recover, e.g. a lost device context. */
     public static inline var FATAL_ERROR:String = "fatalError";
 
     /** An event type to be utilized in custom events. Not used by Starling right now. */

@@ -68,7 +68,7 @@ class TouchProcessor
     private var mMultitapDistance:Float = 25;
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
-     *  method (the oldest being at the end of the vector). */
+     * method (the oldest being at the end of the vector). */
     private var mQueue:Vector<Array<Dynamic>>;
     
     /** The list of all currently active touches. */
@@ -103,7 +103,7 @@ class TouchProcessor
     }
     
     /** Analyzes the current touch queue and processes the list of current touches, emptying
-     *  the queue while doing so. This method is called by Starling once per frame. */
+     * the queue while doing so. This method is called by Starling once per frame. */
     public function advanceTime(passedTime:Float):Void
     {
         var i:Int;
@@ -160,12 +160,12 @@ class TouchProcessor
     }
     
     /** Dispatches TouchEvents to the display objects that are affected by the list of
-     *  given touches. Called internally by "advanceTime". To calculate updated targets,
-     *  the method will call "hitTest" on the "root" object.
-     *  
-     *  @param touches    a list of all touches that have changed just now.
-     *  @param shiftDown  indicates if the shift key was down when the touches occurred.
-     *  @param ctrlDown   indicates if the ctrl or cmd key was down when the touches occurred.
+     * given touches. Called internally by "advanceTime". To calculate updated targets,
+     * the method will call "hitTest" on the "root" object.
+     * 
+     * @param touches    a list of all touches that have changed just now.
+     * @param shiftDown  indicates if the shift key was down when the touches occurred.
+     * @param ctrlDown   indicates if the ctrl or cmd key was down when the touches occurred.
      */
     private function processTouches(touches:Vector<Touch>,
                                       shiftDown:Bool, ctrlDown:Bool):Void
@@ -221,10 +221,10 @@ class TouchProcessor
     }
     
     /** Enqueues an artificial touch that represents the mouse leaving the stage.
-     *  
-     *  <p>On OS X, we get mouse events from outside the stage; on Windows, we do not.
-     *  This method enqueues an artificial hover point that is just outside the stage.
-     *  That way, objects listening for HOVERs over them will get notified everywhere.</p>
+     * 
+     * <p>On OS X, we get mouse events from outside the stage; on Windows, we do not.
+     * This method enqueues an artificial hover point that is just outside the stage.
+     * That way, objects listening for HOVERs over them will get notified everywhere.</p>
      */
     public function enqueueMouseLeftStage():Void
     {
@@ -252,8 +252,8 @@ class TouchProcessor
     }
 
     /** Force-end all current touches. Changes the phase of all touches to 'ENDED' and
-     *  immediately dispatches a new TouchEvent (if touches are present). Called automatically
-     *  when the app receives a 'DEACTIVATE' event. */
+     * immediately dispatches a new TouchEvent (if touches are present). Called automatically
+     * when the app receives a 'DEACTIVATE' event. */
     public function cancelTouches():Void
     {
         if (mCurrentTouches.length > 0)
@@ -364,8 +364,8 @@ class TouchProcessor
     }
     
     /** Indicates if it multitouch simulation should be activated. When the user presses
-     *  ctrl/cmd (and optionally shift), he'll see a second touch curser that mimics the first.
-     *  That's an easy way to develop and test multitouch when there's only a mouse available.
+     * ctrl/cmd (and optionally shift), he'll see a second touch curser that mimics the first.
+     * That's an easy way to develop and test multitouch when there's only a mouse available.
      */
     public var simulateMultitouch(get, set):Bool;
     private function get_simulateMultitouch():Bool { return mTouchMarker != null; }
@@ -387,20 +387,20 @@ class TouchProcessor
     }
     
     /** The time period (in seconds) in which two touches must occur to be recognized as
-     *  a multitap gesture. */
+     * a multitap gesture. */
     public var multitapTime(get, set):Float;
     private function get_multitapTime():Float { return mMultitapTime; }
     private function set_multitapTime(value:Float):Float { return mMultitapTime = value; }
     
     /** The distance (in points) describing how close two touches must be to each other to
-     *  be recognized as a multitap gesture. */
+     * be recognized as a multitap gesture. */
     public var multitapDistance(get, set):Float;
     private function get_multitapDistance():Float { return mMultitapDistance; }
     private function set_multitapDistance(value:Float):Float { return mMultitapDistance = value; }
 
     /** The base object that will be used for hit testing. Per default, this reference points
-     *  to the stage; however, you can limit touch processing to certain parts of your game
-     *  by assigning a different object. */
+     * to the stage; however, you can limit touch processing to certain parts of your game
+     * by assigning a different object. */
     public var root(get, set):DisplayObject;
     private function get_root():DisplayObject { return mRoot; }
     private function set_root(value:DisplayObject):DisplayObject { return mRoot = value; }

@@ -30,7 +30,7 @@ class RectangleUtil
     private static inline var MIN_VALUE:Float = 5e-324;
     
     /** Calculates the intersection between two Rectangles. If the rectangles do not intersect,
-     *  this method returns an empty Rectangle object with its properties set to 0. */
+     * this method returns an empty Rectangle object with its properties set to 0. */
     public static function intersect(rect1:Rectangle, rect2:Rectangle, 
                                      resultRect:Rectangle=null):Rectangle
     {
@@ -50,14 +50,14 @@ class RectangleUtil
     }
     
     /** Calculates a rectangle with the same aspect ratio as the given 'rectangle',
-     *  centered within 'into'.  
+     * centered within 'into'.  
      * 
-     *  <p>This method is useful for calculating the optimal viewPort for a certain display 
-     *  size. You can use different scale modes to specify how the result should be calculated;
-     *  furthermore, you can avoid pixel alignment errors by only allowing whole-number  
-     *  multipliers/divisors (e.g. 3, 2, 1, 1/2, 1/3).</p>
-     *  
-     *  @see starling.utils.ScaleMode
+     * <p>This method is useful for calculating the optimal viewPort for a certain display 
+     * size. You can use different scale modes to specify how the result should be calculated;
+     * furthermore, you can avoid pixel alignment errors by only allowing whole-number  
+     * multipliers/divisors (e.g. 3, 2, 1, 1/2, 1/3).</p>
+     * 
+     * @see starling.utils.ScaleMode
      */
     public static function fit(rectangle:Rectangle, into:Rectangle, 
                                scaleMode:String="showAll", pixelPerfect:Bool=false,
@@ -122,7 +122,7 @@ class RectangleUtil
     }
     
     /** If the rectangle contains negative values for width or height, all coordinates
-     *  are adjusted so that the rectangle describes the same region with positive values. */
+     * are adjusted so that the rectangle describes the same region with positive values. */
     public static function normalize(rect:Rectangle):Void
     {
         if (rect.width < 0)
@@ -139,8 +139,8 @@ class RectangleUtil
     }
 
     /** Calculates the bounds of a rectangle after transforming it by a matrix.
-     *  If you pass a 'resultRect', the result will be stored in this rectangle
-     *  instead of creating a new object. */
+     * If you pass a 'resultRect', the result will be stored in this rectangle
+     * instead of creating a new object. */
     public static function getBounds(rectangle:Rectangle, transformationMatrix:Matrix,
                                      resultRect:Rectangle=null):Rectangle
     {

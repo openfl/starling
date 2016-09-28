@@ -181,7 +181,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Forces the text field to be constructed right away. Normally, 
-     *  it will only do so lazily, i.e. before being rendered. */
+     * it will only do so lazily, i.e. before being rendered. */
     public function redraw():Void
     {
         if (mRequiresRedraw)
@@ -259,18 +259,18 @@ class TextField extends DisplayObjectContainer
     }
 
     /** This method is called immediately before the text is rendered. The intent of
-     *  'formatText' is to be overridden in a subclass, so that you can provide custom
-     *  formatting for the TextField. In the overridden method, call 'setFormat' (either
-     *  over a range of characters or the complete TextField) to modify the format to
-     *  your needs.
-     *  
-     *  @param textField  the flash.text.TextField object that you can format.
-     *  @param textFormat the default text format that's currently set on the text field.
+     * 'formatText' is to be overridden in a subclass, so that you can provide custom
+     * formatting for the TextField. In the overridden method, call 'setFormat' (either
+     * over a range of characters or the complete TextField) to modify the format to
+     * your needs.
+     * 
+     * @param textField  the flash.text.TextField object that you can format.
+     * @param textFormat the default text format that's currently set on the text field.
      */
     private function formatText(textField:flash.text.TextField, textFormat:TextFormat):Void {}
 
     /** Forces a redraw of the current contents right before the display object is rendered.
-     *  Useful especially in combination with the "formatText" method. */
+     * Useful especially in combination with the "formatText" method. */
     @:final private function requireRedraw():Void
     {
         mRequiresRedraw = true;
@@ -627,7 +627,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for 
-     *  the original size. */
+     * the original size. */
     public var fontSize(get, set):Float;
     private function get_fontSize():Float { return mFontSize; }
     private function set_fontSize(value:Float):Float
@@ -641,8 +641,8 @@ class TextField extends DisplayObjectContainer
     }
     
     /** The color of the text. Note that bitmap fonts should be exported in plain white so
-     *  that tinting works correctly. If your bitmap font contains colors, set this property
-     *  to <code>Color.WHITE</code> to get the desired result. @default black */
+     * that tinting works correctly. If your bitmap font contains colors, set this property
+     * to <code>Color.WHITE</code> to get the desired result. @default black */
     public var color(get, set):UInt;
     private function get_color():UInt { return mColor; }
     private function set_color(value:UInt):UInt
@@ -688,7 +688,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Draws a border around the edges of the text field. Useful for visual debugging. 
-     *  @default false */
+     * @default false */
     public var border(get, set):Bool;
     private function get_border():Bool { return mBorder != null; }
     private function set_border(value:Bool):Bool
@@ -764,7 +764,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Indicates whether the font size is scaled down so that the complete text fits
-     *  into the text field. @default false */
+     * into the text field. @default false */
     public var autoScale(get, set):Bool;
     private function get_autoScale():Bool { return mAutoScale; }
     private function set_autoScale(value:Bool):Bool
@@ -778,9 +778,9 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Specifies the type of auto-sizing the TextField will do.
-     *  Note that any auto-sizing will make auto-scaling useless. Furthermore, it has 
-     *  implications on alignment: horizontally auto-sized text will always be left-, 
-     *  vertically auto-sized text will always be top-aligned. @default "none" */
+     * Note that any auto-sizing will make auto-scaling useless. Furthermore, it has 
+     * implications on alignment: horizontally auto-sized text will always be left-, 
+     * vertically auto-sized text will always be top-aligned. @default "none" */
     public var autoSize(get, set):String;
     private function get_autoSize():String { return mAutoSize; }
     private function set_autoSize(value:String):String
@@ -794,9 +794,9 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Indicates if TextField should be batched on rendering. This works only with bitmap
-     *  fonts, and it makes sense only for TextFields with no more than 10-15 characters.
-     *  Otherwise, the CPU costs will exceed any gains you get from avoiding the additional
-     *  draw call. @default false */
+     * fonts, and it makes sense only for TextFields with no more than 10-15 characters.
+     * Otherwise, the CPU costs will exceed any gains you get from avoiding the additional
+     * draw call. @default false */
     public var batchable(get, set):Bool;
     private function get_batchable():Bool { return mBatchable; }
     private function set_batchable(value:Bool):Bool
@@ -808,7 +808,7 @@ class TextField extends DisplayObjectContainer
 
     /** The native Flash BitmapFilters to apply to this TextField.
      *
-     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
+     * <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var nativeFilters(get, set):Array<BitmapFilter>;
     private function get_nativeFilters():Array<BitmapFilter> { return mNativeFilters; }
     private function set_nativeFilters(value:Array<BitmapFilter>) : Array<BitmapFilter>
@@ -819,10 +819,10 @@ class TextField extends DisplayObjectContainer
     }
 
     /** Indicates if the assigned text should be interpreted as HTML code. For a description
-     *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
-     *  Clickable hyperlinks and external images are not supported.
+     * of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
+     * Clickable hyperlinks and external images are not supported.
      *
-     *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
+     * <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var isHtmlText(get, set):Bool;
     private function get_isHtmlText():Bool { return mIsHtmlText; }
     private function set_isHtmlText(value:Bool):Bool
@@ -849,20 +849,20 @@ class TextField extends DisplayObjectContainer
     }
     
     /** The Context3D texture format that is used for rendering of all TrueType texts.
-     *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
-     *  compromise between quality and memory consumption; use <pre>BGRA</pre> for
-     *  the highest quality. */
+     * The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
+     * compromise between quality and memory consumption; use <pre>BGRA</pre> for
+     * the highest quality. */
     public static var defaultTextureFormat(get, set):Context3DTextureFormat;
-    public static function get_defaultTextureFormat():Context3DTextureFormat { return sDefaultTextureFormat; }
-    public static function set_defaultTextureFormat(value:Context3DTextureFormat):Context3DTextureFormat
+    private static function get_defaultTextureFormat():Context3DTextureFormat { return sDefaultTextureFormat; }
+    private static function set_defaultTextureFormat(value:Context3DTextureFormat):Context3DTextureFormat
     {
         return sDefaultTextureFormat = value;
     }
     
     /** Makes a bitmap font available at any TextField in the current stage3D context.
-     *  The font is identified by its <code>name</code> (not case sensitive).
-     *  Per default, the <code>name</code> property of the bitmap font will be used, but you 
-     *  can pass a custom name, as well. @return the name of the font. */
+     * The font is identified by its <code>name</code> (not case sensitive).
+     * Per default, the <code>name</code> property of the bitmap font will be used, but you 
+     * can pass a custom name, as well. @return the name of the font. */
     public static function registerBitmapFont(bitmapFont:BitmapFont, name:String=null):String
     {
         if (name == null) name = bitmapFont.name;
@@ -882,14 +882,14 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Returns a registered bitmap font (or null, if the font has not been registered). 
-     *  The name is not case sensitive. */
+     * The name is not case sensitive. */
     public static function getBitmapFont(name:String):BitmapFont
     {
         return bitmapFonts[convertToLowerCase(name)];
     }
     
     /** Stores the currently available bitmap fonts. Since a bitmap font will only work
-     *  in one Stage3D context, they are saved in Starling's 'contextData' property. */
+     * in one Stage3D context, they are saved in Starling's 'contextData' property. */
     private static var bitmapFonts(get, never):Map<String, BitmapFont>;
     private static function get_bitmapFonts():Map<String, BitmapFont>
     {

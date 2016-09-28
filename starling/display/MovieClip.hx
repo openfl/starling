@@ -62,7 +62,7 @@ class MovieClip extends Image implements IAnimatable
     private var mSoundTransform:SoundTransform = null;
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
-     *  The movie will have the size of the first frame. */  
+     * The movie will have the size of the first frame. */  
     public function new(textures:Vector<Texture>, fps:Float=12)
     {
         if (textures.length > 0)
@@ -102,7 +102,7 @@ class MovieClip extends Image implements IAnimatable
     // frame manipulation
     
     /** Adds an additional frame, optionally with a sound and a custom duration. If the 
-     *  duration is omitted, the default framerate is used (as specified in the constructor). */   
+     * duration is omitted, the default framerate is used (as specified in the constructor). */   
     public function addFrame(texture:Texture, sound:Sound=null, duration:Float=-1):Void
     {
         addFrameAt(numFrames, texture, sound, duration);
@@ -166,7 +166,7 @@ class MovieClip extends Image implements IAnimatable
     }
     
     /** Sets the sound of a certain frame. The sound will be played whenever the frame 
-     *  is displayed. */
+     * is displayed. */
     public function setFrameSound(frameID:Int, sound:Sound):Void
     {
         if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
@@ -189,7 +189,7 @@ class MovieClip extends Image implements IAnimatable
     }
 
     /** Reverses the order of all frames, making the clip run from end to start.
-     *  Makes sure that the currently visible frame stays the same. */
+     * Makes sure that the currently visible frame stays the same. */
     public function reverseFrames():Void
     {
         mTextures.reverse();
@@ -341,7 +341,7 @@ class MovieClip extends Image implements IAnimatable
     private function set_loop(value:Bool):Bool { return mLoop = value; }
     
     /** If enabled, no new sounds will be started during playback. Sounds that are already
-     *  playing are not affected. */
+     * playing are not affected. */
     public var muted(get, set):Bool;
     private function get_muted():Bool { return mMuted; }
     private function set_muted(value:Bool):Bool { return mMuted = value; }
@@ -368,8 +368,8 @@ class MovieClip extends Image implements IAnimatable
     }
     
     /** The default number of frames per second. Individual frames can have different 
-     *  durations. If you change the fps, the durations of all frames will be scaled 
-     *  relatively to the previous value. */
+     * durations. If you change the fps, the durations of all frames will be scaled 
+     * relatively to the previous value. */
     public var fps(get, set):Float;
     private function get_fps():Float { return 1.0 / mDefaultFrameDuration; }
     private function set_fps(value:Float):Float
@@ -389,7 +389,7 @@ class MovieClip extends Image implements IAnimatable
     }
     
     /** Indicates if the clip is still playing. Returns <code>false</code> when the end 
-     *  is reached. */
+     * is reached. */
     public var isPlaying(get, never):Bool;
     private function get_isPlaying():Bool 
     {

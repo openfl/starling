@@ -62,7 +62,7 @@ class ColorMatrixFilter extends FragmentFilter
     private static var sTmpMatrix2:Vector<Float> = new Vector<Float>();
     
     /** Creates a new ColorMatrixFilter instance with the specified matrix. 
-     *  @param matrix a vector of 20 items arranged as a 4x5 matrix.
+     * @param matrix a vector of 20 items arranged as a 4x5 matrix.
      */
     public function new(matrix:Vector<Float>=null)
     {
@@ -122,8 +122,8 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Changes the saturation. Typical values are in the range (-1, 1).
-     *  Values above zero will raise, values below zero will reduce the saturation.
-     *  '-1' will produce a grayscale image. */ 
+     * Values above zero will raise, values below zero will reduce the saturation.
+     * '-1' will produce a grayscale image. */ 
     public function adjustSaturation(sat:Float):ColorMatrixFilter
     {
         sat += 1;
@@ -140,7 +140,7 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Changes the contrast. Typical values are in the range (-1, 1).
-     *  Values above zero will raise, values below zero will reduce the contrast. */
+     * Values above zero will raise, values below zero will reduce the contrast. */
     public function adjustContrast(value:Float):ColorMatrixFilter
     {
         var s:Float = value + 1;
@@ -153,7 +153,7 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Changes the brightness. Typical values are in the range (-1, 1).
-     *  Values above zero will make the image brighter, values below zero will make it darker.*/ 
+     * Values above zero will make the image brighter, values below zero will make it darker.*/ 
     public function adjustBrightness(value:Float):ColorMatrixFilter
     {
         value *= 255;
@@ -180,8 +180,8 @@ class ColorMatrixFilter extends FragmentFilter
     }
     
     /** Tints the image in a certain color, analog to what can be done in Flash Pro.
-     *  @param color the RGB color with which the image should be tinted.
-     *  @param amount the intensity with which tinting should be applied. Range (0, 1). */
+     * @param color the RGB color with which the image should be tinted.
+     * @param amount the intensity with which tinting should be applied. Range (0, 1). */
     public function tint(color:UInt, amount:Float=1.0):ColorMatrixFilter
     {
         var r:Float = Color.getRed(color)   / 255.0;

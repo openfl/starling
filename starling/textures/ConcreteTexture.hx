@@ -56,7 +56,7 @@ class ConcreteTexture extends Texture
     private static var sOrigin:Point = new Point();
     
     /** Creates a ConcreteTexture object from a TextureBase, storing information about size,
-     *  mip-mapping, and if the channels contain premultiplied alpha values. */
+     * mip-mapping, and if the channels contain premultiplied alpha values. */
     public function new(base:TextureBase, format:Context3DTextureFormat, width:Int, height:Int, 
                                     mipMapping:Bool, premultipliedAlpha:Bool,
                                     optimizedForRenderTexture:Bool=false,
@@ -93,16 +93,16 @@ class ConcreteTexture extends Texture
     // texture data upload
     
     /** Uploads a bitmap to the texture. The existing contents will be replaced.
-     *  If the size of the bitmap does not match the size of the texture, the bitmap will be
-     *  cropped or filled up with transparent pixels */
+     * If the size of the bitmap does not match the size of the texture, the bitmap will be
+     * cropped or filled up with transparent pixels */
     public function uploadBitmap(bitmap:Bitmap):Void
     {
         uploadBitmapData(bitmap.bitmapData);
     }
     
     /** Uploads bitmap data to the texture. The existing contents will be replaced.
-     *  If the size of the bitmap does not match the size of the texture, the bitmap will be
-     *  cropped or filled up with transparent pixels */
+     * If the size of the bitmap does not match the size of the texture, the bitmap will be
+     * cropped or filled up with transparent pixels */
     public function uploadBitmapData(data:BitmapData):Void
     {
         var potData:BitmapData = null;
@@ -155,14 +155,14 @@ class ConcreteTexture extends Texture
     }
     
     /** Uploads ATF data from a ByteArray to the texture. Note that the size of the
-     *  ATF-encoded data must be exactly the same as the original texture size.
-     *  
-     *  <p>The 'async' parameter may be either a boolean value or a callback function.
-     *  If it's <code>false</code> or <code>null</code>, the texture will be decoded
-     *  synchronously and will be visible right away. If it's <code>true</code> or a function,
-     *  the data will be decoded asynchronously. The texture will remain unchanged until the
-     *  upload is complete, at which time the callback function will be executed. This is the
-     *  expected function definition: <code>function(texture:Texture):void;</code></p>
+     * ATF-encoded data must be exactly the same as the original texture size.
+     * 
+     * <p>The 'async' parameter may be either a boolean value or a callback function.
+     * If it's <code>false</code> or <code>null</code>, the texture will be decoded
+     * synchronously and will be visible right away. If it's <code>true</code> or a function,
+     * the data will be decoded asynchronously. The texture will remain unchanged until the
+     * upload is complete, at which time the callback function will be executed. This is the
+     * expected function definition: <code>function(texture:Texture):void;</code></p>
      */
     public function uploadAtfData(data:ByteArray, offset:Int=0, async:Dynamic=null):Void
     {
@@ -229,9 +229,9 @@ class ConcreteTexture extends Texture
     }
     
     /** Recreates the underlying Stage3D texture object with the same dimensions and attributes
-     *  as the one that was passed to the constructor. You have to upload new data before the
-     *  texture becomes usable again. Beware: this method does <strong>not</strong> dispose
-     *  the current base. */
+     * as the one that was passed to the constructor. You have to upload new data before the
+     * texture becomes usable again. Beware: this method does <strong>not</strong> dispose
+     * the current base. */
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
@@ -254,8 +254,8 @@ class ConcreteTexture extends Texture
     }
     
     /** Clears the texture with a certain color and alpha value. The previous contents of the
-     *  texture is wiped out. Beware: this method resets the render target to the back buffer; 
-     *  don't call it from within a render method. */ 
+     * texture is wiped out. Beware: this method resets the render target to the back buffer; 
+     * don't call it from within a render method. */ 
     public function clear(color:UInt=0x0, alpha:Float=0.0):Void
     {
         var context:Context3D = Starling.current.context;
@@ -286,9 +286,9 @@ class ConcreteTexture extends Texture
     private function get_optimizedForRenderTexture():Bool { return mOptimizedForRenderTexture; }
     
     /** If Starling's "handleLostContext" setting is enabled, the function that you provide
-     *  here will be called after a context loss. On execution, a new base texture will
-     *  already have been created; however, it will be empty. Call one of the "upload..."
-     *  methods from within the callbacks to restore the actual texture data. */
+     * here will be called after a context loss. On execution, a new base texture will
+     * already have been created; however, it will be empty. Call one of the "upload..."
+     * methods from within the callbacks to restore the actual texture data. */
     public var onRestore(get, set):Function;
     private function get_onRestore():Function { return mOnRestore; }
     private function set_onRestore(value:Function):Function

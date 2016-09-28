@@ -45,15 +45,15 @@ class SubTexture extends Texture
     
     /** Creates a new SubTexture containing the specified region of a parent texture.
      *
-     *  @param parent     The texture you want to create a SubTexture from.
-     *  @param region     The region of the parent texture that the SubTexture will show
-     *                    (in points). If <code>null</code>, the complete area of the parent.
-     *  @param ownsParent If <code>true</code>, the parent texture will be disposed
-     *                    automatically when the SubTexture is disposed.
-     *  @param frame      If the texture was trimmed, the frame rectangle can be used to restore
-     *                    the trimmed area.
-     *  @param rotated    If true, the SubTexture will show the parent region rotated by
-     *                    90 degrees (CCW).
+     * @param parent     The texture you want to create a SubTexture from.
+     * @param region     The region of the parent texture that the SubTexture will show
+     *                   (in points). If <code>null</code>, the complete area of the parent.
+     * @param ownsParent If <code>true</code>, the parent texture will be disposed
+     *                   automatically when the SubTexture is disposed.
+     * @param frame      If the texture was trimmed, the frame rectangle can be used to restore
+     *                   the trimmed area.
+     * @param rotated    If true, the SubTexture will show the parent region rotated by
+     *                   90 degrees (CCW).
      */
     public function new(parent:Texture, region:Rectangle=null,
                                ownsParent:Bool=false, frame:Rectangle=null,
@@ -168,12 +168,12 @@ class SubTexture extends Texture
 
     /** The region of the parent texture that the SubTexture is showing (in points).
      *
-     *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
+     * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var region(get, never):Rectangle;
     private function get_region():Rectangle { return mRegion; }
 
     /** The clipping rectangle, which is the region provided on initialization 
-     *  scaled into [0.0, 1.0]. */
+     * scaled into [0.0, 1.0]. */
     public var clipping(get, never):Rectangle;
     private function get_clipping():Rectangle
     {
@@ -191,9 +191,9 @@ class SubTexture extends Texture
     }
     
     /** The matrix that is used to transform the texture coordinates into the coordinate
-     *  space of the parent texture (used internally by the "adjust..."-methods).
+     * space of the parent texture (used internally by the "adjust..."-methods).
      *
-     *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
+     * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var transformationMatrix(get, never):Matrix;
     private function get_transformationMatrix():Matrix { return mTransformationMatrix; }
     

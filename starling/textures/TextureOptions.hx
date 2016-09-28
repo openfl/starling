@@ -45,7 +45,7 @@ class TextureOptions
     }
 
     /** The scale factor, which influences width and height properties. If you pass '-1',
-     *  the current global content scale factor will be used. */
+     * the current global content scale factor will be used. */
     public var scale(get, set):Float;
     private function get_scale():Float { return mScale; }
     private function set_scale(value:Float):Float
@@ -55,8 +55,8 @@ class TextureOptions
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. Only used
-     *  for textures that are created from Bitmaps; the format of ATF files is set when they
-     *  are created. */
+     * for textures that are created from Bitmaps; the format of ATF files is set when they
+     * are created. */
     public var format(get, set):Context3DTextureFormat;
     private function get_format():Context3DTextureFormat { return mFormat; }
     private function set_format(value:Context3DTextureFormat):Context3DTextureFormat { return mFormat = value; }
@@ -72,19 +72,19 @@ class TextureOptions
     private function set_optimizeForRenderToTexture(value:Bool):Bool { return mOptimizeForRenderToTexture = value; }
  
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
-     *  Note: this only works in textures with sidelengths that are powers of two and 
-     *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
+     * Note: this only works in textures with sidelengths that are powers of two and 
+     * that are not loaded from a texture atlas (i.e. no subtextures). @default false */
     public var repeat(get, set):Bool;
     private function get_repeat():Bool { return mRepeat; }
     private function set_repeat(value:Bool):Bool { return mRepeat = value; }
 
     /** A callback that is used only for ATF textures; if it is set, the ATF data will be
-     *  decoded asynchronously. The texture can only be used when the callback has been
-     *  executed. This property is ignored for all other texture types (they are ready
-     *  immediately when the 'Texture.from...' method returns, anyway).
-     *  
-     *  <p>This is the expected function definition: 
-     *  <code>function(texture:Texture):void;</code></p> 
+     * decoded asynchronously. The texture can only be used when the callback has been
+     * executed. This property is ignored for all other texture types (they are ready
+     * immediately when the 'Texture.from...' method returns, anyway).
+     * 
+     * <p>This is the expected function definition: 
+     * <code>function(texture:Texture):void;</code></p> 
      */
     public var onReady(get, set):Void->Void;
     private function get_onReady():Void->Void { return mOnReady; }

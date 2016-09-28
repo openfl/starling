@@ -111,7 +111,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private function get_currentTime():Float { return mCurrentTime; }
     
     /** The number of times the call will be repeated. 
-     *  Set to '0' to repeat indefinitely. @default 1 */
+     * Set to '0' to repeat indefinitely. @default 1 */
     public var repeatCount(get, set):Int;
     private function get_repeatCount():Int { return mRepeatCount; }
     private function set_repeatCount(value:Int):Int { return mRepeatCount = value; }

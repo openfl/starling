@@ -77,7 +77,7 @@ class VertexData
     }
 
     /** Creates a duplicate of either the complete vertex data object, or of a subset. 
-     *  To clone all vertices, set 'numVertices' to '-1'. */
+     * To clone all vertices, set 'numVertices' to '-1'. */
     public function clone(vertexID:Int=0, numVertices:Int=-1):VertexData
     {
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
@@ -93,7 +93,7 @@ class VertexData
     }
     
     /** Copies the vertex data (or a range of it, defined by 'vertexID' and 'numVertices') 
-     *  of this instance to another vertex data object, starting at a certain index. */
+     * of this instance to another vertex data object, starting at a certain index. */
     public function copyTo(targetData:VertexData, targetVertexID:Int=0,
                            vertexID:Int=0, numVertices:Int=-1):Void
     {
@@ -101,8 +101,8 @@ class VertexData
     }
     
     /** Transforms the vertex position of this instance by a certain matrix and copies the
-     *  result to another VertexData instance. Limit the operation to a range of vertices
-     *  via the 'vertexID' and 'numVertices' parameters. */
+     * result to another VertexData instance. Limit the operation to a range of vertices
+     * via the 'vertexID' and 'numVertices' parameters. */
     public function copyTransformedTo(targetData:VertexData, targetVertexID:Int=0,
                                       matrix:Matrix=null,
                                       vertexID:Int=0, numVertices:Int=-1):Void
@@ -260,7 +260,7 @@ class VertexData
     }
 
     /** Transforms the position of subsequent vertices by multiplication with a 
-     *  transformation matrix. */
+     * transformation matrix. */
     public function transformVertex(vertexID:Int, matrix:Matrix, numVertices:Int=1):Void
     {
         var x:Float, y:Float;
@@ -318,9 +318,9 @@ class VertexData
     }
     
     /** Calculates the bounds of the vertices, which are optionally transformed by a matrix. 
-     *  If you pass a 'resultRect', the result will be stored in this rectangle 
-     *  instead of creating a new object. To use all vertices for the calculation, set
-     *  'numVertices' to '-1'. */
+     * If you pass a 'resultRect', the result will be stored in this rectangle 
+     * instead of creating a new object. To use all vertices for the calculation, set
+     * 'numVertices' to '-1'. */
     public function getBounds(transformationMatrix:Matrix=null, 
                               vertexID:Int=0, numVertices:Int=-1,
                               resultRect:Rectangle=null):Rectangle
@@ -384,11 +384,11 @@ class VertexData
     }
     
     /** Calculates the bounds of the vertices, projected into the XY-plane of a certain
-     *  3D space as they appear from a certain camera position. Note that 'camPos' is expected
-     *  in the target coordinate system (the same that the XY-plane lies in).
-     *  If you pass a 'resultRectangle', the result will be stored in this rectangle
-     *  instead of creating a new object. To use all vertices for the calculation, set
-     *  'numVertices' to '-1'. */
+     * 3D space as they appear from a certain camera position. Note that 'camPos' is expected
+     * in the target coordinate system (the same that the XY-plane lies in).
+     * If you pass a 'resultRectangle', the result will be stored in this rectangle
+     * instead of creating a new object. To use all vertices for the calculation, set
+     * 'numVertices' to '-1'. */
     public function getBoundsProjected(transformationMatrix:Matrix3D, camPos:Vector3D,
                                        vertexID:Int=0, numVertices:Int=-1,
                                        resultRect:Rectangle=null):Rectangle
@@ -483,7 +483,7 @@ class VertexData
     }
     
     /** Changes the way alpha and color values are stored. Optionally updates all exisiting 
-     *  vertices. */
+     * vertices. */
     public function setPremultipliedAlpha(value:Bool, updateData:Bool=true):Void
     {
         if (value == mPremultipliedAlpha) return;
@@ -513,8 +513,8 @@ class VertexData
     }
     
    /** Indicates if the rgb values are stored premultiplied with the alpha value.
-    *  If you change this value, the color data is updated accordingly. If you don't want
-    *  that, use the 'setPremultipliedAlpha' method instead. */
+    * If you change this value, the color data is updated accordingly. If you don't want
+    * that, use the 'setPremultipliedAlpha' method instead. */
     public var premultipliedAlpha(get, set):Bool;
     private function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
     private function set_premultipliedAlpha(value:Bool):Bool

@@ -50,8 +50,8 @@ class Quad extends DisplayObject
     private static var sHelperMatrix3D:Matrix3D = new Matrix3D();
     
     /** Creates a quad with a certain size and color. The last parameter controls if the 
-     *  alpha value should be premultiplied into the color values on rendering, which can
-     *  influence blending output. You can use the default value in most cases.  */
+     * alpha value should be premultiplied into the color values on rendering, which can
+     * influence blending output. You can use the default value in most cases.  */
     public function new(width:Float, height:Float, color:UInt=0xffffff,
                          premultipliedAlpha:Bool=true)
     {
@@ -179,7 +179,7 @@ class Quad extends DisplayObject
     }
     
     /** Transforms the vertex positions of the raw vertex data by a certain matrix and
-     *  copies the result to another VertexData instance. */
+     * copies the result to another VertexData instance. */
     public function copyVertexDataTransformedTo(targetData:VertexData, targetVertexID:Int=0,
                                                 matrix:Matrix=null):Void
     {
@@ -197,7 +197,7 @@ class Quad extends DisplayObject
     private function get_tinted():Bool { return mTinted; }
     
     /** Indicates if the rgb values are stored premultiplied with the alpha value; this can
-     *  affect the rendering. (Most developers don't have to care, though.) */
+     * affect the rendering. (Most developers don't have to care, though.) */
     public var premultipliedAlpha(get, never):Bool;
     private function get_premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
 }

@@ -80,11 +80,11 @@ class Tween extends EventDispatcher implements IAnimatable
     private var mCurrentCycle:Int;
     
     /** Creates a tween with a target, duration (in seconds) and a transition function.
-     *  @param target the object that you want to animate
-     *  @param time the duration of the Tween (in seconds)
-     *  @param transition can be either a String (e.g. one of the constants defined in the
-     *         Transitions class) or a function. Look up the 'Transitions' class for a   
-     *         documentation about the required function signature. */ 
+     * @param target the object that you want to animate
+     * @param time the duration of the Tween (in seconds)
+     * @param transition can be either a String (e.g. one of the constants defined in the
+     *        Transitions class) or a function. Look up the 'Transitions' class for a   
+     *        documentation about the required function signature. */ 
     public function new(target:Dynamic, time:Float, transition:Dynamic="linear")        
     {
          super();
@@ -123,19 +123,19 @@ class Tween extends EventDispatcher implements IAnimatable
   
           
     /** Animates the property of the target to a certain value. You can call this method
-     *  multiple times on one tween.
+     * multiple times on one tween.
      *
-     *  <p>Some property types are handled in a special way:</p>
-     *  <ul>
-     *    <li>If the property contains the string <code>color</code> or <code>Color</code>,
-     *        it will be treated as an unsigned integer with a color value
-     *        (e.g. <code>0xff0000</code> for red). Each color channel will be animated
-     *        individually.</li>
-     *    <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
-     *    <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
-     *        making sure it always uses the shortest possible arc for the rotation.</li>
-     *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
-     *  </ul>
+     * <p>Some property types are handled in a special way:</p>
+     * <ul>
+     *   <li>If the property contains the string <code>color</code> or <code>Color</code>,
+     *       it will be treated as an unsigned integer with a color value
+     *       (e.g. <code>0xff0000</code> for red). Each color channel will be animated
+     *       individually.</li>
+     *   <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
+     *   <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
+     *       making sure it always uses the shortest possible arc for the rotation.</li>
+     *   <li>The string <code>#deg</code> does the same for angles in degrees.</li>
+     * </ul>
      */
     public function animate(property:String, endValue:Float):Void
     {
@@ -171,8 +171,8 @@ class Tween extends EventDispatcher implements IAnimatable
     }
 
     /** Animates the 'rotation' property of an object to a certain target value, using the
-     *  smallest possible arc. 'type' may be either 'rad' or 'deg', depending on the unit of
-     *  measurement. */
+     * smallest possible arc. 'type' may be either 'rad' or 'deg', depending on the unit of
+     * measurement. */
     public function rotateTo(angle:Float, type:String="rad"):Void
     {
         animate("rotation#" + type, angle);
@@ -361,7 +361,7 @@ class Tween extends EventDispatcher implements IAnimatable
     }
     
     /** The end value a certain property is animated to. Throws an ArgumentError if the 
-     *  property is not being animated. */
+     * property is not being animated. */
     public function getEndValue(property:String):Float
     {
         var index:Int = mProperties.indexOf(property);
@@ -426,7 +426,7 @@ class Tween extends EventDispatcher implements IAnimatable
     }
     
     /** The number of times the tween will be executed. 
-     *  Set to '0' to tween indefinitely. @default 1 */
+     * Set to '0' to tween indefinitely. @default 1 */
     public var repeatCount(get, set):Int;
     private function get_repeatCount():Int { return mRepeatCount; }
     private function set_repeatCount(value:Int):Int { return mRepeatCount = value; }
@@ -437,7 +437,7 @@ class Tween extends EventDispatcher implements IAnimatable
     private function set_repeatDelay(value:Float):Float { return mRepeatDelay = value; }
     
     /** Indicates if the tween should be reversed when it is repeating. If enabled, 
-     *  every second repetition will be reversed. @default false */
+     * every second repetition will be reversed. @default false */
     public var reverse(get, set):Bool;
     private function get_reverse():Bool { return mReverse; }
     private function set_reverse(value:Bool):Bool { return mReverse = value; }
@@ -458,7 +458,7 @@ class Tween extends EventDispatcher implements IAnimatable
     private function set_onUpdate(value:Function):Function { return mOnUpdate = value; }
     
     /** A function that will be called each time the tween finishes one repetition
-     *  (except the last, which will trigger 'onComplete'). */
+     * (except the last, which will trigger 'onComplete'). */
     public var onRepeat(get, set):Function;
     private function get_onRepeat():Function { return mOnRepeat; }
     private function set_onRepeat(value:Function):Function { return mOnRepeat = value; }
@@ -489,7 +489,7 @@ class Tween extends EventDispatcher implements IAnimatable
     private function set_onCompleteArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnCompleteArgs = value; }
     
     /** Another tween that will be started (i.e. added to the same juggler) as soon as 
-     *  this tween is completed. */
+     * this tween is completed. */
     public var nextTween(get, set):Tween;
     private function get_nextTween():Tween { return mNextTween; }
     private function set_nextTween(value:Tween):Tween { return mNextTween = value; }

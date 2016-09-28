@@ -125,20 +125,20 @@ class Texture
     }
 
     /** Disposes the underlying texture data. Note that not all textures need to be disposed:
-     *  SubTextures (created with 'Texture.fromTexture') just reference other textures and
-     *  and do not take up resources themselves; this is also true for textures from an
-     *  atlas. */
+     * SubTextures (created with 'Texture.fromTexture') just reference other textures and
+     * and do not take up resources themselves; this is also true for textures from an
+     * atlas. */
     public function dispose():Void
     {
         // override in subclasses
     }
 
     /** Creates a texture object from any of the supported data types, using the specified
-     *  options.
+     * options.
      *
-     *  @param data     Either an embedded asset class, a Bitmap, BitmapData, or a ByteArray
-     *                  with ATF data.
-     *  @param options  Specifies options about the texture settings, e.g. scale factor.
+     * @param data     Either an embedded asset class, a Bitmap, BitmapData, or a ByteArray
+     *                 with ATF data.
+     * @param options  Specifies options about the texture settings, e.g. scale factor.
      */
     public static function fromData(data:Dynamic, options:TextureOptions=null):Texture
     {
@@ -171,17 +171,17 @@ class Texture
     }
 
     /** Creates a texture object from an embedded asset class. Textures created with this
-     *  method will be restored directly from the asset class in case of a context loss,
-     *  which guarantees a very economic memory usage.
+     * method will be restored directly from the asset class in case of a context loss,
+     * which guarantees a very economic memory usage.
      *
-     *  @param assetClass  must contain either a Bitmap or a ByteArray with ATF data.
-     *  @param mipMapping  for Bitmaps, indicates if mipMaps will be created;
-     *                     for ATF data, indicates if the contained mipMaps will be used.
-     *  @param optimizeForRenderToTexture  indicates if this texture will be used as
-     *                     render target
-     *  @param scale    the scale factor of the created texture.
-     *  @param format   the context3D texture format to use. Ignored for ATF data.
-     *  @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
+     * @param assetClass  must contain either a Bitmap or a ByteArray with ATF data.
+     * @param mipMapping  for Bitmaps, indicates if mipMaps will be created;
+     *                    for ATF data, indicates if the contained mipMaps will be used.
+     * @param optimizeForRenderToTexture  indicates if this texture will be used as
+     *                    render target
+     * @param scale    the scale factor of the created texture.
+     * @param format   the context3D texture format to use. Ignored for ATF data.
+     * @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
      */
     public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool=true,
                                              optimizeForRenderToTexture:Bool=false,
@@ -219,19 +219,19 @@ class Texture
     }
 
     /** Creates a texture object from a bitmap.
-     *  Beware: you must not dispose the bitmap's data if Starling should handle a lost device
-     *  context alternatively, you can handle restoration yourself via "texture.root.onRestore".
+     * Beware: you must not dispose the bitmap's data if Starling should handle a lost device
+     * context alternatively, you can handle restoration yourself via "texture.root.onRestore".
      *
-     *  @param bitmap   the texture will be created with the bitmap data of this object.
-     *  @param generateMipMaps  indicates if mipMaps will be created.
-     *  @param optimizeForRenderToTexture  indicates if this texture will be used as
-     *                  render target
-     *  @param scale    the scale factor of the created texture. This affects the reported
-     *                  width and height of the texture object.
-     *  @param format   the context3D texture format to use. Pass one of the packed or
-     *                  compressed formats to save memory (at the price of reduced image
-     *                  quality).
-     *  @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
+     * @param bitmap   the texture will be created with the bitmap data of this object.
+     * @param generateMipMaps  indicates if mipMaps will be created.
+     * @param optimizeForRenderToTexture  indicates if this texture will be used as
+     *                 render target
+     * @param scale    the scale factor of the created texture. This affects the reported
+     *                 width and height of the texture object.
+     * @param format   the context3D texture format to use. Pass one of the packed or
+     *                 compressed formats to save memory (at the price of reduced image
+     *                 quality).
+     * @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
      */
     public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=true,
                                       optimizeForRenderToTexture:Bool=false,
@@ -244,19 +244,19 @@ class Texture
     }
 
     /** Creates a texture object from bitmap data.
-     *  Beware: you must not dispose 'data' if Starling should handle a lost device context;
-     *  alternatively, you can handle restoration yourself via "texture.root.onRestore".
+     * Beware: you must not dispose 'data' if Starling should handle a lost device context;
+     * alternatively, you can handle restoration yourself via "texture.root.onRestore".
      *
-     *  @param data   the texture will be created with the bitmap data of this object.
-     *  @param generateMipMaps  indicates if mipMaps will be created.
-     *  @param optimizeForRenderToTexture  indicates if this texture will be used as
-     *                  render target
-     *  @param scale    the scale factor of the created texture. This affects the reported
-     *                  width and height of the texture object.
-     *  @param format   the context3D texture format to use. Pass one of the packed or
-     *                  compressed formats to save memory (at the price of reduced image
-     *                  quality).
-     *  @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
+     * @param data   the texture will be created with the bitmap data of this object.
+     * @param generateMipMaps  indicates if mipMaps will be created.
+     * @param optimizeForRenderToTexture  indicates if this texture will be used as
+     *                 render target
+     * @param scale    the scale factor of the created texture. This affects the reported
+     *                 width and height of the texture object.
+     * @param format   the context3D texture format to use. Pass one of the packed or
+     *                 compressed formats to save memory (at the price of reduced image
+     *                 quality).
+     * @param repeat   the repeat value of the texture. Only useful for power-of-two textures.
      */
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
                                           optimizeForRenderToTexture:Bool=false,
@@ -278,13 +278,13 @@ class Texture
     }
 
     /** Creates a texture from the compressed ATF format. If you don't want to use any embedded
-     *  mipmaps, you can disable them by setting "useMipMaps" to <code>false</code>.
-     *  Beware: you must not dispose 'data' if Starling should handle a lost device context;
-     *  alternatively, you can handle restoration yourself via "texture.root.onRestore".
+     * mipmaps, you can disable them by setting "useMipMaps" to <code>false</code>.
+     * Beware: you must not dispose 'data' if Starling should handle a lost device context;
+     * alternatively, you can handle restoration yourself via "texture.root.onRestore".
      *
-     *  <p>If the 'async' parameter contains a callback function, the texture is decoded
-     *  asynchronously. It can only be used when the callback has been executed. This is the
-     *  expected function definition: <code>function(texture:Texture):void;</code></p> */
+     * <p>If the 'async' parameter contains a callback function, the texture is decoded
+     * asynchronously. It can only be used when the callback has been executed. This is the
+     * expected function definition: <code>function(texture:Texture):void;</code></p> */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
                                        async:Void->Void=null, repeat:Bool=false):Texture
     {
@@ -309,31 +309,31 @@ class Texture
 
     /** Creates a video texture from a NetStream.
      *
-     *  <p>Below, you'll find  a minimal sample showing how to stream a video from a file.
-     *  Note that <code>ns.play()</code> is called only after creating the texture, and
-     *  outside the <code>onComplete</code>-callback. It's recommended to always make the
-     *  calls in this order; otherwise, playback won't start on some platforms.</p>
+     * <p>Below, you'll find  a minimal sample showing how to stream a video from a file.
+     * Note that <code>ns.play()</code> is called only after creating the texture, and
+     * outside the <code>onComplete</code>-callback. It's recommended to always make the
+     * calls in this order; otherwise, playback won't start on some platforms.</p>
      *
-     *  <listing>
-     *  var nc:NetConnection = new NetConnection();
-     *  nc.connect(null);
-     *  
-     *  var ns:NetStream = new NetStream(nc);
-     *  var texture:Texture = Texture.fromNetStream(ns, 1, function():void
-     *  {
-     *      addChild(new Image(texture));
-     *  });
-     *  
-     *  var file:File = File.applicationDirectory.resolvePath("bugs-bunny.m4v");
-     *  ns.play(file.url);</listing>
+     * <listing>
+     * var nc:NetConnection = new NetConnection();
+     * nc.connect(null);
+     * 
+     * var ns:NetStream = new NetStream(nc);
+     * var texture:Texture = Texture.fromNetStream(ns, 1, function():void
+     * {
+     *     addChild(new Image(texture));
+     * });
+     * 
+     * var file:File = File.applicationDirectory.resolvePath("bugs-bunny.m4v");
+     * ns.play(file.url);</listing>
      *
-     *  @param stream  the NetStream from which the video data is streamed. Beware that 'play'
-     *                 should be called only after the method returns, and outside the
-     *                 <code>onComplete</code> callback.
-     *  @param scale   the scale factor of the created texture. This affects the reported
-     *                 width and height of the texture object.
-     *  @param onComplete will be executed when the texture is ready. Contains a parameter
-     *                 of type 'Texture'.
+     * @param stream  the NetStream from which the video data is streamed. Beware that 'play'
+     *                should be called only after the method returns, and outside the
+     *                <code>onComplete</code> callback.
+     * @param scale   the scale factor of the created texture. This affects the reported
+     *                width and height of the texture object.
+     * @param onComplete will be executed when the texture is ready. Contains a parameter
+     *                of type 'Texture'.
      */
     public static function fromNetStream(stream:NetStream, scale:Float=1,
                                          onComplete:Function=null):Texture
@@ -346,23 +346,23 @@ class Texture
     }
 
     /** Creates a video texture from a camera. Beware that the texture must not be used
-     *  before the 'onComplete' callback has been executed; until then, it will have a size
-     *  of zero pixels.
+     * before the 'onComplete' callback has been executed; until then, it will have a size
+     * of zero pixels.
      *
-     *  <p>Here is a minimal sample showing how to display a camera video:</p>
+     * <p>Here is a minimal sample showing how to display a camera video:</p>
      *
-     *  <listing>
-     *  var camera:Camera = Camera.getCamera();
-     *  var texture:Texture = Texture.fromCamera(camera, 1, function():void
-     *  {
-     *      addChild(new Image(texture));
-     *  });</listing>
+     * <listing>
+     * var camera:Camera = Camera.getCamera();
+     * var texture:Texture = Texture.fromCamera(camera, 1, function():void
+     * {
+     *     addChild(new Image(texture));
+     * });</listing>
      *
-     *  @param camera  the camera from which the video data is streamed.
-     *  @param scale   the scale factor of the created texture. This affects the reported
-     *                 width and height of the texture object.
-     *  @param onComplete will be executed when the texture is ready. May contain a parameter
-     *                 of type 'Texture'.
+     * @param camera  the camera from which the video data is streamed.
+     * @param scale   the scale factor of the created texture. This affects the reported
+     *                width and height of the texture object.
+     * @param onComplete will be executed when the texture is ready. May contain a parameter
+     *                of type 'Texture'.
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
@@ -404,13 +404,13 @@ class Texture
 
     /** Creates a texture with a certain size and color.
      *
-     *  @param width   in points; number of pixels depends on scale parameter
-     *  @param height  in points; number of pixels depends on scale parameter
-     *  @param color   expected in ARGB format (include alpha!)
-     *  @param optimizeForRenderToTexture  indicates if this texture will be used as render target
-     *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
-     *  @param format  the context3D texture format to use. Pass one of the packed or
-     *                 compressed formats to save memory.
+     * @param width   in points; number of pixels depends on scale parameter
+     * @param height  in points; number of pixels depends on scale parameter
+     * @param color   expected in ARGB format (include alpha!)
+     * @param optimizeForRenderToTexture  indicates if this texture will be used as render target
+     * @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
+     * @param format  the context3D texture format to use. Pass one of the packed or
+     *                compressed formats to save memory.
      */
     public static function fromColor(width:Float, height:Float, color:UInt=0xffffffff,
                                      optimizeForRenderToTexture:Bool=false,
@@ -429,21 +429,21 @@ class Texture
     }
 
     /** Creates an empty texture of a certain size.
-     *  Beware that the texture can only be used after you either upload some color data
-     *  ("texture.root.upload...") or clear the texture ("texture.root.clear()").
+     * Beware that the texture can only be used after you either upload some color data
+     * ("texture.root.upload...") or clear the texture ("texture.root.clear()").
      *
-     *  @param width   in points; number of pixels depends on scale parameter
-     *  @param height  in points; number of pixels depends on scale parameter
-     *  @param premultipliedAlpha  the PMA format you will use the texture with. If you will
-     *                 use the texture for bitmap data, use "true"; for ATF data, use "false".
-     *  @param mipMapping  indicates if mipmaps should be used for this texture. When you upload
-     *                 bitmap data, this decides if mipmaps will be created; when you upload ATF
-     *                 data, this decides if mipmaps inside the ATF file will be displayed.
-     *  @param optimizeForRenderToTexture  indicates if this texture will be used as render target
-     *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
-     *  @param format  the context3D texture format to use. Pass one of the packed or
-     *                 compressed formats to save memory (at the price of reduced image quality).
-     *  @param repeat  the repeat mode of the texture. Only useful for power-of-two textures.
+     * @param width   in points; number of pixels depends on scale parameter
+     * @param height  in points; number of pixels depends on scale parameter
+     * @param premultipliedAlpha  the PMA format you will use the texture with. If you will
+     *                use the texture for bitmap data, use "true"; for ATF data, use "false".
+     * @param mipMapping  indicates if mipmaps should be used for this texture. When you upload
+     *                bitmap data, this decides if mipmaps will be created; when you upload ATF
+     *                data, this decides if mipmaps inside the ATF file will be displayed.
+     * @param optimizeForRenderToTexture  indicates if this texture will be used as render target
+     * @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
+     * @param format  the context3D texture format to use. Pass one of the packed or
+     *                compressed formats to save memory (at the price of reduced image quality).
+     * @param repeat  the repeat mode of the texture. Only useful for power-of-two textures.
      */
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
@@ -495,15 +495,15 @@ class Texture
     }
 
     /** Creates a texture that contains a region (in pixels) of another texture. The new
-     *  texture will reference the base texture; no data is duplicated.
+     * texture will reference the base texture; no data is duplicated.
      *
-     *  @param texture  The texture you want to create a SubTexture from.
-     *  @param region   The region of the parent texture that the SubTexture will show
-     *                  (in points).
-     *  @param frame    If the texture was trimmed, the frame rectangle can be used to restore
-     *                  the trimmed area.
-     *  @param rotated  If true, the SubTexture will show the parent region rotated by
-     *                  90 degrees (CCW).
+     * @param texture  The texture you want to create a SubTexture from.
+     * @param region   The region of the parent texture that the SubTexture will show
+     *                 (in points).
+     * @param frame    If the texture was trimmed, the frame rectangle can be used to restore
+     *                 the trimmed area.
+     * @param rotated  If true, the SubTexture will show the parent region rotated by
+     *                 90 degrees (CCW).
      */
     public static function fromTexture(texture:Texture, region:Rectangle=null,
                                        frame:Rectangle=null, rotated:Bool=false):Texture
@@ -512,10 +512,10 @@ class Texture
     }
 
     /** Converts texture coordinates and vertex positions of raw vertex data into the format
-     *  required for rendering. While the texture coordinates of an image always use the
-     *  range <code>[0, 1]</code>, the actual coordinates could be different: you
-     *  might be working with a SubTexture or a texture frame. This method
-     *  adjusts the texture and vertex coordinates accordingly.
+     * required for rendering. While the texture coordinates of an image always use the
+     * range <code>[0, 1]</code>, the actual coordinates could be different: you
+     * might be working with a SubTexture or a texture frame. This method
+     * adjusts the texture and vertex coordinates accordingly.
      */
     public function adjustVertexData(vertexData:VertexData, vertexID:Int, count:Int):Void
     {
@@ -523,16 +523,16 @@ class Texture
     }
 
     /** Converts texture coordinates into the format required for rendering. While the texture
-     *  coordinates of an image always use the range <code>[0, 1]</code>, the actual
-     *  coordinates could be different: you might be working with a SubTexture. This method
-     *  adjusts the coordinates accordingly.
+     * coordinates of an image always use the range <code>[0, 1]</code>, the actual
+     * coordinates could be different: you might be working with a SubTexture. This method
+     * adjusts the coordinates accordingly.
      *
-     *  @param texCoords  a vector containing UV coordinates (optionally, among other data).
-     *                    U and V coordinates always have to come in pairs. The vector is
-     *                    modified in place.
-     *  @param startIndex the index of the first U coordinate in the vector.
-     *  @param stride     the distance (in vector elements) of consecutive UV pairs.
-     *  @param count      the number of UV pairs that should be adjusted, or "-1" for all of them.
+     * @param texCoords  a vector containing UV coordinates (optionally, among other data).
+     *                   U and V coordinates always have to come in pairs. The vector is
+     *                   modified in place.
+     * @param startIndex the index of the first U coordinate in the vector.
+     * @param stride     the distance (in vector elements) of consecutive UV pairs.
+     * @param count      the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
     public function adjustTexCoords(texCoords:Vector<Float>,
                                     startIndex:Int=0, stride:Int=0, count:Int=-1):Void
@@ -543,15 +543,15 @@ class Texture
     // properties
 
     /** The texture frame if it has one (see class description), otherwise <code>null</code>.
-     *  Only SubTextures can have a frame.
+     * Only SubTextures can have a frame.
      *
-     *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
+     * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var frame(get, never):Rectangle;
     private function get_frame():Rectangle { return null; }
 
     /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
-     *  Note: this only works in textures with sidelengths that are powers of two and
-     *  that are not loaded from a texture atlas (i.e. no subtextures). @default false */
+     * Note: this only works in textures with sidelengths that are powers of two and
+     * that are not loaded from a texture atlas (i.e. no subtextures). @default false */
     public var repeat(get, never):Bool;
     private function get_repeat():Bool { return false; }
 
@@ -596,9 +596,9 @@ class Texture
     private function get_premultipliedAlpha():Bool { return false; }
 
     /** Returns the maximum size constraint (for both width and height) for textures in the
-     *  current Context3D profile. */
+     * current Context3D profile. */
     public static var maxSize(get, never):Int;
-    public static function get_maxSize():Int
+    private static function get_maxSize():Int
     {
         var target:Starling = Starling.current;
         var profile:Context3DProfile = target != null ? target.profile : Context3DProfile.BASELINE;

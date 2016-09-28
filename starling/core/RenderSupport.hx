@@ -126,13 +126,13 @@ class RenderSupport
 
     /** Sets up the projection matrices for 2D and 3D rendering.
      *
-     *  <p>The first 4 parameters define which area of the stage you want to view. The camera
-     *  will 'zoom' to exactly this region. The perspective in which you're looking at the
-     *  stage is determined by the final 3 parameters.</p>
+     * <p>The first 4 parameters define which area of the stage you want to view. The camera
+     * will 'zoom' to exactly this region. The perspective in which you're looking at the
+     * stage is determined by the final 3 parameters.</p>
      *
-     *  <p>The stage is always on the rectangle that is spawned up between x- and y-axis (with
-     *  the given size). All objects that are exactly on that rectangle (z equals zero) will be
-     *  rendered in their true size, without any distortion.</p>
+     * <p>The stage is always on the rectangle that is spawned up between x- and y-axis (with
+     * the given size). All objects that are exactly on that rectangle (z equals zero) will be
+     * rendered in their true size, without any distortion.</p>
      */
     public function setProjectionMatrix(x:Float, y:Float, width:Float, height:Float,
                                         stageWidth:Float=0, stageHeight:Float=0,
@@ -260,7 +260,7 @@ class RenderSupport
     }
     
     /** Calculates the product of modelview and projection matrix. 
-     *  CAUTION: Use with care! Each call returns the same instance. */
+     * CAUTION: Use with care! Each call returns the same instance. */
     public var mvpMatrix(get, never):Matrix;
     private function get_mvpMatrix():Matrix
     {
@@ -270,12 +270,12 @@ class RenderSupport
     }
     
     /** Returns the current modelview matrix.
-     *  CAUTION: Use with care! Each call returns the same instance. */
+     * CAUTION: Use with care! Each call returns the same instance. */
     public var modelViewMatrix(get, never):Matrix;
     private function get_modelViewMatrix():Matrix { return mModelViewMatrix; }
     
     /** Returns the current projection matrix.
-     *  CAUTION: Use with care! Each call returns the same instance. */
+     * CAUTION: Use with care! Each call returns the same instance. */
     public var projectionMatrix(get, set):Matrix;
     private function get_projectionMatrix():Matrix { return mProjectionMatrix; }
     private function set_projectionMatrix(value:Matrix):Matrix 
@@ -288,8 +288,8 @@ class RenderSupport
     // 3d transformations
     
     /** Prepends translation, scale and rotation of an object to the 3D modelview matrix.
-     *  The current contents of the 2D modelview matrix is stored in the 3D modelview matrix
-     *  before doing so; the 2D modelview matrix is then reset to the identity matrix. */
+     * The current contents of the 2D modelview matrix is stored in the 3D modelview matrix
+     * before doing so; the 2D modelview matrix is then reset to the identity matrix. */
     public function transformMatrix3D(object:DisplayObject):Void
     {
         mModelViewMatrix3D.prepend(MatrixUtil.convertTo3D(mModelViewMatrix, sMatrix3D));
@@ -313,8 +313,8 @@ class RenderSupport
     }
     
     /** Calculates the product of modelview and projection matrix and stores it in a 3D matrix.
-     *  Different to 'mvpMatrix', this also takes 3D transformations into account. 
-     *  CAUTION: Use with care! Each call returns the same instance. */
+     * Different to 'mvpMatrix', this also takes 3D transformations into account. 
+     * CAUTION: Use with care! Each call returns the same instance. */
     public var mvpMatrix3D(get, never):Matrix3D;
     private function get_mvpMatrix3D():Matrix3D
     {
@@ -333,7 +333,7 @@ class RenderSupport
     }
     
     /** Returns the current 3D projection matrix.
-     *  CAUTION: Use with care! Each call returns the same instance. */
+     * CAUTION: Use with care! Each call returns the same instance. */
     public var projectionMatrix3D(get, set):Matrix3D;
     private function get_projectionMatrix3D():Matrix3D { return mProjectionMatrix3D; }
     private function set_projectionMatrix3D(value:Matrix3D):Matrix3D
@@ -351,7 +351,7 @@ class RenderSupport
     }
     
     /** The blend mode to be used on rendering. To apply the factor, you have to manually call
-     *  'applyBlendMode' (because the actual blend factors depend on the PMA mode). */
+     * 'applyBlendMode' (because the actual blend factors depend on the PMA mode). */
     public var blendMode(get, set):String;
     private function get_blendMode():String { return mBlendMode; }
     private function set_blendMode(value:String):String
@@ -363,7 +363,7 @@ class RenderSupport
     // render targets
     
     /** The texture that is currently being rendered into, or 'null' to render into the 
-     *  back buffer. If you set a new target, it is immediately activated. */
+     * back buffer. If you set a new target, it is immediately activated. */
     public var renderTarget(get, set):Texture;
     private function get_renderTarget():Texture
     {
@@ -377,9 +377,9 @@ class RenderSupport
     }
 
     /** Changes the the current render target.
-     *  @param target       Either a texture or 'null' to render into the back buffer.
-     *  @param antiAliasing Only supported for textures, beginning with AIR 13, and only on
-     *                      Desktop. Values range from 0 (no antialiasing) to 4 (best quality).
+     * @param target       Either a texture or 'null' to render into the back buffer.
+     * @param antiAliasing Only supported for textures, beginning with AIR 13, and only on
+     *                     Desktop. Values range from 0 (no antialiasing) to 4 (best quality).
      */
     public function setRenderTarget(target:Texture, antiAliasing:Int=0):Void
     {
@@ -396,10 +396,10 @@ class RenderSupport
     // clipping
     
     /** The clipping rectangle can be used to limit rendering in the current render target to
-     *  a certain area. This method expects the rectangle in stage coordinates. Internally,
-     *  it uses the 'scissorRectangle' of stage3D, which works with pixel coordinates. 
-     *  Per default, any pushed rectangle is intersected with the previous rectangle;
-     *  the method returns that intersection. */
+     * a certain area. This method expects the rectangle in stage coordinates. Internally,
+     * it uses the 'scissorRectangle' of stage3D, which works with pixel coordinates. 
+     * Per default, any pushed rectangle is intersected with the previous rectangle;
+     * the method returns that intersection. */
     public function pushClipRect(rectangle:Rectangle, intersectWithCurrent:Bool=true):Rectangle
     {
         if (mClipRectStack.length < mClipRectStackSize + 1)
@@ -431,8 +431,8 @@ class RenderSupport
     }
 
     /** Updates the context3D scissor rectangle using the current clipping rectangle. This
-     *  method is called automatically when either the render target, the projection matrix,
-     *  or the clipping rectangle changes. */
+     * method is called automatically when either the render target, the projection matrix,
+     * or the clipping rectangle changes. */
     public function applyClipRect():Void
     {
         finishQuadBatch();
@@ -487,11 +487,11 @@ class RenderSupport
     private var mStencilReferenceValue:UInt = 0;
 
     /** Draws a display object into the stencil buffer, incrementing the buffer on each
-     *  used pixel. The stencil reference value is incremented as well; thus, any subsequent
-     *  stencil tests outside of this area will fail.
+     * used pixel. The stencil reference value is incremented as well; thus, any subsequent
+     * stencil tests outside of this area will fail.
      *
-     *  <p>If 'mask' is part of the display list, it will be drawn at its conventional stage
-     *  coordinates. Otherwise, it will be drawn with the current modelview matrix.</p>
+     * <p>If 'mask' is part of the display list, it will be drawn at its conventional stage
+     * coordinates. Otherwise, it will be drawn with the current modelview matrix.</p>
      */
     public function pushMask(mask:DisplayObject):Void
     {
@@ -514,8 +514,8 @@ class RenderSupport
     }
 
     /** Redraws the most recently pushed mask into the stencil buffer, decrementing the
-     *  buffer on each used pixel. This effectively removes the object from the stencil buffer,
-     *  restoring the previous state. The stencil reference value will be decremented.
+     * buffer on each used pixel. This effectively removes the object from the stencil buffer,
+     * restoring the previous state. The stencil reference value will be decremented.
      */
     public function popMask():Void
     {
@@ -552,7 +552,7 @@ class RenderSupport
     }
 
     /** The current stencil reference value, which is per default the depth of the current
-     *  stencil mask stack. Only change this value if you know what you're doing. */
+     * stencil mask stack. Only change this value if you know what you're doing. */
     public var stencilReferenceValue(get, set):UInt;
     private function get_stencilReferenceValue():UInt { return mStencilReferenceValue; }
     private function set_stencilReferenceValue(value:UInt):UInt
@@ -567,7 +567,7 @@ class RenderSupport
     // optimized quad rendering
     
     /** Adds a quad to the current batch of unrendered quads. If there is a state change,
-     *  all previous quads are rendered at once, and the batch is reset. */
+     * all previous quads are rendered at once, and the batch is reset. */
     public function batchQuad(quad:Quad, parentAlpha:Float, 
                               texture:Texture=null, smoothing:String=null):Void
     {
@@ -582,13 +582,13 @@ class RenderSupport
     }
     
     /** Adds a batch of quads to the current batch of unrendered quads. If there is a state 
-     *  change, all previous quads are rendered at once. 
+     * change, all previous quads are rendered at once. 
      *
-     *  <p>Note that copying the contents of the QuadBatch to the current "cumulative"
-     *  batch takes some time. If the batch consists of more than just a few quads,
-     *  you may be better off calling the "render(Custom)" method on the batch instead.
-     *  Otherwise, the additional CPU effort will be more expensive than what you save by
-     *  avoiding the draw call. (Rule of thumb: no more than 16-20 quads.)</p> */
+     * <p>Note that copying the contents of the QuadBatch to the current "cumulative"
+     * batch takes some time. If the batch consists of more than just a few quads,
+     * you may be better off calling the "render(Custom)" method on the batch instead.
+     * Otherwise, the additional CPU effort will be more expensive than what you save by
+     * avoiding the draw call. (Rule of thumb: no more than 16-20 quads.)</p> */
     public function batchQuadBatch(quadBatch:QuadBatch, parentAlpha:Float):Void
     {
         if (mQuadBatches[mCurrentQuadBatchID].isStateChange(
@@ -643,7 +643,7 @@ class RenderSupport
     }
 
     /** Disposes redundant quad batches if the number of allocated batches is more than
-     *  twice the number of used batches. Only executed when there are at least 16 batches. */
+     * twice the number of used batches. Only executed when there are at least 16 batches. */
     private function trimQuadBatches():Void
     {
         var numUsedBatches:Int  = mCurrentQuadBatchID + 1;
@@ -689,8 +689,8 @@ class RenderSupport
     }
     
     /** Assembles fragment- and vertex-shaders, passed as Strings, to a Program3D. If you
-     *  pass a 'resultProgram', it will be uploaded to that program; otherwise, a new program
-     *  will be created on the current Stage3D context. */ 
+     * pass a 'resultProgram', it will be uploaded to that program; otherwise, a new program
+     * will be created on the current Stage3D context. */ 
     public static function assembleAgal(vertexShader:String, fragmentShader:String,
                                         resultProgram:Program3D=null):Program3D
     {
@@ -711,7 +711,7 @@ class RenderSupport
     }
     
     /** Returns the flags that are required for AGAL texture lookup, 
-     *  including the '&lt;' and '&gt;' delimiters. */
+     * including the '&lt;' and '&gt;' delimiters. */
     public static function getTextureLookupFlags(format:Context3DTextureFormat, mipMapping:Bool,
                                                  repeat:Bool=false,
                                                  smoothing:String="bilinear"):String
@@ -745,7 +745,7 @@ class RenderSupport
     // statistics
     
     /** Raises the draw count by a specific value. Call this method in custom render methods
-     *  to keep the statistics display in sync. */
+     * to keep the statistics display in sync. */
     public function raiseDrawCount(value:UInt=1):Void { mDrawCount += value; }
     
     /** Indicates the number of stage3D draw calls. */

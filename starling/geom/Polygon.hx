@@ -35,8 +35,8 @@ class Polygon
     private static var sRestIndices:Vector<UInt> = new Vector<UInt>();
 
     /** Creates a Polygon with the given coordinates.
-     *  @param vertices an array that contains either 'Point' instances or
-     *                  alternating 'x' and 'y' coordinates.
+     * @param vertices an array that contains either 'Point' instances or
+     *                 alternating 'x' and 'y' coordinates.
      */
     public function new(vertices:Array<Dynamic>=null)
     {
@@ -57,7 +57,7 @@ class Polygon
     }
 
     /** Reverses the order of the vertices. Note that some methods of the Polygon class
-     *  require the vertices in clockwise order. */
+     * require the vertices in clockwise order. */
     public function reverse():Void
     {
         var numCoords:Int = mCoords.length;
@@ -80,7 +80,7 @@ class Polygon
     }
 
     /** Adds vertices to the polygon. Pass either a list of 'Point' instances or alternating
-     *  'x' and 'y' coordinates. */
+     * 'x' and 'y' coordinates. */
     public function addVertices(args:Array<Dynamic>):Void
     {
         var i:Int;
@@ -161,8 +161,8 @@ class Polygon
     }
 
     /** Calculates a possible representation of the polygon via triangles. The resulting
-     *  vector contains a list of vertex indices, where every three indices describe a triangle
-     *  referencing the vertices of the polygon. */
+     * vector contains a list of vertex indices, where every three indices describe a triangle
+     * referencing the vertices of the polygon. */
     public function triangulate(result:Vector<UInt>=null):Vector<UInt>
     {
         // Algorithm "Ear clipping method" described here:
@@ -256,7 +256,7 @@ class Polygon
     }
 
     /** Copies all vertices to a 'Vector', beginning at a certain target index and skipping
-     *  'stride' coordinates between each 'x, y' pair. */
+     * 'stride' coordinates between each 'x, y' pair. */
     public function copyToVector(target:Vector<Float>, targetIndex:Int=0,
                                  stride:Int=0):Void
     {
@@ -375,7 +375,7 @@ class Polygon
     // properties
 
     /** Indicates if the polygon's line segments are not self-intersecting.
-     *  Beware: this is a brute-force implementation with <code>O(n^2)</code>. */
+     * Beware: this is a brute-force implementation with <code>O(n^2)</code>. */
     public var isSimple(get, never):Bool;
     private function get_isSimple():Bool
     {
@@ -412,7 +412,7 @@ class Polygon
     }
 
     /** Indicates if the polygon is convex. In a convex polygon, the vector between any two
-     *  points inside the polygon lies inside it, as well. */
+     * points inside the polygon lies inside it, as well. */
     public var isConvex(get, never):Bool;
     private function get_isConvex():Bool
     {
@@ -461,8 +461,8 @@ class Polygon
     }
 
     /** Returns the total number of vertices spawning up the polygon. Assigning a value
-     *  that's smaller than the current number of vertices will crop the path; a bigger
-     *  value will fill up the path with zeros. */
+     * that's smaller than the current number of vertices will crop the path; a bigger
+     * value will fill up the path with zeros. */
     public var numVertices(get, set):Int;
     private function get_numVertices():Int
     {

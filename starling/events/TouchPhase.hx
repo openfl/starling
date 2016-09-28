@@ -29,14 +29,14 @@ package starling.events;
 class TouchPhase
 {
     /** Only available for mouse input: the cursor hovers over an object <em>without</em> a 
-     *  pressed button. */
+     * pressed button. */
     public static inline var HOVER:String = "hover";
     
     /** The finger touched the screen just now, or the mouse button was pressed. */
     public static inline var BEGAN:String = "began";
     
     /** The finger moves around on the screen, or the mouse is moved while the button is 
-     *  pressed. */
+     * pressed. */
     public static inline var MOVED:String = "moved";
     
     /** The finger or mouse (with pressed button) has not moved since the last frame. */

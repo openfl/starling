@@ -46,18 +46,18 @@ class BlurFilter extends FragmentFilter
     private var sTmpWeights:Vector<Float> = Vector.ofArray ([0, 0, 0, 0, 0]);
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
-     *  <code>Math.ceil(blur)</code>. 
-     *  
-     *  <ul><li>blur = 0.5: 1 pass</li>  
-     *      <li>blur = 1.0: 1 pass</li>
-     *      <li>blur = 1.5: 2 passes</li>
-     *      <li>blur = 2.0: 2 passes</li>
-     *      <li>etc.</li>
-     *  </ul>
-     *  
-     *  <p>Instead of raising the number of passes, you should consider lowering the resolution.
-     *  A lower resolution will result in a blurrier image, while reducing the rendering
-     *  cost.</p>
+     * <code>Math.ceil(blur)</code>. 
+     * 
+     * <ul><li>blur = 0.5: 1 pass</li>  
+     *     <li>blur = 1.0: 1 pass</li>
+     *     <li>blur = 1.5: 2 passes</li>
+     *     <li>blur = 2.0: 2 passes</li>
+     *     <li>etc.</li>
+     * </ul>
+     * 
+     * <p>Instead of raising the number of passes, you should consider lowering the resolution.
+     * A lower resolution will result in a blurrier image, while reducing the rendering
+     * cost.</p>
      */
     public function new(blurX:Float=1, blurY:Float=1, resolution:Float=1)
     {
@@ -259,8 +259,8 @@ class BlurFilter extends FragmentFilter
     }
     
     /** A uniform color will replace the RGB values of the input color, while the alpha
-     *  value will be multiplied with the given factor. Pass <code>false</code> as the
-     *  first parameter to deactivate the uniform color. */
+     * value will be multiplied with the given factor. Pass <code>false</code> as the
+     * first parameter to deactivate the uniform color. */
     public function setUniformColor(enable:Bool, color:UInt=0x0, alpha:Float=1.0):Void
     {
         mColor[0] = Color.getRed(color)   / 255.0;
@@ -271,7 +271,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in x-direction (stage coordinates). 
-     *  The number of required passes will be <code>Math.ceil(value)</code>. */
+     * The number of required passes will be <code>Math.ceil(value)</code>. */
     public var blurX(get, set):Float;
     private function get_blurX():Float { return mBlurX; }
     private function set_blurX(value:Float):Float 
@@ -282,7 +282,7 @@ class BlurFilter extends FragmentFilter
     }
     
     /** The blur factor in y-direction (stage coordinates). 
-     *  The number of required passes will be <code>Math.ceil(value)</code>. */
+     * The number of required passes will be <code>Math.ceil(value)</code>. */
     public var blurY(get, set):Float;
     private function get_blurY():Float { return mBlurY; }
     private function set_blurY(value:Float):Float 

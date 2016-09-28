@@ -79,7 +79,7 @@ class FragmentFilter
     private inline static var PMA:Bool = true;
     
     /** The standard vertex shader code. It will be used automatically if you don't create
-     *  a custom vertex shader yourself. */
+     * a custom vertex shader yourself. */
     private inline static var STD_VERTEX_SHADER:String = 
         "m44 op, va0, vc0 \n" + // 4x4 matrix transform to output space
         "mov v0, va1      \n";  // pass texture coordinates to fragment program
@@ -122,7 +122,7 @@ class FragmentFilter
     private var mHelperRect2:Rectangle   = new Rectangle();
 
     /** Creates a new Fragment filter with the specified number of passes and resolution.
-     *  This constructor may only be called by the constructor of a subclass. */
+     * This constructor may only be called by the constructor of a subclass. */
     private function new(numPasses:Int=1, resolution:Float=1.0)
     {
         if (numPasses < 1) throw new ArgumentError("At least one pass is required.");
@@ -173,8 +173,8 @@ class FragmentFilter
     }
     
     /** Applies the filter on a certain display object, rendering the output into the current 
-     *  render target. This method is called automatically by Starling's rendering system 
-     *  for the object the filter is attached to. */
+     * render target. This method is called automatically by Starling's rendering system 
+     * for the object the filter is attached to. */
     public function render(object:DisplayObject, support:RenderSupport, parentAlpha:Float):Void
     {
         // bottom layer
@@ -396,8 +396,8 @@ class FragmentFilter
     }
     
     /** Calculates the bounds of the filter in stage coordinates. The method calculates two
-     *  rectangles: one with the exact filter bounds, the other with an extended rectangle that
-     *  will yield to a POT size when multiplied with the current scale factor / resolution.
+     * rectangles: one with the exact filter bounds, the other with an extended rectangle that
+     * will yield to a POT size when multiplied with the current scale factor / resolution.
      */
     private function calculateBounds(object:DisplayObject, targetSpace:DisplayObject,
                                      scale:Float, intersectWithStage:Bool,
@@ -471,46 +471,46 @@ class FragmentFilter
     // private methods
 
     /** Subclasses must override this method and use it to create their 
-     *  fragment- and vertex-programs. */
+     * fragment- and vertex-programs. */
     private function createPrograms():Void
     {
         throw new Error("Method has to be implemented in subclass!");
     }
 
     /** Subclasses must override this method and use it to activate their fragment- and
-     *  vertex-programs.
+     * vertex-programs.
      *
-     *  <p>The 'activate' call directly precedes the call to 'context.drawTriangles'. Set up
-     *  the context the way your filter needs it. The following constants and attributes 
-     *  are set automatically:</p>
-     *  
-     *  <ul><li>vertex constants 0-3: mvpMatrix (3D)</li>
-     *      <li>vertex attribute 0: vertex position (FLOAT_2)</li>
-     *      <li>vertex attribute 1: texture coordinates (FLOAT_2)</li>
-     *      <li>texture 0: input texture</li>
-     *  </ul>
-     *  
-     *  @param pass    the current render pass, starting with '0'. Multipass filters can
-     *                 provide different logic for each pass.
-     *  @param context the current context3D (the same as in Starling.context, passed
-     *                 just for convenience)
-     *  @param texture the input texture, which is already bound to sampler 0.
-     *  */
+     * <p>The 'activate' call directly precedes the call to 'context.drawTriangles'. Set up
+     * the context the way your filter needs it. The following constants and attributes 
+     * are set automatically:</p>
+     * 
+     * <ul><li>vertex constants 0-3: mvpMatrix (3D)</li>
+     *     <li>vertex attribute 0: vertex position (FLOAT_2)</li>
+     *     <li>vertex attribute 1: texture coordinates (FLOAT_2)</li>
+     *     <li>texture 0: input texture</li>
+     * </ul>
+     * 
+     * @param pass    the current render pass, starting with '0'. Multipass filters can
+     *                provide different logic for each pass.
+     * @param context the current context3D (the same as in Starling.context, passed
+     *                just for convenience)
+     * @param texture the input texture, which is already bound to sampler 0.
+     * */
     private function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
         throw new Error("Method has to be implemented in subclass!");
     }
     
     /** This method is called directly after 'context.drawTriangles'. 
-     *  If you need to clean up any resources, you can do so in this method. */
+     * If you need to clean up any resources, you can do so in this method. */
     private function deactivate(pass:Int, context:Context3D, texture:Texture):Void
     {
         // clean up resources
     }
     
     /** Assembles fragment- and vertex-shaders, passed as Strings, to a Program3D. 
-     *  If any argument is  null, it is replaced by the class constants STD_FRAGMENT_SHADER or
-     *  STD_VERTEX_SHADER, respectively. */
+     * If any argument is  null, it is replaced by the class constants STD_FRAGMENT_SHADER or
+     * STD_VERTEX_SHADER, respectively. */
     private function assembleAgal(fragmentShader:String=null, vertexShader:String=null):Program3D
     {
         if (fragmentShader == null) fragmentShader = STD_FRAGMENT_SHADER;
@@ -522,8 +522,8 @@ class FragmentFilter
     // cache
     
     /** Caches the filter output into a texture. An uncached filter is rendered in every frame;
-     *  a cached filter only once. However, if the filtered object or the filter settings
-     *  change, it has to be updated manually; to do that, call "cache" again. */
+     * a cached filter only once. However, if the filtered object or the filter settings
+     * change, it has to be updated manually; to do that, call "cache" again. */
     public function cache():Void
     {
         mCacheRequested = true;
@@ -531,7 +531,7 @@ class FragmentFilter
     }
     
     /** Clears the cached output of the filter. After calling this method, the filter will
-     *  be executed once per frame again. */ 
+     * be executed once per frame again. */ 
     public function clearCache():Void
     {
         mCacheRequested = false;
@@ -562,9 +562,9 @@ class FragmentFilter
     private function get_isCached():Bool { return (mCache != null) || mCacheRequested; }
     
     /** The resolution of the filter texture. "1" means stage resolution, "0.5" half the
-     *  stage resolution. A lower resolution saves memory and execution time (depending on 
-     *  the GPU), but results in a lower output quality. Values greater than 1 are allowed;
-     *  such values might make sense for a cached filter when it is scaled up. @default 1 */
+     * stage resolution. A lower resolution saves memory and execution time (depending on 
+     * the GPU), but results in a lower output quality. Values greater than 1 are allowed;
+     * such values might make sense for a cached filter when it is scaled up. @default 1 */
     public var resolution(get, set):Float;
     private function get_resolution():Float { return mResolution; }
     private function set_resolution(value:Float):Float 
@@ -575,7 +575,7 @@ class FragmentFilter
     }
     
     /** The filter mode, which is one of the constants defined in the "FragmentFilterMode" 
-     *  class. @default "replace" */
+     * class. @default "replace" */
     public var mode(get, set):String;
     private function get_mode():String { return mMode; }
     private function set_mode(value:String):String { return mMode = value; }
@@ -591,19 +591,19 @@ class FragmentFilter
     private function set_offsetY(value:Float):Float { return mOffsetY = value; }
     
     /** The x-margin will extend the size of the filter texture along the x-axis.
-     *  Useful when the filter will "grow" the rendered object. */
+     * Useful when the filter will "grow" the rendered object. */
     private var marginX(get, set):Float;
     private function get_marginX():Float { return mMarginX; }
     private function set_marginX(value:Float):Float { return mMarginX = value; }
     
     /** The y-margin will extend the size of the filter texture along the y-axis.
-     *  Useful when the filter will "grow" the rendered object. */
+     * Useful when the filter will "grow" the rendered object. */
     private var marginY(get, set):Float;
     private function get_marginY():Float { return mMarginY; }
     private function set_marginY(value:Float):Float { return mMarginY = value; }
     
     /** The number of passes the filter is applied. The "activate" and "deactivate" methods
-     *  will be called that often. */
+     * will be called that often. */
     private var numPasses(get, set):Int;
     private function set_numPasses(value:Int):Int { return mNumPasses = value; }
     private function get_numPasses():Int { return mNumPasses; }

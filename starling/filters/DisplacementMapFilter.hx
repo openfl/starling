@@ -211,13 +211,13 @@ class DisplacementMapFilter extends FragmentFilter
     // properties
 
     /** Describes which color channel to use in the map image to displace the x result. 
-     *  Possible values are constants from the BitmapDataChannel class. */
+     * Possible values are constants from the BitmapDataChannel class. */
     public var componentX(get, set):UInt;
     private function get_componentX():UInt { return mComponentX; }
     private function set_componentX(value:UInt):UInt { return mComponentX = value; }
 
     /** Describes which color channel to use in the map image to displace the y result. 
-     *  Possible values are constants from the BitmapDataChannel class. */
+     * Possible values are constants from the BitmapDataChannel class. */
     public var componentY(get, set):UInt;
     private function get_componentY():UInt { return mComponentY; }
     private function set_componentY(value:UInt):UInt { return mComponentY = value; }
@@ -246,7 +246,7 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** A value that contains the offset of the upper-left corner of the target display 
-     *  object from the upper-left corner of the map image. */   
+     * object from the upper-left corner of the map image. */   
     public var mapPoint(get, set):Point;
     private function get_mapPoint():Point { return mMapPoint; }
     private function set_mapPoint(value:Point):Point
@@ -257,7 +257,7 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** Indicates how the pixels at the edge of the input image (the filtered object) will
-     *  be wrapped at the edge. */
+     * be wrapped at the edge. */
     public var repeat(get, set):Bool;
     private function get_repeat():Bool { return mRepeat; }
     private function set_repeat(value:Bool):Bool 

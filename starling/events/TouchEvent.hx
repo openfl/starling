@@ -86,8 +86,8 @@ class TouchEvent extends Event
     }
     
     /** Returns a list of touches that originated over a certain target. If you pass a
-     *  'result' vector, the touches will be added to this vector instead of creating a new 
-     *  object. */
+     * 'result' vector, the touches will be added to this vector instead of creating a new 
+     * object. */
     public function getTouches(target:DisplayObject, phase:String=null,
                                result:Vector<Touch>=null):Vector<Touch>
     {
@@ -109,10 +109,10 @@ class TouchEvent extends Event
     
     /** Returns a touch that originated over a certain target. 
      * 
-     *  @param target   The object that was touched; may also be a parent of the actual
-     *                  touch-target.
-     *  @param phase    The phase the touch must be in, or null if you don't care.
-     *  @param id       The ID of the requested touch, or -1 if you don't care.
+     * @param target   The object that was touched; may also be a parent of the actual
+     *                 touch-target.
+     * @param phase    The phase the touch must be in, or null if you don't care.
+     * @param id       The ID of the requested touch, or -1 if you don't care.
      */
     public function getTouch(target:DisplayObject, phase:String=null, id:Int=-1):Touch
     {
@@ -160,8 +160,8 @@ class TouchEvent extends Event
     // custom dispatching
     
     /** @private
-     *  Dispatches the event along a custom bubble chain. During the lifetime of the event,
-     *  each object is visited only once. */
+     * Dispatches the event along a custom bubble chain. During the lifetime of the event,
+     * each object is visited only once. */
     public function dispatch(chain:Vector<EventDispatcher>):Void
     {
         if (chain != null && chain.length != 0)

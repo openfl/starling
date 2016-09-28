@@ -149,7 +149,7 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Removes a child from the container. If the object is not a child, nothing happens. 
-     *  If requested, the child will be disposed right away. */
+     * If requested, the child will be disposed right away. */
     public function removeChild(child:DisplayObject, dispose:Bool=false):DisplayObject
     {
         var childIndex:Int = getChildIndex(child);
@@ -158,7 +158,7 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Removes a child at a certain index. The index positions of any display objects above
-     *  the child are decreased by 1. If requested, the child will be disposed right away. */
+     * the child are decreased by 1. If requested, the child will be disposed right away. */
     public function removeChildAt(index:Int, dispose:Bool=false):DisplayObject
     {
         if (index >= 0 && index < mChildren.length)
@@ -187,7 +187,7 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Removes a range of children from the container (endIndex included). 
-     *  If no arguments are given, all children will be removed. */
+     * If no arguments are given, all children will be removed. */
     public function removeChildren(beginIndex:Int=0, endIndex:Int=-1, dispose:Bool=false):Void
     {
         if (endIndex < 0 || endIndex >= numChildren) 
@@ -202,7 +202,7 @@ class DisplayObjectContainer extends DisplayObject
     }
 
     /** Returns a child object at a certain index. If you pass a negative index,
-     *  '-1' will return the last child, '-2' the second to last child, etc. */
+     * '-1' will return the last child, '-2' the second to last child, etc. */
     public function getChildAt(index:Int):DisplayObject
     {
         var numChildren:Int = mChildren.length;
@@ -261,7 +261,7 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Sorts the children according to a given function (that works just like the sort function
-     *  of the Vector class). */
+     * of the Vector class). */
     public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void
     {
         sSortBuffer.length = mChildren.length;
@@ -407,7 +407,7 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Dispatches an event with the given parameters on all children (recursively). 
-     *  The method uses an internal pool of event objects to avoid allocations. */
+     * The method uses an internal pool of event objects to avoid allocations. */
     public function broadcastEventWith(type:String, data:Dynamic=null):Void
     {
         var event:Event = Event.fromPool(type, false, data);
@@ -420,9 +420,9 @@ class DisplayObjectContainer extends DisplayObject
     private function get_numChildren():Int { return mChildren.length; }
     
     /** If a container is a 'touchGroup', it will act as a single touchable object.
-     *  Touch events will have the container as target, not the touched child.
-     *  (Similar to 'mouseChildren' in the classic display list, but with inverted logic.)
-     *  @default false */
+     * Touch events will have the container as target, not the touched child.
+     * (Similar to 'mouseChildren' in the classic display list, but with inverted logic.)
+     * @default false */
     public var touchGroup(get, set):Bool;
     private function get_touchGroup():Bool { return mTouchGroup; }
     private function set_touchGroup(value:Bool):Bool { return mTouchGroup = value; }
@@ -476,8 +476,8 @@ class DisplayObjectContainer extends DisplayObject
     }
 
     /** Custom implementation of 'Vector.splice'. The native method always create temporary
-     *  objects that have to be garbage collected. This implementation does not cause such
-     *  issues. */
+     * objects that have to be garbage collected. This implementation does not cause such
+     * issues. */
     private function spliceChildren(startIndex:Int, deleteCount:Int=Max.INT_MAX_VALUE,
                                     insertee:DisplayObject=null):Void
     {

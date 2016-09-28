@@ -101,7 +101,7 @@ class EventDispatcher
     }
     
     /** Removes all event listeners with a certain type, or all of them if type is null. 
-     *  Be careful when removing all event listeners: you never know who else was listening. */
+     * Be careful when removing all event listeners: you never know who else was listening. */
     public function removeEventListeners(type:String=null):Void
     {
         if (type != null && mEventListeners != null)
@@ -111,9 +111,9 @@ class EventDispatcher
     }
     
     /** Dispatches an event to all objects that have registered listeners for its type. 
-     *  If an event with enabled 'bubble' property is dispatched to a display object, it will 
-     *  travel up along the line of parents, until it either hits the root object or someone
-     *  stops its propagation manually. */
+     * If an event with enabled 'bubble' property is dispatched to a display object, it will 
+     * travel up along the line of parents, until it either hits the root object or someone
+     * stops its propagation manually. */
     public function dispatchEvent(event:Event):Void
     {
         var bubbles:Bool = event.bubbles;
@@ -134,9 +134,9 @@ class EventDispatcher
     }
     
     /** @private
-     *  Invokes an event on the current object. This method does not do any bubbling, nor
-     *  does it back-up and restore the previous target on the event. The 'dispatchEvent' 
-     *  method uses this method internally. */
+     * Invokes an event on the current object. This method does not do any bubbling, nor
+     * does it back-up and restore the previous target on the event. The 'dispatchEvent' 
+     * method uses this method internally. */
     private function invokeEvent(event:Event):Bool
     {
         var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
@@ -204,8 +204,8 @@ class EventDispatcher
     }
     
     /** Dispatches an event with the given parameters to all objects that have registered 
-     *  listeners for the given type. The method uses an internal pool of event objects to 
-     *  avoid allocations. */
+     * listeners for the given type. The method uses an internal pool of event objects to 
+     * avoid allocations. */
     public function dispatchEventWith(type:String, bubbles:Bool=false, data:Dynamic=null):Void
     {
         if (bubbles || hasEventListener(type)) 

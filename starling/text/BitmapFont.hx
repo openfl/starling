@@ -59,7 +59,7 @@ import starling.text.BitmapChar;
 class BitmapFont
 {
     /** Use this constant for the <code>fontSize</code> property of the TextField class to 
-     *  render the bitmap font in exactly the size it was created. */ 
+     * render the bitmap font in exactly the size it was created. */ 
     public static inline var NATIVE_SIZE:Int = -1;
     
     /** The font name of the embedded minimal bitmap font. Use this e.g. for debug output. */
@@ -84,7 +84,7 @@ class BitmapFont
     private static var sLines:Array<Vector<CharLocation>> = [];
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
-     *  If you don't pass any data, the "mini" font will be created. */
+     * If you don't pass any data, the "mini" font will be created. */
     public function new(texture:Texture=null, fontXml:Xml=null)
     {
         // if no texture is passed in, we create the minimal, embedded font
@@ -269,7 +269,7 @@ class BitmapFont
     }
     
     /** Arranges the characters of a text inside a rectangle, adhering to the given settings. 
-     *  Returns a Vector of CharLocations. */
+     * Returns a Vector of CharLocations. */
     private function arrangeChars(width:Float, height:Float, text:String, fontSize:Float=-1,
                                   hAlign:String="center", vAlign:String="center",
                                   autoScale:Bool=true, kerning:Bool=true,
@@ -445,19 +445,19 @@ class BitmapFont
     private function set_smoothing(value:String):String { return mHelperImage.smoothing = value; } 
     
     /** The baseline of the font. This property does not affect text rendering;
-     *  it's just an information that may be useful for exact text placement. */
+     * it's just an information that may be useful for exact text placement. */
     public var baseline(get, set):Float;
     private function get_baseline():Float { return mBaseline; }
     private function set_baseline(value:Float):Float { return mBaseline = value; }
     
     /** An offset that moves any generated text along the x-axis (in points).
-     *  Useful to make up for incorrect font data. @default 0. */ 
+     * Useful to make up for incorrect font data. @default 0. */ 
     public var offsetX(get, set):Float;
     private function get_offsetX():Float { return mOffsetX; }
     private function set_offsetX(value:Float):Float { return mOffsetX = value; }
     
     /** An offset that moves any generated text along the y-axis (in points).
-     *  Useful to make up for incorrect font data. @default 0. */
+     * Useful to make up for incorrect font data. @default 0. */
     private function get_offsetY():Float { return mOffsetY; }
     private function set_offsetY(value:Float):Float { return mOffsetY = value; }
 

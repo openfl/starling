@@ -37,9 +37,9 @@ class ArrayUtil
     }
 
     /** Inserts an element into the array at the specified index.
-     *  You can use a negative integer to specify a position relative to the end of the
-     *  array (for example, -1 will insert at the very end). If <code>index</code> is
-     *  higher than the array length, gaps are filled up with <code>null</code> values. */
+     * You can use a negative integer to specify a position relative to the end of the
+     * array (for example, -1 will insert at the very end). If <code>index</code> is
+     * higher than the array length, gaps are filled up with <code>null</code> values. */
     public static function insertAt<T>(array:Array<T>, index:Int, object:T):Void
     {
         var i:Int;
@@ -68,8 +68,8 @@ class ArrayUtil
     }
 
     /** Removes the element at the specified index from the array.
-     *  You can use a negative integer to specify a position relative to the end of the
-     *  array (for example, -1 will remove the last element). */
+     * You can use a negative integer to specify a position relative to the end of the
+     * array (for example, -1 will remove the last element). */
     public static function removeAt<T>(array:Array<T>, index:Int):T
     {
         var i:Int;

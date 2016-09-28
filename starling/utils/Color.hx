@@ -44,14 +44,14 @@ class Color
     public static function getBlue(color:UInt):Int  { return  color        & 0xff; }
     
     /** Creates an RGB color, stored in an unsigned integer. Channels are expected
-     *  in the range 0 - 255. */
+     * in the range 0 - 255. */
     public static function rgb(red:Int, green:Int, blue:Int):UInt
     {
         return (red << 16) | (green << 8) | blue;
     }
     
     /** Creates an ARGB color, stored in an unsigned integer. Channels are expected
-     *  in the range 0 - 255. */
+     * in the range 0 - 255. */
     public static function argb(alpha:Int, red:Int, green:Int, blue:Int):UInt
     {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;

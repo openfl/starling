@@ -18,7 +18,7 @@ class TextFieldAutoSize
     public static inline var NONE:String = "none";
     
     /** The text field will grow to the right; no line-breaks will be added.
-     *  The height of the text field remains unchanged. */ 
+     * The height of the text field remains unchanged. */ 
     public static inline var HORIZONTAL:String = "horizontal";
     
     /** The text field will grow to the bottom, adding line-breaks when necessary.

@@ -148,12 +148,12 @@ class Juggler implements IAnimatable
     }
     
     /** Delays the execution of a function until <code>delay</code> seconds have passed.
-     *  This method provides a convenient alternative for creating and adding a DelayedCall
-     *  manually.
+     * This method provides a convenient alternative for creating and adding a DelayedCall
+     * manually.
      *
-     *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
-     *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
-     *  reused.</p> */
+     * <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
+     * Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
+     * reused.</p> */
     public function delayCall(call:Function, delay:Float, args:Array<Dynamic> = null):IAnimatable
     {
         if (call == null) return null;
@@ -167,11 +167,11 @@ class Juggler implements IAnimatable
     }
 
     /** Runs a function at a specified interval (in seconds). A 'repeatCount' of zero
-     *  means that it runs indefinitely.
+     * means that it runs indefinitely.
      *
-     *  <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
-     *  Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
-     *  reused.</p> */
+     * <p>To cancel the call, pass the returned 'IAnimatable' instance to 'Juggler.remove()'.
+     * Do not use the returned IAnimatable otherwise; it is taken from a pool and will be
+     * reused.</p> */
     public function repeatCall(call:Function, interval:Float, repeatCount:Int=0, args:Array<Dynamic>):IAnimatable
     {
         if (call == null) return null;
@@ -191,36 +191,36 @@ class Juggler implements IAnimatable
     }
     
     /** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
-     *  this method uses a tween instance (taken from an object pool) that is added to the
-     *  juggler right away. This method provides a convenient alternative for creating 
-     *  and adding a tween manually.
-     *  
-     *  <p>Fill 'properties' with key-value pairs that describe both the 
-     *  tween and the animation target. Here is an example:</p>
-     *  
-     *  <pre>
-     *  juggler.tween(object, 2.0, {
-     *      transition: Transitions.EASE_IN_OUT,
-     *      delay: 20, // -> tween.delay = 20
-     *      x: 50      // -> tween.animate("x", 50)
-     *  });
-     *  </pre> 
+     * this method uses a tween instance (taken from an object pool) that is added to the
+     * juggler right away. This method provides a convenient alternative for creating 
+     * and adding a tween manually.
+     * 
+     * <p>Fill 'properties' with key-value pairs that describe both the 
+     * tween and the animation target. Here is an example:</p>
+     * 
+     * <pre>
+     * juggler.tween(object, 2.0, {
+     *     transition: Transitions.EASE_IN_OUT,
+     *     delay: 20, // -> tween.delay = 20
+     *     x: 50      // -> tween.animate("x", 50)
+     * });
+     * </pre> 
      *
-     *  <p>To cancel the tween, call 'Juggler.removeTweens' with the same target, or pass
-     *  the returned 'IAnimatable' instance to 'Juggler.remove()'. Do not use the returned
-     *  IAnimatable otherwise; it is taken from a pool and will be reused.</p>
+     * <p>To cancel the tween, call 'Juggler.removeTweens' with the same target, or pass
+     * the returned 'IAnimatable' instance to 'Juggler.remove()'. Do not use the returned
+     * IAnimatable otherwise; it is taken from a pool and will be reused.</p>
      *
-     *  <p>Note that some property types may be animated in a special way:</p>
-     *  <ul>
-     *    <li>If the property contains the string <code>color</code> or <code>Color</code>,
-     *        it will be treated as an unsigned integer with a color value
-     *        (e.g. <code>0xff0000</code> for red). Each color channel will be animated
-     *        individually.</li>
-     *    <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
-     *    <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
-     *        making sure it always uses the shortest possible arc for the rotation.</li>
-     *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
-     *  </ul>
+     * <p>Note that some property types may be animated in a special way:</p>
+     * <ul>
+     *   <li>If the property contains the string <code>color</code> or <code>Color</code>,
+     *       it will be treated as an unsigned integer with a color value
+     *       (e.g. <code>0xff0000</code> for red). Each color channel will be animated
+     *       individually.</li>
+     *   <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
+     *   <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
+     *       making sure it always uses the shortest possible arc for the rotation.</li>
+     *   <li>The string <code>#deg</code> does the same for angles in degrees.</li>
+     * </ul>
      */
     public function tween(target:Dynamic, time:Float, properties:Dynamic):IAnimatable
     {

@@ -19,7 +19,7 @@ class MathUtil
     private static var TWO_PI:Float = Math.PI * 2.0;
 
     /** Calculates the intersection point between the xy-plane and an infinite line
-     *  that is defined by two 3D points in the same coordinate system. */
+     * that is defined by two 3D points in the same coordinate system. */
     public static function intersectLineWithXYPlane(pointA:Vector3D, pointB:Vector3D,
                                                     resultPoint:Point=null):Point
     {

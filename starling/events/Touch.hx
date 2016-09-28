@@ -67,8 +67,8 @@ class Touch
     }
     
     /** Converts the current location of a touch to the local coordinate system of a display 
-     *  object. If you pass a 'resultPoint', the result will be stored in this point instead 
-     *  of creating a new object.*/
+     * object. If you pass a 'resultPoint', the result will be stored in this point instead 
+     * of creating a new object.*/
     public function getLocation(space:DisplayObject, resultPoint:Point=null):Point
     {
         sHelperPoint.setTo(mGlobalX, mGlobalY);
@@ -76,8 +76,8 @@ class Touch
     }
     
     /** Converts the previous location of a touch to the local coordinate system of a display 
-     *  object. If you pass a 'resultPoint', the result will be stored in this point instead 
-     *  of creating a new object.*/
+     * object. If you pass a 'resultPoint', the result will be stored in this point instead 
+     * of creating a new object.*/
     public function getPreviousLocation(space:DisplayObject, resultPoint:Point=null):Point
     {
         sHelperPoint.setTo(mPreviousGlobalX, mPreviousGlobalY);
@@ -85,8 +85,8 @@ class Touch
     }
     
     /** Returns the movement of the touch between the current and previous location. 
-     *  If you pass a 'resultPoint', the result will be stored in this point instead 
-     *  of creating a new object. */ 
+     * If you pass a 'resultPoint', the result will be stored in this point instead 
+     * of creating a new object. */ 
     public function getMovement(space:DisplayObject, resultPoint:Point=null):Point
     {
         if (resultPoint == null) resultPoint = new Point();
@@ -166,7 +166,7 @@ class Touch
     private function get_previousGlobalY():Float { return mPreviousGlobalY; }
 
     /** The x-position of the touch in stage coordinates. If you change this value,
-     *  the previous one will be moved to "previousGlobalX". */
+     * the previous one will be moved to "previousGlobalX". */
     public var globalX(get, set):Float;
     private function get_globalX():Float { return mGlobalX; }
     private function set_globalX(value:Float):Float
@@ -176,7 +176,7 @@ class Touch
     }
 
     /** The y-position of the touch in stage coordinates. If you change this value,
-     *  the previous one will be moved to "previousGlobalY". */
+     * the previous one will be moved to "previousGlobalY". */
     public var globalY(get, set):Float;
     private function get_globalY():Float { return mGlobalY; }
     private function set_globalY(value:Float):Float
@@ -186,7 +186,7 @@ class Touch
     }
     
     /** The number of taps the finger made in a short amount of time. Use this to detect 
-     *  double-taps / double-clicks, etc. */ 
+     * double-taps / double-clicks, etc. */ 
     public var tapCount(get, set):Int;
     private function get_tapCount():Int { return mTapCount; }
     private function set_tapCount(value:Int):Int { return mTapCount = value; }
@@ -215,25 +215,25 @@ class Touch
     private function set_timestamp(value:Float):Float { return mTimestamp = value; }
     
     /** A value between 0.0 and 1.0 indicating force of the contact with the device. 
-     *  If the device does not support detecting the pressure, the value is 1.0. */ 
+     * If the device does not support detecting the pressure, the value is 1.0. */ 
     public var pressure(get, set):Float;
     private function get_pressure():Float { return mPressure; }
     private function set_pressure(value:Float):Float { return mPressure = value; }
     
     /** Width of the contact area. 
-     *  If the device does not support detecting the pressure, the value is 1.0. */
+     * If the device does not support detecting the pressure, the value is 1.0. */
     public var width(get, set):Float;
     private function get_width():Float { return mWidth; }
     private function set_width(value:Float):Float { return mWidth = value; }
     
     /** Height of the contact area. 
-     *  If the device does not support detecting the pressure, the value is 1.0. */
+     * If the device does not support detecting the pressure, the value is 1.0. */
     public var height(get, set):Float;
     private function get_height():Float { return mHeight; }
     private function set_height(value:Float):Float { return mHeight = value; }
 
     /** Indicates if the touch has been cancelled, which may happen when the app moves into
-     *  the background ('Event.DEACTIVATE'). @default false */
+     * the background ('Event.DEACTIVATE'). @default false */
     public var cancelled(get, set):Bool;
     private function get_cancelled():Bool { return mCancelled; }
     private function set_cancelled(value:Bool):Bool { return mCancelled = value; }
@@ -241,8 +241,8 @@ class Touch
     // internal methods
     
     /** @private 
-     *  Dispatches a touch event along the current bubble chain (which is updated each time
-     *  a target is set). */
+     * Dispatches a touch event along the current bubble chain (which is updated each time
+     * a target is set). */
     private function dispatchEvent(event:TouchEvent):Void
     {
         if (mTarget != null) event.dispatch(mBubbleChain);

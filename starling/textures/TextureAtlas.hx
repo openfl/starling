@@ -103,8 +103,8 @@ class TextureAtlas
     }
     
     /** This function is called by the constructor and will parse an XML in Starling's 
-     *  default atlas file format. Override this method to create custom parsing logic
-     *  (e.g. to support a different file format). */
+     * default atlas file format. Override this method to create custom parsing logic
+     * (e.g. to support a different file format). */
     private function parseAtlasXml(atlasXml:Xml):Void
     {
         var scale:Float = mAtlasTexture.scale;
@@ -141,7 +141,7 @@ class TextureAtlas
     }
     
     /** Returns all textures that start with a certain string, sorted alphabetically
-     *  (especially useful for "MovieClip"). */
+     * (especially useful for "MovieClip"). */
     public function getTextures(prefix:String="", result:Vector<Texture>=null):Vector<Texture>
     {
         if (result == null) result = new Vector<Texture>();
@@ -175,7 +175,7 @@ class TextureAtlas
     }
     
     /** Returns the region rectangle associated with a specific name, or <code>null</code>
-     *  if no region with that name has been registered. */
+     * if no region with that name has been registered. */
     public function getRegion(name:String):Rectangle
     {
         var subTexture:SubTexture = mSubTextures[name];
@@ -183,7 +183,7 @@ class TextureAtlas
     }
     
     /** Returns the frame rectangle of a specific region, or <code>null</code> if that region 
-     *  has no frame. */
+     * has no frame. */
     public function getFrame(name:String):Rectangle
     {
         var subTexture:SubTexture = mSubTextures[name];
@@ -191,7 +191,7 @@ class TextureAtlas
     }
     
     /** If true, the specified region in the atlas is rotated by 90 degrees (clockwise). The
-     *  SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
+     * SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
     public function getRotation(name:String):Bool
     {
         var subTexture:SubTexture = mSubTextures[name];
@@ -199,7 +199,7 @@ class TextureAtlas
     }
 
     /** Adds a named region for a SubTexture (described by rectangle with coordinates in
-     *  points) with an optional frame. */
+     * points) with an optional frame. */
     public function addRegion(name:String, region:Rectangle, frame:Rectangle=null,
                               rotated:Bool=false):Void
     {

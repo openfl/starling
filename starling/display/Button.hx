@@ -64,8 +64,8 @@ class Button extends DisplayObjectContainer
     private var mTriggerBounds:Rectangle;
 
     /** Creates a button with a set of state-textures and (optionally) some text.
-     *  Any state that is left 'null' will display the up-state texture. Beware that all
-     *  state textures should have the same dimensions. */
+     * Any state that is left 'null' will display the up-state texture. Beware that all
+     * state textures should have the same dimensions. */
     public function new(upState:Texture, text:String="", downState:Texture=null,
                            overState:Texture=null, disabledState:Texture=null)
     {
@@ -107,9 +107,9 @@ class Button extends DisplayObjectContainer
     }
     
     /** Readjusts the dimensions of the button according to its current state texture.
-     *  Call this method to synchronize button and texture size after assigning a texture
-     *  with a different size. Per default, this method also resets the bounds of the
-     *  button's text. */
+     * Call this method to synchronize button and texture size after assigning a texture
+     * with a different size. Per default, this method also resets the bounds of the
+     * button's text. */
     public function readjustSize(resetTextBounds:Bool=true):Void
     {
         mBody.readjustSize();
@@ -186,7 +186,7 @@ class Button extends DisplayObjectContainer
     }
     
     /** The current state of the button. The corresponding strings are found
-     *  in the ButtonState class. */
+     * in the ButtonState class. */
     public var state(get, set):String;
     private function get_state():String { return mState; }
     private function set_state(value:String):String
@@ -234,8 +234,8 @@ class Button extends DisplayObjectContainer
     }
 
     /** The scale factor of the button on touch. Per default, a button without a down state
-     *  texture will be made slightly smaller, while a button with a down state texture
-     *  remains unscaled. */
+     * texture will be made slightly smaller, while a button with a down state texture
+     * remains unscaled. */
     public var scaleWhenDown(get, set):Float;
     private function get_scaleWhenDown():Float { return mScaleWhenDown; }
     private function set_scaleWhenDown(value:Float):Float
@@ -313,7 +313,7 @@ class Button extends DisplayObjectContainer
     }
     
     /** The name of the font displayed on the button. May be a system font or a registered
-     *  bitmap font. */
+     * bitmap font. */
     public var fontName(get, set):String;
     private function get_fontName():String { return mTextField != null ? mTextField.fontName : "Verdana"; }
     private function set_fontName(value:String):String
@@ -453,7 +453,7 @@ class Button extends DisplayObjectContainer
     }
     
     /** The color of the button's state image. Just like every image object, each pixel's
-     *  color is multiplied with this value. @default white */
+     * color is multiplied with this value. @default white */
     public var color(get, set):UInt;
     private function get_color():UInt { return mBody.color; }
     private function set_color(value:UInt):UInt { return mBody.color = value; }
@@ -463,7 +463,7 @@ class Button extends DisplayObjectContainer
     private function set_smoothing(value:String):String { return mBody.smoothing = value; }
 
     /** The overlay sprite is displayed on top of the button contents. It scales with the
-     *  button when pressed. Use it to add additional objects to the button (e.g. an icon). */
+     * button when pressed. Use it to add additional objects to the button (e.g. an icon). */
     public var overlay(get, never):Sprite;
     private function get_overlay():Sprite
     {
@@ -475,7 +475,7 @@ class Button extends DisplayObjectContainer
     }
 
     /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
-     *  @default true */
+     * @default true */
     private override function get_useHandCursor():Bool { return mUseHandCursor; }
     private override function set_useHandCursor(value:Bool):Bool { return mUseHandCursor = value; }
 }

@@ -109,7 +109,7 @@ class Canvas extends DisplayObject
     }
 
     /** Specifies a simple one-color fill that subsequent calls to drawing methods
-     *  (such as <code>drawCircle()</code>) will use. */
+     * (such as <code>drawCircle()</code>) will use. */
     public function beginFill(color:UInt=0xffffff, alpha:Float=1.0):Void
     {
         mFillColor = color;

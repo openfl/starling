@@ -33,7 +33,7 @@ class SystemUtil
     private static var sSupportsDepthAndStencil:Bool = true;
     
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
-     *  application. This method is automatically called by the Starling constructor. */
+     * application. This method is automatically called by the Starling constructor. */
     public static function initialize():Void
     {
         if (sInitialized) return;
@@ -89,7 +89,7 @@ class SystemUtil
     }
     
     /** Executes the given function with its arguments the next time the application is active.
-     *  (If it <em>is</em> active already, the call will be executed right away.) */
+     * (If it <em>is</em> active already, the call will be executed right away.) */
     public static function executeWhenApplicationIsActive(call:Array<Dynamic>->Void, args:Array<Dynamic>):Void
     {
         initialize();
@@ -99,29 +99,29 @@ class SystemUtil
     }
 
     /** Indicates if the application is currently active. On Desktop, this means that it has
-     *  the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
-     *  returns true. */
+     * the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
+     * returns true. */
     public static var isApplicationActive(get, never):Bool;
-    public static function get_isApplicationActive():Bool
+    private static function get_isApplicationActive():Bool
     {
         initialize();
         return sApplicationActive;
     }
 
     /** Indicates if the code is executed in an Adobe AIR runtime (true)
-     *  or Flash plugin/projector (false). */
+     * or Flash plugin/projector (false). */
     public static var isAIR(get, never):Bool;
-    public static function get_isAIR():Bool
+    private static function get_isAIR():Bool
     {
         initialize();
         return sAIR;
     }
     
     /** Indicates if the code is executed on a Desktop computer with Windows, OS X or Linux
-     *  operating system. If the method returns 'false', it's probably a mobile device
-     *  or a Smart TV. */
+     * operating system. If the method returns 'false', it's probably a mobile device
+     * or a Smart TV. */
     public static var isDesktop(get, never):Bool;
-    public static function get_isDesktop():Bool
+    private static function get_isDesktop():Bool
     {
         initialize();
         #if sys
@@ -132,10 +132,10 @@ class SystemUtil
     }
     
     /** Returns the three-letter platform string of the current system. These are
-     *  the most common platforms: <code>WIN, MAC, LNX, IOS, AND, QNX</code>. Except for the
-     *  last one, which indicates "Blackberry", all should be self-explanatory. */
+     * the most common platforms: <code>WIN, MAC, LNX, IOS, AND, QNX</code>. Except for the
+     * last one, which indicates "Blackberry", all should be self-explanatory. */
     public static var platform(get, never):String;
-    public static function get_platform():String
+    private static function get_platform():String
     {
         initialize();
         #if sys
@@ -146,18 +146,18 @@ class SystemUtil
     }
 
     /** Returns the Flash Player/AIR version string. The format of the version number is:
-     *  <em>majorVersion,minorVersion,buildNumber,internalBuildNumber</em>. */
-    public static function get_version():String
+     * <em>majorVersion,minorVersion,buildNumber,internalBuildNumber</em>. */
+    private static function get_version():String
     {
         initialize();
         return sVersion;
     }
 
     /** Prior to Flash/AIR 15, there was a restriction that the clear function must be
-     *  called on a render target before drawing. This requirement was removed subsequently,
-     *  and this property indicates if that's the case in the current runtime. */
+     * called on a render target before drawing. This requirement was removed subsequently,
+     * and this property indicates if that's the case in the current runtime. */
     public static var supportsRelaxedTargetClearRequirement(get, never):Bool;
-    public static function get_supportsRelaxedTargetClearRequirement():Bool
+    private static function get_supportsRelaxedTargetClearRequirement():Bool
     {
         #if flash
         var reg = ~/\d+/;
@@ -169,18 +169,18 @@ class SystemUtil
     }
 
     /** Returns the value of the 'initialWindow.depthAndStencil' node of the application
-     *  descriptor, if this in an AIR app; otherwise always <code>true</code>. */
+     * descriptor, if this in an AIR app; otherwise always <code>true</code>. */
     public static var supportsDepthAndStencil(get, never):Bool;
-    public static function get_supportsDepthAndStencil():Bool
+    private static function get_supportsDepthAndStencil():Bool
     {
         return sSupportsDepthAndStencil;
     }
 
     /** Indicates if Context3D supports video textures. At the time of this writing,
-     *  video textures are only supported on Windows, OS X and iOS, and only in AIR
-     *  applications (not the Flash Player). */
+     * video textures are only supported on Windows, OS X and iOS, and only in AIR
+     * applications (not the Flash Player). */
     public static var supportsVideoTexture(get, never):Bool;
-    public static function get_supportsVideoTexture():Bool
+    private static function get_supportsVideoTexture():Bool
     {
         #if flash
         return Type.getInstanceFields(Context3D).indexOf("supportsVideoTexture") != -1;

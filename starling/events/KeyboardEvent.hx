@@ -53,7 +53,7 @@ class KeyboardEvent extends Event
     // prevent default
     
     /** Cancels the keyboard event's default behavior. This will be forwarded to the native
-     *  flash KeyboardEvent. */
+     * flash KeyboardEvent. */
     public function preventDefault():Void
     {
         mIsDefaultPrevented = true;
@@ -73,17 +73,17 @@ class KeyboardEvent extends Event
     private function get_keyCode():UInt { return mKeyCode; }
     
     /** Indicates the location of the key on the keyboard. This is useful for differentiating 
-     *  keys that appear more than once on a keyboard. @see Keylocation */ 
+     * keys that appear more than once on a keyboard. @see Keylocation */ 
     public var keyLocation(get, never):UInt;
     private function get_keyLocation():UInt { return mKeyLocation; }
     
     /** Indicates whether the Alt key is active on Windows or Linux; 
-     *  indicates whether the Option key is active on Mac OS. */
+     * indicates whether the Option key is active on Mac OS. */
     public var altKey(get, never):Bool;
     private function get_altKey():Bool { return mAltKey; }
     
     /** Indicates whether the Ctrl key is active on Windows or Linux; 
-     *  indicates whether either the Ctrl or the Command key is active on Mac OS. */
+     * indicates whether either the Ctrl or the Command key is active on Mac OS. */
     public var ctrlKey(get, never):Bool;
     private function get_ctrlKey():Bool { return mCtrlKey; }
     

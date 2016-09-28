@@ -203,8 +203,8 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Creates a matrix that represents the transformation from the local coordinate system 
-     *  to another. If you pass a 'resultMatrix', the result will be stored in this matrix
-     *  instead of creating a new object. */ 
+     * to another. If you pass a 'resultMatrix', the result will be stored in this matrix
+     * instead of creating a new object. */ 
     public function getTransformationMatrix(targetSpace:DisplayObject, 
                                             resultMatrix:Matrix=null):Matrix
     {
@@ -280,16 +280,16 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Returns a rectangle that completely encloses the object as it appears in another 
-     *  coordinate system. If you pass a 'resultRectangle', the result will be stored in this 
-     *  rectangle instead of creating a new object. */ 
+     * coordinate system. If you pass a 'resultRectangle', the result will be stored in this 
+     * rectangle instead of creating a new object. */ 
     public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
     {
         throw new AbstractMethodError();
     }
     
     /** Returns the object that is found topmost beneath a point in local coordinates, or nil if 
-     *  the test fails. If "forTouch" is true, untouchable and invisible objects will cause
-     *  the test to fail. */
+     * the test fails. If "forTouch" is true, untouchable and invisible objects will cause
+     * the test to fail. */
     public function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
         // on a touch test, invisible or untouchable objects cause the test to fail
@@ -304,8 +304,8 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Checks if a certain point is inside the display object's mask. If there is no mask,
-     *  this method always returns <code>true</code> (because having no mask is equivalent
-     *  to having one that's infinitely big). */
+     * this method always returns <code>true</code> (because having no mask is equivalent
+     * to having one that's infinitely big). */
     public function hitTestMask(localPoint:Point):Bool
     {
         if (mMask != null)
@@ -325,8 +325,8 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a point from the local coordinate system to global (stage) coordinates.
-     *  If you pass a 'resultPoint', the result will be stored in this point instead of 
-     *  creating a new object. */
+     * If you pass a 'resultPoint', the result will be stored in this point instead of 
+     * creating a new object. */
     public function localToGlobal(localPoint:Point, resultPoint:Point=null):Point
     {
         if (is3D)
@@ -342,8 +342,8 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Transforms a point from global (stage) coordinates to the local coordinate system.
-     *  If you pass a 'resultPoint', the result will be stored in this point instead of 
-     *  creating a new object. */
+     * If you pass a 'resultPoint', the result will be stored in this point instead of 
+     * creating a new object. */
     public function globalToLocal(globalPoint:Point, resultPoint:Point=null):Point
     {
         if (is3D)
@@ -361,17 +361,17 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Renders the display object with the help of a support object. Never call this method
-     *  directly, except from within another render method.
-     *  @param support Provides utility functions for rendering.
-     *  @param parentAlpha The accumulated alpha value from the object's parent up to the stage. */
+     * directly, except from within another render method.
+     * @param support Provides utility functions for rendering.
+     * @param parentAlpha The accumulated alpha value from the object's parent up to the stage. */
     public function render(support:RenderSupport, parentAlpha:Float):Void
     {
         throw new AbstractMethodError();
     }
     
     /** Indicates if an object occupies any visible area. This is the case when its 'alpha',
-     *  'scaleX' and 'scaleY' values are not zero, its 'visible' property is enabled, and
-     *  if it is not currently used as a mask for another display object. */
+     * 'scaleX' and 'scaleY' values are not zero, its 'visible' property is enabled, and
+     * if it is not currently used as a mask for another display object. */
     public var hasVisibleArea(get, never):Bool;
     private function get_hasVisibleArea():Bool
     {
@@ -379,7 +379,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Moves the pivot point to a certain position within the local coordinate system
-     *  of the object. If you pass no arguments, it will be centered. */ 
+     * of the object. If you pass no arguments, it will be centered. */ 
     public function alignPivot(hAlign:String="center", vAlign:String="center"):Void
     {
         var bounds:Rectangle = getBounds(this, sHelperRect);
@@ -399,9 +399,9 @@ class DisplayObject extends EventDispatcher
     // 3D transformation
 
     /** Creates a matrix that represents the transformation from the local coordinate system
-     *  to another. This method supports three dimensional objects created via 'Sprite3D'.
-     *  If you pass a 'resultMatrix', the result will be stored in this matrix
-     *  instead of creating a new object. */
+     * to another. This method supports three dimensional objects created via 'Sprite3D'.
+     * If you pass a 'resultMatrix', the result will be stored in this matrix
+     * instead of creating a new object. */
     public function getTransformationMatrix3D(targetSpace:DisplayObject,
                                               resultMatrix:Matrix3D=null):Matrix3D
     {
@@ -477,10 +477,10 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a 3D point from the local coordinate system to global (stage) coordinates.
-     *  This is achieved by projecting the 3D point onto the (2D) view plane.
+     * This is achieved by projecting the 3D point onto the (2D) view plane.
      *
-     *  <p>If you pass a 'resultPoint', the result will be stored in this point instead of
-     *  creating a new object.</p> */
+     * <p>If you pass a 'resultPoint', the result will be stored in this point instead of
+     * creating a new object.</p> */
     public function local3DToGlobal(localPoint:Vector3D, resultPoint:Point=null):Point
     {
         var stage:Stage = this.stage;
@@ -493,8 +493,8 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a point from global (stage) coordinates to the 3D local coordinate system.
-     *  If you pass a 'resultPoint', the result will be stored in this point instead of
-     *  creating a new object. */
+     * If you pass a 'resultPoint', the result will be stored in this point instead of
+     * creating a new object. */
     public function globalToLocal3D(globalPoint:Point, resultPoint:Vector3D=null):Vector3D
     {
         var stage:Stage = this.stage;
@@ -635,13 +635,13 @@ class DisplayObject extends EventDispatcher
  
     /** The transformation matrix of the object relative to its parent.
      * 
-     *  <p>If you assign a custom transformation matrix, Starling will try to figure out  
-     *  suitable values for <code>x, y, scaleX, scaleY,</code> and <code>rotation</code>.
-     *  However, if the matrix was created in a different way, this might not be possible. 
-     *  In that case, Starling will apply the matrix, but not update the corresponding 
-     *  properties.</p>
+     * <p>If you assign a custom transformation matrix, Starling will try to figure out  
+     * suitable values for <code>x, y, scaleX, scaleY,</code> and <code>rotation</code>.
+     * However, if the matrix was created in a different way, this might not be possible. 
+     * In that case, Starling will apply the matrix, but not update the corresponding 
+     * properties.</p>
      * 
-     *  <p>CAUTION: not a copy, but the actual object!</p> */
+     * <p>CAUTION: not a copy, but the actual object!</p> */
     public var transformationMatrix(get, set):Matrix;
     @:keep private function get_transformationMatrix():Matrix
     {
@@ -731,10 +731,10 @@ class DisplayObject extends EventDispatcher
     
     /** The 3D transformation matrix of the object relative to its parent.
      *
-     *  <p>For 2D objects, this property returns just a 3D version of the 2D transformation
-     *  matrix. Only the 'Sprite3D' class supports real 3D transformations.</p>
+     * <p>For 2D objects, this property returns just a 3D version of the 2D transformation
+     * matrix. Only the 'Sprite3D' class supports real 3D transformations.</p>
      *
-     *  <p>CAUTION: not a copy, but the actual object!</p> */
+     * <p>CAUTION: not a copy, but the actual object!</p> */
     public var transformationMatrix3D(get, never):Matrix3D;
     private function get_transformationMatrix3D():Matrix3D
     {
@@ -751,7 +751,7 @@ class DisplayObject extends EventDispatcher
     private function get_is3D():Bool { return mIs3D; }
 
     /** Indicates if the mouse cursor should transform into a hand while it's over the sprite. 
-     *  @default false */
+     * @default false */
     public var useHandCursor(get, set):Bool;
     private function get_useHandCursor():Bool { return mUseHandCursor; }
     private function set_useHandCursor(value:Bool):Bool
@@ -779,8 +779,8 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The width of the object in pixels.
-     *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
-     *  be accurate until the object is part of the display list. */
+     * Note that for objects in a 3D space (connected to a Sprite3D), this value might not
+     * be accurate until the object is part of the display list. */
     public var width(get, set):Float;
     private function get_width():Float { return getBounds(mParent, sHelperRect).width; }
     private function set_width(value:Float):Float
@@ -795,8 +795,8 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The height of the object in pixels.
-     *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
-     *  be accurate until the object is part of the display list. */
+     * Note that for objects in a 3D space (connected to a Sprite3D), this value might not
+     * be accurate until the object is part of the display list. */
     public var height(get, set):Float;
     private function get_height():Float { return getBounds(mParent, sHelperRect).height; }
     private function set_height(value:Float):Float
@@ -860,7 +860,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The horizontal scale factor. '1' means no scale, negative values flip the object.
-     *  @default 1 */
+     * @default 1 */
     public var scaleX(get, set):Float;
     private function get_scaleX():Float { return mScaleX; }
     private function set_scaleX(value:Float):Float 
@@ -874,7 +874,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The vertical scale factor. '1' means no scale, negative values flip the object.
-     *  @default 1 */
+     * @default 1 */
     public var scaleY(get, set):Float;
     private function get_scaleY():Float { return mScaleY; }
     private function set_scaleY(value:Float):Float 
@@ -888,7 +888,7 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
-     *  value of 'scaleX' (even if the scaling values are different). @default 1 */
+     * value of 'scaleX' (even if the scaling values are different). @default 1 */
     public var scale(get, set):Float;
     private function get_scale():Float { return scaleX; }
     private function set_scale(value:Float):Float { return scaleX = scaleY = value; }
@@ -924,7 +924,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The rotation of the object in radians. (In Starling, all angles are measured 
-     *  in radians.) */
+     * in radians.) */
     public var rotation(get, set):Float;
     private function get_rotation():Float { return mRotation; }
     private function set_rotation(value:Float):Float 
@@ -959,47 +959,47 @@ class DisplayObject extends EventDispatcher
     private function set_touchable(value:Bool):Bool { return mTouchable = value; }
     
     /** The blend mode determines how the object is blended with the objects underneath. 
-     *   @default auto
-     *   @see starling.display.BlendMode */ 
+     *  @default auto
+     *  @see starling.display.BlendMode */ 
     public var blendMode(get, set):String;
     private function get_blendMode():String { return mBlendMode; }
     private function set_blendMode(value:String):String { return mBlendMode = value; }
     
     /** The name of the display object (default: null). Used by 'getChildByName()' of 
-     *  display object containers. */
+     * display object containers. */
     public var name(get, set):String;
     private function get_name():String { return mName; }
     private function set_name(value:String):String { return mName = value; }
     
     /** The filter that is attached to the display object. The starling.filters
-     *  package contains several classes that define specific filters you can use. 
-     *  Beware that a filter should NOT be attached to different objects simultaneously (for
-     *  performance reasons). Furthermore, when you set this property to 'null' or
-     *  assign a different filter, the previous filter is NOT disposed automatically
-     *  (since you might want to reuse it). */
+     * package contains several classes that define specific filters you can use. 
+     * Beware that a filter should NOT be attached to different objects simultaneously (for
+     * performance reasons). Furthermore, when you set this property to 'null' or
+     * assign a different filter, the previous filter is NOT disposed automatically
+     * (since you might want to reuse it). */
     public var filter(get, set):FragmentFilter;
     private function get_filter():FragmentFilter { return mFilter; }
     private function set_filter(value:FragmentFilter):FragmentFilter { return mFilter = value; }
 
     /** The display object that acts as a mask for the current object.
-     *  Assign <code>null</code> to remove it.
+     * Assign <code>null</code> to remove it.
      *
-     *  <p>A pixel of the masked display object will only be drawn if it is within one of the
-     *  mask's polygons. Texture pixels and alpha values of the mask are not taken into
-     *  account. The mask object itself is never visible.</p>
+     * <p>A pixel of the masked display object will only be drawn if it is within one of the
+     * mask's polygons. Texture pixels and alpha values of the mask are not taken into
+     * account. The mask object itself is never visible.</p>
      *
-     *  <p>If the mask is part of the display list, masking will occur at exactly the
-     *  location it occupies on the stage. If it is not, the mask will be placed in the local
-     *  coordinate system of the target object (as if it was one of its children).</p>
+     * <p>If the mask is part of the display list, masking will occur at exactly the
+     * location it occupies on the stage. If it is not, the mask will be placed in the local
+     * coordinate system of the target object (as if it was one of its children).</p>
      *
-     *  <p>For rectangular masks, you can use simple quads; for other forms (like circles
-     *  or arbitrary shapes) it is recommended to use a 'Canvas' instance.</p>
+     * <p>For rectangular masks, you can use simple quads; for other forms (like circles
+     * or arbitrary shapes) it is recommended to use a 'Canvas' instance.</p>
      *
-     *  <p>Beware that a mask will cause at least two additional draw calls: one to draw the
-     *  mask to the stencil buffer and one to erase it.</p>
+     * <p>Beware that a mask will cause at least two additional draw calls: one to draw the
+     * mask to the stencil buffer and one to erase it.</p>
      *
-     *  @see Canvas
-     *  @default null
+     * @see Canvas
+     * @default null
      */
     public var mask(get, set):DisplayObject;
     private function get_mask():DisplayObject { return mMask; }
@@ -1029,8 +1029,8 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The root object the display object is connected to (i.e. an instance of the class 
-     *  that was passed to the Starling constructor), or null if the object is not connected
-     *  to the stage. */
+     * that was passed to the Starling constructor), or null if the object is not connected
+     * to the stage. */
     public var root(get, never):DisplayObject;
     private function get_root():DisplayObject
     {
@@ -1045,7 +1045,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The stage the display object is connected to, or null if it is not connected 
-     *  to the stage. */
+     * to the stage. */
     public var stage(get ,never):Stage;
     private function get_stage():Stage {
         if (Std.is (this.base, Stage))

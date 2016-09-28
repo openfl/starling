@@ -85,26 +85,26 @@ class RenderTexture extends SubTexture
     private static var sClipRect:Rectangle = new Rectangle();
     
     /** Indicates if new persistent textures should use a single render buffer instead of
-     *  the default double buffering approach. That's faster and requires less memory, but is
-     *  not supported on all hardware.
+     * the default double buffering approach. That's faster and requires less memory, but is
+     * not supported on all hardware.
      *
-     *  <p>You can safely enable this property on all iOS and Desktop systems. On Android,
-     *  it's recommended to enable it only on reasonably modern hardware, e.g. only when
-     *  at least one of the 'Standard' profiles is supported.</p>
+     * <p>You can safely enable this property on all iOS and Desktop systems. On Android,
+     * it's recommended to enable it only on reasonably modern hardware, e.g. only when
+     * at least one of the 'Standard' profiles is supported.</p>
      *
-     *  <p>Beware: this feature requires at least Flash/AIR version 15.</p>
+     * <p>Beware: this feature requires at least Flash/AIR version 15.</p>
      *
-     *  @default false
+     * @default false
      */
     public static var optimizePersistentBuffers:Bool = false;
 
     /** Creates a new RenderTexture with a certain size (in points). If the texture is
-     *  persistent, the contents of the texture remains intact after each draw call, allowing
-     *  you to use the texture just like a canvas. If it is not, it will be cleared before each
-     *  draw call.
+     * persistent, the contents of the texture remains intact after each draw call, allowing
+     * you to use the texture just like a canvas. If it is not, it will be cleared before each
+     * draw call.
      *
-     *  <p>Beware that persistence requires an additional texture buffer (i.e. the required
-     *  memory is doubled). You can avoid that via 'optimizePersistentBuffers', though.</p>
+     * <p>Beware that persistence requires an additional texture buffer (i.e. the required
+     * memory is doubled). You can avoid that via 'optimizePersistentBuffers', though.</p>
      */
     public function new(width:Int, height:Int, persistent:Bool=true,
                                   scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false)
@@ -165,15 +165,15 @@ class RenderTexture extends SubTexture
     }
     
     /** Draws an object into the texture. Note that any filters on the object will currently
-     *  be ignored.
+     * be ignored.
      * 
-     *  @param object       The object to draw.
-     *  @param matrix       If 'matrix' is null, the object will be drawn adhering its 
-     *                      properties for position, scale, and rotation. If it is not null,
-     *                      the object will be drawn in the orientation depicted by the matrix.
-     *  @param alpha        The object's alpha value will be multiplied with this value.
-     *  @param antiAliasing Only supported beginning with AIR 13, and only on Desktop.
-     *                      Values range from 0 (no antialiasing) to 4 (best quality).
+     * @param object       The object to draw.
+     * @param matrix       If 'matrix' is null, the object will be drawn adhering its 
+     *                     properties for position, scale, and rotation. If it is not null,
+     *                     the object will be drawn in the orientation depicted by the matrix.
+     * @param alpha        The object's alpha value will be multiplied with this value.
+     * @param antiAliasing Only supported beginning with AIR 13, and only on Desktop.
+     *                     Values range from 0 (no antialiasing) to 4 (best quality).
      */
     public function draw(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0,
                          antiAliasing:Int=0):Void
@@ -187,13 +187,13 @@ class RenderTexture extends SubTexture
     }
     
     /** Bundles several calls to <code>draw</code> together in a block. This avoids buffer 
-     *  switches and allows you to draw multiple objects into a non-persistent texture.
-     *  Note that the 'antiAliasing' setting provided here overrides those provided in
-     *  individual 'draw' calls.
-     *  
-     *  @param drawingBlock  a callback with the form: <pre>function():void;</pre>
-     *  @param antiAliasing  Only supported beginning with AIR 13, and only on Desktop.
-     *                       Values range from 0 (no antialiasing) to 4 (best quality). */
+     * switches and allows you to draw multiple objects into a non-persistent texture.
+     * Note that the 'antiAliasing' setting provided here overrides those provided in
+     * individual 'draw' calls.
+     * 
+     * @param drawingBlock  a callback with the form: <pre>function():void;</pre>
+     * @param antiAliasing  Only supported beginning with AIR 13, and only on Desktop.
+     *                      Values range from 0 (no antialiasing) to 4 (best quality). */
     public function drawBundled(drawingBlock:DisplayObject->Matrix->Float->Void, antiAliasing:Int=0):Void
     {
         renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
@@ -269,7 +269,7 @@ class RenderTexture extends SubTexture
     }
     
     /** Clears the render texture with a certain color and alpha value. Call without any
-     *  arguments to restore full transparency. */
+     * arguments to restore full transparency. */
     public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
         if (!Starling.current.contextValid) return;
@@ -282,8 +282,8 @@ class RenderTexture extends SubTexture
     }
     
     /** On the iPad 1 (and maybe other hardware?) clearing a non-POT RectangleTexture causes
-     *  an error in the next "createVertexBuffer" call. Thus, we're forced to make this
-     *  really...elegant check here. */
+     * an error in the next "createVertexBuffer" call. Thus, we're forced to make this
+     * really...elegant check here. */
     private var supportsNonPotDimensions(get, never):Bool;
     private function get_supportsNonPotDimensions():Bool
     {
@@ -333,8 +333,8 @@ class RenderTexture extends SubTexture
     // properties
 
     /** Indicates if the render texture is using double buffering. This might be necessary for
-     *  persistent textures, depending on the runtime version and the value of
-     *  'forceDoubleBuffering'. */
+     * persistent textures, depending on the runtime version and the value of
+     * 'forceDoubleBuffering'. */
     private var isDoubleBuffered(get, never):Bool;
     private function get_isDoubleBuffered():Bool { return mBufferTexture != null; }
 
