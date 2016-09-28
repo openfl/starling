@@ -157,13 +157,16 @@ class BitmapFont
             var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
             addChar(id, bitmapChar);
         }
-        var kernings:Xml = fontXml.elementsNamed("kernings").next();
-        for (kerningElement in kernings.elementsNamed("kerning"))
+        if (fontXml.exists("kernings"))
         {
-            var first:Int = Std.parseInt(kerningElement.get("first"));
-            var second:Int = Std.parseInt(kerningElement.get("second"));
-            var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
-            if (mChars.exists(second)) getChar(second).addKerning(first, amount);
+            var kernings:Xml = fontXml.elementsNamed("kernings").next();
+            for (kerningElement in kernings.elementsNamed("kerning"))
+            {
+                var first:Int = Std.parseInt(kerningElement.get("first"));
+                var second:Int = Std.parseInt(kerningElement.get("second"));
+                var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
+                if (mChars.exists(second)) getChar(second).addKerning(first, amount);
+            }
         }
     }
     
