@@ -1,4 +1,4 @@
-[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md)
+[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![Build Status](https://img.shields.io/travis/openfl/starling.svg?style=flat)](https://travis-ci.org/openfl/starling)
 
 Starling
 ========
@@ -15,12 +15,12 @@ _This library has not been published on haxelib yet._
 Development Builds
 ------------------
 
-Clone the starling repository:
+Clone the Starling repository:
 
     git clone https://github.com/openfl/starling
 
 
-Tell haxelib where your development copy of starling is installed:
+Tell haxelib where your development copy of Starling is installed:
 
     haxelib dev starling starling
 
