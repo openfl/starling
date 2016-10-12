@@ -45,7 +45,7 @@ import starling.events.EventDispatcher;
  *  @see Juggler
  *  @see Transitions
  */ 
-class Tween extends EventDispatcher implements IAnimatable
+@:keep class Tween extends EventDispatcher implements IAnimatable
 {
     private static inline var HINT_MARKER:String = '#';
 
