@@ -1,0 +1,13 @@
+{
+	"name": "starling",
+	"url": "https://github.com/openfl/starling",
+	"license": "BSD",
+	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
+	"description": "GPU powered 2D rendering engine which mimics the conventional Flash display list architecture",
+	"version": "1.8.0",
+	"releasenote": "Starling 1.8 port, working with OpenFL 4",
+	"contributors": [ "p.j.shand", "tbyrne", "singmajesty" ],
+	"dependencies": {
+		
+	}
+}
