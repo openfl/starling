@@ -31,6 +31,7 @@ import openfl.Vector;
         
         // create a button that starts the tween
         mStartButton = new Button(buttonTexture, "Start animation");
+        mStartButton.fontName = "DejaVu Sans";
         mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
         mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
         mStartButton.y = 20;
@@ -38,6 +39,7 @@ import openfl.Vector;
         
         // this button will show you how to call a method with a delay
         mDelayButton = new Button(buttonTexture, "Delayed call");
+        mDelayButton.fontName = "DejaVu Sans";
         mDelayButton.addEventListener(Event.TRIGGERED, onDelayButtonTriggered);
         mDelayButton.x = mStartButton.x;
         mDelayButton.y = mStartButton.y + 40;
@@ -48,7 +50,7 @@ import openfl.Vector;
         addChild(mEgg);
         resetEgg();
         
-        mTransitionLabel = new TextField(320, 30, "", "_sans", 20, 0, true);
+        mTransitionLabel = new TextField(320, 30, "", "DejaVu Sans", 20, 0, true);
         mTransitionLabel.y = mDelayButton.y + 40;
         mTransitionLabel.alpha = 0.0; // invisible, will be shown later
         addChild(mTransitionLabel);

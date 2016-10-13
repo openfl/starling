@@ -16,6 +16,7 @@
 	<assets path="assets/audio/wing_flap.ogg" unless="flash" />
 	<assets path="assets/textures/1x" />
 	<assets path="assets/fonts/1x" />
+	<assets path="assets/fonts/DejaVuSans.ttf" />
 	<assets path="assets/fonts/Ubuntu-R.ttf" />
 	
 </project>
