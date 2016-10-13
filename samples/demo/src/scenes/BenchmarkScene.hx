@@ -45,7 +45,7 @@ import starling.utils.StringUtil.formatString;
         addChildAt(mContainer, 0);
 
         mStatusText = new TextField(Constants.GameWidth - 40, 30, "",
-                "Verdana", BitmapFont.NATIVE_SIZE * 2);
+                "_sans", BitmapFont.NATIVE_SIZE * 2);
         mStatusText.x = 20;
         mStatusText.y = 10;
         addChild(mStatusText);

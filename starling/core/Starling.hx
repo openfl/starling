@@ -617,7 +617,7 @@ class Starling extends EventDispatcher
         background.graphics.endFill();
 
         var textField:TextField = new TextField();
-        var textFormat:TextFormat = new TextFormat("Verdana", 14, 0xFFFFFF);
+        var textFormat:TextFormat = new TextFormat("_sans", 14, 0xFFFFFF);
         textFormat.align = TextFormatAlign.CENTER;
         textField.defaultTextFormat = textFormat;
         textField.wordWrap = true;

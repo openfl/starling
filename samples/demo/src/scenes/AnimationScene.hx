@@ -48,7 +48,7 @@ import openfl.Vector;
         addChild(mEgg);
         resetEgg();
         
-        mTransitionLabel = new TextField(320, 30, "", "Verdana", 20, 0, true);
+        mTransitionLabel = new TextField(320, 30, "", "_sans", 20, 0, true);
         mTransitionLabel.y = mDelayButton.y + 40;
         mTransitionLabel.alpha = 0.0; // invisible, will be shown later
         addChild(mTransitionLabel);

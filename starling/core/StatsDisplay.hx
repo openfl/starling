@@ -43,7 +43,7 @@ class StatsDisplay extends Sprite
     {
         super();
         mBackground = new Quad(70, 45, 0x0);
-        mTextField = new TextField(68, 45, "", "Verdana", 12, 0xffffff);
+        mTextField = new TextField(68, 45, "", "_sans", 12, 0xffffff);
         mTextField.x = 2;
         mTextField.hAlign = HAlign.LEFT;
         mTextField.vAlign = VAlign.TOP;
