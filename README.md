@@ -9,8 +9,15 @@ Starling is the "Cross-Platform Game Engine", a popular Stage3D framework.
 Installation
 ------------
 
-_This library has not been published on haxelib yet._
+You can easily install Starling using haxelib:
 
+    haxelib install starling
+
+To add it to an OpenFL project, add this to your project file:
+
+```xml
+<haxelib name="starling" />
+```
 
 Development Builds
 ------------------
