@@ -36,7 +36,7 @@ import starling.utils.VAlign;
         leftTF.hAlign = HAlign.LEFT;
         leftTF.vAlign = VAlign.TOP;
         leftTF.border = true;
-        leftTF.color = 0x993333;
+        leftTF.color = 0x996633;
         addChild(leftTF);
         
         var rightTF:TextField = new TextField(145, 80,
@@ -52,7 +52,7 @@ import starling.utils.VAlign;
         var fontTF:TextField = new TextField(300, 80,
             "... or centered. Embedded fonts are detected automatically and " +
             "<font color='#208080'>support</font> " +
-            "<font color='#993333'>basic</font> " +
+            "<font color='#996633'>basic</font> " +
             "<font color='#333399'>HTML</font> " +
             "<font color='#208020'>formatting</font>.",
             ttFont, ttFontSize, 0x0, true);

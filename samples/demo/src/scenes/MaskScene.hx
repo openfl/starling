@@ -76,7 +76,7 @@ import starling.text.TextField;
     private function createCircle():Canvas
     {
         var circle:Canvas = new Canvas();
-        circle.beginFill(0xff0000);
+        circle.beginFill(0xEA8220);
         circle.drawCircle(0, 0, 100);
         circle.endFill();
         return circle;
