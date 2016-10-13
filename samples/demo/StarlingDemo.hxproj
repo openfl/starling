@@ -16,16 +16,22 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="." />
+    <class path="C:\_projects\HaxeLibraries\openfl\starling" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,3,0" />
+    <class path="C:\_sdks\haxe\lib\lime\3,3,0" />
+    <class path="src" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,3,0\externs\core\openfl" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,3,0\externs\extras" />
+    <class path="bin\html5\release\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="" />
+    <option directives="starling=1.8.00&#xA;starling=0.0.0&#xA;openfl=4.3.0&#xA;lime=3.3.0&#xA;tools=3.3.0&#xA;howlerjs&#xA;no-compilation&#xA;openfl-html5&#xA;lime-html5&#xA;html5&#xA;web&#xA;html5&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="" />
+    <option additional="--macro openfl.Lib.extraParams()&#xA;--macro lime.Lib.extraParams()&#xA;--remap flash:openfl" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

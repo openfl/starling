@@ -12,6 +12,9 @@
 	<haxelib name="starling" />
 	<haxelib name="openfl" />
 	
+	
+	<template rename="index.html" path="assets/template/index.html"/>
+	
 	<assets path="assets/audio/wing_flap.mp3" if="web" />
 	<assets path="assets/audio/wing_flap.ogg" unless="flash" />
 	<assets path="assets/textures/1x" />

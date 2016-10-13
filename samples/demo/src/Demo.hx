@@ -7,6 +7,7 @@ import flash.errors.Error;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import flash.system.System;
+import openfl.display.StageScaleMode;
 
 import haxe.Timer;
 
@@ -43,6 +44,9 @@ class Demo extends Sprite
     private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+		
         start();
     }
 
