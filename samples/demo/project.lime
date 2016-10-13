@@ -4,16 +4,13 @@
 	<meta title="Starling Demo" package="com.demoweb" version="1.0.0" company="OpenFL" />
 	<app main="Demo" file="Demo" path="bin" swf-version="12" />
 	
-	<window width="320" height="480" orientation="portrait" depth-buffer="false" stencil-buffer="true" background="0xffffff" />
+	<window width="320" height="480" orientation="portrait" background="0xffffff" resizable="false" />
 	<window stencil-buffer="false" if="android" />
 	
 	<source path="src" />
 	
 	<haxelib name="starling" />
 	<haxelib name="openfl" />
-	
-	
-	<template rename="index.html" path="assets/template/index.html"/>
 	
 	<assets path="assets/audio/wing_flap.mp3" if="web" />
 	<assets path="assets/audio/wing_flap.ogg" unless="flash" />

@@ -114,7 +114,7 @@ import openfl.Vector;
     
     private function colorizeEgg(colorize:Bool):Void
     {
-        mEgg.color = colorize ? Color.RED : Color.WHITE;
+        mEgg.color = colorize ? 0xEA8220 : Color.WHITE;
     }
     
     public override function dispose():Void
