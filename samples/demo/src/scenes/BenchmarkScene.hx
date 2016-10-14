@@ -45,12 +45,13 @@ import starling.utils.StringUtil.formatString;
         addChildAt(mContainer, 0);
 
         mStatusText = new TextField(Constants.GameWidth - 40, 30, "",
-                "Verdana", BitmapFont.NATIVE_SIZE * 2);
+                "DejaVu Sans", 24);
         mStatusText.x = 20;
         mStatusText.y = 10;
         addChild(mStatusText);
 
         mStartButton = new Button(Game.assets.getTexture("button_normal"), "Start benchmark");
+        mStartButton.fontName = "DejaVu Sans";
         mStartButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
         mStartButton.x = Constants.CenterX - Std.int(mStartButton.width / 2);
         mStartButton.y = 20;
@@ -205,7 +206,7 @@ import starling.utils.StringUtil.formatString;
                                                [numChildren, fps]);
         trace(~/\n/g.replace(resultString, " "));
 
-        mResultText = new TextField(240, 200, resultString);
+        mResultText = new TextField(240, 200, resultString, "DejaVu Sans");
         mResultText.fontSize = 30;
         mResultText.x = Constants.CenterX - mResultText.width / 2;
         mResultText.y = Constants.CenterY - mResultText.height / 2;

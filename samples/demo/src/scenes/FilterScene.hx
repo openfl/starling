@@ -23,6 +23,7 @@ import starling.textures.Texture;
     {
         super();
         mButton = new Button(Game.assets.getTexture("button_normal"), "Switch Filter");
+        mButton.fontName = "DejaVu Sans";
         mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
         mButton.y = 15;
         mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
@@ -33,7 +34,7 @@ import starling.textures.Texture;
         mImage.y = 170;
         addChild(mImage);
         
-        mInfoText = new TextField(300, 32, "", "Verdana", 19);
+        mInfoText = new TextField(300, 32, "", "DejaVu Sans", 19);
         mInfoText.x = 10;
         mInfoText.y = 330;
         addChild(mInfoText);

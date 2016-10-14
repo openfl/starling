@@ -12,7 +12,7 @@ import utils.TouchSheet;
         super();
         var description:String = "[use Ctrl/Cmd & Shift to simulate multi-touch]";
         
-        var infoText:TextField = new TextField(300, 25, description);
+        var infoText:TextField = new TextField(300, 25, description, "DejaVu Sans");
         infoText.x = infoText.y = 10;
         addChild(infoText);
         

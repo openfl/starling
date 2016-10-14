@@ -315,12 +315,12 @@ class Button extends DisplayObjectContainer
     /** The name of the font displayed on the button. May be a system font or a registered
      * bitmap font. */
     public var fontName(get, set):String;
-    private function get_fontName():String { return mTextField != null ? mTextField.fontName : "Verdana"; }
+    private function get_fontName():String { return mTextField != null ? mTextField.fontName : "_sans"; }
     private function set_fontName(value:String):String
     {
         createTextField();
         mTextField.fontName = value;
-        return mTextField != null ? mTextField.fontName : "Verdana";
+        return mTextField != null ? mTextField.fontName : "_sans";
     }
     
     /** The size of the font. */

@@ -68,6 +68,7 @@ class MainMenu extends Sprite
             var sceneClass:Class<Dynamic>  = sceneToCreate[1];
             
             var button:Button = new Button(buttonTexture, sceneTitle);
+            button.fontName = "DejaVu Sans";
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = 145 + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);
@@ -82,7 +83,7 @@ class MainMenu extends Sprite
         // show information about rendering method (hardware/software)
         
         var driverInfo:String = "No driverInfo available" /*Starling.current.context.driverInfo*/;
-        var infoText:TextField = new TextField(310, 64, driverInfo, "Verdana", 10);
+        var infoText:TextField = new TextField(310, 64, driverInfo, "DejaVu Sans", 10);
         infoText.x = 5;
         infoText.y = 475 - infoText.height;
         infoText.vAlign = VAlign.BOTTOM;

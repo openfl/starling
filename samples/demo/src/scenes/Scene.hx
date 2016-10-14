@@ -13,8 +13,9 @@ class Scene extends Sprite
         // (the event will bubble up when it's dispatched.)
         
         mBackButton = new Button(Game.assets.getTexture("button_back"), "Back");
+        mBackButton.fontName = "DejaVu Sans";
         mBackButton.x = Constants.CenterX - mBackButton.width / 2;
-        mBackButton.y = Constants.GameHeight - mBackButton.height + 1;
+        mBackButton.y = Constants.GameHeight - mBackButton.height + 4;
         mBackButton.name = "backButton";
         addChild(mBackButton);
     }

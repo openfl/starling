@@ -138,7 +138,7 @@ class TextField extends DisplayObjectContainer
     private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
     
     /** Create a new text field with the given properties. */
-    public function new(width:Int, height:Int, text:String, fontName:String="Verdana",
+    public function new(width:Int, height:Int, text:String, fontName:String="_sans",
                               fontSize:Float=12, color:UInt=0x0, bold:Bool=false)
     {
         super();
