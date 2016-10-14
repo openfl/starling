@@ -32,7 +32,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--macro openfl.Lib.extraParams()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 12&#xA;-debug " />
+    <option additional="--macro openfl.Lib.extraParams()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 18&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
