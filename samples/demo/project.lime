@@ -2,7 +2,7 @@
 <project>
 	
 	<meta title="Starling Demo" package="com.demoweb" version="1.0.0" company="OpenFL" />
-	<app main="Demo" file="Demo" path="bin" swf-version="12" />
+	<app main="Demo" file="Demo" path="bin" swf-version="18" />
 	
 	<window width="320" height="480" orientation="portrait" depth-buffer="false" stencil-buffer="true" background="0xffffff" />
 	<window stencil-buffer="false" if="android" />
@@ -15,10 +15,13 @@
 	
 	<template rename="index.html" path="assets/template/index.html"/>
 	
+	<haxedef name="dom" if="html5" />
+	
 	<assets path="assets/audio/wing_flap.mp3" if="web" />
 	<assets path="assets/audio/wing_flap.ogg" unless="flash" />
 	<assets path="assets/textures/1x" />
 	<assets path="assets/fonts/1x" />
 	<assets path="assets/fonts/Ubuntu-R.ttf" />
+	<assets rename="videos" path="assets/videos" embed="false" if="flash" />
 	
 </project>

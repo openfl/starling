@@ -16,6 +16,10 @@ import scenes.TextScene;
 import scenes.TextureScene;
 import scenes.TouchScene;
 
+#if flash
+import scenes.VideoScene;
+#end
+
 import starling.core.Starling;
 import starling.display.Button;
 import starling.display.Image;
@@ -52,6 +56,7 @@ class MainMenu extends Sprite
             ["Benchmark", BenchmarkScene],
             ["Masks", MaskScene],
             ["Sprite 3D", Sprite3DScene]
+			#if flash ,["Video", VideoScene] #end
         ];
         
         var buttonTexture:Texture = Game.assets.getTexture("button_medium");
@@ -64,7 +69,7 @@ class MainMenu extends Sprite
             
             var button:Button = new Button(buttonTexture, sceneTitle);
             button.x = count % 2 == 0 ? 28 : 167;
-            button.y = 155 + Std.int(count / 2) * 46;
+            button.y = 145 + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);
             addChild(button);
             
