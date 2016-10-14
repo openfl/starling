@@ -1,4 +1,5 @@
 package scenes;
+
 import openfl.errors.Error;
 import openfl.events.NetStatusEvent;
 import openfl.net.NetConnection;
@@ -15,11 +16,11 @@ import starling.textures.Texture;
 	var nc:NetConnection;
 	var image:Image;
 	
-    public function new()
-    {
-        super(); 
+	public function new()
+	{
+		super(); 
 		play();
-    }
+	}
 	
 	function play() 
 	{
@@ -33,14 +34,25 @@ import starling.textures.Texture;
 			trace(info.duration);
 		}};
 		
-		texture = Texture.fromNetStream(ns, 1, function():Void
+		try
 		{
-			image = new Image(texture);
-			addChild(image);
-			var scale:Float = 320 / image.width;
-			image.scaleX = image.scaleY = scale;
-			image.y = 120;
-		});
+			texture = Texture.fromNetStream(ns, 1, function():Void
+			{
+				image = new Image(texture);
+				addChild(image);
+				var scale:Float = 320 / image.width;
+				image.scaleX = image.scaleY = scale;
+				image.y = 120;
+			});
+		}
+		catch (e:Dynamic)
+		{
+			var textField:TextField = new TextField(220, 128, 
+				"Video texture is not supported on this platform", "DejaVu Sans", 14);
+			textField.x = Constants.CenterX - textField.width / 2;
+			textField.y = Constants.CenterY - textField.height / 2;
+			addChild(textField);
+		}
 		
 		ns.play(url);
 	}

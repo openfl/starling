@@ -33,8 +33,8 @@ class ConcreteVideoTexture extends ConcreteTexture
         super(base, format, width, height, false, false, false, scale, false);
 
         #if flash
-		var baseClass:Class<Dynamic> = Type.getClass(base);
-		var className:String = Type.getClassName(baseClass);
+        var baseClass:Class<Dynamic> = Type.getClass(base);
+        var className:String = Type.getClassName(baseClass);
         if (className != "flash.display3D.textures.VideoTexture")
             throw new ArgumentError("'base' must be VideoTexture");
         #end

@@ -16,7 +16,7 @@ import scenes.TextScene;
 import scenes.TextureScene;
 import scenes.TouchScene;
 
-#if flash
+#if demo_video
 import scenes.VideoScene;
 #end
 
@@ -55,8 +55,10 @@ class MainMenu extends Sprite
             ["Render Texture", RenderTextureScene],
             ["Benchmark", BenchmarkScene],
             ["Masks", MaskScene],
-            ["Sprite 3D", Sprite3DScene]
-			#if flash ,["Video", VideoScene] #end
+            ["Sprite 3D", Sprite3DScene],
+            #if demo_video
+            ["Video", VideoScene]
+            #end
         ];
         
         var buttonTexture:Texture = Game.assets.getTexture("button_medium");
@@ -70,7 +72,7 @@ class MainMenu extends Sprite
             var button:Button = new Button(buttonTexture, sceneTitle);
             button.fontName = "DejaVu Sans";
             button.x = count % 2 == 0 ? 28 : 167;
-            button.y = 145 + Std.int(count / 2) * 46;
+            button.y = #if demo_video 145 #else 155 #end + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);
             addChild(button);
             
@@ -82,7 +84,7 @@ class MainMenu extends Sprite
         
         // show information about rendering method (hardware/software)
         
-        var driverInfo:String = "No driverInfo available" /*Starling.current.context.driverInfo*/;
+        var driverInfo:String = Starling.current.context.driverInfo;
         var infoText:TextField = new TextField(310, 64, driverInfo, "DejaVu Sans", 10);
         infoText.x = 5;
         infoText.y = 475 - infoText.height;

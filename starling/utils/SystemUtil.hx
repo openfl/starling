@@ -183,8 +183,16 @@ class SystemUtil
     private static function get_supportsVideoTexture():Bool
     {
         #if flash
-		return Reflect.hasField(Context3D, "supportsVideoTexture");
-		#else
+        if (Reflect.hasField(Context3D, "supportsVideoTexture"))
+        {
+            return Reflect.callMethod(Context3D, Reflect.field(Context3D, "supportsVideoTexture"), []);
+        }
+        else
+        {
+            return false;
+        }
+        return Reflect.hasField(Context3D, "supportsVideoTexture");
+        #else
         return Context3D.supportsVideoTexture;
         #end
     }
