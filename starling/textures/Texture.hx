@@ -288,7 +288,8 @@ class Texture
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
                                        async:Void->Void=null, repeat:Bool=false):Texture
     {
-        var context:Context3D = Starling.current.context;
+        if (data == null) return null;
+		var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);

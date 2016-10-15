@@ -8,6 +8,7 @@ import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import flash.system.System;
 import openfl.display.StageScaleMode;
+import openfl.utils.ByteArray;
 
 import haxe.Timer;
 
@@ -84,6 +85,7 @@ class Demo extends Sprite
 
         Timer.delay(function()
         {
+            
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
             var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
@@ -94,6 +96,8 @@ class Demo extends Sprite
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
             #if flash
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
+			var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
+			assets.addByteArray("compressed_texture", compressedTexture);
             #else
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
             #end
