@@ -55,9 +55,9 @@ class MainMenu extends Sprite
             ["Render Texture", RenderTextureScene],
             ["Benchmark", BenchmarkScene],
             ["Masks", MaskScene],
-            ["Sprite 3D", Sprite3DScene],
+            ["Sprite 3D", Sprite3DScene]
             #if demo_video
-            ["Video", VideoScene]
+            ,["Video", VideoScene]
             #end
         ];
         
