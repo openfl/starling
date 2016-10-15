@@ -185,7 +185,7 @@ class SystemUtil
         #if flash
         if (Reflect.hasField(Context3D, "supportsVideoTexture"))
         {
-            return Reflect.callMethod(Context3D, Reflect.field(Context3D, "supportsVideoTexture"), []);
+			return cast Reflect.getProperty(Context3D, "supportsVideoTexture");
         }
         else
         {

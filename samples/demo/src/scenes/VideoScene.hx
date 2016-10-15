@@ -7,6 +7,7 @@ import openfl.net.NetStream;
 import starling.display.Image;
 import starling.text.TextField;
 import starling.textures.Texture;
+import starling.utils.SystemUtil;
 
 @:keep class VideoScene extends Scene
 {
@@ -24,18 +25,19 @@ import starling.textures.Texture;
 	
 	function play() 
 	{
-		nc = new NetConnection();
-		nc.connect(null);
 		
-		ns = new NetStream(nc);
-		ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
 		
-		ns.client = { onMetaData:function(info:MetaInfo) {
-			trace(info.duration);
-		}};
-		
-		try
-		{
+		//if (SystemUtil.supportsVideoTexture) {
+			nc = new NetConnection();
+			nc.connect(null);
+			
+			ns = new NetStream(nc);
+			ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+			
+			ns.client = { onMetaData:function(info:MetaInfo) {
+				trace(info.duration);
+			}};
+			
 			texture = Texture.fromNetStream(ns, 1, function():Void
 			{
 				image = new Image(texture);
@@ -44,17 +46,20 @@ import starling.textures.Texture;
 				image.scaleX = image.scaleY = scale;
 				image.y = 120;
 			});
-		}
-		catch (e:Dynamic)
-		{
-			var textField:TextField = new TextField(220, 128, 
-				"Video texture is not supported on this platform", "DejaVu Sans", 14);
+			
+			ns.play(url);
+		/*}
+		else {
+			#if flash
+				var errorMessage:String = "Video texture requires AIR 17.0, Flash Player 18.0";
+			#else
+				var errorMessage:String = "Video texture is not supported on this platform";
+			#end
+			var textField:TextField = new TextField(220, 128, errorMessage, "DejaVu Sans", 14);
 			textField.x = Constants.CenterX - textField.width / 2;
 			textField.y = Constants.CenterY - textField.height / 2;
 			addChild(textField);
-		}
-		
-		ns.play(url);
+		}*/
 	}
 	
 	static private function onNetStatus(e:NetStatusEvent):Void 
@@ -64,7 +69,9 @@ import starling.textures.Texture;
 	
 	override public function dispose():Void
 	{
-		ns.close();
+		if (ns != null) {
+			ns.close();
+		}
 		if (image != null) {
 			if (image.parent != null) {
 				image.parent.removeChild(image, true);
