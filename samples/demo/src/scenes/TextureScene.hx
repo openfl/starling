@@ -1,4 +1,5 @@
 package scenes;
+
 import openfl.display.BitmapData;
 import openfl.errors.Error;
 import openfl.utils.ByteArray;
@@ -29,32 +30,28 @@ import starling.textures.Texture;
         image3.y = -60;
         addChild(image3);
         
-		var bmd:BitmapData = new BitmapData(64, 64, false, 0xFF0000FF);
-		var texture:Texture = Texture.fromBitmapData(bmd);
-		var image = new Image(texture);
-		addChild(image);
-		try
-		{
-			// display a compressed texture
-			var compressedBA:ByteArray = Game.assets.getByteArray("compressed_texture");
-			var compressedTexture:Texture = Texture.fromAtfData(compressedBA);
-			var image:Image = new Image(compressedTexture);
-			image.x = Constants.CenterX - image.width / 2;
-			image.y = 263;
-			addChild(image);
-		}
-		catch (e:Error)
-		{
-			// if it fails, it's probably not supported
-			#if flash
-				var textValue = "Flash Player and AIR must be at least 11.4 and 3.4 respectively (swf-version=17) to see a compressed ATF texture";
-			#else
-				var textValue = "ATF textures are not support in non Flash/Air targets.";
-			#end
-			var textField:TextField = new TextField(220, 128, textValue, "Verdana", 14);
-			textField.x = Constants.CenterX - textField.width / 2;
-			textField.y = 280;
-			addChild(textField);
-		}
+        try
+        {
+            // display a compressed texture
+            var compressedBA:ByteArray = Game.assets.getByteArray("compressed_texture");
+            var compressedTexture:Texture = Texture.fromAtfData(compressedBA);
+            var image:Image = new Image(compressedTexture);
+            image.x = Constants.CenterX - image.width / 2;
+            image.y = 263;
+            addChild(image);
+        }
+        catch (e:Error)
+        {
+            // if it fails, it's probably not supported
+            #if flash
+                var textValue = "Flash Player and AIR must be at least 11.4 and 3.4 respectively (swf-version=17) to see a compressed ATF texture";
+            #else
+                var textValue = "ATF textures are not support in non Flash/Air targets.";
+            #end
+            var textField:TextField = new TextField(220, 128, textValue, "Verdana", 14);
+            textField.x = Constants.CenterX - textField.width / 2;
+            textField.y = 280;
+            addChild(textField);
+        }
     }
 }
