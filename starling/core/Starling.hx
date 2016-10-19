@@ -322,8 +322,8 @@ class Starling extends EventDispatcher
                 mProfile = cast(profile, Context3DProfile);
             
             mShareContext = true;
-            Timer.delay(initialize, 1); // we don't call it right away, because Starling should
-                                       // behave the same way with or without a shared context
+            if (stage3D.context3D != null) Timer.delay(initialize, 1);
+			else stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreatedInitialize, false, 100);
         }
         else
         {
@@ -336,6 +336,11 @@ class Starling extends EventDispatcher
         }
     }
     
+	private function onCreatedInitialize(e:Event):Void 
+	{
+		initialize();
+	}
+	
     /** Disposes all children of the stage and the render context; removes all registered
      * event listeners. */
     public function dispose():Void
