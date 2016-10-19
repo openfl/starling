@@ -12,6 +12,7 @@ package starling.text;
 
 import flash.errors.ArgumentError;
 import flash.geom.Rectangle;
+import openfl.errors.Error;
 
 import openfl.Vector;
 
@@ -118,12 +119,17 @@ class BitmapFont
     
     private function parseFontXml(fontXml:Xml):Void
     {
-        var scale:Float = mTexture.scale;
+		var scale:Float = mTexture.scale;
         var frame:Rectangle = mTexture.frame;
         var frameX:Float = frame != null ? frame.x : 0;
         var frameY:Float = frame != null ? frame.y : 0;
-
+		
         var info:Xml = fontXml.elementsNamed("info").next();
+		if (info == null) {
+			fontXml = fontXml.firstElement();
+			info = fontXml.elementsNamed("info").next();
+		}
+		
         var common:Xml = fontXml.elementsNamed("common").next();
         mName = info.get("face");
         mSize = Std.parseFloat(info.get("size")) / scale;
