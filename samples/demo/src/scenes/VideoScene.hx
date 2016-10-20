@@ -25,9 +25,8 @@ import starling.utils.SystemUtil;
 	
 	function play() 
 	{
-		
-		
-		//if (SystemUtil.supportsVideoTexture) {
+		if (SystemUtil.supportsVideoTexture)
+		{
 			nc = new NetConnection();
 			nc.connect(null);
 			
@@ -48,18 +47,20 @@ import starling.utils.SystemUtil;
 			});
 			
 			ns.play(url);
-		/*}
-		else {
+		}
+		else
+		{
 			#if flash
 				var errorMessage:String = "Video texture requires AIR 17.0, Flash Player 18.0";
 			#else
 				var errorMessage:String = "Video texture is not supported on this platform";
 			#end
+			
 			var textField:TextField = new TextField(220, 128, errorMessage, "DejaVu Sans", 14);
 			textField.x = Constants.CenterX - textField.width / 2;
 			textField.y = Constants.CenterY - textField.height / 2;
 			addChild(textField);
-		}*/
+		}
 	}
 	
 	static private function onNetStatus(e:NetStatusEvent):Void 
