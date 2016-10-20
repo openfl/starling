@@ -29,10 +29,11 @@ import starling.textures.Texture;
         image3.y = -60;
         addChild(image3);
         
-		var bmd:BitmapData = new BitmapData(64, 64, false, 0xFF0000FF);
+		/*var bmd:BitmapData = new BitmapData(64, 64, false, 0xFF0000FF);
 		var texture:Texture = Texture.fromBitmapData(bmd);
 		var image = new Image(texture);
-		addChild(image);
+		addChild(image);*/
+		
 		try
 		{
 			// display a compressed texture
