@@ -289,12 +289,12 @@ class Texture
                                        async:Void->Void=null, repeat:Bool=false):Texture
     {
         if (data == null) return null;
-		var context:Context3D = Starling.current.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);
-		
-		var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
+
+        var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format,
             atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1,
@@ -451,14 +451,7 @@ class Texture
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false):Texture
     {
-        #if !flash
-			//if (mipMapping == true) {
-				//trace("MipMap generation is temporarily disabled");
-			//}
-			mipMapping = false;
-		#end
-		
-		if (scale <= 0) scale = Starling.current.contentScaleFactor;
+        if (scale <= 0) scale = Starling.current.contentScaleFactor;
         if (format == null) format = Context3DTextureFormat.BGRA;
 
         var actualWidth:Int, actualHeight:Int;
@@ -490,7 +483,7 @@ class Texture
             nativeTexture = context.createTexture(actualWidth, actualHeight, format,
                                                   optimizeForRenderToTexture);
         }
-		
+
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, format,
             actualWidth, actualHeight, mipMapping, premultipliedAlpha,
             optimizeForRenderToTexture, scale, repeat);
