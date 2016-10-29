@@ -1,17 +1,20 @@
-package utils
-{
+package utils;
+
 import flash.display.GradientType;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.geom.Matrix;
 
-public class ProgressBar extends Sprite
+class ProgressBar extends Sprite
 {
+    public var ratio(get, set):Float;
+
     private var mBackground:Shape;
     private var mBar:Shape;
 
-    public function ProgressBar(width:Int, height:Int)
+    public function new(width:Int, height:Int)
     {
+        super();
         init(width, height);
     }
 
@@ -45,10 +48,9 @@ public class ProgressBar extends Sprite
         addChild(mBar);
     }
 
-    public function get ratio():Float { return mBar.scaleX; }
-    public function set ratio(value:Float):Void
+    private function get_ratio():Float { return mBar.scaleX; }
+    private function set_ratio(value:Float):Float
     {
-        mBar.scaleX = Math.max(0.0, Math.min(1.0, value));
+        return mBar.scaleX = Math.max(0.0, Math.min(1.0, value));
     }
-}
 }

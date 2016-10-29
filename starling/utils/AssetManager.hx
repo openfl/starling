@@ -131,7 +131,7 @@ class AssetManager extends EventDispatcher
     private var mStarling:Starling;
     private var mNumLostTextures:Int;
     private var mNumRestoredTextures:Int;
-    private var mNumLoadingQueues:Int;
+    private var mNumLoadingQueues:Int = 0;
 
     private var mDefaultTextureOptions:TextureOptions;
     private var mCheckPolicyFile:Bool;

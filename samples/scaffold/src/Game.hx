@@ -1,23 +1,24 @@
-package 
-{
+package;
+
 import starling.animation.Transitions;
 import starling.core.Starling;
 import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
-import starling.utils.MathUtils.deg2rad;
+import starling.utils.MathUtil.deg2rad;
 
 /** The Game class represents the actual game. In this scaffold, it just displays a 
  *  Starling that moves around fast. When the user touches the Starling, the game ends. */ 
-public class Game extends Sprite
+class Game extends Sprite
 {
-    public static const GAME_OVER:String = "gameOver";
+    public static inline var GAME_OVER:String = "gameOver";
     
     private var mBird:Image;
     
-    public function Game()
+    public function new()
     {
+        super();
         init();
     }
     
@@ -38,7 +39,7 @@ public class Game extends Sprite
     {
         var scale:Float = Math.random() * 0.8 + 0.2;
         
-        Starling.juggler.tween(mBird, Math.random() * 0.5 + 0.5, {
+        Starling.current.juggler.tween(mBird, Math.random() * 0.5 + 0.5, {
             x: Math.random() * Constants.STAGE_WIDTH,
             y: Math.random() * Constants.STAGE_HEIGHT,
             scaleX: scale,
@@ -51,12 +52,11 @@ public class Game extends Sprite
     
     private function onBirdTouched(event:TouchEvent):Void
     {
-        if (event.getTouch(mBird, TouchPhase.BEGAN))
+        if (event.getTouch(mBird, TouchPhase.BEGAN) != null)
         {
             Root.assets.playSound("click");
-            Starling.juggler.removeTweens(mBird);
+            Starling.current.juggler.removeTweens(mBird);
             dispatchEventWith(GAME_OVER, true, 100);
         }
     }
-}
 }
