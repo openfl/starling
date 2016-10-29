@@ -451,10 +451,10 @@ class Texture
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false):Texture
     {
-        #if html5
-			if (mipMapping == true) {
-				trace("MipMap Generation is not supported on HTML5 Target");
-			}
+        #if !flash
+			//if (mipMapping == true) {
+				//trace("MipMap generation is temporarily disabled");
+			//}
 			mipMapping = false;
 		#end
 		
