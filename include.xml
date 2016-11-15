@@ -2,5 +2,6 @@
 <extension>
 	
 	<sample path="samples" />
+	<template path="templates" />
 	
 </extension>

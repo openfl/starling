@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="::title::" package="::packageName::" version="::version::" company="::company::" />
+	<app main="Startup" path="Export" file="::file::" swf-version="12.0" />
+	
+	<source path="Source" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="starling" />
+	
+	<assets path="Assets" rename="assets" />
+	
+</project>
