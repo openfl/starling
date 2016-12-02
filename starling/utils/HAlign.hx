@@ -21,6 +21,8 @@ class HAlign
     
     /** Right alignment. */
     public static inline var RIGHT:String  = "right";
+   
+	public static inline var JUSTIFY:String  = "justify";
     
     /** Indicates whether the given alignment string is valid. */
     public static function isValid(hAlign:String):Bool

@@ -1,18 +1,16 @@
-package
-{
-import flash.desktop.NativeApplication;
+package;
+
 import flash.display.Bitmap;
 import flash.display.Loader;
 import flash.display.Sprite;
 import flash.events.Event;
-import flash.filesystem.File;
-import flash.filesystem.FileMode;
-import flash.filesystem.FileStream;
 import flash.geom.Rectangle;
 import flash.system.Capabilities;
 import flash.system.System;
 import flash.utils.ByteArray;
-import flash.utils.setTimeout;
+import haxe.Timer;
+
+import lime.system.System in LimeSystem;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -21,29 +19,31 @@ import starling.utils.AssetManager;
 import starling.utils.RectangleUtil;
 import starling.utils.ScaleMode;
 import starling.utils.SystemUtil;
-import starling.utils.formatString;
+import starling.utils.StringUtil.formatString;
 
 import utils.ProgressBar;
 
-[SWF(width="320", height="480", frameRate="30", backgroundColor="#000000")]
-public class Scaffold_Mobile extends Sprite
+class Scaffold extends Sprite
 {
-    private const StageWidth:Int  = 320;
-    private const StageHeight:Int = 480;
+    private static inline var StageWidth:Int  = 320;
+    private static inline var StageHeight:Int = 480;
 
     private var mStarling:Starling;
     private var mBackground:Loader;
     private var mProgressBar:ProgressBar;
 
-    public function Scaffold_Mobile()
+    public function new()
     {
+        super();
+
         // We develop the game in a *fixed* coordinate system of 320x480. The game might
         // then run on a device with a different resolution; for that case, we zoom the
         // viewPort to the optimal size for any display and load the optimal textures.
 
         var iOS:Bool = SystemUtil.platform == "IOS";
         var stageSize:Rectangle  = new Rectangle(0, 0, StageWidth, StageHeight);
-        var screenSize:Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
+        //var screenSize:Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
+        var screenSize:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         var viewPort:Rectangle = RectangleUtil.fit(stageSize, screenSize, ScaleMode.SHOW_ALL);
         var scaleFactor:Int = viewPort.width < 480 ? 1 : 2; // midway between 320 and 640
 
@@ -68,27 +68,28 @@ public class Scaffold_Mobile extends Sprite
 
         if (!SystemUtil.isDesktop)
         {
-            NativeApplication.nativeApplication.addEventListener(
-                flash.events.Event.ACTIVATE, function (e:*):Void { mStarling.start(); });
-            NativeApplication.nativeApplication.addEventListener(
-                flash.events.Event.DEACTIVATE, function (e:*):Void { mStarling.stop(true); });
+            stage.addEventListener(
+                flash.events.Event.ACTIVATE, function (e):Void { mStarling.start(); });
+            stage.addEventListener(
+                flash.events.Event.DEACTIVATE, function (e):Void { mStarling.stop(true); });
         }
     }
 
-    private function loadAssets(scaleFactor:Int, onComplete:Function):Void
+    private function loadAssets(scaleFactor:Int, onComplete:Dynamic):Void
     {
         // Our assets are loaded and managed by the 'AssetManager'. To use that class,
         // we first have to enqueue pointers to all assets we want it to load.
 
-        var appDir:File = File.applicationDirectory;
+        var appDir:String = LimeSystem.applicationDirectory;
+        if (appDir == null) appDir = "";
         var assets:AssetManager = new AssetManager(scaleFactor);
 
         assets.verbose = Capabilities.isDebugger;
-        assets.enqueue(
-            appDir.resolvePath("audio"),
-            appDir.resolvePath(formatString("fonts/{0}x",    scaleFactor)),
-            appDir.resolvePath(formatString("textures/{0}x", scaleFactor))
-        );
+        assets.enqueue([
+            appDir + "/audio",
+            appDir + formatString("/fonts/{0}x", [ scaleFactor ]),
+            appDir + formatString("/textures/{0}x", [ scaleFactor ])
+        ]);
 
         // Now, while the AssetManager now contains pointers to all the assets, it actually
         // has not loaded them yet. This happens in the "loadQueue" method; and since this
@@ -100,7 +101,7 @@ public class Scaffold_Mobile extends Sprite
             if (ratio == 1)
             {
                 // now would be a good time for a clean-up
-                System.pauseForGCIfCollectionImminent(0);
+                //System.pauseForGCIfCollectionImminent(0);
                 System.gc();
 
                 onComplete(assets);
@@ -110,22 +111,21 @@ public class Scaffold_Mobile extends Sprite
 
     private function startGame(assets:AssetManager):Void
     {
-        var root:Root = mStarling.root as Root;
+        var root:Root = cast mStarling.root;
         root.start(assets);
-        setTimeout(removeElements, 150); // delay to make 100% sure there's no flickering.
+        Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
 
     private function initElements(scaleFactor:Int):Void
     {
         // Add background image. By using "loadBytes", we can avoid any flickering.
 
-        var bgPath:String = formatString("textures/{0}x/background.jpg", scaleFactor);
-        var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
-        var bytes:ByteArray = new ByteArray();
-        var stream:FileStream = new FileStream();
-        stream.open(bgFile, FileMode.READ);
-        stream.readBytes(bytes, 0, stream.bytesAvailable);
-        stream.close();
+        var appDir:String = LimeSystem.applicationDirectory;
+        if (appDir == null) appDir = "assets";
+
+        var bgPath:String = formatString("textures/{0}x/background.jpg", [scaleFactor]);
+        var bgFile:String = appDir + "/" + bgPath;
+        var bytes:ByteArray = ByteArray.fromFile(bgPath);
 
         mBackground = new Loader();
         mBackground.loadBytes(bytes);
@@ -136,7 +136,7 @@ public class Scaffold_Mobile extends Sprite
         mBackground.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
             function(e:Dynamic):Void
             {
-                (mBackground.content as Bitmap).smoothing = true;
+                cast (mBackground.content, Bitmap).smoothing = true;
             });
 
         // While the assets are loaded, we will display a progress bar.
@@ -149,17 +149,16 @@ public class Scaffold_Mobile extends Sprite
 
     private function removeElements():Void
     {
-        if (mBackground)
+        if (mBackground != null)
         {
             mStarling.nativeOverlay.removeChild(mBackground);
             mBackground = null;
         }
 
-        if (mProgressBar)
+        if (mProgressBar != null)
         {
             mStarling.nativeOverlay.removeChild(mProgressBar);
             mProgressBar = null;
         }
     }
-}
 }

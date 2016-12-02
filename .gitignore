@@ -1,7 +1,7 @@
-/samples/demo/bin
-/samples/demo/assets/fonts/*.eot
-/samples/demo/assets/fonts/*.svg
-/samples/demo/assets/fonts/*.woff
+/samples/*/bin
+/samples/*/assets/fonts/*.eot
+/samples/*/assets/fonts/*.svg
+/samples/*/assets/fonts/*.woff
 /hxclasses/
 imports.js
 starling.js

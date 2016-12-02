@@ -88,6 +88,10 @@ class Event
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     public static inline var READY:String = "ready";
     
+	public static inline var FOCUS_CHANGE:String = "focusChange";
+    
+	
+	
     private static var sEventPool:Vector<Event> = new Vector<Event>();
     
     /** Creates an event object that can be passed to listeners. */

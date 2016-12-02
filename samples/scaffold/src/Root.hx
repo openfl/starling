@@ -1,5 +1,5 @@
-package
-{
+package;
+
 import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.Event;
@@ -10,14 +10,18 @@ import starling.utils.AssetManager;
  *  switching between game and menu. For this, it listens to "START_GAME" and "GAME_OVER"
  *  events fired by the Menu and Game classes. Keep this class rather lightweight: it 
  *  controls the high level behaviour of your game. */
-public class Root extends Sprite
+class Root extends Sprite
 {
+    public static var assets(get, never):AssetManager;
+
     private static var sAssets:AssetManager;
     
     private var mActiveScene:Sprite;
     
-    public function Root()
+    public function new()
     {
+        super();
+
         addEventListener(Menu.START_GAME, onStartGame);
         addEventListener(Game.GAME_OVER,  onGameOver);
         
@@ -46,13 +50,12 @@ public class Root extends Sprite
         showScene(Game);
     }
     
-    private function showScene(screen:Class):Void
+    private function showScene(screen:Class<Dynamic>):Void
     {
-        if (mActiveScene) mActiveScene.removeFromParent(true);
-        mActiveScene = new screen();
+        if (mActiveScene != null) mActiveScene.removeFromParent(true);
+        mActiveScene = Type.createInstance (screen, []);
         addChild(mActiveScene);
     }
     
-    public static function get assets():AssetManager { return sAssets; }
-}
+    private static function get_assets():AssetManager { return sAssets; }
 }

@@ -13,6 +13,7 @@ package starling.core;
 import flash.display.Shape;
 import flash.display.Sprite;
 import flash.display.Stage3D;
+import flash.display.Stage in FlashStage;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.display3D.Context3D;
@@ -735,8 +736,8 @@ class Starling extends EventDispatcher
     
     private function onResize(event:Event):Void
     {
-        var stageWidth:Int = stage.stageWidth;
-        var stageHeight:Int = stage.stageHeight;
+        var stageWidth:Int  = cast (event.target, FlashStage).stageWidth;
+        var stageHeight:Int = cast (event.target, FlashStage).stageHeight;
 
         function dispatchResizeEvent():Void
         {

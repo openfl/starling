@@ -52,7 +52,7 @@ class EventDispatcher
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Function):Void
     {
-		if (listener == null) throw Error("null listener added");
+		if (listener == null) throw new Error("null listener added");
 		
         if (mEventListeners == null)
             mEventListeners = new Map<String, Vector<Function>>();

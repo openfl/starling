@@ -81,7 +81,7 @@ class MiniBitmapFont
 0x45fba577, 0x2eecdb70, 
     ];
     
-    private static var XML_DATA:Xml = Xml.createElement('
+    private static var XML_DATA:Xml = Xml.parse('
       <font>
       <info face="mini" size="8" bold="0" italic="0" smooth="0"/>
       <common lineHeight="8" base="7" scaleW="128" scaleH="64" pages="1" packed="0"/>
