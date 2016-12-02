@@ -51,8 +51,8 @@ class ColorMatrixFilter extends FragmentFilter
     private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
     private static inline var PROGRAM_NAME:String = "CMF";
-    private static var MIN_COLOR:Vector<Float> = Vector.ofArray ([0, 0, 0, 0.0001]);
-    private static var IDENTITY:Vector<Float> = Vector.ofArray ([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0]);
+    private static var MIN_COLOR:Vector<Float> = new Vector<Float> ([0, 0, 0, 0.0001]);
+    private static var IDENTITY:Vector<Float> = new Vector<Float> ([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0]);
     private static inline var LUMA_R:Float = 0.299;
     private static inline var LUMA_G:Float = 0.587;
     private static inline var LUMA_B:Float = 0.114;

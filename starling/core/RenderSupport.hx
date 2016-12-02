@@ -84,7 +84,7 @@ class RenderSupport
     private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
     private static var sMatrix3D:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
-        Vector.ofArray ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        new Vector<Float> ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     
     // construction
     

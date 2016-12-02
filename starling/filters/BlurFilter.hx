@@ -34,16 +34,16 @@ class BlurFilter extends FragmentFilter
     private var mNormalProgram:Program3D;
     private var mTintedProgram:Program3D;
     
-    private var mOffsets:Vector<Float> = Vector.ofArray ([0.0, 0, 0, 0]);
-    private var mWeights:Vector<Float> = Vector.ofArray ([0.0, 0, 0, 0]);
-    private var mColor:Vector<Float>   = Vector.ofArray ([1.0, 1, 1, 1]);
+    private var mOffsets:Vector<Float> = new Vector<Float> ([0, 0, 0, 0]);
+    private var mWeights:Vector<Float> = new Vector<Float> ([0, 0, 0, 0]);
+    private var mColor:Vector<Float>   = new Vector<Float> ([1, 1, 1, 1]);
     
     private var mBlurX:Float;
     private var mBlurY:Float;
     private var mUniformColor:Bool;
     
     /** helper object */
-    private var sTmpWeights:Vector<Float> = Vector.ofArray ([0, 0, 0, 0, 0]);
+    private var sTmpWeights:Vector<Float> = new Vector<Float> ([0, 0, 0, 0, 0]);
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      * <code>Math.ceil(blur)</code>. 
