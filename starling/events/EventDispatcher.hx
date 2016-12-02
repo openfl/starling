@@ -11,6 +11,7 @@
 package starling.events;
 
 import haxe.Constraints.Function;
+import openfl.errors.Error;
 
 import openfl.Vector;
 
@@ -51,6 +52,8 @@ class EventDispatcher
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Function):Void
     {
+		if (listener == null) throw Error("null listener added");
+		
         if (mEventListeners == null)
             mEventListeners = new Map<String, Vector<Function>>();
         

@@ -735,8 +735,8 @@ class Starling extends EventDispatcher
     
     private function onResize(event:Event):Void
     {
-        var stageWidth:Int  = event.target.stageWidth;
-        var stageHeight:Int = event.target.stageHeight;
+        var stageWidth:Int = stage.stageWidth;
+        var stageHeight:Int = stage.stageHeight;
 
         function dispatchResizeEvent():Void
         {
@@ -1037,7 +1037,12 @@ class Starling extends EventDispatcher
     /** Displays the statistics box at a certain position. */
     public function showStatsAt(hAlign:String="left", vAlign:String="top", scale:Float=1):Void
     {
-        var onRootCreated:Void->Void = null;
+        function onRootCreated():Void
+		{
+			showStatsAt(hAlign, vAlign, scale);
+			removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+		}
+		
         if (mContext == null)
         {
             // Starling is not yet ready - we postpone this until it's initialized.
@@ -1064,12 +1069,6 @@ class Starling extends EventDispatcher
             if (vAlign == VAlign.TOP) mStatsDisplay.y = 0;
             else if (vAlign == VAlign.BOTTOM) mStatsDisplay.y = stageHeight - mStatsDisplay.height;
             else mStatsDisplay.y = Std.int((stageHeight - mStatsDisplay.height) / 2);
-        }
-        
-        function onRootCreated():Void
-        {
-            showStatsAt(hAlign, vAlign, scale);
-            removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
         }
     }
     
