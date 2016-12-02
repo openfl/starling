@@ -153,6 +153,7 @@ class EventDispatcher
             for (i in 0...numListeners)
             {
                 var listener:Function = listeners[i];
+                if (listener == null) continue;
                 #if flash
                 var numArgs:Int = untyped listener.length;
                 #elseif neko
