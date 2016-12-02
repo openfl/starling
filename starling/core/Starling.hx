@@ -261,10 +261,9 @@ class Starling extends EventDispatcher
      */
     public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
-                             renderMode:Context3DRenderMode=AUTO, profile:Dynamic=null)
+                             renderMode:Context3DRenderMode=AUTO, profile:Dynamic="auto")
     {
         super();
-        if (profile == null) profile = Context3DProfile.BASELINE_CONSTRAINED;
         if (stage == null) throw new ArgumentError("Stage must not be null");
         if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         if (stage3D == null) stage3D = stage.stage3Ds[0];
@@ -324,7 +323,6 @@ class Starling extends EventDispatcher
             
             mShareContext = true;
             if (stage3D.context3D != null) Timer.delay(initialize, 1);
-			else stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreatedInitialize, false, 100);
         }
         else
         {
@@ -337,11 +335,6 @@ class Starling extends EventDispatcher
         }
     }
     
-	private function onCreatedInitialize(e:Event):Void 
-	{
-		initialize();
-	}
-	
     /** Disposes all children of the stage and the render context; removes all registered
      * event listeners. */
     public function dispose():Void
