@@ -315,13 +315,17 @@ class Starling extends EventDispatcher
         
         if (mStage3D.context3D != null && mStage3D.context3D.driverInfo != "Disposed")
         {
+            #if flash
             if (profile == "auto" || Std.is(profile, Array))
                 throw new ArgumentError("When sharing the context3D, " +
                     "the actual profile has to be supplied");
             else
                 mProfile = cast(profile, Context3DProfile);
-            
             mShareContext = true;
+            #else
+            mProfile = mStage3D.context3D.profile;
+            //mShareContext = true;
+            #end
             if (stage3D.context3D != null) Timer.delay(initialize, 1);
         }
         else
