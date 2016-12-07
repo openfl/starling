@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
+	<log warn="The Scaffold has not been completely ported and is not expected to work" />
+	
 	<meta title="Starling Scaffold" package="com.demo.scaffold" version="1.0.0" company="OpenFL" />
 	<app main="Scaffold" path="bin" file="Scaffold" swf-version="12" />
 	
