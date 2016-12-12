@@ -188,7 +188,7 @@ class EventDispatcher
         var length:Int = 1;
         
         if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
-        else chain = new Vector<EventDispatcher> ([element]);
+        else chain = Vector.ofArray ([cast element]);
         
         while ((element = element.parent) != null)
             chain[length++] = element;
