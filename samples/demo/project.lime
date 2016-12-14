@@ -4,7 +4,8 @@
 	<meta title="Starling Demo" package="com.demoweb" version="1.0.0" company="OpenFL" />
 	<app main="Demo" file="Demo" path="bin" swf-version="12" />
 	
-	<window width="320" height="480" orientation="portrait" background="0xffffff" resizable="false" />
+	<window width="320" height="480" orientation="portrait" background="0xffffff" />
+	<window resizable="false" unless="mobile" />
 	<window stencil-buffer="false" if="android" />
 	
 	<source path="src" />
