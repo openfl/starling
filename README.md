@@ -1,4 +1,4 @@
-[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/travis/openfl/starling.svg?style=flat)](https://travis-ci.org/openfl/starling)
+[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/starling) [![Build Status](https://img.shields.io/travis/openfl/starling.svg?style=flat)](https://travis-ci.org/openfl/starling)
 
 Starling
 ========
