@@ -4,8 +4,8 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "GPU powered 2D rendering engine which mimics the conventional Flash display list architecture",
-	"version": "1.8.3",
-	"releasenote": "Fix regresson on C++",
+	"version": "1.8.4",
+	"releasenote": "Add HAlign.JUSTIFY and Event.FOCUS_CHANGE",
 	"contributors": [ "p.j.shand", "tbyrne", "singmajesty" ],
 	"dependencies": {
 		
