@@ -156,6 +156,7 @@ class EventDispatcher
             for (i in 0...numListeners)
             {
                 var listener:Function = listeners[i];
+                if (listener == null) continue;
                 #if flash
                 var numArgs:Int = untyped listener.length;
                 #elseif neko
@@ -190,7 +191,7 @@ class EventDispatcher
         var length:Int = 1;
         
         if (sBubbleChains.length > 0) { chain = sBubbleChains.pop(); chain[0] = element; }
-        else chain = Vector.ofArray ([element]);
+        else chain = Vector.ofArray ([cast element]);
         
         while ((element = element.parent) != null)
             chain[length++] = element;

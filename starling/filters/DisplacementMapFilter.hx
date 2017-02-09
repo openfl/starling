@@ -59,10 +59,10 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** Helper objects */
     private static var sOneHalf:Vector<Float> = Vector.ofArray ([0.5, 0.5, 0.5, 0.5]);
-    private static var sMapTexCoords:Vector<Float> = Vector.ofArray ([0, 0, 1, 0, 0, 1, 1, 1]);
+    private static var sMapTexCoords:Vector<Float> = Vector.ofArray ([0, 0, 1, 0, 0, 1, 1, 1.]);
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
-        Vector.ofArray ([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
+        Vector.ofArray ([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
     
     /** Creates a new displacement map filter that uses the provided map texture. */
     public function new(mapTexture:Texture, mapPoint:Point=null, 
