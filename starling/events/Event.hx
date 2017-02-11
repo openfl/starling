@@ -87,9 +87,7 @@ class Event
     public static inline var SELECT:String = "select";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     public static inline var READY:String = "ready";
-	/** An event type to be utilized in custom events. Not used by Starling right now. */
-	public static inline var FOCUS_CHANGE:String = "focusChange";
-    
+	
 	
 	
     private static var sEventPool:Vector<Event> = new Vector<Event>();
