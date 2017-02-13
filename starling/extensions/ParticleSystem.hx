@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package extensions;
+package starling.extensions;
 
 import flash.errors.ArgumentError;
 import flash.display3D.Context3D;
@@ -52,7 +52,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     public var blendFactorDestination(get, set):String;
     public var texture(get, set):Texture;
     public var smoothing(get, set):String;
-	
+
     public static inline var MAX_NUM_PARTICLES:Int = 16383;
     
     private var mTexture:Texture;
@@ -65,7 +65,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     private var mIndices:Vector<UInt>;
     private var mIndexBuffer:IndexBuffer3D;
     
-    private var mNumParticles:Int;
+    private var mNumParticles:Int = 0;
     private var mMaxCapacity:Int;
     private var mEmissionRate:Float; // emitted particles per second
     private var mEmissionTime:Float;
@@ -224,8 +224,9 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     }
     
     /** Starts the emitter for a certain time. @default infinite time */
-    public function start(duration:Float=Math.POSITIVE_INFINITY):Void
+    public function start(duration:Float=-1):Void
     {
+        if (duration == -1) duration = Math.POSITIVE_INFINITY;
         if (mEmissionRate != 0)                
             mEmissionTime = duration;
     }

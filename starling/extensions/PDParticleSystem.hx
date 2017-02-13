@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package extensions;
+package starling.extensions;
 
 import haxe.xml.Fast;
 
@@ -102,7 +102,7 @@ class PDParticleSystem extends ParticleSystem
     private var mEndColor:ColorArgb;                   // finishColor
     private var mEndColorVariance:ColorArgb;           // finishColorVariance
     
-    public function new(config:Xml, texture:Texture)
+    public function new(config:String, texture:Texture)
     {
         parseConfig(config);
         
@@ -118,7 +118,7 @@ class PDParticleSystem extends ParticleSystem
     
     private override function initParticle(aParticle:Particle):Void
     {
-        var particle:PDParticle = aParticle;
+        var particle:PDParticle = cast aParticle;
      
         // for performance reasons, the random variances are calculated inline instead
         // of calling a function
@@ -197,7 +197,7 @@ class PDParticleSystem extends ParticleSystem
     
     private override function advanceParticle(aParticle:Particle, passedTime:Float):Void
     {
-        var particle:PDParticle = aParticle;
+        var particle:PDParticle = cast aParticle;
         
         var restTime:Float = particle.totalTime - particle.currentTime;
         passedTime = restTime > passedTime ? passedTime : restTime;
@@ -252,9 +252,9 @@ class PDParticleSystem extends ParticleSystem
         emissionRate = mMaxNumParticles / mLifespan;
     }
     
-    private function parseConfig(config:NodeAccess):Void
+    private function parseConfig(config:String):Void
     {
-        var xml = new Fast(config);
+        var xml = new Fast(Xml.parse(config).firstElement());
         var config = xml.node;
         mEmitterXVariance = Std.parseFloat(config.sourcePositionVariance.att.x);
         mEmitterYVariance = Std.parseFloat(config.sourcePositionVariance.att.y);
@@ -262,18 +262,18 @@ class PDParticleSystem extends ParticleSystem
         mGravityY = Std.parseFloat(config.gravity.att.y);
         mEmitterType = getIntValue(config.emitterType);
         mMaxNumParticles = getIntValue(config.maxParticles);
-        mLifespan = Math.max(0.01, getFloatValue(config.particleLifeSpan));
+        //mLifespan = Math.max(0.01, getFloatValue(config.particleLifeSpan));
         mLifespanVariance = getFloatValue(config.particleLifespanVariance);
         mStartSize = getFloatValue(config.startParticleSize);
         mStartSizeVariance = getFloatValue(config.startParticleSizeVariance);
         mEndSize = getFloatValue(config.finishParticleSize);
-        mEndSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
-        mEmitAngle = deg2rad(getFloatValue(config.angle));
-        mEmitAngleVariance = deg2rad(getFloatValue(config.angleVariance));
-        mStartRotation = deg2rad(getFloatValue(config.rotationStart));
-        mStartRotationVariance = deg2rad(getFloatValue(config.rotationStartVariance));
-        mEndRotation = deg2rad(getFloatValue(config.rotationEnd));
-        mEndRotationVariance = deg2rad(getFloatValue(config.rotationEndVariance));
+        //mEndSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
+        mEmitAngle = MathUtil.deg2rad(getFloatValue(config.angle));
+        mEmitAngleVariance = MathUtil.deg2rad(getFloatValue(config.angleVariance));
+        mStartRotation = MathUtil.deg2rad(getFloatValue(config.rotationStart));
+        mStartRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationStartVariance));
+        mEndRotation = MathUtil.deg2rad(getFloatValue(config.rotationEnd));
+        mEndRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationEndVariance));
         mSpeed = getFloatValue(config.speed);
         mSpeedVariance = getFloatValue(config.speedVariance);
         mRadialAcceleration = getFloatValue(config.radialAcceleration);
@@ -283,9 +283,9 @@ class PDParticleSystem extends ParticleSystem
         mMaxRadius = getFloatValue(config.maxRadius);
         mMaxRadiusVariance = getFloatValue(config.maxRadiusVariance);
         mMinRadius = getFloatValue(config.minRadius);
-        mMinRadiusVariance = getFloatValue(config.minRadiusVariance);
-        mRotatePerSecond = deg2rad(getFloatValue(config.rotatePerSecond));
-        mRotatePerSecondVariance = deg2rad(getFloatValue(config.rotatePerSecondVariance));
+        //mMinRadiusVariance = getFloatValue(config.minRadiusVariance);
+        mRotatePerSecond = MathUtil.deg2rad(getFloatValue(config.rotatePerSecond));
+        mRotatePerSecondVariance = MathUtil.deg2rad(getFloatValue(config.rotatePerSecondVariance));
         mStartColor = getColor(config.startColor);
         mStartColorVariance = getColor(config.startColorVariance);
         mEndColor = getColor(config.finishColor);
@@ -296,24 +296,28 @@ class PDParticleSystem extends ParticleSystem
         // compatibility with future Particle Designer versions
         // (might fix some of the uppercase/lowercase typos)
         
-        if (Math.isNaN(mEndSizeVariance))
-            mEndSizeVariance = getFloatValue(config.finishParticleSizeVariance);
-        if (Math.isNaN(mLifespan))
+        if (xml.hasNode.particleLifeSpan)
+            mLifespan = Math.max(0.01, getFloatValue(config.particleLifeSpan));
+        else if (xml.hasNode.particleLifespan)
             mLifespan = Math.max(0.01, getFloatValue(config.particleLifespan));
-        if (Math.isNaN(mLifespanVariance))
-            mLifespanVariance = getFloatValue(config.particleLifeSpanVariance);
-        if (Math.isNaN(mMinRadiusVariance))
+        if (xml.hasNode.FinishParticleSizeVariance)
+            mEndSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
+        else if (xml.hasNode.finishParticleSizeVariance)
+            mEndSizeVariance = getFloatValue(config.finishParticleSizeVariance);
+        if (xml.hasNode.minRadiusVariance)
+            mMinRadiusVariance = getFloatValue(config.minRadiusVariance);
+        else
             mMinRadiusVariance = 0.0;
     }
     
     private function getIntValue(element:Fast):Int
     {
-        Std.parseInt(element.att.value);
+        return Std.parseInt(element.att.value);
     }
     
     private function getFloatValue(element:Fast):Float
     {
-        Std.parseFloat(element.att.value);
+        return Std.parseFloat(element.att.value);
     }
 
     private function getColor(element:Fast):ColorArgb
@@ -326,7 +330,7 @@ class PDParticleSystem extends ParticleSystem
         return color;
     }
 
-    private function getBlendFunc(element:String):String
+    private function getBlendFunc(element:Fast):String
     {
         var value:Int = getIntValue(element);
         switch (value)

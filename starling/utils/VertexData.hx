@@ -70,7 +70,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = Vector.ofArray(cast []);
+        mRawData = new Vector<Float>();
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -144,7 +144,7 @@ class VertexData
     /** Appends the vertices from another VertexData object. */
     public function append(data:VertexData):Void
     {
-        //mRawData.fixed = false;
+        mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
         var rawData:Vector<Float> = data.mRawData;
