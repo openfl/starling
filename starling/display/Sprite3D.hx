@@ -90,10 +90,10 @@ class Sprite3D extends DisplayObjectContainer
         mRotationX = mRotationY = mPivotZ = mZ = 0.0;
         mTransformationMatrix = new Matrix();
         mTransformationMatrix3D = new Matrix3D();
-        setIs3D(true);
+        __setIs3D(true);
 
-        addEventListener(Event.ADDED, onAddedChild);
-        addEventListener(Event.REMOVED, onRemovedChild);
+        addEventListener(Event.ADDED, __onAddedChild);
+        addEventListener(Event.REMOVED, __onRemovedChild);
     }
 
     /** @inheritDoc */
@@ -138,17 +138,17 @@ class Sprite3D extends DisplayObjectContainer
 
     // helpers
 
-    private function onAddedChild(event:Event):Void
+    private function __onAddedChild(event:Event):Void
     {
-        recursivelySetIs3D(cast(event.target, DisplayObject), true);
+        __recursivelySetIs3D(cast(event.target, DisplayObject), true);
     }
 
-    private function onRemovedChild(event:Event):Void
+    private function __onRemovedChild(event:Event):Void
     {
-        recursivelySetIs3D(cast(event.target, DisplayObject), false);
+        __recursivelySetIs3D(cast(event.target, DisplayObject), false);
     }
 
-    private function recursivelySetIs3D(object:DisplayObject, value:Bool):Void
+    private function __recursivelySetIs3D(object:DisplayObject, value:Bool):Void
     {
         if (Std.is(object, Sprite3D))
             return;
@@ -160,13 +160,13 @@ class Sprite3D extends DisplayObjectContainer
 
             //for (var i:Int=0; i<numChildren; ++i)
             for (i in 0...numChildren)
-                recursivelySetIs3D(container.getChildAt(i), value);
+                __recursivelySetIs3D(container.getChildAt(i), value);
         }
 
-        object.setIs3D(value);
+        object.__setIs3D(value);
     }
 
-    private function updateMatrices():Void
+    private function __updateMatrices():Void
     {
         var x:Float = this.x;
         var y:Float = this.y;
@@ -215,7 +215,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         if (mTransformationChanged)
         {
-            updateMatrices();
+            __updateMatrices();
             mTransformationChanged = false;
         }
 
@@ -236,7 +236,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         if (mTransformationChanged)
         {
-            updateMatrices();
+            __updateMatrices();
             mTransformationChanged = false;
         }
 

@@ -125,14 +125,14 @@ class QuadBatch extends DisplayObject
         // so we're able to create a weak event listener; this avoids memory leaks when people 
         // forget to call "dispose" on the QuadBatch.
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE, 
-                                                  onContextCreated, false, 0, true);
+                                                  __onContextCreated, false, 0, true);
     }
 
     /** Disposes vertex- and index-buffer. */
     public override function dispose():Void
     {
-        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
-        destroyBuffers();
+        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, __onContextCreated);
+        __destroyBuffers();
         
         mVertexData.numVertices = 0;
         mIndexData = null;
@@ -144,9 +144,9 @@ class QuadBatch extends DisplayObject
         super.dispose();
     }
     
-    private function onContextCreated(event:Dynamic):Void
+    private function __onContextCreated(event:Dynamic):Void
     {
-        createBuffers();
+        __createBuffers();
     }
     
     /** Call this method after manually changing the contents of 'mVertexData'. */
@@ -172,7 +172,7 @@ class QuadBatch extends DisplayObject
         return clone;
     }
     
-    private function expand():Void
+    private function __expand():Void
     {
         var oldCapacity:Int = this.capacity;
 
@@ -182,9 +182,9 @@ class QuadBatch extends DisplayObject
         this.capacity = oldCapacity < 8 ? 16 : oldCapacity * 2;
     }
     
-    private function createBuffers():Void
+    private function __createBuffers():Void
     {
-        destroyBuffers();
+        __destroyBuffers();
 
         var numVertices:Int = mVertexData.numVertices;
         var numIndices:Int = mIndexData.length;
@@ -202,7 +202,7 @@ class QuadBatch extends DisplayObject
         mSyncRequired = false;
     }
     
-    private function destroyBuffers():Void
+    private function __destroyBuffers():Void
     {
         if (mVertexBuffer != null)
         {
@@ -218,11 +218,11 @@ class QuadBatch extends DisplayObject
     }
 
     /** Uploads the raw data of all batched quads to the vertex buffer. */
-    private function syncBuffers():Void
+    private function __syncBuffers():Void
     {
         if (mVertexBuffer == null)
         {
-            createBuffers();
+            __createBuffers();
         }
         else
         {
@@ -240,7 +240,7 @@ class QuadBatch extends DisplayObject
                                  blendMode:String=null):Void
     {
         if (mNumQuads == 0) return;
-        if (mSyncRequired) syncBuffers();
+        if (mSyncRequired) __syncBuffers();
         
         var pma:Bool = mVertexData.premultipliedAlpha;
         var context:Context3D = Starling.current.context;
@@ -251,7 +251,7 @@ class QuadBatch extends DisplayObject
         
         RenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.blendMode);
         
-        context.setProgram(getProgram(tinted));
+        context.setProgram(__getProgram(tinted));
         if (tinted)
             context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
         context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 1, mvpMatrix, true);
@@ -316,7 +316,7 @@ class QuadBatch extends DisplayObject
         var alpha:Float = parentAlpha * quad.alpha;
         var vertexID:Int = mNumQuads * 4;
         
-        if (mNumQuads + 1 > mVertexData.numVertices / 4) expand();
+        if (mNumQuads + 1 > mVertexData.numVertices / 4) __expand();
         if (mNumQuads == 0) 
         {
             this.blendMode = blendMode != null ? blendMode : quad.blendMode;
@@ -757,14 +757,14 @@ class QuadBatch extends DisplayObject
             mIndexData[i*6+5] = i*4 + 2;
         }
 
-        destroyBuffers();
+        __destroyBuffers();
         mSyncRequired = true;
         return Std.int(mVertexData.numVertices / 4);
     }
 
     // program management
     
-    private function getProgram(tinted:Bool):Program3D
+    private function __getProgram(tinted:Bool):Program3D
     {
         var target:Starling = Starling.current;
         var programName:String = QUAD_PROGRAM_NAME;

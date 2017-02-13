@@ -247,7 +247,7 @@ class DisplayObject extends EventDispatcher
         
         // 1. find a common parent of this and the target space
         
-        commonParent = findCommonParent(this, targetSpace);
+        commonParent = __findCommonParent(this, targetSpace);
         
         // 2. move up from this to common parent
         
@@ -444,7 +444,7 @@ class DisplayObject extends EventDispatcher
 
         // 1. find a common parent of this and the target space
 
-        commonParent = findCommonParent(this, targetSpace);
+        commonParent = __findCommonParent(this, targetSpace);
 
         // 2. move up from this to common parent
 
@@ -509,7 +509,7 @@ class DisplayObject extends EventDispatcher
     // internal methods
     
     /** @private */
-    private function setParent(value:DisplayObjectContainer):Void 
+    private function __setParent(value:DisplayObjectContainer):Void 
     {
         // check for a recursion
         var ancestor:DisplayObject = value;
@@ -524,7 +524,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** @private */
-    private function setIs3D(value:Bool):Void
+    private function __setIs3D(value:Bool):Void
     {
         mIs3D = value;
     }
@@ -538,12 +538,12 @@ class DisplayObject extends EventDispatcher
 
     // helpers
     
-    @:final private function isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
+    @:final private function __isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
     {
         return (a - epsilon < b) && (a + epsilon > b);
     }
     
-    @:final private function findCommonParent(object1:DisplayObject,
+    @:final private function __findCommonParent(object1:DisplayObject,
                                             object2:DisplayObject):DisplayObject
     {
         var currentObject:DisplayObject = object1;
@@ -587,9 +587,9 @@ class DisplayObject extends EventDispatcher
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
-            addEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            addEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            if (this.stage != null) addEnterFrameListenerToStage();
+            addEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            addEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            if (this.stage != null) __addEnterFrameListenerToStage();
         }
         
         super.addEventListener(type, listener);
@@ -602,9 +602,9 @@ class DisplayObject extends EventDispatcher
         
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
-            removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            removeEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            __removeEnterFrameListenerFromStage();
         }
     }
     
@@ -613,20 +613,20 @@ class DisplayObject extends EventDispatcher
     {
         if ((type == null || type == Event.ENTER_FRAME) && hasEventListener(Event.ENTER_FRAME))
         {
-            removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            removeEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            __removeEnterFrameListenerFromStage();
         }
 
         super.removeEventListeners(type);
     }
     
-    private function addEnterFrameListenerToStage(e:Event = null):Void
+    private function __addEnterFrameListenerToStage(e:Event = null):Void
     {
         Starling.current.stage.addEnterFrameListener(this);
     }
     
-    private function removeEnterFrameListenerFromStage(e:Event = null):Void
+    private function __removeEnterFrameListenerFromStage(e:Event = null):Void
     {
         Starling.current.stage.removeEnterFrameListener(this);
     }
@@ -717,7 +717,7 @@ class DisplayObject extends EventDispatcher
         mScaleX = (mSkewY > -PI_Q && mSkewY < PI_Q) ?  matrix.a / Math.cos(mSkewY)
                                                     :  matrix.b / Math.sin(mSkewY);
 
-        if (isEquivalent(mSkewX, mSkewY))
+        if (__isEquivalent(mSkewX, mSkewY))
         {
             mRotation = mSkewX;
             mSkewX = mSkewY = 0;
@@ -760,13 +760,13 @@ class DisplayObject extends EventDispatcher
         mUseHandCursor = value;
         
         if (mUseHandCursor)
-            addEventListener(TouchEvent.TOUCH, onTouch);
+            addEventListener(TouchEvent.TOUCH, __onTouch);
         else
-            removeEventListener(TouchEvent.TOUCH, onTouch);
+            removeEventListener(TouchEvent.TOUCH, __onTouch);
         return mUseHandCursor;
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private function __onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = event.interactsWith(this) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }

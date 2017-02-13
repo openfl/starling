@@ -184,7 +184,7 @@ class Stage extends DisplayObjectContainer
     }
     
     /** @private */
-    private override function getChildEventListeners(object:DisplayObject, eventType:String, 
+    private override function __getChildEventListeners(object:DisplayObject, eventType:String, 
                                                       listeners:Vector<DisplayObject>):Void
     {
         if (eventType == Event.ENTER_FRAME && object == this)
@@ -194,7 +194,7 @@ class Stage extends DisplayObjectContainer
                 listeners[listeners.length] = mEnterFrameListeners[i]; // avoiding 'push' 
         }
         else
-            super.getChildEventListeners(object, eventType, listeners);
+            super.__getChildEventListeners(object, eventType, listeners);
     }
     
     // properties
