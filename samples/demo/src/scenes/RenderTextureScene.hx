@@ -53,7 +53,7 @@ import openfl.Vector;
         addChild(mButton);
     }
     
-    private override function onTouch(event:TouchEvent):Void
+    private function onTouch(event:TouchEvent):Void
     {
         // touching the canvas will draw a brush texture. The 'drawBundled' method is not
         // strictly necessary, but it's faster when you are drawing with several fingers

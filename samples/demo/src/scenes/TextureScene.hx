@@ -48,7 +48,7 @@ import starling.textures.Texture;
             #else
                 var textValue = "ATF textures are not support in non Flash/Air targets.";
             #end
-            var textField:TextField = new TextField(220, 128, textValue, "Verdana", 14);
+            var textField:TextField = new TextField(220, 128, textValue, "DejaVu Sans", 14);
             textField.x = Constants.CenterX - textField.width / 2;
             textField.y = 280;
             addChild(textField);
