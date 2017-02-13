@@ -4,8 +4,8 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "GPU powered 2D rendering engine which mimics the conventional Flash display list architecture",
-	"version": "1.8.5",
-	"releasenote": "fix TextureAtlas.hx parsing issue",
+	"version": "1.8.4",
+	"releasenote": "Added starling particle system extension and demo, minor fixes",
 	"contributors": [ "p.j.shand", "tbyrne", "singmajesty" ],
 	"dependencies": {
 		
