@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package extensions;
+package starling.extensions;
 
 import flash.errors.ArgumentError;
 import flash.display3D.Context3D;
@@ -224,7 +224,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     }
     
     /** Starts the emitter for a certain time. @default infinite time */
-    public function start(duration:Float=Math.POSITIVE_INFINITY):Void
+    public function start(duration:Float=99999999):Void
     {
         if (mEmissionRate != 0)                
             mEmissionTime = duration;

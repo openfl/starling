@@ -8,7 +8,7 @@
 //
 // =================================================================================================
 
-package extensions;
+package starling.extensions;
 
 import haxe.xml.Fast;
 
@@ -118,7 +118,7 @@ class PDParticleSystem extends ParticleSystem
     
     private override function initParticle(aParticle:Particle):Void
     {
-        var particle:PDParticle = aParticle;
+        var particle:PDParticle = try cast(aParticle, PDParticle) catch(e:Dynamic) null;
      
         // for performance reasons, the random variances are calculated inline instead
         // of calling a function
@@ -197,7 +197,7 @@ class PDParticleSystem extends ParticleSystem
     
     private override function advanceParticle(aParticle:Particle, passedTime:Float):Void
     {
-        var particle:PDParticle = aParticle;
+        var particle:PDParticle = try cast(aParticle, PDParticle) catch(e:Dynamic) null;
         
         var restTime:Float = particle.totalTime - particle.currentTime;
         passedTime = restTime > passedTime ? passedTime : restTime;
@@ -252,7 +252,7 @@ class PDParticleSystem extends ParticleSystem
         emissionRate = mMaxNumParticles / mLifespan;
     }
     
-    private function parseConfig(config:NodeAccess):Void
+    private function parseConfig(config:Xml):Void
     {
         var xml = new Fast(config);
         var config = xml.node;
@@ -268,12 +268,12 @@ class PDParticleSystem extends ParticleSystem
         mStartSizeVariance = getFloatValue(config.startParticleSizeVariance);
         mEndSize = getFloatValue(config.finishParticleSize);
         mEndSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
-        mEmitAngle = deg2rad(getFloatValue(config.angle));
-        mEmitAngleVariance = deg2rad(getFloatValue(config.angleVariance));
-        mStartRotation = deg2rad(getFloatValue(config.rotationStart));
-        mStartRotationVariance = deg2rad(getFloatValue(config.rotationStartVariance));
-        mEndRotation = deg2rad(getFloatValue(config.rotationEnd));
-        mEndRotationVariance = deg2rad(getFloatValue(config.rotationEndVariance));
+        mEmitAngle = MathUtil.deg2rad(getFloatValue(config.angle));
+        mEmitAngleVariance = MathUtil.deg2rad(getFloatValue(config.angleVariance));
+        mStartRotation = MathUtil.deg2rad(getFloatValue(config.rotationStart));
+        mStartRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationStartVariance));
+        mEndRotation = MathUtil.deg2rad(getFloatValue(config.rotationEnd));
+        mEndRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationEndVariance));
         mSpeed = getFloatValue(config.speed);
         mSpeedVariance = getFloatValue(config.speedVariance);
         mRadialAcceleration = getFloatValue(config.radialAcceleration);
@@ -284,8 +284,8 @@ class PDParticleSystem extends ParticleSystem
         mMaxRadiusVariance = getFloatValue(config.maxRadiusVariance);
         mMinRadius = getFloatValue(config.minRadius);
         mMinRadiusVariance = getFloatValue(config.minRadiusVariance);
-        mRotatePerSecond = deg2rad(getFloatValue(config.rotatePerSecond));
-        mRotatePerSecondVariance = deg2rad(getFloatValue(config.rotatePerSecondVariance));
+        mRotatePerSecond = MathUtil.deg2rad(getFloatValue(config.rotatePerSecond));
+        mRotatePerSecondVariance = MathUtil.deg2rad(getFloatValue(config.rotatePerSecondVariance));
         mStartColor = getColor(config.startColor);
         mStartColorVariance = getColor(config.startColorVariance);
         mEndColor = getColor(config.finishColor);
@@ -308,12 +308,12 @@ class PDParticleSystem extends ParticleSystem
     
     private function getIntValue(element:Fast):Int
     {
-        Std.parseInt(element.att.value);
+        return Std.parseInt(element.att.value);
     }
     
     private function getFloatValue(element:Fast):Float
     {
-        Std.parseFloat(element.att.value);
+        return Std.parseFloat(element.att.value);
     }
 
     private function getColor(element:Fast):ColorArgb
@@ -326,7 +326,7 @@ class PDParticleSystem extends ParticleSystem
         return color;
     }
 
-    private function getBlendFunc(element:String):String
+    private function getBlendFunc(element:Fast):String
     {
         var value:Int = getIntValue(element);
         switch (value)
