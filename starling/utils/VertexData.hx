@@ -144,7 +144,7 @@ class VertexData
     /** Appends the vertices from another VertexData object. */
     public function append(data:VertexData):Void
     {
-        //mRawData.fixed = false;
+        mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
         var rawData:Vector<Float> = data.mRawData;
