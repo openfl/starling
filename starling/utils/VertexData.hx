@@ -86,8 +86,7 @@ class VertexData
         var clone:VertexData = new VertexData(0, mPremultipliedAlpha);
         clone.mNumVertices = numVertices;
         clone.mRawData = mRawData.slice(vertexID * ELEMENTS_PER_VERTEX,
-                        numVertices * ELEMENTS_PER_VERTEX);
-
+                                     numVertices * ELEMENTS_PER_VERTEX);
         clone.mRawData.fixed = true;
         return clone;
     }
@@ -298,8 +297,6 @@ class VertexData
         if (factor == 1.0) return;
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
             numVertices = mNumVertices - vertexID;
-         
-        var i:Int;
         
         if (mPremultipliedAlpha)
         {
@@ -543,7 +540,7 @@ class VertexData
         
         mNumVertices = value;
         mRawData.fixed = true;
-        return mNumVertices;
+        return value;
     }
     
     /** The raw vertex data; not a copy! */

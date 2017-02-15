@@ -111,27 +111,27 @@ class TextureAtlas
         var region:Rectangle = new Rectangle();
         var frame:Rectangle  = new Rectangle();
         
-		for (subTexture in atlasXml.elementsNamed("SubTexture"))
-		{
-			var name:String        = subTexture.get("name");
-			var x:Float           = getXmlFloat(subTexture, "x") / scale;
-			var y:Float           = getXmlFloat(subTexture, "y") / scale;
-			var width:Float       = getXmlFloat(subTexture, "width") / scale;
-			var height:Float      = getXmlFloat(subTexture, "height") / scale;
-			var frameX:Float      = getXmlFloat(subTexture, "frameX") / scale;
-			var frameY:Float      = getXmlFloat(subTexture, "frameY") / scale;
-			var frameWidth:Float  = getXmlFloat(subTexture, "frameWidth") / scale;
-			var frameHeight:Float = getXmlFloat(subTexture, "frameHeight") / scale;
-			var rotated:Bool    = parseBool(subTexture.get("rotated"));
-			
-			region.setTo(x, y, width, height);
-			frame.setTo(frameX, frameY, frameWidth, frameHeight);
-			
-			if (frameWidth > 0 && frameHeight > 0)
-				addRegion(name, region, frame, rotated);
-			else
-				addRegion(name, region, null,  rotated);
-		}
+        for (subTexture in atlasXml.elementsNamed("SubTexture"))
+        {
+            var name:String        = subTexture.get("name");
+            var x:Float            = getXmlFloat(subTexture, "x") / scale;
+            var y:Float            = getXmlFloat(subTexture, "y") / scale;
+            var width:Float        = getXmlFloat(subTexture, "width") / scale;
+            var height:Float       = getXmlFloat(subTexture, "height") / scale;
+            var frameX:Float       = getXmlFloat(subTexture, "frameX") / scale;
+            var frameY:Float       = getXmlFloat(subTexture, "frameY") / scale;
+            var frameWidth:Float   = getXmlFloat(subTexture, "frameWidth") / scale;
+            var frameHeight:Float  = getXmlFloat(subTexture, "frameHeight") / scale;
+            var rotated:Bool       = parseBool(subTexture.get("rotated"));
+
+            region.setTo(x, y, width, height);
+            frame.setTo(frameX, frameY, frameWidth, frameHeight);
+
+            if (frameWidth > 0 && frameHeight > 0)
+                addRegion(name, region, frame, rotated);
+            else
+                addRegion(name, region, null,  rotated);
+        }
     }
     
     /** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */

@@ -64,9 +64,6 @@ import starling.utils.Max;
  *  @see Sprite
  *  @see DisplayObject
  */
-
-@:access(starling.events.Event)
-
 class DisplayObjectContainer extends DisplayObject
 {
     // members
@@ -332,9 +329,8 @@ class DisplayObjectContainer extends DisplayObject
         var localY:Float = localPoint.y;
         var numChildren:Int = mChildren.length;
         
-        //for (var i:Int = numChildren - 1; i >= 0; --i) // front to back!
         var i:Int = numChildren - 1;
-        while (i >= 0)
+        while (i >= 0) // front to back!
         {
             var child:DisplayObject = mChildren[i];
             if (child.isMask) continue;

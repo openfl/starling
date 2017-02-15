@@ -88,8 +88,8 @@ class StatsDisplay extends Sprite
         mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
         mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
         
-        mTextField.text = "FPS: " + Math.round(mFps * 10) / 10 + 
-                        "\nMEM: " + Math.round(mMemory * 10) / 10 +
+        mTextField.text = "FPS: " + (mFps < 100 ? (Math.round(mFps * 10) / 10) : mFps) + 
+                        "\nMEM: " + (mMemory < 100 ? (Math.round(mMemory * 10) / 10) : mMemory) +
                         "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
     }
     

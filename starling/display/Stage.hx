@@ -54,9 +54,6 @@ import starling.utils.MatrixUtil;
  *  @see starling.events.ResizeEvent  
  * 
  */
-
-@:access(starling.events.EnterFrameEvent)
-
 class Stage extends DisplayObjectContainer
 {
     private var mWidth:Int;
@@ -171,20 +168,20 @@ class Stage extends DisplayObjectContainer
     // enter frame event optimization
     
     /** @private */
-    private function addEnterFrameListener(listener:DisplayObject):Void
+    @:allow(starling) private function addEnterFrameListener(listener:DisplayObject):Void
     {
         mEnterFrameListeners.push(listener);
     }
     
     /** @private */
-    private function removeEnterFrameListener(listener:DisplayObject):Void
+    @:allow(starling) private function removeEnterFrameListener(listener:DisplayObject):Void
     {
         var index:Int = mEnterFrameListeners.indexOf(listener);
         if (index >= 0) mEnterFrameListeners.splice(index, 1); 
     }
     
     /** @private */
-    private override function __getChildEventListeners(object:DisplayObject, eventType:String, 
+    @:allow(starling) private override function __getChildEventListeners(object:DisplayObject, eventType:String, 
                                                       listeners:Vector<DisplayObject>):Void
     {
         if (eventType == Event.ENTER_FRAME && object == this)
@@ -312,7 +309,7 @@ class Stage extends DisplayObjectContainer
     private function set_projectionOffset(value:Point):Point
     {
         mProjectionOffset.setTo(value.x, value.y);
-        return mProjectionOffset;
+        return value;
     }
 
     /** The global position of the camera. This property can only be used to find out the

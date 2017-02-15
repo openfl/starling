@@ -139,7 +139,7 @@ class TextField extends DisplayObjectContainer
     
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String, fontName:String="_sans",
-                              fontSize:Float=12, color:UInt=0x0, bold:Bool=false)
+                        fontSize:Float=12, color:UInt=0x0, bold:Bool=false)
     {
         super();
         mText = text != null ? text : "";
@@ -272,7 +272,7 @@ class TextField extends DisplayObjectContainer
      * Useful especially in combination with the "formatText" method. */
     @:final private function requireRedraw():Void
     {
-        mRequiresRedraw = true;
+    	mRequiresRedraw = true;
     }
 
     private function renderText(scale:Float, resultTextBounds:Rectangle):BitmapData
@@ -350,7 +350,6 @@ class TextField extends DisplayObjectContainer
         var bitmapData:BitmapData = new BitmapData(Std.int(width), Std.int(height), true, 0x0);
         var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
             filterOffset.x, filterOffset.y + Std.int(textOffsetY) - 2);
-
         #if flash
         var drawWithQualityFunc:Function =
             Reflect.getProperty(bitmapData, "drawWithQuality");
@@ -584,7 +583,7 @@ class TextField extends DisplayObjectContainer
         
         mHitArea.width = value;
         mRequiresRedraw = true;
-        return super.get_width();
+        return value;
     }
     
     /** @inheritDoc */
@@ -592,7 +591,7 @@ class TextField extends DisplayObjectContainer
     {
         mHitArea.height = value;
         mRequiresRedraw = true;
-        return super.get_height();
+        return value;
     }
     
     /** The displayed text. */
@@ -606,7 +605,7 @@ class TextField extends DisplayObjectContainer
             mText = value;
             mRequiresRedraw = true;
         }
-        return mText;
+        return value;
     }
     
     /** The name of the font (true type or bitmap font). */
@@ -622,7 +621,7 @@ class TextField extends DisplayObjectContainer
             mFontName = value;
             mRequiresRedraw = true;
         }
-        return mFontName;
+        return value;
     }
     
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for 
@@ -636,7 +635,7 @@ class TextField extends DisplayObjectContainer
             mFontSize = value;
             mRequiresRedraw = true;
         }
-        return mFontSize;
+        return value;
     }
     
     /** The color of the text. Note that bitmap fonts should be exported in plain white so
@@ -651,7 +650,7 @@ class TextField extends DisplayObjectContainer
             mColor = value;
             mRequiresRedraw = true;
         }
-        return mColor;
+        return value;
     }
     
     /** The horizontal alignment of the text. @default center @see starling.utils.HAlign */
@@ -667,7 +666,7 @@ class TextField extends DisplayObjectContainer
             mHAlign = value;
             mRequiresRedraw = true;
         }
-        return mHAlign;
+        return value;
     }
     
     /** The vertical alignment of the text. @default center @see starling.utils.VAlign */
@@ -683,7 +682,7 @@ class TextField extends DisplayObjectContainer
             mVAlign = value;
             mRequiresRedraw = true;
         }
-        return mVAlign;
+        return value;
     }
     
     /** Draws a border around the edges of the text field. Useful for visual debugging. 
@@ -707,7 +706,7 @@ class TextField extends DisplayObjectContainer
             mBorder.removeFromParent(true);
             mBorder = null;
         }
-        return mBorder != null;
+        return value;
     }
     
     /** Indicates whether the text is bold. @default false */
@@ -720,7 +719,7 @@ class TextField extends DisplayObjectContainer
             mBold = value;
             mRequiresRedraw = true;
         }
-        return mBold;
+        return value;
     }
     
     /** Indicates whether the text is italicized. @default false */
@@ -733,7 +732,7 @@ class TextField extends DisplayObjectContainer
             mItalic = value;
             mRequiresRedraw = true;
         }
-        return mItalic;
+        return value;
     }
     
     /** Indicates whether the text is underlined. @default false */
@@ -746,7 +745,7 @@ class TextField extends DisplayObjectContainer
             mUnderline = value;
             mRequiresRedraw = true;
         }
-        return mUnderline;
+        return value;
     }
     
     /** Indicates whether kerning is enabled. @default true */
@@ -759,7 +758,7 @@ class TextField extends DisplayObjectContainer
             mKerning = value;
             mRequiresRedraw = true;
         }
-        return mKerning;
+        return value;
     }
     
     /** Indicates whether the font size is scaled down so that the complete text fits
@@ -773,7 +772,7 @@ class TextField extends DisplayObjectContainer
             mAutoScale = value;
             mRequiresRedraw = true;
         }
-        return mAutoScale;
+        return value;
     }
     
     /** Specifies the type of auto-sizing the TextField will do.
@@ -789,7 +788,7 @@ class TextField extends DisplayObjectContainer
             mAutoSize = value;
             mRequiresRedraw = true;
         }
-        return autoSize;
+        return value;
     }
     
     /** Indicates if TextField should be batched on rendering. This works only with bitmap
@@ -802,7 +801,7 @@ class TextField extends DisplayObjectContainer
     { 
         mBatchable = value;
         if (mQuadBatch != null) mQuadBatch.batchable = value;
-        return mBatchable;
+        return value;
     }
 
     /** The native Flash BitmapFilters to apply to this TextField.
@@ -814,7 +813,7 @@ class TextField extends DisplayObjectContainer
     {
         mNativeFilters = value.copy();
         mRequiresRedraw = true;
-        return mNativeFilters;
+        return value;
     }
 
     /** Indicates if the assigned text should be interpreted as HTML code. For a description
@@ -831,7 +830,7 @@ class TextField extends DisplayObjectContainer
             mIsHtmlText = value;
             mRequiresRedraw = true;
         }
-        return mIsHtmlText;
+        return value;
     }
 
     /** The amount of vertical space (called 'leading') between lines. @default 0 */
@@ -844,7 +843,7 @@ class TextField extends DisplayObjectContainer
             mLeading = value;
             mRequiresRedraw = true;
         }
-        return mLeading;
+        return value;
     }
     
     /** The Context3D texture format that is used for rendering of all TrueType texts.

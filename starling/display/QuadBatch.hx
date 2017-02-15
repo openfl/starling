@@ -66,9 +66,6 @@ import starling.utils.VertexData;
  *
  *  @see Sprite  
  */
-
-@:access(starling.filters.FragmentFilter)
-
 class QuadBatch extends DisplayObject
 {
     /** The maximum number of quads that can be displayed by one QuadBatch. */
@@ -114,7 +111,7 @@ class QuadBatch extends DisplayObject
         mSyncRequired = false;
         mBatchable = false;
         mOwnsTexture = false;
-        
+
         if (optimizeForProfile)
         {
             var profile:Context3DProfile = Starling.current.profile;
@@ -134,8 +131,18 @@ class QuadBatch extends DisplayObject
         Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, __onContextCreated);
         __destroyBuffers();
         
-        mVertexData.numVertices = 0;
-        mIndexData = null;
+        if (mVertexData != null)
+        {
+            mVertexData.numVertices = 0;
+            mVertexData = null;
+        }
+
+        if (mIndexData != null)
+        {
+            mIndexData.length = 0;
+            mIndexData = null;
+        }
+
         mNumQuads = 0;
 
         if (mTexture != null && mOwnsTexture)
@@ -146,7 +153,10 @@ class QuadBatch extends DisplayObject
     
     private function __onContextCreated(event:Dynamic):Void
     {
-        __createBuffers();
+        if (mVertexData != null) // !disposed
+        {
+            __createBuffers();
+        }
     }
     
     /** Call this method after manually changing the contents of 'mVertexData'. */
@@ -166,7 +176,7 @@ class QuadBatch extends DisplayObject
         clone.mTexture = mTexture;
         clone.mSmoothing = mSmoothing;
         clone.mSyncRequired = true;
-        clone.mForceTinted = mForceTinted;
+        clone.mForceTinted = forceTinted;
         clone.blendMode = blendMode;
         clone.alpha = alpha;
         return clone;
@@ -252,8 +262,7 @@ class QuadBatch extends DisplayObject
         RenderSupport.setBlendFactors(pma, blendMode != null ? blendMode : this.blendMode);
         
         context.setProgram(__getProgram(tinted));
-        if (tinted)
-            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
+        context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 0, sRenderAlpha, 1);
         context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 1, mvpMatrix, true);
         context.setVertexBufferAt(0, mVertexBuffer, VertexData.POSITION_OFFSET, 
                                   Context3DVertexBufferFormat.FLOAT_2); 
@@ -759,7 +768,7 @@ class QuadBatch extends DisplayObject
 
         __destroyBuffers();
         mSyncRequired = true;
-        return Std.int(mVertexData.numVertices / 4);
+        return value;
     }
 
     // program management
@@ -827,10 +836,9 @@ class QuadBatch extends DisplayObject
     }
     
     private static function getImageProgramName(tinted:Bool, mipMap:Bool=true, 
-                                                repeat:Bool=false, format:Context3DTextureFormat=null,
+                                                repeat:Bool=false, format:Context3DTextureFormat=BGRA,
                                                 smoothing:String="bilinear"):String
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         var bitField:UInt = 0;
         
         if (tinted) bitField |= 1;

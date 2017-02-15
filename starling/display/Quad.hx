@@ -159,7 +159,7 @@ class Quad extends DisplayObject
         
         if (value != 0xffffff || alpha != 1.0) mTinted = true;
         else mTinted = mVertexData.tinted;
-        return mVertexData.getColor(0);
+        return value;
     }
     
     /** @inheritDoc **/
@@ -169,7 +169,7 @@ class Quad extends DisplayObject
         
         if (value < 1.0) mTinted = true;
         else mTinted = mVertexData.tinted;
-        return mAlpha;
+        return value;
     }
     
     /** Copies the raw vertex data to a VertexData instance. */

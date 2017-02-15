@@ -64,8 +64,9 @@ class Canvas extends DisplayObject
 
         registerPrograms();
 
-        // handle lost context
-        Starling.current.addEventListener(Event.CONTEXT3D_CREATE, __onContextCreated);
+        // Handle lost context (using conventional Flash event for weak listener support)
+        Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
+            __onContextCreated, false, 0, true);
     }
 
     private function __onContextCreated(event:Dynamic):Void
@@ -77,6 +78,7 @@ class Canvas extends DisplayObject
     /** @inheritDoc */
     public override function dispose():Void
     {
+        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, __onContextCreated);
         __destroyBuffers();
         super.dispose();
     }

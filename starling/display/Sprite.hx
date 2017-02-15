@@ -142,7 +142,7 @@ class Sprite extends DisplayObjectContainer
     {
         if (mClipRect != null && value != null) mClipRect.copyFrom(value);
         else mClipRect = (value != null ? value.clone() : null);
-        return mClipRect;
+        return value;
     }
 
     /** Returns the bounds of the container's clipping rectangle in the given coordinate space,

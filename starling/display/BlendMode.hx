@@ -19,7 +19,7 @@ import flash.errors.ArgumentError;
  *  represents a particular four-value vector that is multiplied with the source or destination
  *  color in the blending formula. The blending formula is:</p>
  * 
- *  <pre>result = source Å~ sourceFactor + destination Å~ destinationFactor</pre>
+ *  <pre>result = source ◊ sourceFactor + destination ◊ destinationFactor</pre>
  * 
  *  <p>In the formula, the source color is the output color of the pixel shader program. The 
  *  destination color is the color that currently exists in the color buffer, as set by 
@@ -98,9 +98,7 @@ class BlendMode
     public static function getBlendFactors(mode:String, premultipliedAlpha:Bool=true):Array<Context3DBlendFactor>
     {
         var modes:Map<String, Array<Context3DBlendFactor>> = sBlendFactors[premultipliedAlpha ? 1 : 0];
-        var ret = modes[mode];
-        if (ret != null)
-            return ret;
+        if (modes.exists(mode)) return modes[mode];
         else throw new ArgumentError("Invalid blend mode");
     }
     
@@ -114,6 +112,6 @@ class BlendMode
         modes[name] = [sourceFactor, destFactor];
         
         var otherModes:Map<String, Array<Context3DBlendFactor>> = sBlendFactors[!premultipliedAlpha ? 1 : 0];
-        if (!(otherModes.exists(name))) otherModes[name] = [sourceFactor, destFactor];
+        if (!otherModes.exists(name)) otherModes[name] = [sourceFactor, destFactor];
     }
 }

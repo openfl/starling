@@ -166,7 +166,7 @@ class Image extends Quad
             mVertexDataCache.setPremultipliedAlpha(mTexture.premultipliedAlpha, false);
             onVertexDataChanged();
         }
-        return mTexture;
+        return value;
     }
     
     /** The smoothing filter that is used for the texture. 
@@ -180,7 +180,7 @@ class Image extends Quad
             mSmoothing = value;
         else
             throw new ArgumentError("Invalid smoothing mode: " + value);
-        return mSmoothing;
+        return value;
     }
     
     /** @inheritDoc */

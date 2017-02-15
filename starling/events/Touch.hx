@@ -243,15 +243,15 @@ class Touch
     /** @private 
      * Dispatches a touch event along the current bubble chain (which is updated each time
      * a target is set). */
-    private function dispatchEvent(event:TouchEvent):Void
+    @:allow(starling) private function dispatchEvent(event:TouchEvent):Void
     {
         if (mTarget != null) event.dispatch(mBubbleChain);
     }
     
     /** @private */
-    private var bubbleChain(get, never):Vector<EventDispatcher>;
+    @:allow(starling) private var bubbleChain(get, never):Vector<EventDispatcher>;
     private function get_bubbleChain():Vector<EventDispatcher>
     {
-        return mBubbleChain.copy();
+        return mBubbleChain.concat();
     }
 }

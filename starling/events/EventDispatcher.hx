@@ -35,9 +35,6 @@ import starling.display.DisplayObject;
  *  @see Event
  *  @see starling.display.DisplayObject DisplayObject
  */
-
-@:access(starling.events.Event)
-
 class EventDispatcher
 {
     private var mEventListeners:Map<String, Vector<Function>>;
@@ -93,7 +90,6 @@ class EventDispatcher
                 {
                     var restListeners:Vector<Function> = listeners.slice(0, index);
 
-                    //for (var i:Int=index+1; i<numListeners; ++i)
                     for (i in index + 1...numListeners)
                         restListeners[i-1] = listeners[i];
 
@@ -140,9 +136,10 @@ class EventDispatcher
      * Invokes an event on the current object. This method does not do any bubbling, nor
      * does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      * method uses this method internally. */
-    private function __invokeEvent(event:Event):Bool
+    @:allow(starling) private function __invokeEvent(event:Event):Bool
     {
-        var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Vector<Function> = mEventListeners != null ?
+            mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)

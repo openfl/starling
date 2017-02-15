@@ -52,9 +52,6 @@ import starling.display.DisplayObject;
  *  @see Touch
  *  @see TouchPhase
  */
-
-@:access(starling.events.EventDispatcher)
-
 class TouchEvent extends Event
 {
     /** Event type for touch or mouse input. */

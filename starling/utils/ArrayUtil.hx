@@ -48,7 +48,6 @@ class ArrayUtil
         if (index < 0) index += length + 1;
         if (index < 0) index = 0;
 
-        //for (i = index - 1; i >= length; --i)
         i = index - 1;
         while (i >= length)
         {
@@ -56,7 +55,6 @@ class ArrayUtil
             --i;
         }
 
-        //for (i = length; i > index; --i)
         i = length;
         while (i > index)
         {
@@ -80,7 +78,6 @@ class ArrayUtil
 
         var object:T = array[index];
 
-        //for (i = index+1; i < length; ++i)
         i = index + 1;
         while (i < length)
         {
