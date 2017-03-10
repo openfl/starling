@@ -478,7 +478,7 @@ import starling.events.EventDispatcher;
     private function set_onStartArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnStartArgs = value; }
     
     /** The arguments that will be passed to the 'onUpdate' function. */
-    public var onUpdateArgs:Array<Dynamic>;
+    public var onUpdateArgs(get, set):Array<Dynamic>;
     private function get_onUpdateArgs():Array<Dynamic> { return mOnUpdateArgs; }
     private function set_onUpdateArgs(value:Array<Dynamic>):Void { mOnUpdateArgs = value; }
     
