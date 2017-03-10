@@ -480,7 +480,7 @@ import starling.events.EventDispatcher;
     /** The arguments that will be passed to the 'onUpdate' function. */
     public var onUpdateArgs(get, set):Array<Dynamic>;
     private function get_onUpdateArgs():Array<Dynamic> { return mOnUpdateArgs; }
-    private function set_onUpdateArgs(value:Array<Dynamic>):Void { mOnUpdateArgs = value; }
+    private function set_onUpdateArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnUpdateArgs = value; }
     
     /** The arguments that will be passed to the 'onRepeat' function. */
     public var onRepeatArgs(get, set):Array<Dynamic>;
