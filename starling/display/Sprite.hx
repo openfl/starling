@@ -74,11 +74,11 @@ class Sprite extends DisplayObjectContainer
     /** @inheritDoc */
     public override function dispose():Void
     {
-        disposeFlattenedContents();
+        __disposeFlattenedContents();
         super.dispose();
     }
     
-    private function disposeFlattenedContents():Void
+    private function __disposeFlattenedContents():Void
     {
         if (mFlattenedContents != null)
         {
@@ -122,7 +122,7 @@ class Sprite extends DisplayObjectContainer
     public function unflatten():Void
     {
         mFlattenRequested = false;
-        disposeFlattenedContents();
+        __disposeFlattenedContents();
     }
     
     /** Indicates if the sprite was flattened. */
@@ -142,7 +142,7 @@ class Sprite extends DisplayObjectContainer
     {
         if (mClipRect != null && value != null) mClipRect.copyFrom(value);
         else mClipRect = (value != null ? value.clone() : null);
-        return mClipRect;
+        return value;
     }
 
     /** Returns the bounds of the container's clipping rectangle in the given coordinate space,

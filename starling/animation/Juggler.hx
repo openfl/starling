@@ -49,10 +49,6 @@ import starling.events.EventDispatcher;
  *  @see Tween
  *  @see DelayedCall 
  */
-
-@:access(starling.animation.DelayedCall)
-@:access(starling.animation.Tween)
-
 class Juggler implements IAnimatable
 {
     private var mObjects:Vector<IAnimatable>;
@@ -264,7 +260,7 @@ class Juggler implements IAnimatable
         // there is a high probability that the "advanceTime" function modifies the list 
         // of animatables. we must not process new objects right now (they will be processed
         // in the next frame), and we need to clean up any empty slots in the list.
-
+        
         while (i < numObjects)
         {
             var object:IAnimatable = mObjects[i];
@@ -280,17 +276,16 @@ class Juggler implements IAnimatable
                 object.advanceTime(time);
                 ++currentIndex;
             }
-            
             ++i;
         }
         
         if (currentIndex != i)
         {
             numObjects = mObjects.length; // count might have changed!
-
+            
             while (i < numObjects)
                 mObjects[currentIndex++] = mObjects[i++];
-
+            
             mObjects.length = currentIndex;
         }
     }
@@ -307,7 +302,7 @@ class Juggler implements IAnimatable
     /** The total life time of the juggler (in seconds). */
     public var elapsedTime(get, never):Float;
     private function get_elapsedTime():Float { return mElapsedTime; }
- 
+
     /** The actual vector that contains all objects that are currently being animated. */
     private var objects(get, never):Vector<IAnimatable>;
     private function get_objects():Vector<IAnimatable> { return mObjects; }

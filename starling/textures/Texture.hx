@@ -44,7 +44,7 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  *  <strong>Texture Formats</strong>
  *
  *  <p>Since textures can be created from a "BitmapData" object, Starling supports any bitmap
- *  format that is supported by openfl. And since you can render any Flash display object into
+ *  format that is supported by OpenFL. And since you can render any Flash display object into
  *  a BitmapData object, you can use this to display non-Starling content in Starling - e.g.
  *  Shape objects.</p>
  *
@@ -185,10 +185,9 @@ class Texture
      */
     public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool=true,
                                              optimizeForRenderToTexture:Bool=false,
-                                             scale:Float=1, format:Context3DTextureFormat=null,
+                                             scale:Float=1, format:Context3DTextureFormat=BGRA,
                                              repeat:Bool=false):Texture
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture;
         var asset = Type.createEmptyInstance(assetClass);
 
@@ -235,10 +234,9 @@ class Texture
      */
     public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool=true,
                                       optimizeForRenderToTexture:Bool=false,
-                                      scale:Float=1, format:Context3DTextureFormat=null,
+                                      scale:Float=1, format:Context3DTextureFormat=BGRA,
                                       repeat:Bool=false):Texture
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture,
                               scale, format, repeat);
     }
@@ -260,10 +258,9 @@ class Texture
      */
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
                                           optimizeForRenderToTexture:Bool=false,
-                                          scale:Float=1, format:Context3DTextureFormat=null,
+                                          scale:Float=1, format:Context3DTextureFormat=BGRA,
                                           repeat:Bool=false):Texture
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
@@ -293,7 +290,6 @@ class Texture
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);
-		
 		var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format,
@@ -398,7 +394,7 @@ class Texture
         texture = new ConcreteVideoTexture(base, scale);
         texture.onRestore = function():Void
         {
-            @:privateAccess texture.root.attachVideo(type, attachment);
+            texture.root.attachVideo(type, attachment);
         };
 
         return texture;
@@ -416,9 +412,8 @@ class Texture
      */
     public static function fromColor(width:Float, height:Float, color:UInt=0xffffffff,
                                      optimizeForRenderToTexture:Bool=false,
-                                     scale:Float=-1, format:Context3DTextureFormat=null):Texture
+                                     scale:Float=-1, format:Context3DTextureFormat=BGRA):Texture
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         var texture:Texture = Texture.empty(width, height, true, false,
                                             optimizeForRenderToTexture, scale, format);
         texture.root.clear(color, Color.getAlpha(color) / 255.0);
@@ -449,17 +444,9 @@ class Texture
      */
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
                                  mipMapping:Bool=true, optimizeForRenderToTexture:Bool=false,
-                                 scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false):Texture
+                                 scale:Float=-1, format:Context3DTextureFormat=BGRA, repeat:Bool=false):Texture
     {
-        #if html5
-			if (mipMapping == true) {
-				trace("MipMap Generation is not supported on HTML5 Target");
-			}
-			mipMapping = false;
-		#end
-		
 		if (scale <= 0) scale = Starling.current.contentScaleFactor;
-        if (format == null) format = Context3DTextureFormat.BGRA;
 
         var actualWidth:Int, actualHeight:Int;
         var nativeTexture:TextureBase;
@@ -490,7 +477,7 @@ class Texture
             nativeTexture = context.createTexture(actualWidth, actualHeight, format,
                                                   optimizeForRenderToTexture);
         }
-		
+
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, format,
             actualWidth, actualHeight, mipMapping, premultipliedAlpha,
             optimizeForRenderToTexture, scale, repeat);

@@ -120,8 +120,7 @@ import starling.events.EventDispatcher;
         
         return this;
     }
-  
-          
+    
     /** Animates the property of the target to a certain value. You can call this method
      * multiple times on one tween.
      *
@@ -198,7 +197,8 @@ import starling.events.EventDispatcher;
         if (mCurrentCycle < 0 && previousTime <= 0 && mCurrentTime > 0)
         {
             mCurrentCycle++;
-            if (mOnStart != null) {
+            if (mOnStart != null)
+            {
                 if (mOnStartArgs != null) {
                     mOnStart(mOnStartArgs);
                 } else {
@@ -221,7 +221,8 @@ import starling.events.EventDispatcher;
             updateFunc(mProperties[i], mStartValues[i], mEndValues[i]);
         }
 
-        if (mOnUpdate != null) {
+        if (mOnUpdate != null)
+        {
             if (mOnUpdateArgs != null) {
                 mOnUpdate(mOnUpdateArgs);
             } else {
@@ -236,7 +237,8 @@ import starling.events.EventDispatcher;
                 mCurrentTime = -mRepeatDelay;
                 mCurrentCycle++;
                 if (mRepeatCount > 1) mRepeatCount--;
-                if (mOnRepeat != null) {
+                if (mOnRepeat != null)
+                {
                     if (mOnRepeatArgs != null) {
                         mOnRepeat(mOnRepeatArgs);
                     } else {
@@ -254,13 +256,15 @@ import starling.events.EventDispatcher;
                 // add it to another juggler; so this event has to be dispatched *before*
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                if (mOnComplete != null) {
+                if (mOnComplete != null)
+                {
                     if (mOnCompleteArgs != null) {
                         mOnComplete(mOnCompleteArgs);
                     } else {
                         mOnComplete();
                     }
                 }
+                if (mCurrentTime == 0) carryOverTime = 0; // tween was reset
             }
         }
         
@@ -277,10 +281,10 @@ import starling.events.EventDispatcher;
 
         switch (hint)
         {
-            case null:  updateFunc = updateStandard; //break;
-            case "rgb": updateFunc = updateRgb; //break;
-            case "rad": updateFunc = updateRad; //break;
-            case "deg": updateFunc = updateDeg; //break;
+            case null:  updateFunc = updateStandard;
+            case "rgb": updateFunc = updateRgb;
+            case "rad": updateFunc = updateRad;
+            case "deg": updateFunc = updateDeg;
             default:
                 trace("[Starling] Ignoring unknown property hint: " + hint);
                 updateFunc = updateStandard;
@@ -390,7 +394,7 @@ import starling.events.EventDispatcher;
         
         if (mTransitionFunc == null)
             throw new ArgumentError("Invalid transiton: " + value);
-        return mTransitionName;
+        return value;
     }
     
     /** The actual transition function used for the animation. */
@@ -422,7 +426,7 @@ import starling.events.EventDispatcher;
     { 
         mCurrentTime = mCurrentTime + mDelay - value;
         mDelay = value;
-        return mDelay;
+        return value;
     }
     
     /** The number of times the tween will be executed. 
@@ -474,9 +478,9 @@ import starling.events.EventDispatcher;
     private function set_onStartArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnStartArgs = value; }
     
     /** The arguments that will be passed to the 'onUpdate' function. */
-    public var onUpdateArgs:Array<Dynamic>;
+    public var onUpdateArgs(get, set):Array<Dynamic>;
     private function get_onUpdateArgs():Array<Dynamic> { return mOnUpdateArgs; }
-    private function set_onUpdateArgs(value:Array<Dynamic>):Void { mOnUpdateArgs = value; }
+    private function set_onUpdateArgs(value:Array<Dynamic>):Array<Dynamic> { return mOnUpdateArgs = value; }
     
     /** The arguments that will be passed to the 'onRepeat' function. */
     public var onRepeatArgs(get, set):Array<Dynamic>;
@@ -499,15 +503,15 @@ import starling.events.EventDispatcher;
     private static var sTweenPool:Vector<Tween> = new Vector<Tween>();
     
     /** @private */
-    private static function fromPool(target:Dynamic, time:Float, 
-                                               transition:Dynamic="linear"):Tween
+    @:allow(starling) private static function fromPool(target:Dynamic, time:Float, 
+                                                       transition:Dynamic="linear"):Tween
     {
         if (sTweenPool.length != 0) return sTweenPool.pop().reset(target, time, transition);
         else return new Tween(target, time, transition);
     }
     
     /** @private */
-    private static function toPool(tween:Tween):Void
+    @:allow(starling) private static function toPool(tween:Tween):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
         tween.mOnStart = tween.mOnUpdate = tween.mOnRepeat = tween.mOnComplete = null;

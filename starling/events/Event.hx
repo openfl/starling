@@ -87,10 +87,6 @@ class Event
     public static inline var SELECT:String = "select";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     public static inline var READY:String = "ready";
-	/** An event type to be utilized in custom events. Not used by Starling right now. */
-	public static inline var FOCUS_CHANGE:String = "focusChange";
-    
-	
 	
     private static var sEventPool:Vector<Event> = new Vector<Event>();
     
@@ -139,38 +135,38 @@ class Event
     // properties for public use
     
     /** @private */
-    private function setTarget(value:EventDispatcher):Void { target = value; }
+    @:allow(starling) private function setTarget(value:EventDispatcher):Void { target = value; }
     
     /** @private */
-    private function setCurrentTarget(value:EventDispatcher):Void { currentTarget = value; } 
+    @:allow(starling) private function setCurrentTarget(value:EventDispatcher):Void { currentTarget = value; } 
     
     /** @private */
-    private function setData(value:Dynamic):Void { data = value; }
+    @:allow(starling) private function setData(value:Dynamic):Void { data = value; }
     
     /** @private */
-    private var stopsPropagation(default, null):Bool;
+    @:allow(starling) private var stopsPropagation(default, null):Bool;
     
     /** @private */
-    private var stopsImmediatePropagation(default, null):Bool;
+    @:allow(starling) private var stopsImmediatePropagation(default, null):Bool;
     
     // event pooling
     
     /** @private */
-    private static function fromPool(type:String, bubbles:Bool=false, data:Dynamic=null):Event
+    @:allow(starling) private static function fromPool(type:String, bubbles:Bool=false, data:Dynamic=null):Event
     {
         if (sEventPool.length != 0) return sEventPool.pop().reset(type, bubbles, data);
         else return new Event(type, bubbles, data);
     }
     
     /** @private */
-    private static function toPool(event:Event):Void
+    @:allow(starling) private static function toPool(event:Event):Void
     {
         event.data = event.target = event.currentTarget = null;
         sEventPool[sEventPool.length] = event; // avoiding 'push'
     }
     
     /** @private */
-    private function reset(type:String, bubbles:Bool=false, data:Dynamic=null):Event
+    @:allow(starling) private function reset(type:String, bubbles:Bool=false, data:Dynamic=null):Event
     {
         this.type = type;
         this.bubbles = bubbles;

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="ParticleDemo" package="com.sample.particledemo" version="1.0.0" company="Company Name" />
+	<app main="Startup" path="Export" file="ParticleDemo" swf-version="12.0" />
+	
+	<window width="640" height="480" background="#222222" />
+	
+	<source path="Source" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="starling" />
+	
+	<assets path="Assets" rename="assets" />
+	
+</project>

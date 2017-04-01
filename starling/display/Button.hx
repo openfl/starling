@@ -59,6 +59,7 @@ class Button extends DisplayObjectContainer
     private var mScaleWhenOver:Float;
     private var mAlphaWhenDown:Float;
     private var mAlphaWhenDisabled:Float;
+    //private var mUseHandCursor:Bool;
     private var mEnabled:Bool;
     private var mState:String;
     private var mTriggerBounds:Rectangle;
@@ -67,7 +68,7 @@ class Button extends DisplayObjectContainer
      * Any state that is left 'null' will display the up-state texture. Beware that all
      * state textures should have the same dimensions. */
     public function new(upState:Texture, text:String="", downState:Texture=null,
-                           overState:Texture=null, disabledState:Texture=null)
+                        overState:Texture=null, disabledState:Texture=null)
     {
         super();
         if (upState == null) throw new ArgumentError("Texture 'upState' cannot be null");
@@ -90,7 +91,7 @@ class Button extends DisplayObjectContainer
         mContents = new Sprite();
         mContents.addChild(mBody);
         addChild(mContents);
-        addEventListener(TouchEvent.TOUCH, onTouch);
+        addEventListener(TouchEvent.TOUCH, __onTouch);
         
         this.touchGroup = true;
         this.text = text;
@@ -118,7 +119,7 @@ class Button extends DisplayObjectContainer
             textBounds = new Rectangle(0, 0, mBody.width, mBody.height);
     }
 
-    private function createTextField():Void
+    private function __createTextField():Void
     {
         if (mTextField == null)
         {
@@ -136,7 +137,7 @@ class Button extends DisplayObjectContainer
         mTextField.y = mTextBounds.y;
     }
     
-    private override function onTouch(event:TouchEvent):Void
+    private override function __onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = (mUseHandCursor && mEnabled && event.interactsWith(this)) ?
             MouseCursor.BUTTON : MouseCursor.AUTO;
@@ -192,11 +193,11 @@ class Button extends DisplayObjectContainer
     private function set_state(value:String):String
     {
         mState = value;
-        refreshState();
-        return mState;
+        __refreshState();
+        return value;
     }
 
-    private function refreshState():Void
+    private function __refreshState():Void
     {
         mContents.x = mContents.y = 0;
         mContents.scaleX = mContents.scaleY = mContents.alpha = 1.0;
@@ -204,31 +205,27 @@ class Button extends DisplayObjectContainer
         switch (mState)
         {
             case ButtonState.DOWN:
-                setStateTexture(mDownState);
+                __setStateTexture(mDownState);
                 mContents.alpha = mAlphaWhenDown;
                 mContents.scaleX = mContents.scaleY = mScaleWhenDown;
                 mContents.x = (1.0 - mScaleWhenDown) / 2.0 * mBody.width;
                 mContents.y = (1.0 - mScaleWhenDown) / 2.0 * mBody.height;
-                //break;
             case ButtonState.UP:
-                setStateTexture(mUpState);
-                //break;
+                __setStateTexture(mUpState);
             case ButtonState.OVER:
-                setStateTexture(mOverState);
+                __setStateTexture(mOverState);
                 mContents.scaleX = mContents.scaleY = mScaleWhenOver;
                 mContents.x = (1.0 - mScaleWhenOver) / 2.0 * mBody.width;
                 mContents.y = (1.0 - mScaleWhenOver) / 2.0 * mBody.height;
-                //break;
             case ButtonState.DISABLED:
-                setStateTexture(mDisabledState);
+                __setStateTexture(mDisabledState);
                 mContents.alpha = mAlphaWhenDisabled;
-                //break;
             default:
                 throw new ArgumentError("Invalid button state: " + mState);
         }
     }
 
-    private function setStateTexture(texture:Texture):Void
+    private function __setStateTexture(texture:Texture):Void
     {
         mBody.texture = texture != null ? texture : mUpState;
     }
@@ -241,8 +238,8 @@ class Button extends DisplayObjectContainer
     private function set_scaleWhenDown(value:Float):Float
     {
         mScaleWhenDown = value;
-        if (mState == ButtonState.DOWN) refreshState();
-        return mScaleWhenDown;
+        if (mState == ButtonState.DOWN) __refreshState();
+        return value;
     }
 
     /** The scale factor of the button while the mouse cursor hovers over it. @default 1.0 */
@@ -251,8 +248,8 @@ class Button extends DisplayObjectContainer
     private function set_scaleWhenOver(value:Float):Float
     {
         mScaleWhenOver = value;
-        if (mState == ButtonState.OVER) refreshState();
-        return mScaleWhenOver;
+        if (mState == ButtonState.OVER) __refreshState();
+        return value;
     }
 
     /** The alpha value of the button on touch. @default 1.0 */
@@ -261,8 +258,8 @@ class Button extends DisplayObjectContainer
     private function set_alphaWhenDown(value:Float):Float
     {
         mAlphaWhenDown = value;
-        if (mState == ButtonState.DOWN) refreshState();
-        return mAlphaWhenDown;
+        if (mState == ButtonState.DOWN) __refreshState();
+        return value;
     }
 
     /** The alpha value of the button when it is disabled. @default 0.5 */
@@ -271,8 +268,8 @@ class Button extends DisplayObjectContainer
     private function set_alphaWhenDisabled(value:Float):Float
     {
         mAlphaWhenDisabled = value;
-        if (mState == ButtonState.DISABLED) refreshState();
-        return mAlphaWhenDisabled;
+        if (mState == ButtonState.DISABLED) __refreshState();
+        return value;
     }
     
     /** Indicates if the button can be triggered. */
@@ -285,7 +282,7 @@ class Button extends DisplayObjectContainer
             mEnabled = value;
             state = value ? ButtonState.UP : ButtonState.DISABLED;
         }
-        return mEnabled;
+        return value;
     }
     
     /** The text that is displayed on the button. */
@@ -303,13 +300,13 @@ class Button extends DisplayObjectContainer
         }
         else
         {
-            createTextField();
+            __createTextField();
             mTextField.text = value;
             
             if (mTextField.parent == null)
                 mContents.addChild(mTextField);
         }
-        return mTextField != null ? mTextField.text : "";
+        return value;
     }
     
     /** The name of the font displayed on the button. May be a system font or a registered
@@ -318,9 +315,9 @@ class Button extends DisplayObjectContainer
     private function get_fontName():String { return mTextField != null ? mTextField.fontName : "_sans"; }
     private function set_fontName(value:String):String
     {
-        createTextField();
+        __createTextField();
         mTextField.fontName = value;
-        return mTextField != null ? mTextField.fontName : "_sans";
+        return value;
     }
     
     /** The size of the font. */
@@ -328,9 +325,9 @@ class Button extends DisplayObjectContainer
     private function get_fontSize():Float { return mTextField != null ? mTextField.fontSize : 12; }
     private function set_fontSize(value:Float):Float
     {
-        createTextField();
+        __createTextField();
         mTextField.fontSize = value;
-        return mTextField != null ? mTextField.fontSize : 12;
+        return value;
     }
     
     /** The color of the font. */
@@ -338,9 +335,9 @@ class Button extends DisplayObjectContainer
     private function get_fontColor():UInt { return mTextField != null ? mTextField.color : 0x0; }
     private function set_fontColor(value:UInt):UInt
     {
-        createTextField();
+        __createTextField();
         mTextField.color = value;
-        return mTextField != null ? mTextField.color : 0x0;
+        return value;
     }
     
     /** Indicates if the font should be bold. */
@@ -348,9 +345,9 @@ class Button extends DisplayObjectContainer
     private function get_fontBold():Bool { return mTextField != null ? mTextField.bold : false; }
     private function set_fontBold(value:Bool):Bool
     {
-        createTextField();
+        __createTextField();
         mTextField.bold = value;
-        return fontBold;
+        return value;
     }
     
     /** The texture that is displayed when the button is not being touched. */
@@ -369,10 +366,10 @@ class Button extends DisplayObjectContainer
                 (mState == ButtonState.DOWN && mDownState == null) ||
                 (mState == ButtonState.OVER && mOverState == null))
             {
-                setStateTexture(value);
+                __setStateTexture(value);
             }
         }
-        return mUpState;
+        return value;
     }
     
     /** The texture that is displayed while the button is touched. */
@@ -383,9 +380,9 @@ class Button extends DisplayObjectContainer
         if (mDownState != value)
         {
             mDownState = value;
-            if (mState == ButtonState.DOWN) setStateTexture(value);
+            if (mState == ButtonState.DOWN) __setStateTexture(value);
         }
-        return mDownState;
+        return value;
     }
 
     /** The texture that is displayed while mouse hovers over the button. */
@@ -396,9 +393,9 @@ class Button extends DisplayObjectContainer
         if (mOverState != value)
         {
             mOverState = value;
-            if (mState == ButtonState.OVER) setStateTexture(value);
+            if (mState == ButtonState.OVER) __setStateTexture(value);
         }
-        return mOverState;
+        return value;
     }
 
     /** The texture that is displayed when the button is disabled. */
@@ -409,9 +406,9 @@ class Button extends DisplayObjectContainer
         if (mDisabledState != value)
         {
             mDisabledState = value;
-            if (mState == ButtonState.DISABLED) setStateTexture(value);
+            if (mState == ButtonState.DISABLED) __setStateTexture(value);
         }
-        return mDisabledState;
+        return value;
     }
     
     /** The vertical alignment of the text on the button. */
@@ -423,9 +420,9 @@ class Button extends DisplayObjectContainer
     
     private function set_textVAlign(value:String):String
     {
-        createTextField();
+        __createTextField();
         mTextField.vAlign = value;
-        return mTextField != null ? mTextField.vAlign : VAlign.CENTER;
+        return value;
     }
     
     /** The horizontal alignment of the text on the button. */
@@ -437,9 +434,9 @@ class Button extends DisplayObjectContainer
     
     private function set_textHAlign(value:String):String
     {
-        createTextField();
+        __createTextField();
         mTextField.hAlign = value;
-        return mTextField != null ? mTextField.hAlign : HAlign.CENTER;
+        return value;
     }
     
     /** The bounds of the textfield on the button. Allows moving the text to a custom position. */
@@ -448,8 +445,8 @@ class Button extends DisplayObjectContainer
     private function set_textBounds(value:Rectangle):Rectangle
     {
         mTextBounds = value.clone();
-        createTextField();
-        return mTextBounds.clone();
+        __createTextField();
+        return value;
     }
     
     /** The color of the button's state image. Just like every image object, each pixel's

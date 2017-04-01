@@ -115,15 +115,9 @@ class MovieClip extends Image implements IAnimatable
         if (frameID < 0 || frameID > numFrames) throw new ArgumentError("Invalid frame id");
         if (duration < 0) duration = mDefaultFrameDuration;
         
-        //#if flash
-        //mTextures.splice(frameID, 0, texture);
-        //mSounds.splice(frameID, 0, sound);
-        //mDurations.splice(frameID, 0, duration);
-        //#else
         mTextures.insertAt(frameID, texture);
         mSounds.insertAt(frameID, sound);
         mDurations.insertAt(frameID, duration);
-        //#end
         
         if (frameID > 0 && frameID == numFrames) 
             mStartTimes[frameID] = mStartTimes[frameID-1] + mDurations[frameID-1];
@@ -364,7 +358,7 @@ class MovieClip extends Image implements IAnimatable
         
         texture = mTextures[mCurrentFrame];
         if (mPlaying && !mWasStopped) playSound(mCurrentFrame);
-        return mCurrentFrame;
+        return value;
     }
     
     /** The default number of frames per second. Individual frames can have different 
@@ -385,7 +379,7 @@ class MovieClip extends Image implements IAnimatable
             mDurations[i] *= acceleration;
 
         updateStartTimes();
-        return 1.0 / mDefaultFrameDuration;
+        return value;
     }
     
     /** Indicates if the clip is still playing. Returns <code>false</code> when the end 

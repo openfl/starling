@@ -29,7 +29,6 @@ class VectorUtil
         if (index < 0) index += length + 1;
         if (index < 0) index = 0;
 
-        //for (i = index - 1; i >= length; --i)
         i = index - 1;
         while (i >= length)
         {
@@ -37,7 +36,6 @@ class VectorUtil
             --i;
         }
 
-        //for (i = length; i > index; --i)
         i = length;
         while (i > index)
         {
@@ -52,7 +50,6 @@ class VectorUtil
      * index to specify a position relative to the end of the vector. */
     public static function removeIntAt(vector:Vector<Int>, index:UInt):Int
     {
-        //var i:Int;
         var length:UInt = vector.length;
 
         if (index < 0) index += length;
@@ -60,7 +57,6 @@ class VectorUtil
 
         var value:Int = vector[index];
 
-        //for (i = index+1; i < length; ++i)
         for (i in index + 1...length)
             vector[i-1] = vector[i];
 
@@ -78,7 +74,6 @@ class VectorUtil
         if (index < 0) index += length + 1;
         if (index < 0) index = 0;
 
-        //for (i = index - 1; i >= length; --i)
         i = index - 1;
         while (i >= length)
         {
@@ -86,7 +81,6 @@ class VectorUtil
            --i;
         }
 
-        //for (i = length; i > index; --i)
         i = length;
         while (i > index)
         {
@@ -101,7 +95,6 @@ class VectorUtil
      * index to specify a position relative to the end of the vector. */
     public static function removeUnsignedIntAt(vector:Vector<UInt>, index:UInt):UInt
     {
-        //var i:Int;
         var length:UInt = vector.length;
 
         if (index < 0) index += length;
@@ -109,7 +102,6 @@ class VectorUtil
 
         var value:UInt = vector[index];
 
-        //for (i = index+1; i < length; ++i)
         for (i in index + 1...length)
             vector[i-1] = vector[i];
 
@@ -127,7 +119,6 @@ class VectorUtil
         if (index < 0) index += length + 1;
         if (index < 0) index = 0;
 
-        //for (i = index - 1; i >= length; --i)
         i = index - 1;
         while (i >= length)
         {
@@ -135,7 +126,6 @@ class VectorUtil
             --i;
         }
 
-        //for (i = length; i > index; --i)
         i = length;
         while (i > index)
         {
@@ -150,7 +140,6 @@ class VectorUtil
      * index to specify a position relative to the end of the vector. */
     public static function removeNumberAt(vector:Vector<Float>, index:UInt):Float
     {
-        //var i:Int;
         var length:UInt = vector.length;
 
         if (index < 0) index += length;
@@ -158,7 +147,6 @@ class VectorUtil
 
         var value:Float = vector[index];
 
-        //for (i = index+1; i < length; ++i)
         for (i in index + 1...length)
             vector[i-1] = vector[i];
 

@@ -107,7 +107,7 @@ class RenderTexture extends SubTexture
      * memory is doubled). You can avoid that via 'optimizePersistentBuffers', though.</p>
      */
     public function new(width:Int, height:Int, persistent:Bool=true,
-                                  scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false)
+                        scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false)
     {
         if (format == null) format = Context3DTextureFormat.BGRA;
         // TODO: when Adobe has fixed this bug on the iPad 1 (see 'supportsNonPotDimensions'),

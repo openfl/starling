@@ -278,7 +278,7 @@ class BlurFilter extends FragmentFilter
     { 
         mBlurX = value; 
         updateMarginsAndPasses(); 
-        return mBlurX; 
+        return value; 
     }
     
     /** The blur factor in y-direction (stage coordinates). 
@@ -289,6 +289,6 @@ class BlurFilter extends FragmentFilter
     { 
         mBlurY = value; 
         updateMarginsAndPasses(); 
-        return mBlurY; 
+        return value; 
     }
 }

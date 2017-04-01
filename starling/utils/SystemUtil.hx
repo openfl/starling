@@ -16,6 +16,8 @@ import flash.events.EventDispatcher;
 import flash.system.Capabilities;
 import flash.Lib;
 
+import haxe.Constraints.Function;
+
 import lime.app.Application;
 import lime.app.Config.WindowConfig;
 
@@ -39,6 +41,7 @@ class SystemUtil
         if (sInitialized) return;
         
         sInitialized = true;
+        sPlatform = Capabilities.version.substr(0, 3);
         sVersion = Capabilities.version.substr(4);
         
         try
@@ -90,11 +93,12 @@ class SystemUtil
     
     /** Executes the given function with its arguments the next time the application is active.
      * (If it <em>is</em> active already, the call will be executed right away.) */
-    public static function executeWhenApplicationIsActive(call:Array<Dynamic>->Void, args:Array<Dynamic>):Void
+    public static function executeWhenApplicationIsActive(call:Function, args:Array<Dynamic>):Void
     {
         initialize();
         
-        if (sApplicationActive) call(args);
+        if (args == null) args = [];
+        if (sApplicationActive) Reflect.callMethod(call, call, args);
         else sWaitingCalls.push([call, args]);
     }
 
@@ -124,11 +128,8 @@ class SystemUtil
     private static function get_isDesktop():Bool
     {
         initialize();
-        #if sys
-        return ~/(WIN|MAC|LNX)/.match(Sys.systemName());
-        #else
-        return true;
-        #end
+        return #if desktop true #else false #end;
+        //return ~/(WIN|MAC|LNX)/.match(sPlatform);
     }
     
     /** Returns the three-letter platform string of the current system. These are
@@ -138,11 +139,7 @@ class SystemUtil
     private static function get_platform():String
     {
         initialize();
-        #if sys
-        return Sys.systemName();
-        #else
-        return "";
-        #end
+        return sPlatform;
     }
 
     /** Returns the Flash Player/AIR version string. The format of the version number is:

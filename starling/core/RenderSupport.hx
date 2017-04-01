@@ -183,7 +183,6 @@ class RenderSupport
     }
 
     /** Sets up the projection matrix for ortographic 2D rendering. */
-    //[Deprecated(replacement="setProjectionMatrix")] 
     @:deprecated("Use setProjectionMatrix instead.")
     public function setOrthographicProjection(x:Float, y:Float, width:Float, height:Float):Void
     {
@@ -339,7 +338,7 @@ class RenderSupport
     private function set_projectionMatrix3D(value:Matrix3D):Matrix3D
     {
         mProjectionMatrix3D.copyFrom(value);
-        return mProjectionMatrix3D;
+        return value;
     }
 
     // blending
@@ -357,7 +356,7 @@ class RenderSupport
     private function set_blendMode(value:String):String
     {
         if (value != BlendMode.AUTO) mBlendMode = value;
-        return mBlendMode;
+        return value;
     }
     
     // render targets
@@ -534,7 +533,7 @@ class RenderSupport
 
         context.setStencilReferenceValue(mStencilReferenceValue);
         context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                    Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
     }
 
     private function drawMask(mask:DisplayObject):Void
@@ -561,7 +560,7 @@ class RenderSupport
 
         if (Starling.current.contextValid)
             Starling.current.context.setStencilReferenceValue(value);
-        return mStencilReferenceValue;
+        return value;
     }
 
     // optimized quad rendering
@@ -701,11 +700,9 @@ class RenderSupport
             resultProgram = context.createProgram();
         }
         
-        var assembler = new AGALMiniAssembler ();
-        
         resultProgram.upload(
-            assembler.assemble(Context3DProgramType.VERTEX, vertexShader),
-            assembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader));
+            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader),
+            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader));
         
         return resultProgram;
     }

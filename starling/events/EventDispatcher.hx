@@ -35,9 +35,6 @@ import starling.display.DisplayObject;
  *  @see Event
  *  @see starling.display.DisplayObject DisplayObject
  */
-
-@:access(starling.events.Event)
-
 class EventDispatcher
 {
     private var mEventListeners:Map<String, Vector<Function>>;
@@ -52,8 +49,8 @@ class EventDispatcher
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Function):Void
     {
-		if (listener == null) throw new Error("null listener added");
-		
+        if (listener == null) throw new Error("null listener added");
+        
         if (mEventListeners == null)
             mEventListeners = new Map<String, Vector<Function>>();
         
@@ -93,7 +90,6 @@ class EventDispatcher
                 {
                     var restListeners:Vector<Function> = listeners.slice(0, index);
 
-                    //for (var i:Int=index+1; i<numListeners; ++i)
                     for (i in index + 1...numListeners)
                         restListeners[i-1] = listeners[i];
 
@@ -130,8 +126,8 @@ class EventDispatcher
         var previousTarget:EventDispatcher = event.target;
         event.setTarget(this);
         
-        if (bubbles && Std.is(this, DisplayObject)) bubbleEvent(event);
-        else                                  invokeEvent(event);
+        if (bubbles && Std.is(this, DisplayObject)) __bubbleEvent(event);
+        else                                  __invokeEvent(event);
         
         if (previousTarget != null) event.setTarget(previousTarget);
     }
@@ -140,9 +136,10 @@ class EventDispatcher
      * Invokes an event on the current object. This method does not do any bubbling, nor
      * does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      * method uses this method internally. */
-    private function invokeEvent(event:Event):Bool
+    @:allow(starling) private function __invokeEvent(event:Event):Bool
     {
-        var listeners:Vector<Function> = mEventListeners != null ? mEventListeners[event.type] : null;
+        var listeners:Vector<Function> = mEventListeners != null ?
+            mEventListeners[event.type] : null;
         var numListeners:Int = listeners == null ? 0 : listeners.length;
         
         if (numListeners != 0)
@@ -181,7 +178,7 @@ class EventDispatcher
     }
     
     /** @private */
-    private function bubbleEvent(event:Event):Void
+    private function __bubbleEvent(event:Event):Void
     {
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.
@@ -199,7 +196,7 @@ class EventDispatcher
         for (i in 0...length)
         {
             if (chain[i] == null) continue;
-            var stopPropagation:Bool = chain[i].invokeEvent(event);
+            var stopPropagation:Bool = chain[i].__invokeEvent(event);
             if (stopPropagation) break;
         }
         

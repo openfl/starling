@@ -51,8 +51,8 @@ class ColorMatrixFilter extends FragmentFilter
     private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
     private static inline var PROGRAM_NAME:String = "CMF";
-    private static var MIN_COLOR:Vector<Float> = Vector.ofArray ([0, 0, 0, 0.0001]);
-    private static var IDENTITY:Vector<Float> = Vector.ofArray ([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0.]);
+    private static var MIN_COLOR:Vector<Float> = Vector.ofArray([0, 0, 0, 0.0001]);
+    private static var IDENTITY:Vector<Float> = Vector.ofArray([1,0,0,0,0,  0,1,0,0,0,  0,0,1,0,0,  0,0,0,1,0.]);
     private static inline var LUMA_R:Float = 0.299;
     private static inline var LUMA_G:Float = 0.587;
     private static inline var LUMA_B:Float = 0.114;
@@ -96,7 +96,7 @@ class ColorMatrixFilter extends FragmentFilter
                 "add ft0, ft0, fc4              \n" + // add offset
                 "mul ft0.xyz, ft0.xyz, ft0.www  \n" + // multiply with alpha again (PMA)
                 "mov oc, ft0                    \n";  // copy to output
-
+            
             mShaderProgram = target.registerProgramFromSource(PROGRAM_NAME,
                 FragmentFilter.STD_VERTEX_SHADER, fragmentShader);
         }
@@ -105,7 +105,7 @@ class ColorMatrixFilter extends FragmentFilter
     /** @private */
     private override function activate(pass:Int, context:Context3D, texture:Texture):Void
     {
-        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix, 5);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, mShaderMatrix);
         context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 5, MIN_COLOR);
         context.setProgram(mShaderProgram);
     }
@@ -241,11 +241,40 @@ class ColorMatrixFilter extends FragmentFilter
                                   m15:Float, m16:Float, m17:Float, m18:Float, m19:Float
                                   ):ColorMatrixFilter
     {
-        sTmpMatrix2 = Vector.ofArray ([m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
-            m10, m11, m12, m13, m14, m15, m16, m17, m18, m19]);
+        pushValues(sTmpMatrix2, m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, 
+            m10, m11, m12, m13, m14, m15, m16, m17, m18, m19);
         
         concat(sTmpMatrix2);
         return this;
+    }
+
+    private function pushValues(vector:Vector<Float>, m0:Float, m1:Float, m2:Float, m3:Float, m4:Float, 
+                                m5:Float, m6:Float, m7:Float, m8:Float, m9:Float, 
+                                m10:Float, m11:Float, m12:Float, m13:Float, m14:Float, 
+                                m15:Float, m16:Float, m17:Float, m18:Float, m19:Float):Void
+    {
+        // avoid GC from Vector.ofArray
+        vector.length = 20;
+        vector[0] = m0;
+        vector[1] = m1;
+        vector[2] = m2;
+        vector[3] = m3;
+        vector[4] = m4;
+        vector[5] = m5;
+        vector[6] = m6;
+        vector[7] = m7;
+        vector[8] = m8;
+        vector[9] = m9;
+        vector[10] = m10;
+        vector[11] = m11;
+        vector[12] = m12;
+        vector[13] = m13;
+        vector[14] = m14;
+        vector[15] = m15;
+        vector[16] = m16;
+        vector[17] = m17;
+        vector[18] = m18;
+        vector[19] = m19;
     }
 
     private function copyMatrix(from:Vector<Float>, to:Vector<Float>):Void
@@ -259,14 +288,13 @@ class ColorMatrixFilter extends FragmentFilter
         // the shader needs the matrix components in a different order, 
         // and it needs the offsets in the range 0-1.
         
-        mShaderMatrix = Vector.ofArray([
-            mUserMatrix[0],  mUserMatrix[1],  mUserMatrix[2],  mUserMatrix[3],
+        pushValues(mShaderMatrix, mUserMatrix[0],  mUserMatrix[1],  mUserMatrix[2],  mUserMatrix[3],
             mUserMatrix[5],  mUserMatrix[6],  mUserMatrix[7],  mUserMatrix[8],
             mUserMatrix[10], mUserMatrix[11], mUserMatrix[12], mUserMatrix[13], 
             mUserMatrix[15], mUserMatrix[16], mUserMatrix[17], mUserMatrix[18],
             mUserMatrix[4] / 255.0,  mUserMatrix[9] / 255.0,  mUserMatrix[14] / 255.0,  
             mUserMatrix[19] / 255.0
-        ]);
+        );
     }
     
     // properties
@@ -289,6 +317,6 @@ class ColorMatrixFilter extends FragmentFilter
         }
         
         updateShaderMatrix();
-        return mUserMatrix;
+        return value;
     }
 }

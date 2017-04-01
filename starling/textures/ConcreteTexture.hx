@@ -33,6 +33,7 @@ import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.events.Event;
 import starling.utils.Color;
+import starling.utils.SystemUtil;
 
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture. */
 class ConcreteTexture extends Texture
@@ -58,9 +59,9 @@ class ConcreteTexture extends Texture
     /** Creates a ConcreteTexture object from a TextureBase, storing information about size,
      * mip-mapping, and if the channels contain premultiplied alpha values. */
     public function new(base:TextureBase, format:Context3DTextureFormat, width:Int, height:Int, 
-                                    mipMapping:Bool, premultipliedAlpha:Bool,
-                                    optimizedForRenderTexture:Bool=false,
-                                    scale:Float=1, repeat:Bool=false)
+                        mipMapping:Bool, premultipliedAlpha:Bool,
+                        optimizedForRenderTexture:Bool=false,
+                        scale:Float=1, repeat:Bool=false)
     {
         super();
         mScale = scale <= 0 ? 1.0 : scale;
@@ -105,6 +106,13 @@ class ConcreteTexture extends Texture
      * cropped or filled up with transparent pixels */
     public function uploadBitmapData(data:BitmapData):Void
     {
+        if (!Starling.current.isRendering && !SystemUtil.isDesktop)
+        {
+            trace("[Starling] Warning: uploading bitmap data while Starling is not rendering " +
+                  "may cause a crash on some platforms. Ignoring request.");
+            return;
+        }
+
         var potData:BitmapData = null;
         
         if (data.width != mWidth || data.height != mHeight)
@@ -195,7 +203,7 @@ class ConcreteTexture extends Texture
     }
     #end
 
-    private function attachVideo(type:String, attachment:Dynamic, onComplete:Function=null):Void
+    @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:Function=null):Void
     {
         var className:String = Type.getClassName(Type.getClass(mBase));
 
@@ -301,7 +309,7 @@ class ConcreteTexture extends Texture
             Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         }
         else mOnRestore = null;
-        return mOnRestore;
+        return value;
     }
     
     /** @inheritDoc */

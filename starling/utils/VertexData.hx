@@ -70,7 +70,7 @@ class VertexData
     /** Create a new VertexData object with a specified number of vertices. */
     public function new(numVertices:Int, premultipliedAlpha:Bool=false)
     {
-        mRawData = Vector.ofArray(cast []);
+        mRawData = new Vector<Float>();
         mPremultipliedAlpha = premultipliedAlpha;
         mNumVertices = 0;
         this.numVertices = numVertices;
@@ -86,8 +86,7 @@ class VertexData
         var clone:VertexData = new VertexData(0, mPremultipliedAlpha);
         clone.mNumVertices = numVertices;
         clone.mRawData = mRawData.slice(vertexID * ELEMENTS_PER_VERTEX,
-                        numVertices * ELEMENTS_PER_VERTEX);
-
+                                     numVertices * ELEMENTS_PER_VERTEX);
         clone.mRawData.fixed = true;
         return clone;
     }
@@ -144,7 +143,7 @@ class VertexData
     /** Appends the vertices from another VertexData object. */
     public function append(data:VertexData):Void
     {
-        //mRawData.fixed = false;
+        mRawData.fixed = false;
         
         var targetIndex:Int = mRawData.length;
         var rawData:Vector<Float> = data.mRawData;
@@ -298,8 +297,6 @@ class VertexData
         if (factor == 1.0) return;
         if (numVertices < 0 || vertexID + numVertices > mNumVertices)
             numVertices = mNumVertices - vertexID;
-         
-        var i:Int;
         
         if (mPremultipliedAlpha)
         {
@@ -543,7 +540,7 @@ class VertexData
         
         mNumVertices = value;
         mRawData.fixed = true;
-        return mNumVertices;
+        return value;
     }
     
     /** The raw vertex data; not a copy! */

@@ -26,9 +26,8 @@ class TextureOptions
     private var mRepeat:Bool = false;
     
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
-                                   format:Context3DTextureFormat=null, repeat:Bool=false)
+                                   format:Context3DTextureFormat=BGRA, repeat:Bool=false)
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
         mScale = scale;
         mFormat = format;
         mMipMapping = mipMapping;
@@ -51,7 +50,7 @@ class TextureOptions
     private function set_scale(value:Float):Float
     {
         mScale = value > 0 ? value : Starling.current.contentScaleFactor;
-        return mScale;
+        return value;
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. Only used

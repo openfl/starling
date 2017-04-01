@@ -3,10 +3,10 @@
 	"url": "https://github.com/openfl/starling",
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
-	"description": "GPU powered 2D rendering engine which mimics the conventional Flash display list architecture",
-	"version": "1.8.4",
-	"releasenote": "Add HAlign.JUSTIFY and Event.FOCUS_CHANGE",
-	"contributors": [ "p.j.shand", "tbyrne", "singmajesty" ],
+	"description": "The Cross-Platform Game Engine",
+	"version": "1.8.8",
+	"releasenote": "Minor tween fix",
+	"contributors": [ "singmajesty", "p.j.shand", "tbyrne" ],
 	"dependencies": {
 		
 	}

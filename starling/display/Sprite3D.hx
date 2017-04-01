@@ -75,6 +75,8 @@ class Sprite3D extends DisplayObjectContainer
     private var mPivotZ:Float;
     private var mZ:Float;
 
+    //private var mTransformationMatrix:Matrix;
+    //private var mTransformationMatrix3D:Matrix3D;
     private var mTransformationChanged:Bool;
 
     /** Helper objects. */
@@ -90,10 +92,10 @@ class Sprite3D extends DisplayObjectContainer
         mRotationX = mRotationY = mPivotZ = mZ = 0.0;
         mTransformationMatrix = new Matrix();
         mTransformationMatrix3D = new Matrix3D();
-        setIs3D(true);
+        __setIs3D(true);
 
-        addEventListener(Event.ADDED, onAddedChild);
-        addEventListener(Event.REMOVED, onRemovedChild);
+        addEventListener(Event.ADDED, __onAddedChild);
+        addEventListener(Event.REMOVED, __onRemovedChild);
     }
 
     /** @inheritDoc */
@@ -138,17 +140,17 @@ class Sprite3D extends DisplayObjectContainer
 
     // helpers
 
-    private function onAddedChild(event:Event):Void
+    private function __onAddedChild(event:Event):Void
     {
-        recursivelySetIs3D(cast(event.target, DisplayObject), true);
+        __recursivelySetIs3D(cast(event.target, DisplayObject), true);
     }
 
-    private function onRemovedChild(event:Event):Void
+    private function __onRemovedChild(event:Event):Void
     {
-        recursivelySetIs3D(cast(event.target, DisplayObject), false);
+        __recursivelySetIs3D(cast(event.target, DisplayObject), false);
     }
 
-    private function recursivelySetIs3D(object:DisplayObject, value:Bool):Void
+    private function __recursivelySetIs3D(object:DisplayObject, value:Bool):Void
     {
         if (Std.is(object, Sprite3D))
             return;
@@ -158,15 +160,14 @@ class Sprite3D extends DisplayObjectContainer
             var container:DisplayObjectContainer = cast object;
             var numChildren:Int = container.numChildren;
 
-            //for (var i:Int=0; i<numChildren; ++i)
             for (i in 0...numChildren)
-                recursivelySetIs3D(container.getChildAt(i), value);
+                __recursivelySetIs3D(container.getChildAt(i), value);
         }
 
-        object.setIs3D(value);
+        object.__setIs3D(value);
     }
 
-    private function updateMatrices():Void
+    private function __updateMatrices():Void
     {
         var x:Float = this.x;
         var y:Float = this.y;
@@ -179,7 +180,7 @@ class Sprite3D extends DisplayObjectContainer
         mTransformationMatrix3D.identity();
 
         if (scaleX != 1.0 || scaleY != 1.0 || mScaleZ != 1.0)
-            mTransformationMatrix3D.appendScale(mScaleX, mScaleY, mScaleZ);
+            mTransformationMatrix3D.appendScale(scaleX > 0 ? scaleX : E, scaleY > 0 ? scaleY : E, mScaleZ > 0 ? mScaleZ : E);
         if (mRotationX != 0.0)
             mTransformationMatrix3D.appendRotation(rad2deg(mRotationX), Vector3D.X_AXIS);
         if (mRotationY != 0.0)
@@ -196,7 +197,6 @@ class Sprite3D extends DisplayObjectContainer
     }
 
     /** Indicates if the object can be represented by a 2D transformation. */
-    //[Inline]
     private var is2D(get, never):Bool;
     private inline function get_is2D():Bool
     {
@@ -215,7 +215,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         if (mTransformationChanged)
         {
-            updateMatrices();
+            __updateMatrices();
             mTransformationChanged = false;
         }
 
@@ -227,7 +227,7 @@ class Sprite3D extends DisplayObjectContainer
         super.transformationMatrix = value;
         mRotationX = mRotationY = mPivotZ = mZ = 0;
         mTransformationChanged = true;
-        return super.transformationMatrix;
+        return value;
     }
 
     /**  The 3D transformation matrix of the object relative to its parent.
@@ -236,7 +236,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         if (mTransformationChanged)
         {
-            updateMatrices();
+            __updateMatrices();
             mTransformationChanged = false;
         }
 
@@ -248,7 +248,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         super.x = value;
         mTransformationChanged = true;
-        return super.x;
+        return value;
     }
 
     /** @inheritDoc */
@@ -256,7 +256,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         super.y = value;
         mTransformationChanged = true;
-        return super.y;
+        return value;
     }
 
     /** The z coordinate of the object relative to the local coordinates of the parent.
@@ -268,7 +268,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         mZ = value;
         mTransformationChanged = true;
-        return mZ;
+        return value;
     }
 
     /** @inheritDoc */
@@ -276,7 +276,7 @@ class Sprite3D extends DisplayObjectContainer
     {
          super.pivotX = value;
          mTransformationChanged = true;
-         return super.pivotX;
+         return value;
     }
 
     /** @inheritDoc */
@@ -284,7 +284,7 @@ class Sprite3D extends DisplayObjectContainer
     {
          super.pivotY = value;
          mTransformationChanged = true;
-         return super.pivotY;
+         return value;
     }
 
     /** The z coordinate of the object's origin in its own coordinate space (default: 0). */
@@ -294,7 +294,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         mPivotZ = value;
         mTransformationChanged = true;
-        return mPivotZ;
+        return value;
     }
 
     /** @inheritDoc */
@@ -302,7 +302,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         super.scaleX = value;
         mTransformationChanged = true;
-        return super.scaleX;
+        return value;
     }
 
     /** @inheritDoc */
@@ -310,7 +310,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         super.scaleY = value;
         mTransformationChanged = true;
-        return super.scaleY;
+        return value;
     }
 
     /** The depth scale factor. '1' means no scale, negative values flip the object. */
@@ -320,7 +320,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         mScaleZ = value;
         mTransformationChanged = true;
-        return mScaleZ;
+        return value;
     }
 
     /** @private */
@@ -330,7 +330,7 @@ class Sprite3D extends DisplayObjectContainer
 
         // super.skewX = value;
         // mOrientationChanged = true;
-        return super.skewX;
+        return value;
     }
 
     /** @private */
@@ -340,7 +340,7 @@ class Sprite3D extends DisplayObjectContainer
 
         // super.skewY = value;
         // mOrientationChanged = true;
-        return super.skewY;
+        return value;
     }
 
     /** The rotation of the object about the z axis, in radians.
@@ -349,7 +349,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         super.rotation = value;
         mTransformationChanged = true;
-        return super.rotation;
+        return value;
     }
 
     /** The rotation of the object about the x axis, in radians.
@@ -360,7 +360,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         mRotationX = MathUtil.normalizeAngle(value);
         mTransformationChanged = true;
-        return mRotationX;
+        return value;
     }
 
     /** The rotation of the object about the y axis, in radians.
@@ -371,7 +371,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         mRotationY = MathUtil.normalizeAngle(value);
         mTransformationChanged = true;
-        return mRotationY;
+        return value;
     }
 
     /** The rotation of the object about the z axis, in radians.

@@ -140,8 +140,8 @@ class FragmentFilter
         mVertexData.setTexCoords(2, 0, 1);
         mVertexData.setTexCoords(3, 1, 1);
         
-        mIndexData = Vector.ofArray ([0, 1, 2, 1, 3, 2]);
-        //mIndexData.fixed = true;
+        mIndexData = Vector.ofArray([0, 1, 2, 1, 3, 2]);
+        mIndexData.fixed = true;
 
         if (Starling.current.contextValid)
             createPrograms();
@@ -541,7 +541,7 @@ class FragmentFilter
     // flattening
     
     /** @private */
-    private function compile(object:DisplayObject):QuadBatch
+    @:allow(starling) private function compile(object:DisplayObject):QuadBatch
     {
         var support:RenderSupport;
         var stage:Stage = object.stage;
@@ -571,7 +571,7 @@ class FragmentFilter
     {
         if (value <= 0) throw new ArgumentError("Resolution must be > 0");
         else mResolution = value; 
-        return mResolution;
+        return value;
     }
     
     /** The filter mode, which is one of the constants defined in the "FragmentFilterMode" 

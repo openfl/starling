@@ -36,7 +36,6 @@ import starling.utils.HAlign;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.VAlign;
-import starling.utils.ArrayUtil;
 
 /** Dispatched when an object is added to a parent. */
 @:meta(Event(name="added", type="starling.events.Event"))
@@ -130,9 +129,6 @@ import starling.utils.ArrayUtil;
  *  @see Sprite
  *  @see Stage 
  */
-
-@:access(starling.events.EventDispatcher)
-
 class DisplayObject extends EventDispatcher
 {
     // members
@@ -247,7 +243,7 @@ class DisplayObject extends EventDispatcher
         
         // 1. find a common parent of this and the target space
         
-        commonParent = findCommonParent(this, targetSpace);
+        commonParent = __findCommonParent(this, targetSpace);
         
         // 2. move up from this to common parent
         
@@ -444,7 +440,7 @@ class DisplayObject extends EventDispatcher
 
         // 1. find a common parent of this and the target space
 
-        commonParent = findCommonParent(this, targetSpace);
+        commonParent = __findCommonParent(this, targetSpace);
 
         // 2. move up from this to common parent
 
@@ -509,7 +505,7 @@ class DisplayObject extends EventDispatcher
     // internal methods
     
     /** @private */
-    private function setParent(value:DisplayObjectContainer):Void 
+    private function __setParent(value:DisplayObjectContainer):Void 
     {
         // check for a recursion
         var ancestor:DisplayObject = value;
@@ -524,7 +520,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** @private */
-    private function setIs3D(value:Bool):Void
+    private function __setIs3D(value:Bool):Void
     {
         mIs3D = value;
     }
@@ -538,12 +534,12 @@ class DisplayObject extends EventDispatcher
 
     // helpers
     
-    @:final private function isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
+    @:final private function __isEquivalent(a:Float, b:Float, epsilon:Float=0.0001):Bool
     {
         return (a - epsilon < b) && (a + epsilon > b);
     }
     
-    @:final private function findCommonParent(object1:DisplayObject,
+    @:final private function __findCommonParent(object1:DisplayObject,
                                             object2:DisplayObject):DisplayObject
     {
         var currentObject:DisplayObject = object1;
@@ -587,9 +583,9 @@ class DisplayObject extends EventDispatcher
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
-            addEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            addEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            if (this.stage != null) addEnterFrameListenerToStage();
+            addEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            addEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            if (this.stage != null) __addEnterFrameListenerToStage();
         }
         
         super.addEventListener(type, listener);
@@ -602,9 +598,9 @@ class DisplayObject extends EventDispatcher
         
         if (type == Event.ENTER_FRAME && !hasEventListener(type))
         {
-            removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            removeEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            __removeEnterFrameListenerFromStage();
         }
     }
     
@@ -613,20 +609,20 @@ class DisplayObject extends EventDispatcher
     {
         if ((type == null || type == Event.ENTER_FRAME) && hasEventListener(Event.ENTER_FRAME))
         {
-            removeEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
-            removeEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            removeEnterFrameListenerFromStage();
+            removeEventListener(Event.ADDED_TO_STAGE, __addEnterFrameListenerToStage);
+            removeEventListener(Event.REMOVED_FROM_STAGE, __removeEnterFrameListenerFromStage);
+            __removeEnterFrameListenerFromStage();
         }
 
         super.removeEventListeners(type);
     }
     
-    private function addEnterFrameListenerToStage(e:Event = null):Void
+    private function __addEnterFrameListenerToStage(e:Event = null):Void
     {
         Starling.current.stage.addEnterFrameListener(this);
     }
     
-    private function removeEnterFrameListenerFromStage(e:Event = null):Void
+    private function __removeEnterFrameListenerFromStage(e:Event = null):Void
     {
         Starling.current.stage.removeEnterFrameListener(this);
     }
@@ -717,7 +713,7 @@ class DisplayObject extends EventDispatcher
         mScaleX = (mSkewY > -PI_Q && mSkewY < PI_Q) ?  matrix.a / Math.cos(mSkewY)
                                                     :  matrix.b / Math.sin(mSkewY);
 
-        if (isEquivalent(mSkewX, mSkewY))
+        if (__isEquivalent(mSkewX, mSkewY))
         {
             mRotation = mSkewX;
             mSkewX = mSkewY = 0;
@@ -760,13 +756,13 @@ class DisplayObject extends EventDispatcher
         mUseHandCursor = value;
         
         if (mUseHandCursor)
-            addEventListener(TouchEvent.TOUCH, onTouch);
+            addEventListener(TouchEvent.TOUCH, __onTouch);
         else
-            removeEventListener(TouchEvent.TOUCH, onTouch);
-        return mUseHandCursor;
+            removeEventListener(TouchEvent.TOUCH, __onTouch);
+        return value;
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private function __onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = event.interactsWith(this) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }
@@ -791,7 +787,7 @@ class DisplayObject extends EventDispatcher
         scaleX = 1.0;
         var actualWidth:Float = width;
         if (actualWidth != 0.0) scaleX = value / actualWidth;
-        return getBounds(mParent, sHelperRect).width;
+        return value;
     }
     
     /** The height of the object in pixels.
@@ -804,7 +800,7 @@ class DisplayObject extends EventDispatcher
         scaleY = 1.0;
         var actualHeight:Float = height;
         if (actualHeight != 0.0) scaleY = value / actualHeight;
-        return getBounds(mParent, sHelperRect).height;
+        return value;
     }
     
     /** The x coordinate of the object relative to the local coordinates of the parent. */
@@ -817,7 +813,7 @@ class DisplayObject extends EventDispatcher
             mX = value;
             mOrientationChanged = true;
         }
-        return mX;
+        return value;
     }
     
     /** The y coordinate of the object relative to the local coordinates of the parent. */
@@ -830,7 +826,7 @@ class DisplayObject extends EventDispatcher
             mY = value;
             mOrientationChanged = true;
         }
-        return mY;
+        return value;
     }
     
     /** The x coordinate of the object's origin in its own coordinate space (default: 0). */
@@ -843,7 +839,7 @@ class DisplayObject extends EventDispatcher
             mPivotX = value;
             mOrientationChanged = true;
         }
-        return mPivotX;
+        return value;
     }
     
     /** The y coordinate of the object's origin in its own coordinate space (default: 0). */
@@ -856,7 +852,7 @@ class DisplayObject extends EventDispatcher
             mPivotY = value;
             mOrientationChanged = true;
         }
-        return mPivotY;
+        return value;
     }
     
     /** The horizontal scale factor. '1' means no scale, negative values flip the object.
@@ -870,7 +866,7 @@ class DisplayObject extends EventDispatcher
             mScaleX = value;
             mOrientationChanged = true;
         }
-        return mScaleX;
+        return value;
     }
     
     /** The vertical scale factor. '1' means no scale, negative values flip the object.
@@ -884,7 +880,7 @@ class DisplayObject extends EventDispatcher
             mScaleY = value;
             mOrientationChanged = true;
         }
-        return mScaleY;
+        return value;
     }
 
     /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
@@ -905,7 +901,7 @@ class DisplayObject extends EventDispatcher
             mSkewX = value;
             mOrientationChanged = true;
         }
-        return mSkewX;
+        return value;
     }
     
     /** The vertical skew angle in radians. */
@@ -920,7 +916,7 @@ class DisplayObject extends EventDispatcher
             mSkewY = value;
             mOrientationChanged = true;
         }
-        return mSkewY;
+        return value;
     }
     
     /** The rotation of the object in radians. (In Starling, all angles are measured 
@@ -936,7 +932,7 @@ class DisplayObject extends EventDispatcher
             mRotation = value;
             mOrientationChanged = true;
         }
-        return mRotation;
+        return value;
     }
     
     /** The opacity of the object. 0 = transparent, 1 = opaque. @default 1 */
@@ -945,7 +941,7 @@ class DisplayObject extends EventDispatcher
     private function set_alpha(value:Float):Float 
     { 
         mAlpha = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value); 
-        return mAlpha;
+        return value;
     }
     
     /** The visibility of the object. An invisible object will be untouchable. */
@@ -1046,15 +1042,6 @@ class DisplayObject extends EventDispatcher
     
     /** The stage the display object is connected to, or null if it is not connected 
      * to the stage. */
-    public var stage(get ,never):Stage;
-    private function get_stage():Stage {
-        if (Std.is (this.base, Stage))
-        {
-            return cast this.base;
-        }
-        else
-        {
-            return null;
-        }
-    }
+    public var stage(get, never):Stage;
+    private function get_stage():Stage { return Std.is(this.base, Stage) ? cast this.base : null; }
 }

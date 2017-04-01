@@ -52,9 +52,6 @@ import starling.utils.MathUtil;
  *  Always use the base implementation of "processTouches" to let them be dispatched. That
  *  said: you can always dispatch your own custom events, of course.</p>
  */
-
-@:access(starling.events.Touch)
-
 class TouchProcessor
 {
     private var mStage:Stage;
@@ -371,7 +368,7 @@ class TouchProcessor
     private function get_simulateMultitouch():Bool { return mTouchMarker != null; }
     private function set_simulateMultitouch(value:Bool):Bool
     { 
-        if (simulateMultitouch == value) return mTouchMarker != null; // no change
+        if (simulateMultitouch == value) return value; // no change
         if (value)
         {
             mTouchMarker = new TouchMarker();
@@ -383,7 +380,7 @@ class TouchProcessor
             mTouchMarker.removeFromParent(true);
             mTouchMarker = null;
         }
-        return mTouchMarker != null;
+        return value;
     }
     
     /** The time period (in seconds) in which two touches must occur to be recognized as

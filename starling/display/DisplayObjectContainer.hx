@@ -64,9 +64,6 @@ import starling.utils.Max;
  *  @see Sprite
  *  @see DisplayObject
  */
-
-@:access(starling.events.Event)
-
 class DisplayObjectContainer extends DisplayObject
 {
     // members
@@ -127,9 +124,9 @@ class DisplayObjectContainer extends DisplayObject
                 child.removeFromParent();
 
                 if (index == numChildren) mChildren[numChildren] = child;
-                else spliceChildren(index, 0, child);
+                else __spliceChildren(index, 0, child);
 
-                child.setParent(this);
+                child.__setParent(this);
                 child.dispatchEventWith(Event.ADDED, true);
                 
                 if (stage != null)
@@ -173,9 +170,9 @@ class DisplayObjectContainer extends DisplayObject
                 else           child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
             }
             
-            child.setParent(null);
+            child.__setParent(null);
             index = mChildren.indexOf(child); // index might have changed by event handler
-            if (index >= 0) spliceChildren(index, 1);
+            if (index >= 0) __spliceChildren(index, 1);
             if (dispose) child.dispose();
             
             return child;
@@ -238,8 +235,8 @@ class DisplayObjectContainer extends DisplayObject
         var oldIndex:Int = getChildIndex(child);
         if (oldIndex == index) return;
         if (oldIndex == -1) throw new ArgumentError("Not a child of this container");
-        spliceChildren(oldIndex, 1);
-        spliceChildren(index, 0, child);
+        __spliceChildren(oldIndex, 1);
+        __spliceChildren(index, 0, child);
     }
     
     /** Swaps the indexes of two children. */
@@ -333,7 +330,7 @@ class DisplayObjectContainer extends DisplayObject
         var numChildren:Int = mChildren.length;
         
         var i:Int = numChildren - 1;
-        while (i >= 0)
+        while (i >= 0) // front to back!
         {
             var child:DisplayObject = mChildren[i];
             if (child.isMask) {
@@ -399,7 +396,7 @@ class DisplayObjectContainer extends DisplayObject
         // care that the static helper vector does not get corrupted.
         
         var fromIndex:Int = sBroadcastListeners.length;
-        getChildEventListeners(this, event.type, sBroadcastListeners);
+        __getChildEventListeners(this, event.type, sBroadcastListeners);
         var toIndex:Int = sBroadcastListeners.length;
         
         for (i in fromIndex...toIndex)
@@ -480,7 +477,7 @@ class DisplayObjectContainer extends DisplayObject
     /** Custom implementation of 'Vector.splice'. The native method always create temporary
      * objects that have to be garbage collected. This implementation does not cause such
      * issues. */
-    private function spliceChildren(startIndex:Int, deleteCount:Int=Max.INT_MAX_VALUE,
+    private function __spliceChildren(startIndex:Int, deleteCount:Int=Max.INT_MAX_VALUE,
                                     insertee:DisplayObject=null):Void
     {
         var vector:Vector<DisplayObject> = mChildren;
@@ -522,7 +519,7 @@ class DisplayObjectContainer extends DisplayObject
     }
 
     /** @private */
-    private function getChildEventListeners(object:DisplayObject, eventType:String, 
+    private function __getChildEventListeners(object:DisplayObject, eventType:String, 
                                              listeners:Vector<DisplayObject>):Void
     {
         var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
@@ -536,7 +533,7 @@ class DisplayObjectContainer extends DisplayObject
             var numChildren:Int = children.length;
             
             for (i in 0...numChildren)
-                getChildEventListeners(children[i], eventType, listeners);
+                __getChildEventListeners(children[i], eventType, listeners);
         }
     }
 }

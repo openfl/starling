@@ -58,17 +58,17 @@ class DisplacementMapFilter extends FragmentFilter
     private var mMapTexCoordBuffer:VertexBuffer3D;
     
     /** Helper objects */
-    private static var sOneHalf:Vector<Float> = Vector.ofArray ([0.5, 0.5, 0.5, 0.5]);
-    private static var sMapTexCoords:Vector<Float> = Vector.ofArray ([0, 0, 1, 0, 0, 1, 1, 1.]);
+    private static var sOneHalf:Vector<Float> = Vector.ofArray([0.5, 0.5, 0.5, 0.5]);
+    private static var sMapTexCoords:Vector<Float> = Vector.ofArray([0, 0, 1, 0, 0, 1, 1, 1.]);
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
-        Vector.ofArray ([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
+        Vector.ofArray([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
     
     /** Creates a new displacement map filter that uses the provided map texture. */
     public function new(mapTexture:Texture, mapPoint:Point=null, 
-                                          componentX:UInt=0, componentY:UInt=0, 
-                                          scaleX:Float=0.0, scaleY:Float=0.0,
-                                          repeat:Bool=false)
+                        componentX:UInt=0, componentY:UInt=0, 
+                        scaleX:Float=0.0, scaleY:Float=0.0,
+                        repeat:Bool=false)
     {
         mMapTexture = mapTexture;
         mMapPoint = new Point();
@@ -185,8 +185,8 @@ class DisplacementMapFilter extends FragmentFilter
         else if (mComponentY == BitmapDataChannel.BLUE)  columnY = 2;
         else                                             columnY = 3;
         
-        sMatrixData[columnX * 4] = mScaleX * scale / textureWidth;
-        sMatrixData[columnY * 4] = mScaleY * scale / textureHeight;
+        sMatrixData[columnX * 4    ] = mScaleX * scale / textureWidth;
+        sMatrixData[columnY * 4 + 1] = mScaleY * scale / textureHeight;
         
         sMatrix.copyRawDataFrom(sMatrixData);
         
@@ -242,7 +242,7 @@ class DisplacementMapFilter extends FragmentFilter
             mMapTexture = value;
             createPrograms();
         }
-        return mMapTexture;
+        return value;
     }
     
     /** A value that contains the offset of the upper-left corner of the target display 
@@ -253,7 +253,7 @@ class DisplacementMapFilter extends FragmentFilter
     {
         if (value != null) mMapPoint.setTo(value.x, value.y);
         else mMapPoint.setTo(0, 0);
-        return mMapPoint;
+        return value;
     }
     
     /** Indicates how the pixels at the edge of the input image (the filtered object) will
@@ -267,6 +267,6 @@ class DisplacementMapFilter extends FragmentFilter
             mRepeat = value;
             createPrograms();
         }
-        return mRepeat;
+        return value;
     }
 }

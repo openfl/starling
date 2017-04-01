@@ -121,7 +121,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private static var sPool:Vector<DelayedCall> = new Vector<DelayedCall>();
     
     /** @private */
-    private static function fromPool(call:Function, delay:Float, 
+    @:allow(starling) private static function fromPool(call:Function, delay:Float, 
                                                args:Array<Dynamic>=null):DelayedCall
     {
         if (sPool.length != 0) return sPool.pop().reset(call, delay, args);
@@ -129,7 +129,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     }
     
     /** @private */
-    private static function toPool(delayedCall:DelayedCall):Void
+    @:allow(starling) private static function toPool(delayedCall:DelayedCall):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
         delayedCall.mCall = null;

@@ -456,6 +456,7 @@ class Starling extends EventDispatcher
     {
         mContext = mStage3D.context3D;
         mContext.enableErrorChecking = mEnableErrorChecking;
+        contextData[PROGRAM_DATA_NAME] = new Map<String, Program3D>();
         
         trace("[Starling] Initialization complete.");
         trace("[Starling] Display Driver: " + mContext.driverInfo);
@@ -599,7 +600,10 @@ class Starling extends EventDispatcher
                                          enableDepthAndStencil:Bool,
                                          wantsBestResolution:Bool=false):Void
     {
-        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil && SystemUtil.supportsDepthAndStencil, wantsBestResolution);
+        enableDepthAndStencil = enableDepthAndStencil && SystemUtil.supportsDepthAndStencil;
+        width = (width < 32) ? 32 : width;
+        height = (height < 32) ? 32 : height;
+        mContext.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution);
     }
 
     private function updateNativeOverlay():Void
@@ -719,7 +723,7 @@ class Starling extends EventDispatcher
         if (!mStarted) return;
         
         var keyEvent:starling.events.KeyboardEvent = new starling.events.KeyboardEvent(
-            event.type, event.charCode, event.keyCode, event.keyLocation,
+            event.type, event.charCode, event.keyCode, event.keyLocation, 
             event.ctrlKey, event.altKey, event.shiftKey);
         
         makeCurrent();
@@ -909,6 +913,13 @@ class Starling extends EventDispatcher
     /** Indicates if this Starling instance is started. */
     public var isStarted(get, never):Bool;
     private function get_isStarted():Bool { return mStarted; }
+
+    /** Indicates if this instance is currently rendering its display list each frame.
+     *  Even when Starling was stopped, it might continue rendering; that's because the
+     *  classic display list is only updated when stage3D is. (If Starling stopped rendering,
+     *  conventional Flash contents would freeze, as well.) */
+    public var isRendering(get, never):Bool;
+    private function get_isRendering():Bool { return mRendering; }
     
     /** The default juggler of this instance. Will be advanced once per frame. */
     public var juggler(get, never):Juggler;
@@ -926,7 +937,7 @@ class Starling extends EventDispatcher
     public var contextData(get, never):Map<String, Dynamic>;
     private function get_contextData():Map<String, Dynamic>
     {
-        return sContextData.get(mStage3D);
+        return sContextData[mStage3D];
     }
     
     /** Returns the current width of the back buffer. In most cases, this value is in pixels;
@@ -960,7 +971,7 @@ class Starling extends EventDispatcher
     {
         mSimulateMultitouch = value;
         if (mContext != null) mTouchProcessor.simulateMultitouch = value;
-        return mSimulateMultitouch;
+        return value;
     }
 
     /** Indicates if Stage3D render methods will report errors. It's recommended to activate
@@ -975,7 +986,7 @@ class Starling extends EventDispatcher
     { 
         mEnableErrorChecking = value;
         if (mContext != null) mContext.enableErrorChecking = value;
-        return mEnableErrorChecking;
+        return value;
     }
     
     /** The antialiasing level. 0 - no antialasing, 16 - maximum antialiasing. @default 0 */
@@ -988,7 +999,7 @@ class Starling extends EventDispatcher
             mAntiAliasing = value;
             if (contextValid) updateViewPort(true);
         }
-        return mAntiAliasing;
+        return value;
     }
     
     /** The viewport into which Starling contents will be rendered. */
@@ -1029,7 +1040,7 @@ class Starling extends EventDispatcher
             else               showStatsAt();
         }
         else mStatsDisplay.removeFromParent();
-        return mStatsDisplay != null && mStatsDisplay.parent != null;
+        return value;
     }
     
     /** Displays the statistics box at a certain position. */
@@ -1108,7 +1119,7 @@ class Starling extends EventDispatcher
             mRootClass = value;
             if (mContext != null) initializeRoot();
         }
-        return mRootClass;
+        return value;
     }
 
     /** Indicates if the Context3D render calls are managed externally to Starling, 
@@ -1136,7 +1147,7 @@ class Starling extends EventDispatcher
             mSupportHighResolutions = value;
             if (contextValid) updateViewPort(true);
         }
-        return mSupportHighResolutions;
+        return value;
     }
 
     /** Indicates if keyboard events are broadcast to all display objects, or dispatched
@@ -1160,7 +1171,7 @@ class Starling extends EventDispatcher
             mTouchProcessor.dispose();
             mTouchProcessor = value;
         }
-        return mTouchProcessor;
+        return value;
     }
     
     /** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
@@ -1189,13 +1200,13 @@ class Starling extends EventDispatcher
     /** The render context of the currently active Starling instance. */
     /*
     public static var context(get, never):Context3D;
-    private static function get_context():Context3D { return sCurrent ? sCurrent.context : null; }
+    private static function get_context():Context3D { return sCurrent != null ? sCurrent.context : null; }
     */
     
     /** The default juggler of the currently active Starling instance. */
     /*
     public static var juggler(get, never):Juggler;
-    private static function get_juggler():Juggler { return sCurrent ? sCurrent.juggler : null; }
+    private static function get_juggler():Juggler { return sCurrent != null ? sCurrent.juggler : null; }
     */
     
     /** The contentScaleFactor of the currently active Starling instance. */
@@ -1203,7 +1214,7 @@ class Starling extends EventDispatcher
     public static var contentScaleFactor(get, never):Float;
     private static function get_contentScaleFactor():Float 
     {
-        return sCurrent ? sCurrent.contentScaleFactor : 1.0;
+        return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
     }
     */
     
@@ -1221,7 +1232,7 @@ class Starling extends EventDispatcher
         else 
             Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
                                            MultitouchInputMode.NONE;
-        return Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+        return value;
     }
     
     /** Indicates if Starling should automatically recover from a lost device context.
@@ -1253,6 +1264,6 @@ class Starling extends EventDispatcher
             "'handleLostContext' must be set before Starling instance is created");
         else
             sHandleLostContext = value;
-        return sHandleLostContext;
+        return value;
     }
 }

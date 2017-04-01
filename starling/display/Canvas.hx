@@ -64,27 +64,29 @@ class Canvas extends DisplayObject
 
         registerPrograms();
 
-        // handle lost context
-        Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+        // Handle lost context (using conventional Flash event for weak listener support)
+        Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
+            __onContextCreated, false, 0, true);
     }
 
-    private function onContextCreated(event:Dynamic):Void
+    private function __onContextCreated(event:Dynamic):Void
     {
         registerPrograms();
-        syncBuffers();
+        __syncBuffers();
     }
 
     /** @inheritDoc */
     public override function dispose():Void
     {
-        destroyBuffers();
+        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, __onContextCreated);
+        __destroyBuffers();
         super.dispose();
     }
 
     /** Draws a circle. */
     public function drawCircle(x:Float, y:Float, radius:Float):Void
     {
-        appendPolygon(Polygon.createCircle(x, y, radius));
+        __appendPolygon(Polygon.createCircle(x, y, radius));
     }
 
     /** Draws an ellipse. */
@@ -93,19 +95,19 @@ class Canvas extends DisplayObject
         var radiusX:Float = width  / 2.0;
         var radiusY:Float = height / 2.0;
 
-        appendPolygon(Polygon.createEllipse(x + radiusX, y + radiusY, radiusX, radiusY));
+        __appendPolygon(Polygon.createEllipse(x + radiusX, y + radiusY, radiusX, radiusY));
     }
 
     /** Draws a rectangle. */
     public function drawRectangle(x:Float, y:Float, width:Float, height:Float):Void
     {
-        appendPolygon(Polygon.createRectangle(x, y, width, height));
+        __appendPolygon(Polygon.createRectangle(x, y, width, height));
     }
 
     /** Draws an arbitrary polygon. */
     public function drawPolygon(polygon:Polygon):Void
     {
-        appendPolygon(polygon);
+        __appendPolygon(polygon);
     }
 
     /** Specifies a simple one-color fill that subsequent calls to drawing methods
@@ -129,14 +131,14 @@ class Canvas extends DisplayObject
         mVertexData.numVertices = 0;
         mIndexData.length = 0;
         mPolygons.length = 0;
-        destroyBuffers();
+        __destroyBuffers();
     }
 
     /** @inheritDoc */
     public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
         if (mIndexData.length == 0) return;
-        if (mSyncRequired) syncBuffers();
+        if (mSyncRequired) __syncBuffers();
 
         support.finishQuadBatch();
         support.raiseDrawCount();
@@ -186,7 +188,7 @@ class Canvas extends DisplayObject
         return null;
     }
 
-    private function appendPolygon(polygon:Polygon):Void
+    private function __appendPolygon(polygon:Polygon):Void
     {
         var oldNumVertices:Int = mVertexData.numVertices;
         var oldNumIndices:Int = mIndexData.length;
@@ -200,7 +202,7 @@ class Canvas extends DisplayObject
         for (i in oldNumIndices...newNumIndices)
             mIndexData[i] += oldNumVertices;
 
-        applyFillColor(oldNumVertices, polygon.numVertices);
+        __applyFillColor(oldNumVertices, polygon.numVertices);
 
         mPolygons[mPolygons.length] = polygon;
         mSyncRequired = true;
@@ -221,16 +223,16 @@ class Canvas extends DisplayObject
         target.registerProgramFromSource(PROGRAM_NAME, vertexShader, fragmentShader);
     }
 
-    private function applyFillColor(vertexIndex:Int, numVertices:Int):Void
+    private function __applyFillColor(vertexIndex:Int, numVertices:Int):Void
     {
         var endIndex:Int = vertexIndex + numVertices;
         for (i in vertexIndex...endIndex)
             mVertexData.setColorAndAlpha(i, mFillColor, mFillAlpha);
     }
 
-    private function syncBuffers():Void
+    private function __syncBuffers():Void
     {
-        destroyBuffers();
+        __destroyBuffers();
 
         var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
@@ -247,7 +249,7 @@ class Canvas extends DisplayObject
         mSyncRequired = false;
     }
 
-    private function destroyBuffers():Void
+    private function __destroyBuffers():Void
     {
         if (mVertexBuffer != null) mVertexBuffer.dispose();
         if (mIndexBuffer != null)  mIndexBuffer.dispose();

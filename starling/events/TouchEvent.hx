@@ -52,9 +52,6 @@ import starling.display.DisplayObject;
  *  @see Touch
  *  @see TouchPhase
  */
-
-@:access(starling.events.EventDispatcher)
-
 class TouchEvent extends Event
 {
     /** Event type for touch or mouse input. */
@@ -175,7 +172,7 @@ class TouchEvent extends Event
                 var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
                 if (mVisitedObjects.indexOf(chainElement) == -1)
                 {
-                    var stopPropagation:Bool = chainElement.invokeEvent(this);
+                    var stopPropagation:Bool = chainElement.__invokeEvent(this);
                     mVisitedObjects[mVisitedObjects.length] = chainElement;
                     if (stopPropagation) break;
                 }

@@ -74,7 +74,6 @@ class Polygon
             tmp = mCoords[i + 1];
             mCoords[i + 1] = mCoords[numCoords - i - 1];
             mCoords[numCoords - i - 1] = tmp;
-
             i += 2;
         }
     }
@@ -279,8 +278,8 @@ class Polygon
         for (i in 0...numPoints)
         {
             result += "  [Vertex " + i + ": " +
-                "x=" + mCoords[i * 2    ] + ", " +
-                "y=" + mCoords[i * 2 + 1] + "]"  +
+                "x=" + (Math.round(mCoords[i * 2    ]*10)/10) + ", " +
+                "y=" + (Math.round(mCoords[i * 2 + 1]*10)/10) + "]"  +
                 (i == numPoints - 1 ? "\n" : ",\n");
         }
 
@@ -401,10 +400,8 @@ class Polygon
 
                 if (areVectorsIntersecting(ax, ay, bx, by, cx, cy, dx, dy))
                     return false;
-
                 j += 2;
             }
-
             i += 2;
         }
 
@@ -430,7 +427,6 @@ class Polygon
                 {
                     return false;
                 }
-
                 i += 2;
             }
         }
@@ -452,7 +448,6 @@ class Polygon
             {
                 area += mCoords[i  ] * mCoords[(i+3) % numCoords];
                 area -= mCoords[i+1] * mCoords[(i+2) % numCoords];
-
                 i += 2;
             }
         }
@@ -479,6 +474,6 @@ class Polygon
             for (i in oldLength...value)
                 mCoords[i * 2] = mCoords[i * 2 + 1] = 0.0;
         }
-        return Std.int(mCoords.length / 2);
+        return value;
     }
 }
