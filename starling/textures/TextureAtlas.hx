@@ -111,6 +111,10 @@ class TextureAtlas
         var region:Rectangle = new Rectangle();
         var frame:Rectangle  = new Rectangle();
         
+		if (atlasXml.firstElement().nodeName == "TextureAtlas") {
+			atlasXml = atlasXml.firstElement();
+		}
+		
         for (subTexture in atlasXml.elementsNamed("SubTexture"))
         {
             var name:String        = subTexture.get("name");
