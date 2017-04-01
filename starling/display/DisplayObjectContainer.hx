@@ -332,23 +332,25 @@ class DisplayObjectContainer extends DisplayObject
         var localY:Float = localPoint.y;
         var numChildren:Int = mChildren.length;
         
-        //for (var i:Int = numChildren - 1; i >= 0; --i) // front to back!
         var i:Int = numChildren - 1;
         while (i >= 0)
         {
             var child:DisplayObject = mChildren[i];
-            if (child.isMask) continue;
-
+            if (child.isMask) {
+				--i;
+				continue;
+			}
+			
             sHelperMatrix.copyFrom(child.transformationMatrix);
             sHelperMatrix.invert();
-
+			
             MatrixUtil.transformCoords(sHelperMatrix, localX, localY, sHelperPoint);
             target = child.hitTest(sHelperPoint, forTouch);
-
+			
             if (target != null) return forTouch && mTouchGroup ? this : target;
             --i;
         }
-
+		
         return null;
     }
     
