@@ -4,9 +4,9 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "1.8.8",
-	"releasenote": "Minor tween fix",
-	"contributors": [ "singmajesty", "p.j.shand", "tbyrne" ],
+	"version": "1.8.9",
+	"releasenote": "TextureAtlas XMLHttpRequest parsing fix",
+	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {
 		
 	}
