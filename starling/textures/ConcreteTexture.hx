@@ -243,20 +243,19 @@ class ConcreteTexture extends Texture
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
-        var classType = Type.getClass(mBase);
         
-        if (Std.is(classType, flash.display3D.textures.Texture))
+        if (Std.is(mBase, flash.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
-        else if (Std.is(classType, flash.display3D.textures.RectangleTexture))
+        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
             mBase = context.createRectangleTexture (mWidth, mHeight, mFormat,
                                                       mOptimizedForRenderTexture);
         #if flash
-        else if (Std.is(classType, flash.display3D.textures.VideoTexture))
+        else if (Std.is(mBase, flash.display3D.textures.VideoTexture))
             mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
         #end
         else
-            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(classType));
+            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(Type.getClass(mBase)));
 
         mDataUploaded = false;
     }
