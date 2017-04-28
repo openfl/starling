@@ -18,38 +18,38 @@ import starling.core.Starling;
  *  method. */ 
 class TextureOptions
 {
-    private var mScale:Float;
+    private var __scale:Float;
     private var mFormat:Context3DTextureFormat;
     private var mMipMapping:Bool;
     private var mOptimizeForRenderToTexture:Bool = false;
-    private var mOnReady:Void->Void = null;
-    private var mRepeat:Bool = false;
+    private var __onReady:Void->Void = null;
+    private var __repeat:Bool = false;
     
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
                                    format:Context3DTextureFormat=BGRA, repeat:Bool=false)
     {
-        mScale = scale;
+        __scale = scale;
         mFormat = format;
         mMipMapping = mipMapping;
-        mRepeat = repeat;
+        __repeat = repeat;
     }
     
     /** Creates a clone of the TextureOptions object with the exact same properties. */
     public function clone():TextureOptions
     {
-        var clone:TextureOptions = new TextureOptions(mScale, mMipMapping, mFormat, mRepeat);
+        var clone:TextureOptions = new TextureOptions(__scale, mMipMapping, mFormat, __repeat);
         clone.mOptimizeForRenderToTexture = mOptimizeForRenderToTexture;
-        clone.mOnReady = mOnReady;
+        clone.__onReady = __onReady;
         return clone;
     }
 
     /** The scale factor, which influences width and height properties. If you pass '-1',
      * the current global content scale factor will be used. */
     public var scale(get, set):Float;
-    private function get_scale():Float { return mScale; }
+    private function get_scale():Float { return __scale; }
     private function set_scale(value:Float):Float
     {
-        mScale = value > 0 ? value : Starling.current.contentScaleFactor;
+        __scale = value > 0 ? value : Starling.current.contentScaleFactor;
         return value;
     }
     
@@ -74,8 +74,8 @@ class TextureOptions
      * Note: this only works in textures with sidelengths that are powers of two and 
      * that are not loaded from a texture atlas (i.e. no subtextures). @default false */
     public var repeat(get, set):Bool;
-    private function get_repeat():Bool { return mRepeat; }
-    private function set_repeat(value:Bool):Bool { return mRepeat = value; }
+    private function get_repeat():Bool { return __repeat; }
+    private function set_repeat(value:Bool):Bool { return __repeat = value; }
 
     /** A callback that is used only for ATF textures; if it is set, the ATF data will be
      * decoded asynchronously. The texture can only be used when the callback has been
@@ -86,6 +86,6 @@ class TextureOptions
      * <code>function(texture:Texture):void;</code></p> 
      */
     public var onReady(get, set):Void->Void;
-    private function get_onReady():Void->Void { return mOnReady; }
-    private function set_onReady(value:Void->Void):Void->Void { return mOnReady = value; }
+    private function get_onReady():Void->Void { return __onReady; }
+    private function set_onReady(value:Void->Void):Void->Void { return __onReady = value; }
 }

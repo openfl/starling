@@ -155,14 +155,14 @@ class EventDispatcher
                 var listener:Function = listeners[i];
                 if (listener == null) continue;
                 #if flash
-                var numArgs:Int = untyped listener.length;
+                var nu__args:Int = untyped listener.length;
                 #elseif neko
-                var numArgs:Int = untyped ($nargs)(listener);
+                var nu__args:Int = untyped ($nargs)(listener);
                 #else
-                var numArgs:Int = 2;
+                var nu__args:Int = 2;
                 #end
-                if (numArgs == 0) listener();
-                else if (numArgs == 1) listener(event);
+                if (nu__args == 0) listener();
+                else if (nu__args == 1) listener(event);
                 else listener(event, event.data);
                 
                 if (event.stopsImmediatePropagation)

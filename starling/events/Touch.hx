@@ -41,11 +41,11 @@ class Touch
     private var mID:Int;
     private var mGlobalX:Float;
     private var mGlobalY:Float;
-    private var mPreviousGlobalX:Float;
-    private var mPreviousGlobalY:Float;
+    private var __previousGlobalX:Float;
+    private var __previousGlobalY:Float;
     private var mTapCount:Int;
     private var mPhase:String;
-    private var mTarget:DisplayObject;
+    private var __target:DisplayObject;
     private var mTimestamp:Float;
     private var mPressure:Float;
     private var mWidth:Float;
@@ -80,7 +80,7 @@ class Touch
      * of creating a new object.*/
     public function getPreviousLocation(space:DisplayObject, resultPoint:Point=null):Point
     {
-        sHelperPoint.setTo(mPreviousGlobalX, mPreviousGlobalY);
+        sHelperPoint.setTo(__previousGlobalX, __previousGlobalY);
         return space.globalToLocal(sHelperPoint, resultPoint);
     }
     
@@ -117,8 +117,8 @@ class Touch
         var clone:Touch = new Touch(mID);
         clone.mGlobalX = mGlobalX;
         clone.mGlobalY = mGlobalY;
-        clone.mPreviousGlobalX = mPreviousGlobalX;
-        clone.mPreviousGlobalY = mPreviousGlobalY;
+        clone.__previousGlobalX = __previousGlobalX;
+        clone.__previousGlobalY = __previousGlobalY;
         clone.mPhase = mPhase;
         clone.mTapCount = mTapCount;
         clone.mTimestamp = mTimestamp;
@@ -126,7 +126,7 @@ class Touch
         clone.mWidth = mWidth;
         clone.mHeight = mHeight;
         clone.mCancelled = mCancelled;
-        clone.target = mTarget;
+        clone.target = __target;
         return clone;
     }
     
@@ -134,10 +134,10 @@ class Touch
     
     private function updateBubbleChain():Void
     {
-        if (mTarget != null)
+        if (__target != null)
         {
             var length:Int = 1;
-            var element:DisplayObject = mTarget;
+            var element:DisplayObject = __target;
             
             mBubbleChain.length = 1;
             mBubbleChain[0] = element;
@@ -159,11 +159,11 @@ class Touch
     
     /** The previous x-position of the touch in stage coordinates. */
     public var previousGlobalX(get, never):Float;
-    private function get_previousGlobalX():Float { return mPreviousGlobalX; }
+    private function get_previousGlobalX():Float { return __previousGlobalX; }
     
     /** The previous y-position of the touch in stage coordinates. */
     public var previousGlobalY(get, never):Float;
-    private function get_previousGlobalY():Float { return mPreviousGlobalY; }
+    private function get_previousGlobalY():Float { return __previousGlobalY; }
 
     /** The x-position of the touch in stage coordinates. If you change this value,
      * the previous one will be moved to "previousGlobalX". */
@@ -171,7 +171,7 @@ class Touch
     private function get_globalX():Float { return mGlobalX; }
     private function set_globalX(value:Float):Float
     {
-        mPreviousGlobalX = mGlobalX != mGlobalX ? value : mGlobalX; // isNaN check
+        __previousGlobalX = mGlobalX != mGlobalX ? value : mGlobalX; // isNaN check
         return mGlobalX = value;
     }
 
@@ -181,7 +181,7 @@ class Touch
     private function get_globalY():Float { return mGlobalY; }
     private function set_globalY(value:Float):Float
     {
-        mPreviousGlobalY = mGlobalY != mGlobalY ? value : mGlobalY; // isNaN check
+        __previousGlobalY = mGlobalY != mGlobalY ? value : mGlobalY; // isNaN check
         return mGlobalY = value;
     }
     
@@ -198,15 +198,15 @@ class Touch
     
     /** The display object at which the touch occurred. */
     public var target(get, set):DisplayObject;
-    private function get_target():DisplayObject { return mTarget; }
+    private function get_target():DisplayObject { return __target; }
     private function set_target(value:DisplayObject):DisplayObject
     {
-        if (mTarget != value)
+        if (__target != value)
         {
-            mTarget = value;
+            __target = value;
             updateBubbleChain();
         }
-        return mTarget;
+        return __target;
     }
     
     /** The moment the touch occurred (in seconds since application start). */
@@ -245,7 +245,7 @@ class Touch
      * a target is set). */
     @:allow(starling) private function dispatchEvent(event:TouchEvent):Void
     {
-        if (mTarget != null) event.dispatch(mBubbleChain);
+        if (__target != null) event.dispatch(mBubbleChain);
     }
     
     /** @private */

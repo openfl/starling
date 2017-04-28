@@ -47,11 +47,11 @@ class ConcreteTexture extends Texture
     private var mMipMapping:Bool;
     private var mPremultipliedAlpha:Bool;
     private var mOptimizedForRenderTexture:Bool;
-    private var mScale:Float;
-    private var mRepeat:Bool;
-    private var mOnRestore:Function;
+    private var __scale:Float;
+    private var __repeat:Bool;
+    private var __onRestore:Function;
     private var mDataUploaded:Bool;
-    private var mTextureReadyCallback:Function;
+    private var __textureReadyCallback:Function;
     
     /** helper object */
     private static var sOrigin:Point = new Point();
@@ -64,7 +64,7 @@ class ConcreteTexture extends Texture
                         scale:Float=1, repeat:Bool=false)
     {
         super();
-        mScale = scale <= 0 ? 1.0 : scale;
+        __scale = scale <= 0 ? 1.0 : scale;
         mBase = base;
         mFormat = format;
         mWidth = width;
@@ -72,10 +72,10 @@ class ConcreteTexture extends Texture
         mMipMapping = mipMapping;
         mPremultipliedAlpha = premultipliedAlpha;
         mOptimizedForRenderTexture = optimizedForRenderTexture;
-        mRepeat = repeat;
-        mOnRestore = null;
+        __repeat = repeat;
+        __onRestore = null;
         mDataUploaded = false;
-        mTextureReadyCallback = null;
+        __textureReadyCallback = null;
     }
     
     /** Disposes the TextureBase object. */
@@ -183,7 +183,7 @@ class ConcreteTexture extends Texture
         
         if (Reflect.isFunction(async))
         {
-            mTextureReadyCallback = async;
+            __textureReadyCallback = async;
             mBase.addEventListener(TEXTURE_READY, onTextureReady);
         }
         
@@ -210,7 +210,7 @@ class ConcreteTexture extends Texture
         if (className == "flash.display3D.textures.VideoTexture")
         {
             mDataUploaded = true;
-            mTextureReadyCallback = onComplete;
+            __textureReadyCallback = onComplete;
             Reflect.callMethod(mBase, Reflect.getProperty(mBase, "attach" + type), attachment);
             mBase.addEventListener(TEXTURE_READY, onTextureReady);
         }
@@ -220,8 +220,8 @@ class ConcreteTexture extends Texture
     private function onTextureReady(event:Dynamic):Void
     {
         mBase.removeEventListener(TEXTURE_READY, onTextureReady);
-        if (mTextureReadyCallback != null) mTextureReadyCallback(this);
-        mTextureReadyCallback = null;
+        if (__textureReadyCallback != null) __textureReadyCallback(this);
+        __textureReadyCallback = null;
     }
     
     // texture backup (context loss)
@@ -230,7 +230,7 @@ class ConcreteTexture extends Texture
     {
         // recreate the underlying texture & restore contents
         createBase();
-        if (mOnRestore != null) mOnRestore();
+        if (__onRestore != null) __onRestore();
         
         // if no texture has been uploaded above, we init the texture with transparent pixels.
         if (!mDataUploaded) clear();
@@ -297,17 +297,17 @@ class ConcreteTexture extends Texture
      * already have been created; however, it will be empty. Call one of the "upload..."
      * methods from within the callbacks to restore the actual texture data. */
     public var onRestore(get, set):Function;
-    private function get_onRestore():Function { return mOnRestore; }
+    private function get_onRestore():Function { return __onRestore; }
     private function set_onRestore(value:Function):Function
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
         if (Starling.handleLostContext && value != null)
         {
-            mOnRestore = value;
+            __onRestore = value;
             Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         }
-        else mOnRestore = null;
+        else __onRestore = null;
         return value;
     }
     
@@ -321,10 +321,10 @@ class ConcreteTexture extends Texture
     private override function get_format():Context3DTextureFormat { return mFormat; }
     
     /** @inheritDoc */
-    private override function get_width():Float  { return mWidth / mScale;  }
+    private override function get_width():Float  { return mWidth / __scale;  }
     
     /** @inheritDoc */
-    private override function get_height():Float { return mHeight / mScale; }
+    private override function get_height():Float { return mHeight / __scale; }
     
     /** @inheritDoc */
     private override function get_nativeWidth():Float { return mWidth; }
@@ -333,7 +333,7 @@ class ConcreteTexture extends Texture
     private override function get_nativeHeight():Float { return mHeight; }
     
     /** The scale factor, which influences width and height properties. */
-    private override function get_scale():Float { return mScale; }
+    private override function get_scale():Float { return __scale; }
     
     /** @inheritDoc */
     private override function get_mipMapping():Bool { return mMipMapping; }
@@ -342,5 +342,5 @@ class ConcreteTexture extends Texture
     private override function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
     
     /** @inheritDoc */
-    private override function get_repeat():Bool { return mRepeat; }
+    private override function get_repeat():Bool { return __repeat; }
 }

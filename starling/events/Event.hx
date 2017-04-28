@@ -59,7 +59,7 @@ class Event
     /** Event type that indicates that the root DisplayObject has been created. */
     public static inline var ROOT_CREATED:String = "rootCreated";
     /** Event type for an animated object that requests to be removed from the juggler. */
-    public static inline var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
+    public static inline var REMOVE_FROM_JUGGLER:String = "removeFro__juggler";
     /** Event type that is dispatched by the AssetManager after a context loss. */
     public static inline var TEXTURES_RESTORED:String = "texturesRestored";
     /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */

@@ -99,11 +99,11 @@ class BlurFilter extends FragmentFilter
     
     private function createProgram(tinted:Bool):Program3D
     {
-        var programName:String = tinted ? TINTED_PROGRAM_NAME : NORMAL_PROGRAM_NAME;
+        var progra__name:String = tinted ? TINTED_PROGRAM_NAME : NORMAL_PROGRAM_NAME;
         var target:Starling = Starling.current;
         
-        if (target.hasProgram(programName))
-            return target.getProgram(programName);
+        if (target.hasProgram(progra__name))
+            return target.getProgram(progra__name);
         
         // vc0-3 - mvp matrix
         // vc4   - kernel offset
@@ -152,7 +152,7 @@ class BlurFilter extends FragmentFilter
         else fragmentShader +=
             "add  oc, ft5, ft4                              \n";   // add to output color
         
-        return target.registerProgramFromSource(programName, vertexShader, fragmentShader);
+        return target.registerProgramFromSource(progra__name, vertexShader, fragmentShader);
     }
     
     /** @private */

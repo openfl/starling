@@ -47,14 +47,14 @@ import starling.textures.Texture;
  */    
 class MovieClip extends Image implements IAnimatable
 {
-    private var mTextures:Vector<Texture>;
+    private var __textures:Vector<Texture>;
     private var mSounds:Vector<Sound>;
     private var mDurations:Vector<Float>;
-    private var mStartTimes:Vector<Float>;
+    private var __startTimes:Vector<Float>;
 
     private var mDefaultFrameDuration:Float;
-    private var mCurrentTime:Float;
-    private var mCurrentFrame:Int;
+    private var __currentTime:Float;
+    private var __currentFrame:Int;
     private var mLoop:Bool;
     private var mPlaying:Bool;
     private var mMuted:Bool;
@@ -79,23 +79,23 @@ class MovieClip extends Image implements IAnimatable
     private function init(textures:Vector<Texture>, fps:Float):Void
     {
         if (fps <= 0) throw new ArgumentError("Invalid fps: " + fps);
-        var numFrames:Int = textures.length;
+        var nu__frames:Int = textures.length;
         
         mDefaultFrameDuration = 1.0 / fps;
         mLoop = true;
         mPlaying = true;
-        mCurrentTime = 0.0;
-        mCurrentFrame = 0;
+        __currentTime = 0.0;
+        __currentFrame = 0;
         mWasStopped = true;
-        mTextures = textures.concat();
-        mSounds = new Vector<Sound>(numFrames);
-        mDurations = new Vector<Float>(numFrames);
-        mStartTimes = new Vector<Float>(numFrames);
+        __textures = textures.concat();
+        mSounds = new Vector<Sound>(nu__frames);
+        mDurations = new Vector<Float>(nu__frames);
+        __startTimes = new Vector<Float>(nu__frames);
         
-        for (i in 0...numFrames)
+        for (i in 0...nu__frames)
         {
             mDurations[i] = mDefaultFrameDuration;
-            mStartTimes[i] = i * mDefaultFrameDuration;
+            __startTimes[i] = i * mDefaultFrameDuration;
         }
     }
     
@@ -105,22 +105,22 @@ class MovieClip extends Image implements IAnimatable
      * duration is omitted, the default framerate is used (as specified in the constructor). */   
     public function addFrame(texture:Texture, sound:Sound=null, duration:Float=-1):Void
     {
-        addFrameAt(numFrames, texture, sound, duration);
+        addFrameAt(nu__frames, texture, sound, duration);
     }
     
     /** Adds a frame at a certain index, optionally with a sound and a custom duration. */
     public function addFrameAt(frameID:Int, texture:Texture, sound:Sound=null, 
                                duration:Float=-1):Void
     {
-        if (frameID < 0 || frameID > numFrames) throw new ArgumentError("Invalid frame id");
+        if (frameID < 0 || frameID > nu__frames) throw new ArgumentError("Invalid frame id");
         if (duration < 0) duration = mDefaultFrameDuration;
         
-        mTextures.insertAt(frameID, texture);
+        __textures.insertAt(frameID, texture);
         mSounds.insertAt(frameID, sound);
         mDurations.insertAt(frameID, duration);
         
-        if (frameID > 0 && frameID == numFrames) 
-            mStartTimes[frameID] = mStartTimes[frameID-1] + mDurations[frameID-1];
+        if (frameID > 0 && frameID == nu__frames) 
+            __startTimes[frameID] = __startTimes[frameID-1] + mDurations[frameID-1];
         else
             updateStartTimes();
     }
@@ -128,10 +128,10 @@ class MovieClip extends Image implements IAnimatable
     /** Removes the frame at a certain ID. The successors will move down. */
     public function removeFrameAt(frameID:Int):Void
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
-        if (numFrames == 1) throw new IllegalOperationError("Movie clip must not be empty");
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
+        if (nu__frames == 1) throw new IllegalOperationError("Movie clip must not be empty");
         
-        mTextures.splice(frameID, 1);
+        __textures.splice(frameID, 1);
         mSounds.splice(frameID, 1);
         mDurations.splice(frameID, 1);
         
@@ -141,21 +141,21 @@ class MovieClip extends Image implements IAnimatable
     /** Returns the texture of a certain frame. */
     public function getFrameTexture(frameID:Int):Texture
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
-        return mTextures[frameID];
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
+        return __textures[frameID];
     }
     
     /** Sets the texture of a certain frame. */
     public function setFrameTexture(frameID:Int, texture:Texture):Void
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
-        mTextures[frameID] = texture;
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
+        __textures[frameID] = texture;
     }
     
     /** Returns the sound of a certain frame. */
     public function getFrameSound(frameID:Int):Sound
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
         return mSounds[frameID];
     }
     
@@ -163,21 +163,21 @@ class MovieClip extends Image implements IAnimatable
      * is displayed. */
     public function setFrameSound(frameID:Int, sound:Sound):Void
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
         mSounds[frameID] = sound;
     }
     
     /** Returns the duration of a certain frame (in seconds). */
     public function getFrameDuration(frameID:Int):Float
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
         return mDurations[frameID];
     }
     
     /** Sets the duration of a certain frame (in seconds). */
     public function setFrameDuration(frameID:Int, duration:Float):Void
     {
-        if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
+        if (frameID < 0 || frameID >= nu__frames) throw new ArgumentError("Invalid frame id");
         mDurations[frameID] = duration;
         updateStartTimes();
     }
@@ -186,14 +186,14 @@ class MovieClip extends Image implements IAnimatable
      * Makes sure that the currently visible frame stays the same. */
     public function reverseFrames():Void
     {
-        mTextures.reverse();
+        __textures.reverse();
         mSounds.reverse();
         mDurations.reverse();
 
         updateStartTimes();
 
-        mCurrentTime = totalTime - mCurrentTime;
-        mCurrentFrame = numFrames - mCurrentFrame - 1;
+        __currentTime = totalTime - __currentTime;
+        __currentFrame = nu__frames - __currentFrame - 1;
     }
     
     // playback methods
@@ -222,13 +222,13 @@ class MovieClip extends Image implements IAnimatable
     
     private function updateStartTimes():Void
     {
-        var numFrames:Int = this.numFrames;
+        var nu__frames:Int = this.nu__frames;
         
-        mStartTimes.length = 0;
-        mStartTimes[0] = 0;
+        __startTimes.length = 0;
+        __startTimes[0] = 0;
         
-        for (i in 1...numFrames)
-            mStartTimes[i] = mStartTimes[i-1] + mDurations[i-1];
+        for (i in 1...nu__frames)
+            __startTimes[i] = __startTimes[i-1] + mDurations[i-1];
     }
 
     private function playSound(frame:Int):Void
@@ -245,7 +245,7 @@ class MovieClip extends Image implements IAnimatable
         if (!mPlaying || passedTime <= 0.0) return;
 
         var finalFrame:Int;
-        var previousFrame:Int = mCurrentFrame;
+        var previousFrame:Int = __currentFrame;
         var restTime:Float = 0.0;
         var dispatchCompleteEvent:Bool = false;
         var totalTime:Float = this.totalTime;
@@ -256,53 +256,53 @@ class MovieClip extends Image implements IAnimatable
             // we need to play the frame's sound manually.
 
             mWasStopped = false;
-            playSound(mCurrentFrame);
+            playSound(__currentFrame);
         }
 
-        if (mLoop && mCurrentTime >= totalTime)
+        if (mLoop && __currentTime >= totalTime)
         { 
-            mCurrentTime = 0.0; 
-            mCurrentFrame = 0; 
+            __currentTime = 0.0; 
+            __currentFrame = 0; 
         }
         
-        if (mCurrentTime < totalTime)
+        if (__currentTime < totalTime)
         {
-            mCurrentTime += passedTime;
-            finalFrame = mTextures.length - 1;
+            __currentTime += passedTime;
+            finalFrame = __textures.length - 1;
             
-            while (mCurrentTime > mStartTimes[mCurrentFrame] + mDurations[mCurrentFrame])
+            while (__currentTime > __startTimes[__currentFrame] + mDurations[__currentFrame])
             {
-                if (mCurrentFrame == finalFrame)
+                if (__currentFrame == finalFrame)
                 {
                     if (mLoop && !hasEventListener(Event.COMPLETE))
                     {
-                        mCurrentTime -= totalTime;
-                        mCurrentFrame = 0;
+                        __currentTime -= totalTime;
+                        __currentFrame = 0;
                     }
                     else
                     {
-                        restTime = mCurrentTime - totalTime;
+                        restTime = __currentTime - totalTime;
                         dispatchCompleteEvent = true;
-                        mCurrentFrame = finalFrame;
-                        mCurrentTime = totalTime;
+                        __currentFrame = finalFrame;
+                        __currentTime = totalTime;
                         break;
                     }
                 }
                 else
                 {
-                    mCurrentFrame++;
+                    __currentFrame++;
                 }
 
-                if (mSounds[mCurrentFrame] != null) playSound(mCurrentFrame);
+                if (mSounds[__currentFrame] != null) playSound(__currentFrame);
             }
             
             // special case when we reach *exactly* the total time.
-            if (mCurrentFrame == finalFrame && mCurrentTime == totalTime)
+            if (__currentFrame == finalFrame && __currentTime == totalTime)
                 dispatchCompleteEvent = true;
         }
         
-        if (mCurrentFrame != previousFrame)
-            texture = mTextures[mCurrentFrame];
+        if (__currentFrame != previousFrame)
+            texture = __textures[__currentFrame];
         
         if (dispatchCompleteEvent)
             dispatchEventWith(Event.COMPLETE);
@@ -317,17 +317,17 @@ class MovieClip extends Image implements IAnimatable
     public var totalTime(get, never):Float;
     private function get_totalTime():Float 
     {
-        var numFrames:Int = mTextures.length;
-        return mStartTimes[numFrames-1] + mDurations[numFrames-1];
+        var nu__frames:Int = __textures.length;
+        return __startTimes[nu__frames-1] + mDurations[nu__frames-1];
     }
     
     /** The time that has passed since the clip was started (each loop starts at zero). */
     public var currentTime(get, never):Float;
-    private function get_currentTime():Float { return mCurrentTime; }
+    private function get_currentTime():Float { return __currentTime; }
     
     /** The total Float of frames. */
-    public var numFrames(get, never):Int;
-    private function get_numFrames():Int { return mTextures.length; }
+    public var nu__frames(get, never):Int;
+    private function get_nu__frames():Int { return __textures.length; }
     
     /** Indicates if the clip should loop. */
     public var loop(get, set):Bool;
@@ -347,17 +347,17 @@ class MovieClip extends Image implements IAnimatable
 
     /** The index of the frame that is currently displayed. */
     public var currentFrame(get, set):Int;
-    private function get_currentFrame():Int { return mCurrentFrame; }
+    private function get_currentFrame():Int { return __currentFrame; }
     private function set_currentFrame(value:Int):Int
     {
-        mCurrentFrame = value;
-        mCurrentTime = 0.0;
+        __currentFrame = value;
+        __currentTime = 0.0;
         
         for (i in 0...value)
-            mCurrentTime += getFrameDuration(i);
+            __currentTime += getFrameDuration(i);
         
-        texture = mTextures[mCurrentFrame];
-        if (mPlaying && !mWasStopped) playSound(mCurrentFrame);
+        texture = __textures[__currentFrame];
+        if (mPlaying && !mWasStopped) playSound(__currentFrame);
         return value;
     }
     
@@ -372,10 +372,10 @@ class MovieClip extends Image implements IAnimatable
         
         var newFrameDuration:Float = 1.0 / value;
         var acceleration:Float = newFrameDuration / mDefaultFrameDuration;
-        mCurrentTime *= acceleration;
+        __currentTime *= acceleration;
         mDefaultFrameDuration = newFrameDuration;
         
-        for (i in 0...numFrames) 
+        for (i in 0...nu__frames) 
             mDurations[i] *= acceleration;
 
         updateStartTimes();
@@ -388,7 +388,7 @@ class MovieClip extends Image implements IAnimatable
     private function get_isPlaying():Bool 
     {
         if (mPlaying)
-            return mLoop || mCurrentTime < totalTime;
+            return mLoop || __currentTime < totalTime;
         else
             return false;
     }
@@ -397,6 +397,6 @@ class MovieClip extends Image implements IAnimatable
     public var isComplete(get, never):Bool;
     private function get_isComplete():Bool
     {
-        return !mLoop && mCurrentTime >= totalTime;
+        return !mLoop && __currentTime >= totalTime;
     }
 }

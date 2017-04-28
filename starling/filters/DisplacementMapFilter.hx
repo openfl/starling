@@ -50,9 +50,9 @@ class DisplacementMapFilter extends FragmentFilter
     private var mMapPoint:Point;
     private var mComponentX:UInt;
     private var mComponentY:UInt;
-    private var mScaleX:Float;
-    private var mScaleY:Float;
-    private var mRepeat:Bool;
+    private var __scaleX:Float;
+    private var __scaleY:Float;
+    private var __repeat:Bool;
     
     private var mShaderProgram:Program3D;
     private var mMapTexCoordBuffer:VertexBuffer3D;
@@ -74,9 +74,9 @@ class DisplacementMapFilter extends FragmentFilter
         mMapPoint = new Point();
         mComponentX = componentX;
         mComponentY = componentY;
-        mScaleX = scaleX;
-        mScaleY = scaleY;
-        mRepeat = repeat;
+        __scaleX = scaleX;
+        __scaleY = scaleY;
+        __repeat = repeat;
         this.mapPoint = mapPoint;
         
         super();
@@ -100,12 +100,12 @@ class DisplacementMapFilter extends FragmentFilter
         var mapFlags:String = RenderSupport.getTextureLookupFlags(
                                   mapTexture.format, mapTexture.mipMapping, mapTexture.repeat);
         var inputFlags:String = RenderSupport.getTextureLookupFlags(
-                                    Context3DTextureFormat.BGRA, false, mRepeat);
-        var programName:String = formatString("DMF_m{0}_i{1}", [mapFlags, inputFlags]);
+                                    Context3DTextureFormat.BGRA, false, __repeat);
+        var progra__name:String = formatString("DMF_m{0}_i{1}", [mapFlags, inputFlags]);
         
-        if (target.hasProgram(programName))
+        if (target.hasProgram(progra__name))
         {
-            mShaderProgram = target.getProgram(programName);
+            mShaderProgram = target.getProgram(progra__name);
         }
         else
         {
@@ -133,7 +133,7 @@ class DisplacementMapFilter extends FragmentFilter
                 "tex  oc, ft3, fs0 " + inputFlags // read input texture at displaced coords
             ].join("\n");
             
-            mShaderProgram = target.registerProgramFromSource(programName, 
+            mShaderProgram = target.registerProgramFromSource(progra__name, 
                 vertexShader, fragmentShader);
         }
     }
@@ -185,8 +185,8 @@ class DisplacementMapFilter extends FragmentFilter
         else if (mComponentY == BitmapDataChannel.BLUE)  columnY = 2;
         else                                             columnY = 3;
         
-        sMatrixData[columnX * 4    ] = mScaleX * scale / textureWidth;
-        sMatrixData[columnY * 4 + 1] = mScaleY * scale / textureHeight;
+        sMatrixData[columnX * 4    ] = __scaleX * scale / textureWidth;
+        sMatrixData[columnY * 4 + 1] = __scaleY * scale / textureHeight;
         
         sMatrix.copyRawDataFrom(sMatrixData);
         
@@ -224,13 +224,13 @@ class DisplacementMapFilter extends FragmentFilter
 
     /** The multiplier used to scale the x displacement result from the map calculation. */
     public var scaleX(get, set):Float;
-    private function get_scaleX():Float { return mScaleX; }
-    private function set_scaleX(value:Float):Float { return mScaleX = value; }
+    private function get_scaleX():Float { return __scaleX; }
+    private function set_scaleX(value:Float):Float { return __scaleX = value; }
 
     /** The multiplier used to scale the y displacement result from the map calculation. */
     public var scaleY(get, set):Float;
-    private function get_scaleY():Float { return mScaleY; }
-    private function set_scaleY(value:Float):Float { return mScaleY = value; }
+    private function get_scaleY():Float { return __scaleY; }
+    private function set_scaleY(value:Float):Float { return __scaleY = value; }
     
     /** The texture that will be used to calculate displacement. */
     public var mapTexture(get, set):Texture;
@@ -259,12 +259,12 @@ class DisplacementMapFilter extends FragmentFilter
     /** Indicates how the pixels at the edge of the input image (the filtered object) will
      * be wrapped at the edge. */
     public var repeat(get, set):Bool;
-    private function get_repeat():Bool { return mRepeat; }
+    private function get_repeat():Bool { return __repeat; }
     private function set_repeat(value:Bool):Bool 
     { 
-        if (mRepeat != value)
+        if (__repeat != value)
         {
-            mRepeat = value;
+            __repeat = value;
             createPrograms();
         }
         return value;

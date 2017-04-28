@@ -44,9 +44,9 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  * 	<pre>
  *  renderTexture.drawBundled(function():void
  *  {
- *     for (var i:int=0; i&lt;numDrawings; ++i)
+ *     for (var i:int=0; i&lt;nu__drawings; ++i)
  *     {
- *         image.rotation = (2 &#42; Math.PI / numDrawings) &#42; i;
+ *         image.rotation = (2 &#42; Math.PI / nu__drawings) &#42; i;
  *         renderTexture.draw(image);
  *     }   
  *  });
@@ -76,10 +76,10 @@ class RenderTexture extends SubTexture
     private var mActiveTexture:Texture;
     private var mBufferTexture:Texture;
     private var mHelperImage:Image;
-    private var mDrawing:Bool;
+    private var __drawing:Bool;
     private var mBufferReady:Bool;
-    private var mIsPersistent:Bool;
-    private var mSupport:RenderSupport;
+    private var __isPersistent:Bool;
+    private var __support:RenderSupport;
     
     /** helper object */
     private static var sClipRect:Rectangle = new Rectangle();
@@ -136,9 +136,9 @@ class RenderTexture extends SubTexture
         var rootWidth:Float  = mActiveTexture.root.width;
         var rootHeight:Float = mActiveTexture.root.height;
         
-        mIsPersistent = persistent;
-        mSupport = new RenderSupport();
-        mSupport.setProjectionMatrix(0, 0, rootWidth, rootHeight, width, height);
+        __isPersistent = persistent;
+        __support = new RenderSupport();
+        __support.setProjectionMatrix(0, 0, rootWidth, rootHeight, width, height);
         
         if (persistent && (!optimizePersistentBuffers || !SystemUtil.supportsRelaxedTargetClearRequirement))
         {
@@ -152,7 +152,7 @@ class RenderTexture extends SubTexture
     /** @inheritDoc */
     public override function dispose():Void
     {
-        mSupport.dispose();
+        __support.dispose();
         mActiveTexture.dispose();
         
         if (isDoubleBuffered)
@@ -180,7 +180,7 @@ class RenderTexture extends SubTexture
     {
         if (object == null) return;
         
-        if (mDrawing)
+        if (__drawing)
             render(object, matrix, alpha);
         else
             renderBundled(render, object, matrix, alpha, antiAliasing);
@@ -204,19 +204,19 @@ class RenderTexture extends SubTexture
         var filter:FragmentFilter = object.filter;
         var mask:DisplayObject = object.mask;
 
-        mSupport.loadIdentity();
-        mSupport.blendMode = object.blendMode == BlendMode.AUTO ?
+        __support.loadIdentity();
+        __support.blendMode = object.blendMode == BlendMode.AUTO ?
             BlendMode.NORMAL : object.blendMode;
 
-        if (matrix != null) mSupport.prependMatrix(matrix);
-        else        mSupport.transformMatrix(object);
+        if (matrix != null) __support.prependMatrix(matrix);
+        else        __support.transformMatrix(object);
 
-        if (mask != null)   mSupport.pushMask(mask);
+        if (mask != null)   __support.pushMask(mask);
 
-        if (filter != null) filter.render(object, mSupport, alpha);
-        else        object.render(mSupport, alpha);
+        if (filter != null) filter.render(object, __support, alpha);
+        else        object.render(__support, alpha);
 
-        if (mask != null)   mSupport.popMask();
+        if (mask != null)   __support.popMask();
     }
     
     private function renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
@@ -236,35 +236,35 @@ class RenderTexture extends SubTexture
             mHelperImage.texture = mBufferTexture;
         }
 
-        var previousRenderTarget:Texture = mSupport.renderTarget;
+        var previousRenderTarget:Texture = __support.renderTarget;
         
         // limit drawing to relevant area
         sClipRect.setTo(0, 0, mActiveTexture.width, mActiveTexture.height);
 
-        mSupport.pushClipRect(sClipRect);
-        mSupport.setRenderTarget(mActiveTexture, antiAliasing);
+        __support.pushClipRect(sClipRect);
+        __support.setRenderTarget(mActiveTexture, antiAliasing);
         
         if (isDoubleBuffered || !isPersistent || !mBufferReady)
-            mSupport.clear();
+            __support.clear();
 
         // draw buffer
         if (isDoubleBuffered && mBufferReady)
-            mHelperImage.render(mSupport, 1.0);
+            mHelperImage.render(__support, 1.0);
         else
             mBufferReady = true;
         
         try
         {
-            mDrawing = true;
+            __drawing = true;
             renderBlock(object, matrix, alpha);
         }
         //finally
         {
-            mDrawing = false;
-            mSupport.finishQuadBatch();
-            mSupport.nextFrame();
-            mSupport.renderTarget = previousRenderTarget;
-            mSupport.popClipRect();
+            __drawing = false;
+            __support.finishQuadBatch();
+            __support.nextFrame();
+            __support.renderTarget = previousRenderTarget;
+            __support.popClipRect();
         }
     }
     
@@ -273,11 +273,11 @@ class RenderTexture extends SubTexture
     public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
         if (!Starling.current.contextValid) return;
-        var previousRenderTarget:Texture = mSupport.renderTarget;
+        var previousRenderTarget:Texture = __support.renderTarget;
 
-        mSupport.renderTarget = mActiveTexture;
-        mSupport.clear(rgb, alpha);
-        mSupport.renderTarget = previousRenderTarget;
+        __support.renderTarget = mActiveTexture;
+        __support.clear(rgb, alpha);
+        __support.renderTarget = previousRenderTarget;
         mBufferReady = true;
     }
     
@@ -340,7 +340,7 @@ class RenderTexture extends SubTexture
 
     /** Indicates if the texture is persistent over multiple draw calls. */
     public var isPersistent(get, never):Bool;
-    private function get_isPersistent():Bool { return mIsPersistent; }
+    private function get_isPersistent():Bool { return __isPersistent; }
     
     /** @inheritDoc */
     private override function get_base():TextureBase { return mActiveTexture.base; }

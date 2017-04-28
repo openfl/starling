@@ -60,7 +60,7 @@ class TouchEvent extends Event
     private var mShiftKey:Bool;
     private var mCtrlKey:Bool;
     private var mTimestamp:Float;
-    private var mVisitedObjects:Vector<EventDispatcher>;
+    private var __visitedObjects:Vector<EventDispatcher>;
     
     /** Helper object. */
     private static var sTouches:Vector<Touch> = new Vector<Touch>();
@@ -74,10 +74,10 @@ class TouchEvent extends Event
         mShiftKey = shiftKey;
         mCtrlKey = ctrlKey;
         mTimestamp = -1.0;
-        mVisitedObjects = new Vector<EventDispatcher>();
+        __visitedObjects = new Vector<EventDispatcher>();
         
-        var numTouches:Int=touches.length;
-        for (i in 0...numTouches)
+        var nu__touches:Int=touches.length;
+        for (i in 0...nu__touches)
             if (touches[i].timestamp > mTimestamp)
                 mTimestamp = touches[i].timestamp;
     }
@@ -90,9 +90,9 @@ class TouchEvent extends Event
     {
         if (result == null) result = new Vector<Touch>();
         var allTouches:Vector<Touch> = cast data;
-        var numTouches:Int = allTouches.length;
+        var nu__touches:Int = allTouches.length;
         
-        for (i in 0...numTouches)
+        for (i in 0...nu__touches)
         {
             var touch:Touch = cast(allTouches[i], Touch);
             var correctTarget:Bool = touch.isTouching(target);
@@ -114,16 +114,16 @@ class TouchEvent extends Event
     public function getTouch(target:DisplayObject, phase:String=null, id:Int=-1):Touch
     {
         getTouches(target, phase, sTouches);
-        var numTouches:Int = sTouches.length;
+        var nu__touches:Int = sTouches.length;
         
-        if (numTouches > 0) 
+        if (nu__touches > 0) 
         {
             var touch:Touch = null;
             
             if (id < 0) touch = sTouches[0];
             else
             {
-                for (i in 0...numTouches)
+                for (i in 0...nu__touches)
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
@@ -170,10 +170,10 @@ class TouchEvent extends Event
             for (i in 0...chainLength)
             {
                 var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
-                if (mVisitedObjects.indexOf(chainElement) == -1)
+                if (__visitedObjects.indexOf(chainElement) == -1)
                 {
                     var stopPropagation:Bool = chainElement.__invokeEvent(this);
-                    mVisitedObjects[mVisitedObjects.length] = chainElement;
+                    __visitedObjects[__visitedObjects.length] = chainElement;
                     if (stopPropagation) break;
                 }
             }

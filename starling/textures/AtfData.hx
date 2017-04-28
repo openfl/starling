@@ -21,8 +21,8 @@ class AtfData
     private var mFormat:Context3DTextureFormat;
     private var mWidth:Int;
     private var mHeight:Int;
-    private var mNumTextures:Int;
-    private var mIsCubeMap:Bool;
+    private var mNu__textures:Int;
+    private var __isCubeMap:Bool;
     private var mData:ByteArray;
     
     /** Create a new instance by parsing the given byte array. */
@@ -44,8 +44,8 @@ class AtfData
         
         mWidth = Std.int(Math.pow(2, data.readUnsignedByte())); 
         mHeight = Std.int(Math.pow(2, data.readUnsignedByte()));
-        mNumTextures = data.readUnsignedByte();
-        mIsCubeMap = (format & 0x80) != 0;
+        mNu__textures = data.readUnsignedByte();
+        __isCubeMap = (format & 0x80) != 0;
         mData = data;
         
         // version 2 of the new file format contains information about
@@ -54,8 +54,8 @@ class AtfData
         if (data[5] != 0 && data[6] == 255)
         {
             var emptyMipmaps:Bool = (data[5] & 0x01) == 1;
-            var numTextures:Int  = data[5] >> 1 & 0x7f;
-            mNumTextures = emptyMipmaps ? 1 : numTextures;
+            var nu__textures:Int  = data[5] >> 1 & 0x7f;
+            mNu__textures = emptyMipmaps ? 1 : nu__textures;
         }
     }
 
@@ -85,12 +85,12 @@ class AtfData
     private function get_height():Int { return mHeight; }
 
     /** The number of encoded textures. '1' means that there are no mip maps. */
-    public var numTextures(get, never):Int;
-    private function get_numTextures():Int { return mNumTextures; }
+    public var nu__textures(get, never):Int;
+    private function get_nu__textures():Int { return mNu__textures; }
 
     /** Indicates if the ATF data encodes a cube map. Not supported by Starling! */
     public var isCubeMap(get, never):Bool;
-    private function get_isCubeMap():Bool { return mIsCubeMap; }
+    private function get_isCubeMap():Bool { return __isCubeMap; }
 
     /** The actual byte data, including header. */
     public var data(get, never):ByteArray;

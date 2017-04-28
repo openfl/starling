@@ -71,9 +71,9 @@ class BitmapFont
     private static inline var CHAR_NEWLINE:Int         = 10;
     private static inline var CHAR_CARRIAGE_RETURN:Int = 13;
     
-    private var mTexture:Texture;
+    private var __texture:Texture;
     private var mChars:Map<Int, BitmapChar>;
-    private var mName:String;
+    private var __name:String;
     private var mSize:Float;
     private var mLineHeight:Float;
     private var mBaseline:Float;
@@ -99,10 +99,10 @@ class BitmapFont
             throw new ArgumentError("fontXml cannot be null!");
         }
         
-        mName = "unknown";
+        __name = "unknown";
         mLineHeight = mSize = mBaseline = 14;
         mOffsetX = mOffsetY = 0.0;
-        mTexture = texture;
+        __texture = texture;
         mChars = new Map<Int, BitmapChar>();
         mHelperImage = new Image(texture);
         
@@ -112,14 +112,14 @@ class BitmapFont
     /** Disposes the texture of the bitmap font! */
     public function dispose():Void
     {
-        if (mTexture != null)
-            mTexture.dispose();
+        if (__texture != null)
+            __texture.dispose();
     }
     
     private function parseFontXml(fontXml:Xml):Void
     {
-		var scale:Float = mTexture.scale;
-        var frame:Rectangle = mTexture.frame;
+		var scale:Float = __texture.scale;
+        var frame:Rectangle = __texture.frame;
         var frameX:Float = frame != null ? frame.x : 0;
         var frameY:Float = frame != null ? frame.y : 0;
 		
@@ -130,7 +130,7 @@ class BitmapFont
 		}
 		
         var common:Xml = fontXml.elementsNamed("common").next();
-        mName = info.get("face");
+        __name = info.get("face");
         mSize = Std.parseFloat(info.get("size")) / scale;
         mLineHeight = Std.parseFloat(common.get("lineHeight")) / scale;
         mBaseline = Std.parseFloat(common.get("base")) / scale;
@@ -140,7 +140,7 @@ class BitmapFont
         
         if (mSize <= 0)
         {
-            trace("[Starling] Warning: invalid font size in '" + mName + "' font.");
+            trace("[Starling] Warning: invalid font size in '" + __name + "' font.");
             mSize = (mSize == 0.0 ? 16.0 : mSize * -1.0);
         }
         
@@ -158,7 +158,7 @@ class BitmapFont
             region.width  = Std.parseFloat(charElement.get("width")) / scale;
             region.height = Std.parseFloat(charElement.get("height")) / scale;
             
-            var texture:Texture = Texture.fromTexture(mTexture, region);
+            var texture:Texture = Texture.fro__texture(__texture, region);
             var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
             addChar(id, bitmapChar);
         }
@@ -320,7 +320,7 @@ class BitmapFont
                     }
                     else if (char == null)
                     {
-                        trace("[Starling] Font: " + mName + " missing character: " +
+                        trace("[Starling] Font: " + __name + " missing character: " +
                             text.charAt(i) + " id: " + charID);
                     }
                     else
@@ -434,7 +434,7 @@ class BitmapFont
     
     /** The name of the font as it was parsed from the font file. */
     public var name(get, never):String;
-    private function get_name():String { return mName; }
+    private function get_name():String { return __name; }
     
     /** The native size of the font. */
     public var size(get, never):Float;
@@ -468,7 +468,7 @@ class BitmapFont
     private function set_offsetY(value:Float):Float { return mOffsetY = value; }
 
     /** The underlying texture that contains all the chars. */
-    private function get_texture():Texture { return mTexture; }
+    private function get_texture():Texture { return __texture; }
 }
 
 class CharLocation

@@ -47,7 +47,7 @@ import starling.utils.Color;
 class ColorMatrixFilter extends FragmentFilter
 {
     private var mShaderProgram:Program3D;
-    private var mUserMatrix:Vector<Float>;   // offset in range 0-255
+    private var __userMatrix:Vector<Float>;   // offset in range 0-255
     private var mShaderMatrix:Vector<Float>; // offset in range 0-1, changed order
     
     private static inline var PROGRAM_NAME:String = "CMF";
@@ -67,7 +67,7 @@ class ColorMatrixFilter extends FragmentFilter
     public function new(matrix:Vector<Float>=null)
     {
         super();
-        mUserMatrix   = new Vector<Float>();
+        __userMatrix   = new Vector<Float>();
         mShaderMatrix = new Vector<Float>();
         
         this.matrix = matrix;
@@ -219,17 +219,17 @@ class ColorMatrixFilter extends FragmentFilter
             for (x in 0...5)
             {
                 sTmpMatrix1[i+x] = 
-                    matrix[i]        * mUserMatrix[x]           +
-                    matrix[i+1] * mUserMatrix[x + 5] +
-                    matrix[i+2] * mUserMatrix[x + 10] +
-                    matrix[i+3] * mUserMatrix[x + 15] +
+                    matrix[i]        * __userMatrix[x]           +
+                    matrix[i+1] * __userMatrix[x + 5] +
+                    matrix[i+2] * __userMatrix[x + 10] +
+                    matrix[i+3] * __userMatrix[x + 15] +
                     (x == 4 ? matrix[i+4] : 0);
             }
             
             i+=5;
         }
         
-        copyMatrix(sTmpMatrix1, mUserMatrix);
+        copyMatrix(sTmpMatrix1, __userMatrix);
         updateShaderMatrix();
         return this;
     }
@@ -288,12 +288,12 @@ class ColorMatrixFilter extends FragmentFilter
         // the shader needs the matrix components in a different order, 
         // and it needs the offsets in the range 0-1.
         
-        pushValues(mShaderMatrix, mUserMatrix[0],  mUserMatrix[1],  mUserMatrix[2],  mUserMatrix[3],
-            mUserMatrix[5],  mUserMatrix[6],  mUserMatrix[7],  mUserMatrix[8],
-            mUserMatrix[10], mUserMatrix[11], mUserMatrix[12], mUserMatrix[13], 
-            mUserMatrix[15], mUserMatrix[16], mUserMatrix[17], mUserMatrix[18],
-            mUserMatrix[4] / 255.0,  mUserMatrix[9] / 255.0,  mUserMatrix[14] / 255.0,  
-            mUserMatrix[19] / 255.0
+        pushValues(mShaderMatrix, __userMatrix[0],  __userMatrix[1],  __userMatrix[2],  __userMatrix[3],
+            __userMatrix[5],  __userMatrix[6],  __userMatrix[7],  __userMatrix[8],
+            __userMatrix[10], __userMatrix[11], __userMatrix[12], __userMatrix[13], 
+            __userMatrix[15], __userMatrix[16], __userMatrix[17], __userMatrix[18],
+            __userMatrix[4] / 255.0,  __userMatrix[9] / 255.0,  __userMatrix[14] / 255.0,  
+            __userMatrix[19] / 255.0
         );
     }
     
@@ -301,7 +301,7 @@ class ColorMatrixFilter extends FragmentFilter
     
     /** A vector of 20 items arranged as a 4x5 matrix. */
     public var matrix(get, set):Vector<Float>;
-    private function get_matrix():Vector<Float> { return mUserMatrix; }
+    private function get_matrix():Vector<Float> { return __userMatrix; }
     private function set_matrix(value:Vector<Float>):Vector<Float>
     {
         if (value != null && value.length != 20) 
@@ -309,11 +309,11 @@ class ColorMatrixFilter extends FragmentFilter
         
         if (value == null)
         {
-            mUserMatrix = IDENTITY.copy();
+            __userMatrix = IDENTITY.copy();
         }
         else
         {
-            copyMatrix(value, mUserMatrix);
+            copyMatrix(value, __userMatrix);
         }
         
         updateShaderMatrix();

@@ -4,15 +4,15 @@ import openfl.Vector;
 
 class Ellipse extends ImmutablePolygon
 {
-    private var mX:Float;
-    private var mY:Float;
+    private var __x:Float;
+    private var __y:Float;
     private var mRadiusX:Float;
     private var mRadiusY:Float;
 
     public function new(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1)
     {
-        mX = x;
-        mY = y;
+        __x = x;
+        __y = y;
         mRadiusX = radiusX;
         mRadiusY = radiusY;
 
@@ -30,8 +30,8 @@ class Ellipse extends ImmutablePolygon
 
         for (i in 0...numSides)
         {
-            vertices[i * 2    ] = Math.cos(angle) * mRadiusX + mX;
-            vertices[i * 2 + 1] = Math.sin(angle) * mRadiusY + mY;
+            vertices[i * 2    ] = Math.cos(angle) * mRadiusX + __x;
+            vertices[i * 2 + 1] = Math.sin(angle) * mRadiusY + __y;
             angle += angleDelta;
         }
 
@@ -59,8 +59,8 @@ class Ellipse extends ImmutablePolygon
 
     override public function contains(x:Float, y:Float):Bool
     {
-        var vx:Float = x - mX;
-        var vy:Float = y - mY;
+        var vx:Float = x - __x;
+        var vy:Float = y - __y;
 
         var a:Float = vx / mRadiusX;
         var b:Float = vy / mRadiusY;

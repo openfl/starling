@@ -58,7 +58,7 @@ class Sprite extends DisplayObjectContainer
     private var mFlattenedContents:Vector<QuadBatch>;
     private var mFlattenRequested:Bool;
     private var mFlattenOptimized:Bool;
-    private var mClipRect:Rectangle;
+    private var __clipRect:Rectangle;
     
     /** Helper objects. */
     private static var sHelperMatrix:Matrix = new Matrix();
@@ -137,11 +137,11 @@ class Sprite extends DisplayObjectContainer
      * <strong>Note:</strong> clipping rectangles are axis aligned with the screen, so they
      * will not be rotated or skewed if the Sprite is. */
     public var clipRect(get, set):Rectangle;
-    private function get_clipRect():Rectangle { return mClipRect; }
+    private function get_clipRect():Rectangle { return __clipRect; }
     private function set_clipRect(value:Rectangle):Rectangle 
     {
-        if (mClipRect != null && value != null) mClipRect.copyFrom(value);
-        else mClipRect = (value != null ? value.clone() : null);
+        if (__clipRect != null && value != null) __clipRect.copyFrom(value);
+        else __clipRect = (value != null ? value.clone() : null);
         return value;
     }
 
@@ -149,7 +149,7 @@ class Sprite extends DisplayObjectContainer
      * or null if the sprite does not have one. */
     public function getClipRect(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
     {
-        if (mClipRect == null) return null;
+        if (__clipRect == null) return null;
         if (resultRect == null) resultRect = new Rectangle();
         
         var x:Float = 0.0, y:Float = 0.0;
@@ -163,10 +163,10 @@ class Sprite extends DisplayObjectContainer
         {
             switch(i)
             {
-                case 0: x = mClipRect.left;  y = mClipRect.top;
-                case 1: x = mClipRect.left;  y = mClipRect.bottom;
-                case 2: x = mClipRect.right; y = mClipRect.top;
-                case 3: x = mClipRect.right; y = mClipRect.bottom;
+                case 0: x = __clipRect.left;  y = __clipRect.top;
+                case 1: x = __clipRect.left;  y = __clipRect.bottom;
+                case 2: x = __clipRect.right; y = __clipRect.top;
+                case 3: x = __clipRect.right; y = __clipRect.bottom;
             }
             var transformedPoint:Point = MatrixUtil.transformCoords(transMatrix, x, y, sHelperPoint);
             
@@ -186,7 +186,7 @@ class Sprite extends DisplayObjectContainer
         var bounds:Rectangle = super.getBounds(targetSpace, resultRect);
         
         // if we have a scissor rect, intersect it with our bounds
-        if (mClipRect != null)
+        if (__clipRect != null)
             RectangleUtil.intersect(bounds, getClipRect(targetSpace, sHelperRect), 
                                     bounds);
         
@@ -196,7 +196,7 @@ class Sprite extends DisplayObjectContainer
     /** @inheritDoc */
     public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
     {
-        if (mClipRect != null && !mClipRect.containsPoint(localPoint))
+        if (__clipRect != null && !__clipRect.containsPoint(localPoint))
             return null;
         else
             return super.hitTest(localPoint, forTouch);
@@ -205,7 +205,7 @@ class Sprite extends DisplayObjectContainer
     /** @inheritDoc */
     public override function render(support:RenderSupport, parentAlpha:Float):Void
     {
-        if (mClipRect != null)
+        if (__clipRect != null)
         {
             var clipRect:Rectangle = support.pushClipRect(getClipRect(stage, sHelperRect));
             if (clipRect.isEmpty())
@@ -247,7 +247,7 @@ class Sprite extends DisplayObjectContainer
         }
         else super.render(support, parentAlpha);
         
-        if (mClipRect != null)
+        if (__clipRect != null)
             support.popClipRect();
     }
 }

@@ -30,14 +30,14 @@ import starling.utils.VertexData;
  */
 class SubTexture extends Texture
 {
-    private var mParent:Texture;
+    private var __parent:Texture;
     private var mOwnsParent:Bool;
     private var mRegion:Rectangle;
-    private var mFrame:Rectangle;
-    private var mRotated:Bool;
+    private var __frame:Rectangle;
+    private var __rotated:Bool;
     private var mWidth:Float;
     private var mHeight:Float;
-    private var mTransformationMatrix:Matrix;
+    private var __transformationMatrix:Matrix;
     
     /** Helper object. */
     private static var sTexCoords:Point = new Point();
@@ -63,37 +63,37 @@ class SubTexture extends Texture
         // TODO: in a future version, the order of arguments of this constructor should
         //       be fixed ('ownsParent' at the very end).
         
-        mParent = parent;
+        __parent = parent;
         mRegion = region != null ? region.clone() : new Rectangle(0, 0, parent.width, parent.height);
-        mFrame = frame != null ? frame.clone() : null;
+        __frame = frame != null ? frame.clone() : null;
         mOwnsParent = ownsParent;
-        mRotated = rotated;
+        __rotated = rotated;
         mWidth  = rotated ? mRegion.height : mRegion.width;
         mHeight = rotated ? mRegion.width  : mRegion.height;
-        mTransformationMatrix = new Matrix();
+        __transformationMatrix = new Matrix();
         
         if (rotated)
         {
-            mTransformationMatrix.translate(0, -1);
-            mTransformationMatrix.rotate(Math.PI / 2.0);
+            __transformationMatrix.translate(0, -1);
+            __transformationMatrix.rotate(Math.PI / 2.0);
         }
 
-        if (mFrame != null && (mFrame.x > 0 || mFrame.y > 0 ||
-            mFrame.right < mWidth || mFrame.bottom < mHeight))
+        if (__frame != null && (__frame.x > 0 || __frame.y > 0 ||
+            __frame.right < mWidth || __frame.bottom < mHeight))
         {
             trace("[Starling] Warning: frames inside the texture's region are unsupported.");
         }
 
-        mTransformationMatrix.scale(mRegion.width  / mParent.width,
-                                    mRegion.height / mParent.height);
-        mTransformationMatrix.translate(mRegion.x  / mParent.width,
-                                        mRegion.y  / mParent.height);
+        __transformationMatrix.scale(mRegion.width  / __parent.width,
+                                    mRegion.height / __parent.height);
+        __transformationMatrix.translate(mRegion.x  / __parent.width,
+                                        mRegion.y  / __parent.height);
     }
     
     /** Disposes the parent texture if this texture owns it. */
     public override function dispose():Void
     {
-        if (mOwnsParent) mParent.dispose();
+        if (mOwnsParent) __parent.dispose();
         super.dispose();
     }
     
@@ -105,17 +105,17 @@ class SubTexture extends Texture
         
         adjustTexCoords(vertexData.rawData, startIndex, stride, count);
         
-        if (mFrame != null)
+        if (__frame != null)
         {
             if (count != 4)
                 throw new ArgumentError("Textures with a frame can only be used on quads");
             
-            var deltaRight:Float  = mFrame.width  + mFrame.x - mWidth;
-            var deltaBottom:Float = mFrame.height + mFrame.y - mHeight;
+            var deltaRight:Float  = __frame.width  + __frame.x - mWidth;
+            var deltaBottom:Float = __frame.height + __frame.y - mHeight;
             
-            vertexData.translateVertex(vertexID,     -mFrame.x, -mFrame.y);
-            vertexData.translateVertex(vertexID + 1, -deltaRight, -mFrame.y);
-            vertexData.translateVertex(vertexID + 2, -mFrame.x, -deltaBottom);
+            vertexData.translateVertex(vertexID,     -__frame.x, -__frame.y);
+            vertexData.translateVertex(vertexID + 1, -deltaRight, -__frame.y);
+            vertexData.translateVertex(vertexID + 2, -__frame.x, -deltaBottom);
             vertexData.translateVertex(vertexID + 3, -deltaRight, -deltaBottom);
         }
     }
@@ -135,7 +135,7 @@ class SubTexture extends Texture
         
         while (texture != null)
         {
-            sMatrix.concat(texture.mTransformationMatrix);
+            sMatrix.concat(texture.__transformationMatrix);
             texture = Std.is(texture.parent, SubTexture) ? cast texture.parent : null;
         }
         
@@ -155,7 +155,7 @@ class SubTexture extends Texture
     
     /** The texture which the SubTexture is based on. */
     public var parent(get, never):Texture;
-    private function get_parent():Texture { return mParent; }
+    private function get_parent():Texture { return __parent; }
     
     /** Indicates if the parent texture is disposed when this object is disposed. */
     public var ownsParent(get, never):Bool;
@@ -163,7 +163,7 @@ class SubTexture extends Texture
     
     /** If true, the SubTexture will show the parent region rotated by 90 degrees (CCW). */
     public var rotated(get, never):Bool;
-    private function get_rotated():Bool { return mRotated; }
+    private function get_rotated():Bool { return __rotated; }
 
     /** The region of the parent texture that the SubTexture is showing (in points).
      *
@@ -179,8 +179,8 @@ class SubTexture extends Texture
         var topLeft:Point = new Point();
         var bottomRight:Point = new Point();
         
-        MatrixUtil.transformCoords(mTransformationMatrix, 0.0, 0.0, topLeft);
-        MatrixUtil.transformCoords(mTransformationMatrix, 1.0, 1.0, bottomRight);
+        MatrixUtil.transformCoords(__transformationMatrix, 0.0, 0.0, topLeft);
+        MatrixUtil.transformCoords(__transformationMatrix, 1.0, 1.0, bottomRight);
         
         var clipping:Rectangle = new Rectangle(topLeft.x, topLeft.y,
             bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
@@ -194,16 +194,16 @@ class SubTexture extends Texture
      *
      * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var transformationMatrix(get, never):Matrix;
-    private function get_transformationMatrix():Matrix { return mTransformationMatrix; }
+    private function get_transformationMatrix():Matrix { return __transformationMatrix; }
     
     /** @inheritDoc */
-    private override function get_base():TextureBase { return mParent.base; }
+    private override function get_base():TextureBase { return __parent.base; }
     
     /** @inheritDoc */
-    private override function get_root():ConcreteTexture { return mParent.root; }
+    private override function get_root():ConcreteTexture { return __parent.root; }
     
     /** @inheritDoc */
-    private override function get_format():Context3DTextureFormat { return mParent.format; }
+    private override function get_format():Context3DTextureFormat { return __parent.format; }
     
     /** @inheritDoc */
     private override function get_width():Float { return mWidth; }
@@ -218,17 +218,17 @@ class SubTexture extends Texture
     private override function get_nativeHeight():Float { return mHeight * scale; }
     
     /** @inheritDoc */
-    private override function get_mipMapping():Bool { return mParent.mipMapping; }
+    private override function get_mipMapping():Bool { return __parent.mipMapping; }
     
     /** @inheritDoc */
-    private override function get_premultipliedAlpha():Bool { return mParent.premultipliedAlpha; }
+    private override function get_premultipliedAlpha():Bool { return __parent.premultipliedAlpha; }
     
     /** @inheritDoc */
-    private override function get_scale():Float { return mParent.scale; }
+    private override function get_scale():Float { return __parent.scale; }
     
     /** @inheritDoc */
-    private override function get_repeat():Bool { return mParent.repeat; }
+    private override function get_repeat():Bool { return __parent.repeat; }
     
     /** @inheritDoc */
-    private override function get_frame():Rectangle { return mFrame; }
+    private override function get_frame():Rectangle { return __frame; }
 }

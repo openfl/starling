@@ -29,27 +29,27 @@ import starling.events.EventDispatcher;
  */ 
 class DelayedCall extends EventDispatcher implements IAnimatable
 {
-    private var mCurrentTime:Float;
-    private var mTotalTime:Float;
-    private var mCall:Function;
-    private var mArgs:Array<Dynamic>;
-    private var mRepeatCount:Int;
+    private var __currentTime:Float;
+    private var __totalTime:Float;
+    private var __callback:Function;
+    private var __args:Array<Dynamic>;
+    private var __repeatCount:Int;
     
     /** Creates a delayed call. */
-    public function new(call:Function, delay:Float, args:Array<Dynamic>=null)
+    public function new(callback:Function, delay:Float, args:Array<Dynamic>=null)
     {
         super();
-        reset(call, delay, args);
+        reset(callback, delay, args);
     }
     
     /** Resets the delayed call to its default values, which is useful for pooling. */
-    public function reset(call:Function, delay:Float, args:Array<Dynamic>=null):DelayedCall
+    public function reset(callback:Function, delay:Float, args:Array<Dynamic>=null):DelayedCall
     {
-        mCurrentTime = 0;
-        mTotalTime = Math.max(delay, 0.0001);
-        mCall = call;
-        mArgs = args;
-        mRepeatCount = 1;
+        __currentTime = 0;
+        __totalTime = Math.max(delay, 0.0001);
+        __callback = callback;
+        __args = args;
+        __repeatCount = 1;
         
         return this;
     }
@@ -57,27 +57,27 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     /** @inheritDoc */
     public function advanceTime(time:Float):Void
     {
-        var previousTime:Float = mCurrentTime;
-        mCurrentTime += time;
+        var previousTime:Float = __currentTime;
+        __currentTime += time;
 
-        if (mCurrentTime > mTotalTime)
-            mCurrentTime = mTotalTime;
+        if (__currentTime > __totalTime)
+            __currentTime = __totalTime;
         
-        if (previousTime < mTotalTime && mCurrentTime >= mTotalTime)
+        if (previousTime < __totalTime && __currentTime >= __totalTime)
         {                
-            if (mRepeatCount == 0 || mRepeatCount > 1)
+            if (__repeatCount == 0 || __repeatCount > 1)
             {
-                Reflect.callMethod(mCall, mCall, mArgs);
+                Reflect.callMethod(__callback, __callback, __args);
                 
-                if (mRepeatCount > 0) mRepeatCount -= 1;
-                mCurrentTime = 0;
-                advanceTime((previousTime + time) - mTotalTime);
+                if (__repeatCount > 0) __repeatCount -= 1;
+                __currentTime = 0;
+                advanceTime((previousTime + time) - __totalTime);
             }
             else
             {
                 // save call & args: they might be changed through an event listener
-                var call:Function = mCall;
-                var args:Array<Dynamic> = mArgs;
+                var call:Function = __callback;
+                var args:Array<Dynamic> = __args;
                 
                 // in the callback, people might want to call "reset" and re-add it to the
                 // juggler; so this event has to be dispatched *before* executing 'call'.
@@ -91,7 +91,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
       * anything else than '1', this method will complete only the current iteration. */
     public function complete():Void
     {
-        var restTime:Float = mTotalTime - mCurrentTime;
+        var restTime:Float = __totalTime - __currentTime;
         if (restTime > 0) advanceTime(restTime);
     }
     
@@ -99,22 +99,22 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     public var isComplete(get, never):Bool;
     private function get_isComplete():Bool 
     { 
-        return mRepeatCount == 1 && mCurrentTime >= mTotalTime; 
+        return __repeatCount == 1 && __currentTime >= __totalTime; 
     }
     
     /** The time for which calls will be delayed (in seconds). */
     public var totalTime(get, never):Float;
-    private function get_totalTime():Float { return mTotalTime; }
+    private function get_totalTime():Float { return __totalTime; }
     
     /** The time that has already passed (in seconds). */
     public var currentTime(get, never):Float;
-    private function get_currentTime():Float { return mCurrentTime; }
+    private function get_currentTime():Float { return __currentTime; }
     
     /** The number of times the call will be repeated. 
      * Set to '0' to repeat indefinitely. @default 1 */
     public var repeatCount(get, set):Int;
-    private function get_repeatCount():Int { return mRepeatCount; }
-    private function set_repeatCount(value:Int):Int { return mRepeatCount = value; }
+    private function get_repeatCount():Int { return __repeatCount; }
+    private function set_repeatCount(value:Int):Int { return __repeatCount = value; }
     
     // delayed call pooling
     
@@ -132,8 +132,8 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     @:allow(starling) private static function toPool(delayedCall:DelayedCall):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
-        delayedCall.mCall = null;
-        delayedCall.mArgs = null;
+        delayedCall.__callback = null;
+        delayedCall.__args = null;
         delayedCall.removeEventListeners();
         sPool.push(delayedCall);
     }

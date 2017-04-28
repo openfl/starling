@@ -67,14 +67,14 @@ class PDParticleSystem extends ParticleSystem
     private var mMaxNumParticles:Int;                  // maxParticles
     private var mLifespan:Float;                       // particleLifeSpan
     private var mLifespanVariance:Float;               // particleLifeSpanVariance
-    private var mStartSize:Float;                      // startParticleSize
-    private var mStartSizeVariance:Float;              // startParticleSizeVariance
+    private var __startSize:Float;                      // startParticleSize
+    private var __startSizeVariance:Float;              // startParticleSizeVariance
     private var mEndSize:Float;                        // finishParticleSize
     private var mEndSizeVariance:Float;                // finishParticleSizeVariance
     private var mEmitAngle:Float;                      // angle
     private var mEmitAngleVariance:Float;              // angleVariance
-    private var mStartRotation:Float;                  // rotationStart
-    private var mStartRotationVariance:Float;          // rotationStartVariance
+    private var __startRotation:Float;                  // rotationStart
+    private var __startRotationVariance:Float;          // rotationStartVariance
     private var mEndRotation:Float;                    // rotationEnd
     private var mEndRotationVariance:Float;            // rotationEndVariance
     
@@ -93,12 +93,12 @@ class PDParticleSystem extends ParticleSystem
     private var mMaxRadiusVariance:Float;              // maxRadiusVariance
     private var mMinRadius:Float;                      // minRadius
     private var mMinRadiusVariance:Float;              // minRadiusVariance
-    private var mRotatePerSecond:Float;                // rotatePerSecond
-    private var mRotatePerSecondVariance:Float;        // rotatePerSecondVariance
+    private var __rotatePerSecond:Float;                // rotatePerSecond
+    private var __rotatePerSecondVariance:Float;        // rotatePerSecondVariance
     
     // color configuration
-    private var mStartColor:ColorArgb;                 // startColor
-    private var mStartColorVariance:ColorArgb;         // startColorVariance
+    private var __startColor:ColorArgb;                 // startColor
+    private var __startColorVariance:ColorArgb;         // startColorVariance
     private var mEndColor:ColorArgb;                   // finishColor
     private var mEndColorVariance:ColorArgb;           // finishColorVariance
     
@@ -108,7 +108,7 @@ class PDParticleSystem extends ParticleSystem
         
         var emissionRate:Float = mMaxNumParticles / mLifespan;
         super(texture, emissionRate, mMaxNumParticles, mMaxNumParticles,
-              mBlendFactorSource, mBlendFactorDestination);
+              __blendFactorSource, __blendFactorDestination);
     }
     
     private override function createParticle():Particle
@@ -145,11 +145,11 @@ class PDParticleSystem extends ParticleSystem
         particle.emitRadius = startRadius;
         particle.emitRadiusDelta = (endRadius - startRadius) / lifespan;
         particle.emitRotation = mEmitAngle + mEmitAngleVariance * (Math.random() * 2.0 - 1.0);
-        particle.emitRotationDelta = mRotatePerSecond + mRotatePerSecondVariance * (Math.random() * 2.0 - 1.0);
+        particle.emitRotationDelta = __rotatePerSecond + __rotatePerSecondVariance * (Math.random() * 2.0 - 1.0);
         particle.radialAcceleration = mRadialAcceleration + mRadialAccelerationVariance * (Math.random() * 2.0 - 1.0);
         particle.tangentialAcceleration = mTangentialAcceleration + mTangentialAccelerationVariance * (Math.random() * 2.0 - 1.0);
         
-        var startSize:Float = mStartSize + mStartSizeVariance * (Math.random() * 2.0 - 1.0);
+        var startSize:Float = __startSize + __startSizeVariance * (Math.random() * 2.0 - 1.0);
         var endSize:Float = mEndSize + mEndSizeVariance * (Math.random() * 2.0 - 1.0);
         if (startSize < 0.1) startSize = 0.1;
         if (endSize < 0.1)   endSize = 0.1;
@@ -161,15 +161,15 @@ class PDParticleSystem extends ParticleSystem
         var startColor:ColorArgb = particle.colorArgb;
         var colorDelta:ColorArgb = particle.colorArgbDelta;
         
-        startColor.red   = mStartColor.red;
-        startColor.green = mStartColor.green;
-        startColor.blue  = mStartColor.blue;
-        startColor.alpha = mStartColor.alpha;
+        startColor.red   = __startColor.red;
+        startColor.green = __startColor.green;
+        startColor.blue  = __startColor.blue;
+        startColor.alpha = __startColor.alpha;
         
-        if (mStartColorVariance.red != 0)   startColor.red   += mStartColorVariance.red   * (Math.random() * 2.0 - 1.0);
-        if (mStartColorVariance.green != 0) startColor.green += mStartColorVariance.green * (Math.random() * 2.0 - 1.0);
-        if (mStartColorVariance.blue != 0)  startColor.blue  += mStartColorVariance.blue  * (Math.random() * 2.0 - 1.0);
-        if (mStartColorVariance.alpha != 0) startColor.alpha += mStartColorVariance.alpha * (Math.random() * 2.0 - 1.0);
+        if (__startColorVariance.red != 0)   startColor.red   += __startColorVariance.red   * (Math.random() * 2.0 - 1.0);
+        if (__startColorVariance.green != 0) startColor.green += __startColorVariance.green * (Math.random() * 2.0 - 1.0);
+        if (__startColorVariance.blue != 0)  startColor.blue  += __startColorVariance.blue  * (Math.random() * 2.0 - 1.0);
+        if (__startColorVariance.alpha != 0) startColor.alpha += __startColorVariance.alpha * (Math.random() * 2.0 - 1.0);
         
         var endColorRed:Float   = mEndColor.red;
         var endColorGreen:Float = mEndColor.green;
@@ -188,7 +188,7 @@ class PDParticleSystem extends ParticleSystem
         
         // rotation
         
-        var startRotation:Float = mStartRotation + mStartRotationVariance * (Math.random() * 2.0 - 1.0);
+        var startRotation:Float = __startRotation + __startRotationVariance * (Math.random() * 2.0 - 1.0);
         var endRotation:Float   = mEndRotation   + mEndRotationVariance   * (Math.random() * 2.0 - 1.0);
         
         particle.rotation = startRotation;
@@ -264,14 +264,14 @@ class PDParticleSystem extends ParticleSystem
         mMaxNumParticles = getIntValue(config.maxParticles);
         //mLifespan = Math.max(0.01, getFloatValue(config.particleLifeSpan));
         mLifespanVariance = getFloatValue(config.particleLifespanVariance);
-        mStartSize = getFloatValue(config.startParticleSize);
-        mStartSizeVariance = getFloatValue(config.startParticleSizeVariance);
+        __startSize = getFloatValue(config.startParticleSize);
+        __startSizeVariance = getFloatValue(config.startParticleSizeVariance);
         mEndSize = getFloatValue(config.finishParticleSize);
         //mEndSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
         mEmitAngle = MathUtil.deg2rad(getFloatValue(config.angle));
         mEmitAngleVariance = MathUtil.deg2rad(getFloatValue(config.angleVariance));
-        mStartRotation = MathUtil.deg2rad(getFloatValue(config.rotationStart));
-        mStartRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationStartVariance));
+        __startRotation = MathUtil.deg2rad(getFloatValue(config.rotationStart));
+        __startRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationStartVariance));
         mEndRotation = MathUtil.deg2rad(getFloatValue(config.rotationEnd));
         mEndRotationVariance = MathUtil.deg2rad(getFloatValue(config.rotationEndVariance));
         mSpeed = getFloatValue(config.speed);
@@ -284,14 +284,14 @@ class PDParticleSystem extends ParticleSystem
         mMaxRadiusVariance = getFloatValue(config.maxRadiusVariance);
         mMinRadius = getFloatValue(config.minRadius);
         //mMinRadiusVariance = getFloatValue(config.minRadiusVariance);
-        mRotatePerSecond = MathUtil.deg2rad(getFloatValue(config.rotatePerSecond));
-        mRotatePerSecondVariance = MathUtil.deg2rad(getFloatValue(config.rotatePerSecondVariance));
-        mStartColor = getColor(config.startColor);
-        mStartColorVariance = getColor(config.startColorVariance);
+        __rotatePerSecond = MathUtil.deg2rad(getFloatValue(config.rotatePerSecond));
+        __rotatePerSecondVariance = MathUtil.deg2rad(getFloatValue(config.rotatePerSecondVariance));
+        __startColor = getColor(config.startColor);
+        __startColorVariance = getColor(config.startColorVariance);
         mEndColor = getColor(config.finishColor);
         mEndColorVariance = getColor(config.finishColorVariance);
-        mBlendFactorSource = getBlendFunc(config.blendFuncSource);
-        mBlendFactorDestination = getBlendFunc(config.blendFuncDestination);
+        __blendFactorSource = getBlendFunc(config.blendFuncSource);
+        __blendFactorDestination = getBlendFunc(config.blendFuncDestination);
         
         // compatibility with future Particle Designer versions
         // (might fix some of the uppercase/lowercase typos)
@@ -378,11 +378,11 @@ class PDParticleSystem extends ParticleSystem
     private function get_lifespanVariance():Float { return mLifespanVariance; }
     private function set_lifespanVariance(value:Float):Float { return mLifespanVariance = value; }
 
-    private function get_startSize():Float { return mStartSize; }
-    private function set_startSize(value:Float):Float { return mStartSize = value; }
+    private function get_startSize():Float { return __startSize; }
+    private function set_startSize(value:Float):Float { return __startSize = value; }
 
-    private function get_startSizeVariance():Float { return mStartSizeVariance; }
-    private function set_startSizeVariance(value:Float):Float { return mStartSizeVariance = value; }
+    private function get_startSizeVariance():Float { return __startSizeVariance; }
+    private function set_startSizeVariance(value:Float):Float { return __startSizeVariance = value; }
 
     private function get_endSize():Float { return mEndSize; }
     private function set_endSize(value:Float):Float { return mEndSize = value; }
@@ -396,11 +396,11 @@ class PDParticleSystem extends ParticleSystem
     private function get_emitAngleVariance():Float { return mEmitAngleVariance; }
     private function set_emitAngleVariance(value:Float):Float { return mEmitAngleVariance = value; }
 
-    private function get_startRotation():Float { return mStartRotation; }
-    private function set_startRotation(value:Float):Float { return mStartRotation = value; }
+    private function get_startRotation():Float { return __startRotation; }
+    private function set_startRotation(value:Float):Float { return __startRotation = value; }
 
-    private function get_startRotationVariance():Float { return mStartRotationVariance; }
-    private function set_startRotationVariance(value:Float):Float { return mStartRotationVariance = value; }
+    private function get_startRotationVariance():Float { return __startRotationVariance; }
+    private function set_startRotationVariance(value:Float):Float { return __startRotationVariance = value; }
     
     private function get_endRotation():Float { return mEndRotation; }
     private function set_endRotation(value:Float):Float { return mEndRotation = value; }
@@ -444,17 +444,17 @@ class PDParticleSystem extends ParticleSystem
     private function get_minRadiusVariance():Float { return mMinRadiusVariance; }
     private function set_minRadiusVariance(value:Float):Float { return mMinRadiusVariance = value; }
 
-    private function get_rotatePerSecond():Float { return mRotatePerSecond; }
-    private function set_rotatePerSecond(value:Float):Float { return mRotatePerSecond = value; }
+    private function get_rotatePerSecond():Float { return __rotatePerSecond; }
+    private function set_rotatePerSecond(value:Float):Float { return __rotatePerSecond = value; }
 
-    private function get_rotatePerSecondVariance():Float { return mRotatePerSecondVariance; }
-    private function set_rotatePerSecondVariance(value:Float):Float { return mRotatePerSecondVariance = value; }
+    private function get_rotatePerSecondVariance():Float { return __rotatePerSecondVariance; }
+    private function set_rotatePerSecondVariance(value:Float):Float { return __rotatePerSecondVariance = value; }
 
-    private function get_startColor():ColorArgb { return mStartColor; }
-    private function set_startColor(value:ColorArgb):ColorArgb { return mStartColor = value; }
+    private function get_startColor():ColorArgb { return __startColor; }
+    private function set_startColor(value:ColorArgb):ColorArgb { return __startColor = value; }
 
-    private function get_startColorVariance():ColorArgb { return mStartColorVariance; }
-    private function set_startColorVariance(value:ColorArgb):ColorArgb { return mStartColorVariance = value; }
+    private function get_startColorVariance():ColorArgb { return __startColorVariance; }
+    private function set_startColorVariance(value:ColorArgb):ColorArgb { return __startColorVariance = value; }
 
     private function get_endColor():ColorArgb { return mEndColor; }
     private function set_endColor(value:ColorArgb):ColorArgb { return mEndColor = value; }

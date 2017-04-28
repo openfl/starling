@@ -55,11 +55,11 @@ class ParticleSystem extends DisplayObject implements IAnimatable
 
     public static inline var MAX_NUM_PARTICLES:Int = 16383;
     
-    private var mTexture:Texture;
+    private var __texture:Texture;
     private var mParticles:Vector<Particle>;
-    private var mFrameTime:Float;
+    private var __frameTime:Float;
     
-    private var mProgram:Program3D;
+    private var __program:Program3D;
     private var mVertexData:VertexData;
     private var mVertexBuffer:VertexBuffer3D;
     private var mIndices:Vector<UInt>;
@@ -77,8 +77,8 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     
     private var mEmitterX:Float;
     private var mEmitterY:Float;
-    private var mBlendFactorSource:String;
-    private var mBlendFactorDestination:String;
+    private var __blendFactorSource:String;
+    private var __blendFactorDestination:String;
     private var mSmoothing:String;
     
     public function new(texture:Texture, emissionRate:Float,
@@ -88,18 +88,18 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         super();
         if (texture == null) throw new ArgumentError("texture must not be null");
         
-        mTexture = texture;
+        __texture = texture;
         mParticles = new Vector<Particle>(0, false);
         mVertexData = new VertexData(0);
         mIndices = new Vector<UInt>();
         mEmissionRate = emissionRate;
         mEmissionTime = 0.0;
-        mFrameTime = 0.0;
+        __frameTime = 0.0;
         mEmitterX = mEmitterY = 0;
         mMaxCapacity = Std.int(Math.min(MAX_NUM_PARTICLES, maxCapacity));
         mSmoothing = TextureSmoothing.BILINEAR;
-        mBlendFactorSource =      (blendFactorSource != null) ? blendFactorSource : Context3DBlendFactor.ONE;
-        mBlendFactorDestination = (blendFactorDest != null) ? blendFactorDest : Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+        __blendFactorSource =      (blendFactorSource != null) ? blendFactorSource : Context3DBlendFactor.ONE;
+        __blendFactorDestination = (blendFactorDest != null) ? blendFactorDest : Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
 
         createProgram();
         updatePremultipliedAlpha();
@@ -128,14 +128,14 @@ class ParticleSystem extends DisplayObject implements IAnimatable
 
     private function updatePremultipliedAlpha():Void
     {
-        var pma:Bool = mTexture.premultipliedAlpha;
+        var pma:Bool = __texture.premultipliedAlpha;
 
         // Particle Designer uses special logic for a certain blend factor combination
-        if (mBlendFactorSource == Context3DBlendFactor.ONE &&
-                mBlendFactorDestination == Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA)
+        if (__blendFactorSource == Context3DBlendFactor.ONE &&
+                __blendFactorDestination == Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA)
         {
-            mVertexData.premultipliedAlpha = mTexture.premultipliedAlpha;
-            if (!pma) mBlendFactorSource = Context3DBlendFactor.SOURCE_ALPHA;
+            mVertexData.premultipliedAlpha = __texture.premultipliedAlpha;
+            if (!pma) __blendFactorSource = Context3DBlendFactor.SOURCE_ALPHA;
         }
         else
         {
@@ -178,7 +178,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         baseVertexData.setTexCoords(1, 1.0, 0.0);
         baseVertexData.setTexCoords(2, 0.0, 1.0);
         baseVertexData.setTexCoords(3, 1.0, 1.0);
-        mTexture.adjustVertexData(baseVertexData, 0, 4);
+        __texture.adjustVertexData(baseVertexData, 0, 4);
         
         mParticles.fixed = false;
         mIndices.fixed = false;
@@ -299,9 +299,9 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         if (mEmissionTime > 0)
         {
             var timeBetweenParticles:Float = 1.0 / mEmissionRate;
-            mFrameTime += passedTime;
+            __frameTime += passedTime;
             
-            while (mFrameTime > 0)
+            while (__frameTime > 0)
             {
                 if (mNumParticles < mMaxCapacity)
                 {
@@ -314,12 +314,12 @@ class ParticleSystem extends DisplayObject implements IAnimatable
                     // particle might be dead at birth
                     if (particle.totalTime > 0.0)
                     {
-                        advanceParticle(particle, mFrameTime);
+                        advanceParticle(particle, __frameTime);
                         ++mNumParticles;
                     }
                 }
                 
-                mFrameTime -= timeBetweenParticles;
+                __frameTime -= timeBetweenParticles;
             }
             
             if (mEmissionTime != Math.POSITIVE_INFINITY)
@@ -337,8 +337,8 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         var rotation:Float;
         var x:Float, y:Float;
         var xOffset:Float, yOffset:Float;
-        var textureWidth:Float = mTexture.width;
-        var textureHeight:Float = mTexture.height;
+        var textureWidth:Float = __texture.width;
+        var textureHeight:Float = __texture.height;
         
         for (i in 0...mNumParticles)
         {
@@ -405,10 +405,10 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mNumParticles * 4);
         mIndexBuffer.uploadFromVector(mIndices, 0, mNumParticles * 6);
         
-        context.setBlendFactors(mBlendFactorSource, mBlendFactorDestination);
-        context.setTextureAt(0, mTexture.base);
+        context.setBlendFactors(__blendFactorSource, __blendFactorDestination);
+        context.setTextureAt(0, __texture.base);
         
-        context.setProgram(mProgram);
+        context.setProgram(__program);
         context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, support.mvpMatrix3D, true);
         context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, sRenderAlpha, 1);
         context.setVertexBufferAt(0, mVertexBuffer, VertexData.POSITION_OFFSET, Context3DVertexBufferFormat.FLOAT_2); 
@@ -447,14 +447,14 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     
     private function createProgram():Void
     {
-        var mipmap:Bool = mTexture.mipMapping;
-        var textureFormat:String = mTexture.format;
-        var programName:String = "ext.ParticleSystem." + textureFormat + "/" +
+        var mipmap:Bool = __texture.mipMapping;
+        var textureFormat:String = __texture.format;
+        var progra__name:String = "ext.ParticleSystem." + textureFormat + "/" +
                                  mSmoothing.charAt(0) + (mipmap ? "+mm" : "");
         
-        mProgram = Starling.current.getProgram(programName);
+        __program = Starling.current.getProgram(progra__name);
         
-        if (mProgram == null)
+        if (__program == null)
         {
             var textureOptions:String =
                 RenderSupport.getTextureLookupFlags(textureFormat, mipmap, false, mSmoothing);
@@ -470,11 +470,11 @@ class ParticleSystem extends DisplayObject implements IAnimatable
             
             var assembler:AGALMiniAssembler = new AGALMiniAssembler();
             
-            Starling.current.registerProgram(programName,
+            Starling.current.registerProgram(progra__name,
                 assembler.assemble(Context3DProgramType.VERTEX, vertexProgramCode),
                 assembler.assemble(Context3DProgramType.FRAGMENT, fragmentProgramCode));
             
-            mProgram = Starling.current.getProgram(programName);
+            __program = Starling.current.getProgram(progra__name);
         }
     }
     
@@ -498,28 +498,28 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     private function get_emitterY():Float { return mEmitterY; }
     private function set_emitterY(value:Float):Float { return mEmitterY = value; }
     
-    private function get_blendFactorSource():String { return mBlendFactorSource; }
+    private function get_blendFactorSource():String { return __blendFactorSource; }
     private function set_blendFactorSource(value:String):String
     {
-        mBlendFactorSource = value;
+        __blendFactorSource = value;
         updatePremultipliedAlpha();
         return value;
     }
     
-    private function get_blendFactorDestination():String { return mBlendFactorDestination; }
+    private function get_blendFactorDestination():String { return __blendFactorDestination; }
     private function set_blendFactorDestination(value:String):String
     {
-        mBlendFactorDestination = value;
+        __blendFactorDestination = value;
         updatePremultipliedAlpha();
         return value;
     }
     
-    private function get_texture():Texture { return mTexture; }
+    private function get_texture():Texture { return __texture; }
     private function set_texture(value:Texture):Texture
     {
         if (value == null) throw new ArgumentError("Texture cannot be null");
 
-        mTexture = value;
+        __texture = value;
         createProgram();
         updatePremultipliedAlpha();
 
@@ -530,7 +530,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
             mVertexData.setTexCoords(i + 1, 1.0, 0.0);
             mVertexData.setTexCoords(i + 2, 0.0, 1.0);
             mVertexData.setTexCoords(i + 3, 1.0, 1.0);
-            mTexture.adjustVertexData(mVertexData, i, 4);
+            __texture.adjustVertexData(mVertexData, i, 4);
             i -= 4;
         }
         return value;

@@ -141,11 +141,11 @@ class AssetManager extends EventDispatcher
     private var mVerbose:Bool;
     private var mQueue:Array<QueuedAsset>;
     
-    private var mTextures:Map<String, Texture>;
+    private var __textures:Map<String, Texture>;
     private var mAtlases:Map<String, TextureAtlas>;
     private var mSounds:Map<String, Sound>;
-    private var mXmls:Map<String, Xml>;
-    private var mObjects:Map<String, Dynamic>;
+    private var __xmls:Map<String, Xml>;
+    private var __objects:Map<String, Dynamic>;
     private var mByteArrays:Map<String, ByteArray>;
     
     /** helper objects */
@@ -160,11 +160,11 @@ class AssetManager extends EventDispatcher
     {
         super();
         mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
-        mTextures = new Map();
+        __textures = new Map();
         mAtlases = new Map();
         mSounds = new Map();
-        mXmls = new Map();
-        mObjects = new Map();
+        __xmls = new Map();
+        __objects = new Map();
         mByteArrays = new Map();
         mNumConnections = 3;
         mVerbose = true;
@@ -179,14 +179,14 @@ class AssetManager extends EventDispatcher
      */
     public function dispose():Void
     {
-        for (texture in mTextures)
+        for (texture in __textures)
             texture.dispose();
         
         for (atlas in mAtlases)
             atlas.dispose();
         
         #if 0
-        for  (xml in mXmls)
+        for  (xml in __xmls)
             System.disposeXML(xml);
         #end
         
@@ -201,7 +201,7 @@ class AssetManager extends EventDispatcher
      * texture atlases. */
     public function getTexture(name:String):Texture
     {
-        if (mTextures.exists(name)) return mTextures[name];
+        if (__textures.exists(name)) return __textures[name];
         else
         {
             for (atlas in mAtlases)
@@ -229,7 +229,7 @@ class AssetManager extends EventDispatcher
     /** Returns all texture names that start with a certain string, sorted alphabetically. */
     public function getTextureNames(prefix:String="", result:Vector<String>=null):Vector<String>
     {
-        result = getDictionaryKeys(mTextures, prefix, result);
+        result = getDictionaryKeys(__textures, prefix, result);
         
         for (atlas in mAtlases)
             atlas.getNames(prefix, result);
@@ -278,28 +278,28 @@ class AssetManager extends EventDispatcher
     /** Returns an XML with a certain name, or null if it's not found. */
     public function getXml(name:String):Xml
     {
-        return mXmls[name];
+        return __xmls[name];
     }
     
     /** Returns all XML names that start with a certain string, sorted alphabetically. 
      * If you pass a result vector, the names will be added to that vector. */
     public function getXmlNames(prefix:String="", result:Vector<String>=null):Vector<String>
     {
-        return getDictionaryKeys(mXmls, prefix, result);
+        return getDictionaryKeys(__xmls, prefix, result);
     }
 
     /** Returns an object with a certain name, or null if it's not found. Enqueued JSON
      * data is parsed and can be accessed with this method. */
     public function getObject(name:String):Dynamic
     {
-        return mObjects[name];
+        return __objects[name];
     }
     
     /** Returns all object names that start with a certain string, sorted alphabetically. 
      * If you pass a result vector, the names will be added to that vector. */
     public function getObjectNames(prefix:String="", result:Vector<String>=null):Vector<String>
     {
-        return getDictionaryKeys(mObjects, prefix, result);
+        return getDictionaryKeys(__objects, prefix, result);
     }
     
     /** Returns a byte array with a certain name, or null if it's not found. */
@@ -324,13 +324,13 @@ class AssetManager extends EventDispatcher
     {
         log("Adding texture '" + name + "'");
         
-        if (mTextures.exists(name))
+        if (__textures.exists(name))
         {
             log("Warning: name was already in use; the previous texture will be replaced.");
-            mTextures[name].dispose();
+            __textures[name].dispose();
         }
         
-        mTextures[name] = texture;
+        __textures[name] = texture;
     }
     
     /** Register a texture atlas under a certain name. It will be available right away. 
@@ -368,15 +368,15 @@ class AssetManager extends EventDispatcher
     {
         log("Adding XML '" + name + "'");
         
-        if (mXmls.exists(name))
+        if (__xmls.exists(name))
         {
             log("Warning: name was already in use; the previous XML will be replaced.");
             #if 0
-            System.disposeXML(mXmls[name]);
+            System.disposeXML(__xmls[name]);
             #end
         }
 
-        mXmls[name] = xml;
+        __xmls[name] = xml;
     }
     
     /** Register an arbitrary object under a certain name. It will be available right away. 
@@ -385,10 +385,10 @@ class AssetManager extends EventDispatcher
     {
         log("Adding object '" + name + "'");
         
-        if (mObjects.exists(name))
+        if (__objects.exists(name))
             log("Warning: name was already in use; the previous object will be replaced.");
         
-        mObjects[name] = object;
+        __objects[name] = object;
     }
     
     /** Register a byte array under a certain name. It will be available right away.
@@ -414,10 +414,10 @@ class AssetManager extends EventDispatcher
     {
         log("Removing texture '" + name + "'");
         
-        if (dispose && mTextures.exists(name))
-            mTextures[name].dispose();
+        if (dispose && __textures.exists(name))
+            __textures[name].dispose();
         
-        mTextures.remove(name);
+        __textures.remove(name);
     }
     
     /** Removes a certain texture atlas, optionally disposing it. */
@@ -444,18 +444,18 @@ class AssetManager extends EventDispatcher
         log("Removing xml '"+ name + "'");
         
         #if 0
-        if (dispose && mXmls.exists(name))
-            System.disposeXML(mXmls[name]);
+        if (dispose && __xmls.exists(name))
+            System.disposeXML(__xmls[name]);
         #end
         
-        mXmls.remove(name);
+        __xmls.remove(name);
     }
     
     /** Removes a certain object. */
     public function removeObject(name:String):Void
     {
         log("Removing object '"+ name + "'");
-        mObjects.remove(name);
+        __objects.remove(name);
     }
     
     /** Removes a certain byte array, optionally disposing its memory right away. */
@@ -485,11 +485,11 @@ class AssetManager extends EventDispatcher
         purgeQueue();
         dispose();
 
-        mTextures = new Map<String, Texture>();
+        __textures = new Map<String, Texture>();
         mAtlases = new Map<String, TextureAtlas>();
         mSounds = new Map<String, Sound>();
-        mXmls = new Map<String, Xml>();
-        mObjects = new Map<String, Dynamic>();
+        __xmls = new Map<String, Xml>();
+        __objects = new Map<String, Dynamic>();
         mByteArrays = new Map<String, ByteArray>();
     }
     

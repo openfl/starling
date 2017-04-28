@@ -34,7 +34,7 @@ class KeyboardEvent extends Event
     private var mAltKey:Bool;
     private var mCtrlKey:Bool;
     private var mShiftKey:Bool;
-    private var mIsDefaultPrevented:Bool;
+    private var __isDefaultPrevented:Bool;
     
     /** Creates a new KeyboardEvent. */
     public function new(type:String, charCode:UInt=0, keyCode:UInt=0, 
@@ -56,11 +56,11 @@ class KeyboardEvent extends Event
      * flash KeyboardEvent. */
     public function preventDefault():Void
     {
-        mIsDefaultPrevented = true;
+        __isDefaultPrevented = true;
     }
     
     /** Checks whether the preventDefault() method has been called on the event. */
-    public function isDefaultPrevented():Bool { return mIsDefaultPrevented; }
+    public function isDefaultPrevented():Bool { return __isDefaultPrevented; }
     
     // properties
     

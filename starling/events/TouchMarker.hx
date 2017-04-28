@@ -23,19 +23,19 @@ import starling.textures.Texture;
 class TouchMarker extends Sprite
 {
     private var mCenter:Point;
-    private var mTexture:Texture;
+    private var __texture:Texture;
     
     public function new()
     {
         super();
         mCenter = new Point();
-        mTexture = createTexture();
+        __texture = createTexture();
         
         for (i in 0...2)
         {
-            var marker:Image = new Image(mTexture);
-            marker.pivotX = mTexture.width / 2;
-            marker.pivotY = mTexture.height / 2;
+            var marker:Image = new Image(__texture);
+            marker.pivotX = __texture.width / 2;
+            marker.pivotY = __texture.height / 2;
             marker.touchable = false;
             addChild(marker);
         }
@@ -43,7 +43,7 @@ class TouchMarker extends Sprite
     
     public override function dispose():Void
     {
-        mTexture.dispose();
+        __texture.dispose();
         super.dispose();
     }
     

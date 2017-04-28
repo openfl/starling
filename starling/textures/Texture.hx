@@ -72,7 +72,7 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  *
  *  <listing>
  *  var frame:Rectangle = new Rectangle(-10, -10, 30, 30);
- *  var texture:Texture = Texture.fromTexture(anotherTexture, null, frame);
+ *  var texture:Texture = Texture.fro__texture(anotherTexture, null, frame);
  *  var image:Image = new Image(texture);</listing>
  *
  *  <p>This code would create an image with a size of 30x30, with the texture placed at
@@ -88,7 +88,7 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  *
  *  <p>If, on the other hand, you want to show only a part of the texture in an image
  *  (i.e. to crop the the texture), you can either create a subtexture (with the method
- *  'Texture.fromTexture()' and specifying a rectangle for the region), or you can manipulate
+ *  'Texture.fro__texture()' and specifying a rectangle for the region), or you can manipulate
  *  the texture coordinates of the image object. The method 'image.setTexCoords' allows you
  *  to do that.</p>
  *
@@ -125,7 +125,7 @@ class Texture
     }
 
     /** Disposes the underlying texture data. Note that not all textures need to be disposed:
-     * SubTextures (created with 'Texture.fromTexture') just reference other textures and
+     * SubTextures (created with 'Texture.fro__texture') just reference other textures and
      * and do not take up resources themselves; this is also true for textures from an
      * atlas. */
     public function dispose():Void
@@ -293,7 +293,7 @@ class Texture
 		var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcreteTexture(nativeTexture, atfData.format,
-            atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1,
+            atfData.width, atfData.height, useMipMaps && atfData.nu__textures > 1,
             false, false, scale, repeat);
 
         concreteTexture.uploadAtfData(data, 0, async);
@@ -501,7 +501,7 @@ class Texture
      * @param rotated  If true, the SubTexture will show the parent region rotated by
      *                 90 degrees (CCW).
      */
-    public static function fromTexture(texture:Texture, region:Rectangle=null,
+    public static function fro__texture(texture:Texture, region:Rectangle=null,
                                        frame:Rectangle=null, rotated:Bool=false):Texture
     {
         return new SubTexture(texture, region, false, frame, rotated);

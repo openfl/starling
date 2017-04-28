@@ -10,3 +10,4 @@ starling.js.map
 starling-export.hxml
 docs/xml
 docs/pages
+*.DS_Store

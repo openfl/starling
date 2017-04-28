@@ -110,7 +110,7 @@ class TextField extends DisplayObjectContainer
 
     private var mFontSize:Float;
     private var mColor:UInt;
-    private var mText:String;
+    private var __text:String;
     private var mFontName:String;
     private var mHAlign:String;
     private var mVAlign:String;
@@ -121,10 +121,10 @@ class TextField extends DisplayObjectContainer
     private var mAutoSize:String;
     private var mKerning:Bool;
     private var mLeading:Float;
-    private var mNativeFilters:Array<BitmapFilter>;
+    private var __nativeFilters:Array<BitmapFilter>;
     private var mRequiresRedraw:Bool;
-    private var mIsHtmlText:Bool;
-    private var mTextBounds:Rectangle;
+    private var __isHtmlText:Bool;
+    private var __textBounds:Rectangle;
     private var mBatchable:Bool;
     
     private var mHitArea:Rectangle;
@@ -142,7 +142,7 @@ class TextField extends DisplayObjectContainer
                         fontSize:Float=12, color:UInt=0x0, bold:Bool=false)
     {
         super();
-        mText = text != null ? text : "";
+        __text = text != null ? text : "";
         mFontSize = fontSize;
         mColor = color;
         mHAlign = HAlign.CENTER;
@@ -203,12 +203,12 @@ class TextField extends DisplayObjectContainer
             mQuadBatch = null; 
         }
         
-        if (mTextBounds == null) 
-            mTextBounds = new Rectangle();
+        if (__textBounds == null) 
+            __textBounds = new Rectangle();
         
         var texture:Texture;
         var scale:Float = Starling.current.contentScaleFactor;
-        var bitmapData:BitmapData = renderText(scale, mTextBounds);
+        var bitmapData:BitmapData = renderText(scale, __textBounds);
         var format:Context3DTextureFormat = sDefaultTextureFormat;
         var maxTextureSize:Int = Texture.maxSize;
         var shrinkHelper:Float = 0;
@@ -221,7 +221,7 @@ class TextField extends DisplayObjectContainer
                 (maxTextureSize - shrinkHelper) / bitmapData.height
             );
             bitmapData.dispose();
-            bitmapData = renderText(scale, mTextBounds);
+            bitmapData = renderText(scale, __textBounds);
             shrinkHelper += 1;
         }
 
@@ -231,10 +231,10 @@ class TextField extends DisplayObjectContainer
         texture = Texture.fromBitmapData(bitmapData, false, false, scale, format);
         texture.root.onRestore = function():Void
         {
-            if (mTextBounds == null)
-                mTextBounds = new Rectangle();
+            if (__textBounds == null)
+                __textBounds = new Rectangle();
 
-            bitmapData = renderText(scale, mTextBounds);
+            bitmapData = renderText(scale, __textBounds);
             texture.root.uploadBitmapData(bitmapData);
             bitmapData.dispose();
             bitmapData = null;
@@ -306,11 +306,11 @@ class TextField extends DisplayObjectContainer
         sNativeTextField.multiline = true;            
         sNativeTextField.wordWrap = true;         
 
-        if (mIsHtmlText) sNativeTextField.htmlText = mText;
-        else             sNativeTextField.text     = mText;
+        if (__isHtmlText) sNativeTextField.htmlText = __text;
+        else             sNativeTextField.text     = __text;
            
         sNativeTextField.embedFonts = true;
-        sNativeTextField.filters = mNativeFilters;
+        sNativeTextField.filters = __nativeFilters;
         
         // we try embedded fonts first, non-embedded fonts are just a fallback
         if (sNativeTextField.textWidth == 0.0 || sNativeTextField.textHeight == 0.0)
@@ -390,8 +390,8 @@ class TextField extends DisplayObjectContainer
             format.size = size--;
             textField.defaultTextFormat = format;
 
-            if (mIsHtmlText) textField.htmlText = mText;
-            else             textField.text     = mText;
+            if (__isHtmlText) textField.htmlText = __text;
+            else             textField.text     = __text;
         }
     }
     
@@ -489,24 +489,24 @@ class TextField extends DisplayObjectContainer
             vAlign = VAlign.TOP;
         }
         
-        bitmapFont.fillQuadBatch(mQuadBatch, width, height, mText,
+        bitmapFont.fillQuadBatch(mQuadBatch, width, height, __text,
                 mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning, mLeading);
         
         mQuadBatch.batchable = mBatchable;
         
         if (mAutoSize != TextFieldAutoSize.NONE)
         {
-            mTextBounds = mQuadBatch.getBounds(mQuadBatch, mTextBounds);
+            __textBounds = mQuadBatch.getBounds(mQuadBatch, __textBounds);
             
             if (isHorizontalAutoSize)
-                mHitArea.width  = mTextBounds.x + mTextBounds.width;
+                mHitArea.width  = __textBounds.x + __textBounds.width;
             if (isVerticalAutoSize)
-                mHitArea.height = mTextBounds.y + mTextBounds.height;
+                mHitArea.height = __textBounds.y + __textBounds.height;
         }
         else
         {
             // hit area doesn't change, text bounds can be created on demand
-            mTextBounds = null;
+            __textBounds = null;
         }
     }
     
@@ -554,8 +554,8 @@ class TextField extends DisplayObjectContainer
     private function get_textBounds():Rectangle
     {
         if (mRequiresRedraw) redraw();
-        if (mTextBounds == null) mTextBounds = mQuadBatch.getBounds(mQuadBatch);
-        return mTextBounds.clone();
+        if (__textBounds == null) __textBounds = mQuadBatch.getBounds(mQuadBatch);
+        return __textBounds.clone();
     }
     
     /** @inheritDoc */
@@ -596,13 +596,13 @@ class TextField extends DisplayObjectContainer
     
     /** The displayed text. */
     public var text(get, set):String;
-    private function get_text():String { return mText; }
+    private function get_text():String { return __text; }
     private function set_text(value:String):String
     {
         if (value == null) value = "";
-        if (mText != value)
+        if (__text != value)
         {
-            mText = value;
+            __text = value;
             mRequiresRedraw = true;
         }
         return value;
@@ -808,10 +808,10 @@ class TextField extends DisplayObjectContainer
      *
      * <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var nativeFilters(get, set):Array<BitmapFilter>;
-    private function get_nativeFilters():Array<BitmapFilter> { return mNativeFilters; }
+    private function get_nativeFilters():Array<BitmapFilter> { return __nativeFilters; }
     private function set_nativeFilters(value:Array<BitmapFilter>) : Array<BitmapFilter>
     {
-        mNativeFilters = value.copy();
+        __nativeFilters = value.copy();
         mRequiresRedraw = true;
         return value;
     }
@@ -822,12 +822,12 @@ class TextField extends DisplayObjectContainer
      *
      * <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
     public var isHtmlText(get, set):Bool;
-    private function get_isHtmlText():Bool { return mIsHtmlText; }
+    private function get_isHtmlText():Bool { return __isHtmlText; }
     private function set_isHtmlText(value:Bool):Bool
     {
-        if (mIsHtmlText != value)
+        if (__isHtmlText != value)
         {
-            mIsHtmlText = value;
+            __isHtmlText = value;
             mRequiresRedraw = true;
         }
         return value;

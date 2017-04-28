@@ -4,15 +4,15 @@ import openfl.Vector;
 
 class Rectangle extends ImmutablePolygon
 {
-    private var mX:Float;
-    private var mY:Float;
+    private var __x:Float;
+    private var __y:Float;
     private var mWidth:Float;
     private var mHeight:Float;
 
     public function new(x:Float, y:Float, width:Float, height:Float)
     {
-        mX = x;
-        mY = y;
+        __x = x;
+        __y = y;
         mWidth = width;
         mHeight = height;
 
@@ -33,8 +33,8 @@ class Rectangle extends ImmutablePolygon
 
     override public function contains(x:Float, y:Float):Bool
     {
-        return x >= mX && x <= mX + mWidth &&
-               y >= mY && y <= mY + mHeight;
+        return x >= __x && x <= __x + mWidth &&
+               y >= __y && y <= __y + mHeight;
     }
 
     override private function get_area():Float
