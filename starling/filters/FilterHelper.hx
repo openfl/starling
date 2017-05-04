@@ -31,17 +31,17 @@ use namespace starling_internal;
  */
 internal class FilterHelper implements IFilterHelper
 {
-    private var _width:Number;
-    private var _height:Number;
-    private var _nativeWidth:int;
-    private var _nativeHeight:int;
+    private var _width:Float;
+    private var _height:Float;
+    private var _nativeWidth:Int;
+    private var _nativeHeight:Int;
     private var _pool:Vector.<Texture>;
-    private var _usePotTextures:Boolean;
+    private var _usePotTextures:Bool;
     private var _textureFormat:String;
-    private var _preferredScale:Number;
-    private var _scale:Number;
-    private var _sizeStep:int;
-    private var _numPasses:int;
+    private var _preferredScale:Float;
+    private var _scale:Float;
+    private var _sizeStep:Int;
+    private var _numPasses:Int;
     private var _projectionMatrix:Matrix3D;
     private var _renderTarget:Texture;
     private var _targetBounds:Rectangle;
@@ -66,7 +66,7 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** Purges the pool. */
-    public function dispose():void
+    public function dispose():Void
     {
         Pool.putRectangle(_clipRect);
         _clipRect = null;
@@ -79,13 +79,13 @@ internal class FilterHelper implements IFilterHelper
      *  return <code>null</code> instead of a texture, to indicate that this pass should be
      *  rendered to the back buffer.
      */
-    public function start(numPasses:int, drawLastPassToBackBuffer:Boolean):void
+    public function start(numPasses:Int, drawLastPassToBackBuffer:Bool):Void
     {
         _numPasses = drawLastPassToBackBuffer ? numPasses : -1;
     }
 
     /** @inheritDoc */
-    public function getTexture(resolution:Number=1.0):Texture
+    public function getTexture(resolution:Float=1.0):Texture
     {
         var texture:Texture;
         var subTexture:SubTexture;
@@ -117,7 +117,7 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** @inheritDoc */
-    public function putTexture(texture:Texture):void
+    public function putTexture(texture:Texture):Void
     {
         if (texture)
         {
@@ -129,9 +129,9 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** Purges the pool and disposes all textures. */
-    public function purge():void
+    public function purge():Void
     {
-        for (var i:int = 0, len:int = _pool.length; i < len; ++i)
+        for (var i:Int = 0, len:Int = _pool.length; i < len; ++i)
             _pool[i].dispose();
 
         _pool.length = 0;
@@ -140,13 +140,13 @@ internal class FilterHelper implements IFilterHelper
     /** Updates the size of the returned textures. Small size changes may allow the
      *  existing textures to be reused; big size changes will automatically dispose
      *  them. */
-    private function setSize(width:Number, height:Number):void
+    private function setSize(width:Float, height:Float):Void
     {
-        var factor:Number;
-        var newScale:Number = _preferredScale;
-        var maxNativeSize:int   = Texture.maxSize;
-        var newNativeWidth:int  = getNativeSize(width,  newScale);
-        var newNativeHeight:int = getNativeSize(height, newScale);
+        var factor:Float;
+        var newScale:Float = _preferredScale;
+        var maxNativeSize:Int   = Texture.maxSize;
+        var newNativeWidth:Int  = getNativeSize(width,  newScale);
+        var newNativeHeight:Int = getNativeSize(height, newScale);
 
         if (newNativeWidth > maxNativeSize || newNativeHeight > maxNativeSize)
         {
@@ -170,9 +170,9 @@ internal class FilterHelper implements IFilterHelper
         _height = height;
     }
 
-    private function getNativeSize(size:Number, textureScale:Number):int
+    private function getNativeSize(size:Float, textureScale:Float):Int
     {
-        var nativeSize:Number = size * textureScale;
+        var nativeSize:Float = size * textureScale;
 
         if (_usePotTextures)
             return nativeSize > _sizeStep ? MathUtil.getNextPowerOfTwo(nativeSize) : _sizeStep;
@@ -181,19 +181,19 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** The projection matrix that was active when the filter started processing. */
-    public function get projectionMatrix3D():Matrix3D { return _projectionMatrix; }
-    public function set projectionMatrix3D(value:Matrix3D):void
+    private function get_projectionMatrix3D():Matrix3D { return _projectionMatrix; }
+    private function set_projectionMatrix3D(value:Matrix3D):Void
     {
         _projectionMatrix.copyFrom(value);
     }
 
     /** The render target that was active when the filter started processing. */
-    public function get renderTarget():Texture { return _renderTarget; }
-    public function set renderTarget(value:Texture):void { _renderTarget = value; }
+    private function get_renderTarget():Texture { return _renderTarget; }
+    private function set_renderTarget(value:Texture):Void { _renderTarget = value; }
 
     /** The clipping rectangle that was active when the filter started processing. */
-    public function get clipRect():Rectangle { return _clipRect; }
-    public function set clipRect(value:Rectangle):void
+    private function get_clipRect():Rectangle { return _clipRect; }
+    private function set_clipRect(value:Rectangle):Void
     {
         if (value)
         {
@@ -208,26 +208,26 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** @inheritDoc */
-    public function get targetBounds():Rectangle { return _targetBounds; }
-    public function set targetBounds(value:Rectangle):void
+    private function get_targetBounds():Rectangle { return _targetBounds; }
+    private function set_targetBounds(value:Rectangle):Void
     {
         _targetBounds.copyFrom(value);
         setSize(value.width, value.height);
     }
 
     /** @inheritDoc */
-    public function get target():DisplayObject { return _target; }
-    public function set target(value:DisplayObject):void { _target = value; }
+    private function get_target():DisplayObject { return _target; }
+    private function set_target(value:DisplayObject):Void { _target = value; }
 
     /** The scale factor of the returned textures. */
-    public function get textureScale():Number { return _preferredScale; }
-    public function set textureScale(value:Number):void
+    private function get_textureScale():Float { return _preferredScale; }
+    private function set_textureScale(value:Float):Void
     {
         _preferredScale = value > 0 ? value : Starling.contentScaleFactor;
     }
 
     /** The texture format of the returned textures. @default BGRA */
-    public function get textureFormat():String { return _textureFormat; }
-    public function set textureFormat(value:String):void { _textureFormat = value; }
+    private function get_textureFormat():String { return _textureFormat; }
+    private function set_textureFormat(value:String):Void { _textureFormat = value; }
 }
 }

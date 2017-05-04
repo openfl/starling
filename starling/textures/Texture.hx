@@ -54,7 +54,7 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  *
  *  <p>Beginning with AIR 17, you can use Starling textures to show video content (if the
  *  current platform supports that, see "SystemUtil.supportsVideoTexture").
- *  The two factory methods "fromCamera" and "fromNetStream" allow you to make use of
+ *  The two factory methods "fro__camera" and "fromNetStream" allow you to make use of
  *  this feature.</p>
  *
  *  <strong>Mip Mapping</strong>
@@ -77,7 +77,7 @@ import starling.utils.PowerOfTwo.getNextPowerOfTwo;
  *
  *  <p>This code would create an image with a size of 30x30, with the texture placed at
  *  <code>x=10, y=10</code> within that image (assuming that 'anotherTexture' has a width and
- *  height of 10 pixels, it would appear in the middle of the image).</p>
+ *  height of 10 pixels, it would appear in the __iddle of the image).</p>
  *
  *  <p>The texture atlas makes use of this feature, as it allows to crop transparent edges
  *  of a texture and making up for the changed size by specifying the original texture frame.
@@ -351,7 +351,7 @@ class Texture
      *
      * <listing>
      * var camera:Camera = Camera.getCamera();
-     * var texture:Texture = Texture.fromCamera(camera, 1, function():void
+     * var texture:Texture = Texture.fro__camera(camera, 1, function():void
      * {
      *     addChild(new Image(texture));
      * });</listing>
@@ -363,7 +363,7 @@ class Texture
      *                of type 'Texture'.
      */
     #if flash
-    public static function fromCamera(camera:Camera, scale:Float=1,
+    public static function fro__camera(camera:Camera, scale:Float=1,
                                       onComplete:Function=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
@@ -410,7 +410,7 @@ class Texture
      * @param format  the context3D texture format to use. Pass one of the packed or
      *                compressed formats to save memory.
      */
-    public static function fromColor(width:Float, height:Float, color:UInt=0xffffffff,
+    public static function fro__color(width:Float, height:Float, color:UInt=0xffffffff,
                                      optimizeForRenderToTexture:Bool=false,
                                      scale:Float=-1, format:Context3DTextureFormat=BGRA):Texture
     {

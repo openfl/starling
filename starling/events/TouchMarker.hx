@@ -22,13 +22,14 @@ import starling.textures.Texture;
 /** The TouchMarker is used internally to mark touches created through "simulateMultitouch". */
 class TouchMarker extends Sprite
 {
-    private var mCenter:Point;
+    private var __center:Point;
     private var __texture:Texture;
     
     public function new()
     {
         super();
-        mCenter = new Point();
+	
+        __center = new Point();
         __texture = createTexture();
         
         for (i in 0...2)
@@ -51,20 +52,20 @@ class TouchMarker extends Sprite
     {
         if (withCenter)
         {
-            mCenter.x += x - realMarker.x;
-            mCenter.y += y - realMarker.y;
+            __center.x += x - realMarker.x;
+            __center.y += y - realMarker.y;
         }
         
         realMarker.x = x;
         realMarker.y = y;
-        mockMarker.x = 2*mCenter.x - x;
-        mockMarker.y = 2*mCenter.y - y;
+        mockMarker.x = 2*__center.x - x;
+        mockMarker.y = 2*__center.y - y;
     }
     
     public function moveCenter(x:Float, y:Float):Void
     {
-        mCenter.x = x;
-        mCenter.y = y;
+        __center.x = x;
+        __center.y = y;
         moveMarker(realX, realY); // reset mock position
     }
     

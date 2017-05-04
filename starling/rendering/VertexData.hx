@@ -108,8 +108,8 @@ public class VertexData
     private var _format:VertexDataFormat;
     private var _attributes:Vector.<VertexDataAttribute>;
     private var _numAttributes:int;
-    private var _premultipliedAlpha:Boolean;
-    private var _tinted:Boolean;
+    private var _premultipliedAlpha:Bool;
+    private var _tinted:Bool;
 
     private var _posOffset:int;  // in bytes
     private var _colOffset:int;  // in bytes
@@ -658,15 +658,15 @@ public class VertexData
      *  Changing this value does <strong>not</strong> modify any existing color data.
      *  If you want that, use the <code>setPremultipliedAlpha</code> method instead.
      *  @default true */
-    public function get premultipliedAlpha():Boolean { return _premultipliedAlpha; }
-    public function set premultipliedAlpha(value:Boolean):void
+    public function get premultipliedAlpha():Bool { return _premultipliedAlpha; }
+    public function set premultipliedAlpha(value:Bool):void
     {
         setPremultipliedAlpha(value, false);
     }
 
     /** Changes the way alpha and color values are stored. Optionally updates all existing
      *  vertices. */
-    public function setPremultipliedAlpha(value:Boolean, updateData:Boolean):void
+    public function setPremultipliedAlpha(value:Bool, updateData:Bool):void
     {
         if (updateData && value != _premultipliedAlpha)
         {
@@ -701,7 +701,7 @@ public class VertexData
      *  sense after copying part of a tinted VertexData instance to another, since not each
      *  color value is checked in the process. An instance is tinted if any vertices have a
      *  non-white color or are not fully opaque. */
-    public function updateTinted(attrName:String="color"):Boolean
+    public function updateTinted(attrName:String="color"):Bool
     {
         var pos:int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
         _tinted = false;
@@ -885,7 +885,7 @@ public class VertexData
     }
 
     /** Indicates if the VertexData instances contains an attribute with the specified name. */
-    public function hasAttribute(attrName:String):Boolean
+    public function hasAttribute(attrName:String):Bool
     {
         return getAttribute(attrName) != null;
     }
@@ -894,7 +894,7 @@ public class VertexData
 
     /** Creates a vertex buffer object with the right size to fit the complete data.
      *  Optionally, the current data is uploaded right away. */
-    public function createVertexBuffer(upload:Boolean=false,
+    public function createVertexBuffer(upload:Bool=false,
                                        bufferUsage:String="staticDraw"):VertexBuffer3D
     {
         var context:Context3D = Starling.context;
@@ -1093,8 +1093,8 @@ public class VertexData
      *  accurate; <code>true</code> represents just an educated guess. To be entirely sure,
      *  you may call <code>updateTinted()</code>.
      */
-    public function get tinted():Boolean { return _tinted; }
-    public function set tinted(value:Boolean):void { _tinted = value; }
+    public function get tinted():Bool { return _tinted; }
+    public function set tinted(value:Bool):void { _tinted = value; }
 
     /** The format string that describes the attributes of each vertex. */
     public function get formatString():String

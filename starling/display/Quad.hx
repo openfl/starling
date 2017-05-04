@@ -10,194 +10,201 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
 
-import starling.core.RenderSupport;
-import starling.utils.VertexData;
+import starling.rendering.IndexData;
+import starling.rendering.VertexData;
+import starling.styles.MeshStyle;
+import starling.textures.Texture;
+import starling.utils.RectangleUtil;
 
-/** A Quad represents a rectangle with a uniform color or a color gradient.
- *  
- *  <p>You can set one color per vertex. The colors will smoothly fade into each other over the area
- *  of the quad. To display a simple linear color gradient, assign one color to vertices 0 and 1 and 
- *  another color to vertices 2 and 3. </p> 
+/** A Quad represents a colored and/or textured rectangle.
  *
- *  <p>The indices of the vertices are arranged like this:</p>
- *  
+ *  <p>Quads may have a color and a texture. When assigning a texture, the colors of the
+ *  vertices will "tint" the texture, i.e. the vertex color will be multiplied with the color
+ *  of the texture at the same position. That's why the default color of a quad is pure white:
+ *  tinting with white does not change the texture color (that's a multiplication with one).</p>
+ *
+ *  <p>A quad is, by definition, always rectangular. The basic quad class will always contain
+ *  exactly four vertices, arranged like this:</p>
+ *
  *  <pre>
  *  0 - 1
  *  | / |
  *  2 - 3
  *  </pre>
- * 
+ *
+ *  <p>You can set the color of each vertex individually; and since the colors will smoothly
+ *  fade into each other over the area of the quad, you can use this to create simple linear
+ *  color gradients (e.g. by assigning one color to vertices 0 and 1 and another to vertices
+ *  2 and 3).</p>
+ *
+ *  <p>However, note that the number of vertices may be different in subclasses.
+ *  Check the property <code>numVertices</code> if you are unsure.</p>
+ *
+ *  @see starling.textures.Texture
  *  @see Image
  */
-class Quad extends DisplayObject
+class Quad extends Mesh
 {
-    private var mTinted:Bool;
-    
-    /** The raw vertex data of the quad. */
-    private var mVertexData:VertexData;
-    
-    /** Helper objects. */
-    private static var sHelperPoint:Point = new Point();
-    private static var sHelperPoint3D:Vector3D = new Vector3D();
-    private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sHelperMatrix3D:Matrix3D = new Matrix3D();
-    
-    /** Creates a quad with a certain size and color. The last parameter controls if the 
-     * alpha value should be premultiplied into the color values on rendering, which can
-     * influence blending output. You can use the default value in most cases.  */
-    public function new(width:Float, height:Float, color:UInt=0xffffff,
-                         premultipliedAlpha:Bool=true)
+    private var __bounds:Rectangle;
+
+    // helper objects
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sMatrix3D:Matrix3D = new Matrix3D();
+
+    /** Creates a quad with a certain size and color. */
+    public function new(width:Float, height:Float, color:UInt=0xffffff)
     {
-        super();
+        __bounds = new Rectangle(0, 0, width, height);
+
+        var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
+        var indexData:IndexData = new IndexData(6);
+
+        super(vertexData, indexData);
+
         if (width == 0.0 || height == 0.0)
             throw new ArgumentError("Invalid size: width and height must not be zero");
 
-        mTinted = color != 0xffffff;
-        
-        mVertexData = new VertexData(4, premultipliedAlpha);
-        mVertexData.setPosition(0, 0.0, 0.0);
-        mVertexData.setPosition(1, width, 0.0);
-        mVertexData.setPosition(2, 0.0, height);
-        mVertexData.setPosition(3, width, height);
-        mVertexData.setUniformColor(color);
-        
-        onVertexDataChanged();
+        setupVertices();
+        this.color = color;
     }
-    
-    /** Call this method after manually changing the contents of 'mVertexData'. */
-    private function onVertexDataChanged():Void
+
+    /** Sets up vertex- and index-data according to the current settings. */
+    private function setupVertices():Void
     {
-        // override in subclasses, if necessary
-    }
-    
-    /** @inheritDoc */
-    public override function getBounds(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
-    {
-        if (resultRect == null) resultRect = new Rectangle();
-        
-        if (targetSpace == this) // optimization
+        var posAttr:String = "position";
+        var texAttr:String = "texCoords";
+        var texture:Texture = style.texture;
+        var vertexData:VertexData = this.vertexData;
+        var indexData:IndexData = this.indexData;
+
+        indexData.numIndices = 0;
+        indexData.addQuad(0, 1, 2, 3);
+
+        if (vertexData.numVertices != 4)
         {
-            mVertexData.getPosition(3, sHelperPoint);
-            resultRect.setTo(0.0, 0.0, sHelperPoint.x, sHelperPoint.y);
+            vertexData.numVertices = 4;
+            vertexData.trim();
         }
-        else if (targetSpace == parent && rotation == 0.0) // optimization
+
+        if (texture != null)
         {
-            var scaleX:Float = this.scaleX;
-            var scaleY:Float = this.scaleY;
-            mVertexData.getPosition(3, sHelperPoint);
-            resultRect.setTo(x - pivotX * scaleX,      y - pivotY * scaleY,
-                             sHelperPoint.x * scaleX, sHelperPoint.y * scaleY);
-            if (scaleX < 0) { resultRect.width  *= -1; resultRect.x -= resultRect.width;  }
-            if (scaleY < 0) { resultRect.height *= -1; resultRect.y -= resultRect.height; }
-        }
-        else if (is3D && stage != null)
-        {
-            stage.getCameraPosition(targetSpace, sHelperPoint3D);
-            getTransformationMatrix3D(targetSpace, sHelperMatrix3D);
-            mVertexData.getBoundsProjected(sHelperMatrix3D, sHelperPoint3D, 0, 4, resultRect);
+            texture.setupVertexPositions(vertexData, 0, "position", _bounds);
+            texture.setupTextureCoordinates(vertexData, 0, texAttr);
         }
         else
         {
-            getTransformationMatrix(targetSpace, sHelperMatrix);
-            mVertexData.getBounds(sHelperMatrix, 0, 4, resultRect);
+            vertexData.setPoint(0, posAttr, _bounds.left,  _bounds.top);
+            vertexData.setPoint(1, posAttr, _bounds.right, _bounds.top);
+            vertexData.setPoint(2, posAttr, _bounds.left,  _bounds.bottom);
+            vertexData.setPoint(3, posAttr, _bounds.right, _bounds.bottom);
+
+            vertexData.setPoint(0, texAttr, 0.0, 0.0);
+            vertexData.setPoint(1, texAttr, 1.0, 0.0);
+            vertexData.setPoint(2, texAttr, 0.0, 1.0);
+            vertexData.setPoint(3, texAttr, 1.0, 1.0);
         }
-        
-        return resultRect;
+
+        setRequiresRedraw();
     }
-    
-    /** Returns the color of a vertex at a certain index. */
-    public function getVertexColor(vertexID:Int):UInt
-    {
-        return mVertexData.getColor(vertexID);
-    }
-    
-    /** Sets the color of a vertex at a certain index. */
-    public function setVertexColor(vertexID:Int, color:UInt):Void
-    {
-        mVertexData.setColor(vertexID, color);
-        onVertexDataChanged();
-        
-        if (color != 0xffffff) mTinted = true;
-        else mTinted = mVertexData.tinted;
-    }
-    
-    /** Returns the alpha value of a vertex at a certain index. */
-    public function getVertexAlpha(vertexID:Int):Float
-    {
-        return mVertexData.getAlpha(vertexID);
-    }
-    
-    /** Sets the alpha value of a vertex at a certain index. */
-    public function setVertexAlpha(vertexID:Int, alpha:Float):Void
-    {
-        mVertexData.setAlpha(vertexID, alpha);
-        onVertexDataChanged();
-        
-        if (alpha != 1.0) mTinted = true;
-        else mTinted = mVertexData.tinted;
-    }
-    
-    /** Returns the color of the quad, or of vertex 0 if vertices have different colors. */
-    public var color(get, set):UInt;
-    private function get_color():UInt 
-    { 
-        return mVertexData.getColor(0); 
-    }
-    
-    /** Sets the colors of all vertices to a certain value. */
-    private function set_color(value:UInt):UInt 
-    {
-        mVertexData.setUniformColor(value);
-        onVertexDataChanged();
-        
-        if (value != 0xffffff || alpha != 1.0) mTinted = true;
-        else mTinted = mVertexData.tinted;
-        return value;
-    }
-    
-    /** @inheritDoc **/
-    private override function set_alpha(value:Float):Float
-    {
-        super.set_alpha(value);
-        
-        if (value < 1.0) mTinted = true;
-        else mTinted = mVertexData.tinted;
-        return value;
-    }
-    
-    /** Copies the raw vertex data to a VertexData instance. */
-    public function copyVertexDataTo(targetData:VertexData, targetVertexID:Int=0):Void
-    {
-        mVertexData.copyTo(targetData, targetVertexID);
-    }
-    
-    /** Transforms the vertex positions of the raw vertex data by a certain matrix and
-     * copies the result to another VertexData instance. */
-    public function copyVertexDataTransformedTo(targetData:VertexData, targetVertexID:Int=0,
-                                                matrix:Matrix=null):Void
-    {
-        mVertexData.copyTransformedTo(targetData, targetVertexID, matrix, 0, 4);
-    }
-    
+
     /** @inheritDoc */
-    public override function render(support:RenderSupport, parentAlpha:Float):Void
+    public override function getBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
     {
-        support.batchQuad(this, parentAlpha);
+        if (out == null) out = new Rectangle();
+
+        if (targetSpace == this) // optimization
+        {
+            out.copyFrom(_bounds);
+        }
+        else if (targetSpace == parent && !isRotated) // optimization
+        {
+            var scaleX:Float = this.scaleX;
+            var scaleY:Float = this.scaleY;
+
+            out.setTo(   x - pivotX * scaleX,     y - pivotY * scaleY,
+                      _bounds.width * scaleX, _bounds.height * scaleY);
+
+            if (scaleX < 0) { out.width  *= -1; out.x -= out.width;  }
+            if (scaleY < 0) { out.height *= -1; out.y -= out.height; }
+        }
+        else if (is3D && stage != null)
+        {
+            stage.getCameraPosition(targetSpace, sPoint3D);
+            getTransformationMatrix3D(targetSpace, sMatrix3D);
+            RectangleUtil.getBoundsProjected(__bounds, sMatrix3D, sPoint3D, out);
+        }
+        else
+        {
+            getTransformationMatrix(targetSpace, sMatrix);
+            RectangleUtil.getBounds(__bounds, sMatrix, out);
+        }
+
+        return out;
     }
-    
-    /** Returns true if the quad (or any of its vertices) is non-white or non-opaque. */
-    public var tinted(get, never):Bool;
-    private function get_tinted():Bool { return mTinted; }
-    
-    /** Indicates if the rgb values are stored premultiplied with the alpha value; this can
-     * affect the rendering. (Most developers don't have to care, though.) */
-    public var premultipliedAlpha(get, never):Bool;
-    private function get_premultipliedAlpha():Bool { return mVertexData.premultipliedAlpha; }
+
+    /** @inheritDoc */
+    override public function hitTest(localPoint:Point):DisplayObject
+    {
+        if (!visible || !touchable || !hitTestMask(localPoint)) return null;
+        else if (__bounds.containsPoint(localPoint)) return this;
+        else return null;
+    }
+
+    /** Readjusts the dimensions of the quad. Use this method without any arguments to
+     *  synchronize quad and texture size after assigning a texture with a different size.
+     *  You can also force a certain width and height by passing positive, non-zero
+     *  values for width and height. */
+    public function readjustSize(width:Float=-1, height:Float=-1):Void
+    {
+        if (width  <= 0) width  = texture ? texture.frameWidth  : __bounds.width;
+        if (height <= 0) height = texture ? texture.frameHeight : __bounds.height;
+
+        if (width != __bounds.width || height != __bounds.height)
+        {
+            __bounds.setTo(0, 0, width, height);
+            setupVertices();
+        }
+    }
+
+    /** Creates a quad from the given texture.
+     *  The quad will have the same size as the texture. */
+    public static function fromTexture(texture:Texture):Quad
+    {
+        var quad:Quad = new Quad(100, 100);
+        quad.texture = texture;
+        quad.readjustSize();
+        return quad;
+    }
+
+    /** The texture that is mapped to the quad (or <code>null</code>, if there is none).
+     *  Per default, it is mapped to the complete quad, i.e. to the complete area between the
+     *  top left and bottom right vertices. This can be changed with the
+     *  <code>setTexCoords</code>-method.
+     *
+     *  <p>Note that the size of the quad will not change when you assign a texture, which
+     *  means that the texture might be distorted at first. Call <code>readjustSize</code> to
+     *  synchronize quad and texture size.</p>
+     *
+     *  <p>You could also set the texture via the <code>style.texture</code> property.
+     *  That way, however, the texture frame won't be taken into account. Since only rectangular
+     *  objects can make use of a texture frame, only a property on the Quad class can do that.
+     *  </p>
+     */
+    override private function set_texture(value:Texture):Texture
+    {
+        if (value != texture)
+        {
+            super.texture = value;
+            setupVertices();
+        }
+        return value;
+    }
 }

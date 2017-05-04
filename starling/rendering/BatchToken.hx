@@ -62,7 +62,7 @@ public class BatchToken
     }
 
     /** Indicates if this token contains the same values as the given one. */
-    public function equals(other:BatchToken):Boolean
+    public function equals(other:BatchToken):Bool
     {
         return batchID == other.batchID && vertexID == other.vertexID && indexID == other.indexID;
     }

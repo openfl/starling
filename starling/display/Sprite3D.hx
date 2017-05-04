@@ -10,14 +10,14 @@
 
 package starling.display;
 
-import flash.errors.Error;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Vector3D;
+import openfl.errors.Error;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Vector3D;
 
-import starling.core.RenderSupport;
 import starling.events.Event;
+import starling.rendering.Painter;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.MathUtil.rad2deg;
@@ -57,12 +57,10 @@ import starling.utils.MathUtil.rad2deg;
  *
  *  <p><strong>Limitations</strong></p>
  *
- *  <p>A Sprite3D object cannot be flattened (although you can flatten objects <em>within</em>
- *  a Sprite3D), and it does not work with the "clipRect" property. Furthermore, a filter
- *  applied to a Sprite3D object cannot be cached.</p>
- *
  *  <p>On rendering, each Sprite3D requires its own draw call — except if the object does not
- *  contain any 3D transformations ('z', 'rotationX/Y' and 'pivotZ' are zero).</p>
+ *  contain any 3D transformations ('z', 'rotationX/Y' and 'pivotZ' are zero). Furthermore,
+ *  it interrupts the render cache, i.e. the cache cannot contain objects within different
+ *  3D coordinate systems. Flat contents within the Sprite3D will be cached, though.</p>
  *
  */
 class Sprite3D extends DisplayObjectContainer
@@ -73,11 +71,12 @@ class Sprite3D extends DisplayObjectContainer
     private var __rotationY:Float;
     private var __scaleZ:Float;
     private var __pivotZ:Float;
-    private var mZ:Float;
+    private var __z:Float;
 
     //private var __transformationMatrix:Matrix;
     //private var __transformationMatrix3D:Matrix3D;
     private var __transformationChanged:Bool;
+    private var __is2D:Bool;
 
     /** Helper objects. */
     private static var sHelperPoint:Vector3D    = new Vector3D();
@@ -88,41 +87,43 @@ class Sprite3D extends DisplayObjectContainer
     public function new()
     {
         super();
+
         __scaleZ = 1.0;
-        __rotationX = __rotationY = __pivotZ = mZ = 0.0;
+        __rotationX = __rotationY = __pivotZ = __z = 0.0;
         __transformationMatrix = new Matrix();
         __transformationMatrix3D = new Matrix3D();
-        __setIs3D(true);
+        __is2D = true;   // meaning: this 3D object contains only 2D content
+        __setIs3D(true); // meaning: this display object supports 3D transformations
 
         addEventListener(Event.ADDED, __onAddedChild);
         addEventListener(Event.REMOVED, __onRemovedChild);
     }
 
     /** @inheritDoc */
-    public override function render(support:RenderSupport, parentAlpha:Float):Void
+    override public function render(painter:Painter):Void
     {
-        if (is2D) super.render(support, parentAlpha);
+        if (__is2D) super.render(painter);
         else
         {
-            support.finishQuadBatch();
-            support.pushMatrix3D();
-            support.transformMatrix3D(this);
+            painter.finishMeshBatch();
+            painter.pushState();
+            painter.state.transformModelviewMatrix3D(transformationMatrix3D);
 
-            super.render(support, parentAlpha);
+            super.render(painter);
 
-            support.finishQuadBatch();
-            support.popMatrix3D();
+            painter.finishMeshBatch();
+            painter.excludeFromCache(this);
+            painter.popState();
         }
     }
 
     /** @inheritDoc */
-    public override function hitTest(localPoint:Point, forTouch:Bool=false):DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
-        if (is2D) return super.hitTest(localPoint, forTouch);
+        if (__is2D) return super.hitTest(localPoint);
         else
         {
-            if (forTouch && (!visible || !touchable))
-                return null;
+            if (!visible || !touchable) return null;
 
             // We calculate the interception point between the 3D plane that is spawned up
             // by this sprite3D and the straight line between the camera and the hit point.
@@ -134,8 +135,19 @@ class Sprite3D extends DisplayObjectContainer
             MatrixUtil.transformCoords3D(sHelperMatrix, localPoint.x, localPoint.y, 0, sHelperPointAlt);
             MathUtil.intersectLineWithXYPlane(sHelperPoint, sHelperPointAlt, localPoint);
 
-            return super.hitTest(localPoint, forTouch);
+            return super.hitTest(localPoint);
         }
+    }
+
+    /** @private */
+    override public function setRequiresRedraw():Void
+    {
+        __is2D = __z > -E && __z < E &&
+                 __rotationX > -E && __rotationX < E &&
+                 __rotationY > -E && __rotationY < E &&
+                 __pivotZ > -E && __pivotZ < E;
+
+        super.setRequiresRedraw();
     }
 
     // helpers
@@ -180,30 +192,20 @@ class Sprite3D extends DisplayObjectContainer
         __transformationMatrix3D.identity();
 
         if (scaleX != 1.0 || scaleY != 1.0 || __scaleZ != 1.0)
-            __transformationMatrix3D.appendScale(scaleX > 0 ? scaleX : E, scaleY > 0 ? scaleY : E, __scaleZ > 0 ? __scaleZ : E);
+            __transformationMatrix3D.appendScale(scaleX != 0 ? scaleX : E, scaleY != 0 ? scaleY : E, __scaleZ != 0 ? __scaleZ : E);
         if (__rotationX != 0.0)
             __transformationMatrix3D.appendRotation(rad2deg(__rotationX), Vector3D.X_AXIS);
         if (__rotationY != 0.0)
             __transformationMatrix3D.appendRotation(rad2deg(__rotationY), Vector3D.Y_AXIS);
         if (rotationZ != 0.0)
             __transformationMatrix3D.appendRotation(rad2deg( rotationZ), Vector3D.Z_AXIS);
-        if (x != 0.0 || y != 0.0 || mZ != 0.0)
-            __transformationMatrix3D.appendTranslation(x, y, mZ);
+        if (x != 0.0 || y != 0.0 || __z != 0.0)
+            __transformationMatrix3D.appendTranslation(x, y, __z);
         if (pivotX != 0.0 || pivotY != 0.0 || __pivotZ != 0.0)
             __transformationMatrix3D.prependTranslation(-pivotX, -pivotY, -__pivotZ);
 
-        if (is2D) MatrixUtil.convertTo2D(__transformationMatrix3D, __transformationMatrix);
+        if (__is2D) MatrixUtil.convertTo2D(__transformationMatrix3D, __transformationMatrix);
         else      __transformationMatrix.identity();
-    }
-
-    /** Indicates if the object can be represented by a 2D transformation. */
-    private var is2D(get, never):Bool;
-    private inline function get_is2D():Bool
-    {
-        return mZ > -E && mZ < E &&
-            __rotationX > -E && __rotationX < E &&
-            __rotationY > -E && __rotationY < E &&
-            __pivotZ > -E && __pivotZ < E;
     }
 
     // properties
@@ -225,7 +227,7 @@ class Sprite3D extends DisplayObjectContainer
     private override function set_transformationMatrix(value:Matrix):Matrix
     {
         super.transformationMatrix = value;
-        __rotationX = __rotationY = __pivotZ = mZ = 0;
+        __rotationX = __rotationY = __pivotZ = __z = 0;
         __transformationChanged = true;
         return value;
     }
@@ -263,11 +265,12 @@ class Sprite3D extends DisplayObjectContainer
      * The z-axis points away from the camera, i.e. positive z-values will move the object further
      * away from the viewer. */
     @:keep public var z(get, set):Float;
-    @:keep private function get_z():Float { return mZ; }
+    @:keep private function get_z():Float { return __z; }
     @:keep private function set_z(value:Float):Float
     {
-        mZ = value;
+        __z = value;
         __transformationChanged = true;
+        setRequiresRedraw();
         return value;
     }
 
@@ -294,6 +297,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         __pivotZ = value;
         __transformationChanged = true;
+        setRequiresRedraw();
         return value;
     }
 
@@ -320,7 +324,14 @@ class Sprite3D extends DisplayObjectContainer
     {
         __scaleZ = value;
         __transformationChanged = true;
+        setRequiresRedraw();
         return value;
+    }
+
+    /** @private */
+    override private function set_scale(value:Float):Float
+    {
+        return scaleX = scaleY = scaleZ = value;
     }
 
     /** @private */
@@ -360,6 +371,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         __rotationX = MathUtil.normalizeAngle(value);
         __transformationChanged = true;
+        setRequiresRedraw();
         return value;
     }
 
@@ -371,6 +383,7 @@ class Sprite3D extends DisplayObjectContainer
     {
         __rotationY = MathUtil.normalizeAngle(value);
         __transformationChanged = true;
+        setRequiresRedraw();
         return value;
     }
 

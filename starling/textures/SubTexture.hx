@@ -35,8 +35,8 @@ class SubTexture extends Texture
     private var mRegion:Rectangle;
     private var __frame:Rectangle;
     private var __rotated:Bool;
-    private var mWidth:Float;
-    private var mHeight:Float;
+    private var __width:Float;
+    private var __height:Float;
     private var __transformationMatrix:Matrix;
     
     /** Helper object. */
@@ -68,8 +68,8 @@ class SubTexture extends Texture
         __frame = frame != null ? frame.clone() : null;
         mOwnsParent = ownsParent;
         __rotated = rotated;
-        mWidth  = rotated ? mRegion.height : mRegion.width;
-        mHeight = rotated ? mRegion.width  : mRegion.height;
+        __width  = rotated ? mRegion.height : mRegion.width;
+        __height = rotated ? mRegion.width  : mRegion.height;
         __transformationMatrix = new Matrix();
         
         if (rotated)
@@ -79,7 +79,7 @@ class SubTexture extends Texture
         }
 
         if (__frame != null && (__frame.x > 0 || __frame.y > 0 ||
-            __frame.right < mWidth || __frame.bottom < mHeight))
+            __frame.right < __width || __frame.bottom < __height))
         {
             trace("[Starling] Warning: frames inside the texture's region are unsupported.");
         }
@@ -110,8 +110,8 @@ class SubTexture extends Texture
             if (count != 4)
                 throw new ArgumentError("Textures with a frame can only be used on quads");
             
-            var deltaRight:Float  = __frame.width  + __frame.x - mWidth;
-            var deltaBottom:Float = __frame.height + __frame.y - mHeight;
+            var deltaRight:Float  = __frame.width  + __frame.x - __width;
+            var deltaBottom:Float = __frame.height + __frame.y - __height;
             
             vertexData.translateVertex(vertexID,     -__frame.x, -__frame.y);
             vertexData.translateVertex(vertexID + 1, -deltaRight, -__frame.y);
@@ -206,16 +206,16 @@ class SubTexture extends Texture
     private override function get_format():Context3DTextureFormat { return __parent.format; }
     
     /** @inheritDoc */
-    private override function get_width():Float { return mWidth; }
+    private override function get_width():Float { return __width; }
     
     /** @inheritDoc */
-    private override function get_height():Float { return mHeight; }
+    private override function get_height():Float { return __height; }
     
     /** @inheritDoc */
-    private override function get_nativeWidth():Float { return mWidth * scale; }
+    private override function get_nativeWidth():Float { return __width * scale; }
     
     /** @inheritDoc */
-    private override function get_nativeHeight():Float { return mHeight * scale; }
+    private override function get_nativeHeight():Float { return __height * scale; }
     
     /** @inheritDoc */
     private override function get_mipMapping():Bool { return __parent.mipMapping; }

@@ -19,9 +19,9 @@ import flash.utils.ByteArray;
 class AtfData
 {
     private var mFormat:Context3DTextureFormat;
-    private var mWidth:Int;
-    private var mHeight:Int;
-    private var mNu__textures:Int;
+    private var __width:Int;
+    private var __height:Int;
+    private var __numTextures:Int;
     private var __isCubeMap:Bool;
     private var mData:ByteArray;
     
@@ -42,9 +42,9 @@ class AtfData
             default: throw new Error("Invalid ATF format");
         }
         
-        mWidth = Std.int(Math.pow(2, data.readUnsignedByte())); 
-        mHeight = Std.int(Math.pow(2, data.readUnsignedByte()));
-        mNu__textures = data.readUnsignedByte();
+        __width = Std.int(Math.pow(2, data.readUnsignedByte())); 
+        __height = Std.int(Math.pow(2, data.readUnsignedByte()));
+        __numTextures = data.readUnsignedByte();
         __isCubeMap = (format & 0x80) != 0;
         mData = data;
         
@@ -55,7 +55,7 @@ class AtfData
         {
             var emptyMipmaps:Bool = (data[5] & 0x01) == 1;
             var nu__textures:Int  = data[5] >> 1 & 0x7f;
-            mNu__textures = emptyMipmaps ? 1 : nu__textures;
+            __numTextures = emptyMipmaps ? 1 : nu__textures;
         }
     }
 
@@ -67,7 +67,7 @@ class AtfData
         {
             var signature:String = "";
             for (i in 0...3)
-                signature += String.fromCharCode(data[i]);
+                signature += String.fro__charCode(data[i]);
             return signature == "ATF";
         }
     }
@@ -78,15 +78,15 @@ class AtfData
 
     /** The width of the texture in pixels. */
     public var width(get, never):Int;
-    private function get_width():Int { return mWidth; }
+    private function get_width():Int { return __width; }
 
     /** The height of the texture in pixels. */
     public var height(get, never):Int;
-    private function get_height():Int { return mHeight; }
+    private function get_height():Int { return __height; }
 
     /** The number of encoded textures. '1' means that there are no mip maps. */
     public var nu__textures(get, never):Int;
-    private function get_nu__textures():Int { return mNu__textures; }
+    private function get_nu__textures():Int { return __numTextures; }
 
     /** Indicates if the ATF data encodes a cube map. Not supported by Starling! */
     public var isCubeMap(get, never):Bool;

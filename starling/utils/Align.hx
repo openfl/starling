@@ -34,20 +34,20 @@ public final class Align
     public static const CENTER:String = "center";
     
     /** Indicates whether the given alignment string is valid. */
-    public static function isValid(align:String):Boolean
+    public static function isValid(align:String):Bool
     {
         return align == LEFT || align == RIGHT || align == CENTER ||
                align == TOP  || align == BOTTOM;
     }
 
     /** Indicates if the given string is a valid horizontal alignment. */
-    public static function isValidHorizontal(align:String):Boolean
+    public static function isValidHorizontal(align:String):Bool
     {
         return align == LEFT || align == CENTER || align == RIGHT;
     }
 
     /** Indicates if the given string is a valid vertical alignment. */
-    public static function isValidVertical(align:String):Boolean
+    public static function isValidVertical(align:String):Bool
     {
         return align == TOP || align == CENTER || align == BOTTOM;
     }

@@ -35,13 +35,13 @@ internal class ConcretePotTexture extends ConcreteTexture
     private static var sMatrix:Matrix = new Matrix();
     private static var sRectangle:Rectangle = new Rectangle();
     private static var sOrigin:Point = new Point();
-    private static var sAsyncSupported:Boolean = true;
+    private static var sAsyncSupported:Bool = true;
 
     /** Creates a new instance with the given parameters. */
     public function ConcretePotTexture(base:flash.display3D.textures.Texture, format:String,
-                                       width:int, height:int, mipMapping:Boolean,
-                                       premultipliedAlpha:Boolean,
-                                       optimizedForRenderTexture:Boolean=false, scale:Number=1)
+                                       width:int, height:int, mipMapping:Bool,
+                                       premultipliedAlpha:Bool,
+                                       optimizedForRenderTexture:Bool=false, scale:Number=1)
     {
         super(base, format, width, height, mipMapping, premultipliedAlpha,
               optimizedForRenderTexture, scale);
@@ -71,7 +71,7 @@ internal class ConcretePotTexture extends ConcreteTexture
     override public function uploadBitmapData(data:BitmapData, async:*=null):void
     {
         var buffer:BitmapData = null;
-        var isAsync:Boolean = async is Function || async === true;
+        var isAsync:Bool = async is Function || async === true;
 
         if (async is Function)
             _textureReadyCallback = async as Function;
@@ -115,12 +115,12 @@ internal class ConcretePotTexture extends ConcreteTexture
     }
 
     /** @inheritDoc */
-    override public function get isPotTexture():Boolean { return true; }
+    override public function get isPotTexture():Bool { return true; }
 
     /** @inheritDoc */
     override public function uploadAtfData(data:ByteArray, offset:int = 0, async:* = null):void
     {
-        var isAsync:Boolean = async is Function || async === true;
+        var isAsync:Bool = async is Function || async === true;
 
         if (async is Function)
         {
@@ -132,7 +132,7 @@ internal class ConcretePotTexture extends ConcreteTexture
         setDataUploaded();
     }
 
-    private function upload(source:BitmapData, mipLevel:uint, isAsync:Boolean):void
+    private function upload(source:BitmapData, mipLevel:uint, isAsync:Bool):void
     {
         if (isAsync)
         {

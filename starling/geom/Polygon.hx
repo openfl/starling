@@ -83,14 +83,14 @@ class Polygon
     public function addVertices(args:Array<Dynamic>):Void
     {
         var i:Int;
-        var nu__args:Int = args.length;
+        var numArgs:Int = args.length;
         var numCoords:Int = mCoords.length;
 
-        if (nu__args > 0)
+        if (numArgs > 0)
         {
             if (Std.is(args[0], Point))
             {
-                for (i in 0...nu__args)
+                for (i in 0...numArgs)
                 {
                     mCoords[numCoords + i * 2    ] = cast(args[i], Point).x;
                     mCoords[numCoords + i * 2 + 1] = cast(args[i], Point).y;
@@ -98,7 +98,7 @@ class Polygon
             }
             else if (Std.is(args[0], Float))
             {
-                for (i in 0...nu__args)
+                for (i in 0...numArgs)
                     mCoords[numCoords + i] = args[i];
             }
             else throw new ArgumentError("Invalid type: " + Type.getClassName(Type.getClass(args[0])));

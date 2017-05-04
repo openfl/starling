@@ -102,7 +102,7 @@ public class Pool
      *  @param identity   If enabled, the matrix will be reset to the identity.
      *                    Otherwise, its contents is undefined.
      */
-    public static function getMatrix3D(identity:Boolean = true):Matrix3D
+    public static function getMatrix3D(identity:Bool = true):Matrix3D
     {
         if (sMatrices3D.length == 0) return new Matrix3D();
         else

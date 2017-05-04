@@ -28,26 +28,26 @@ class KeyboardEvent extends Event
     /** Event type for a key that was pressed. */
     public static inline var KEY_DOWN:String = "keyDown";
     
-    private var mCharCode:UInt;
-    private var mKeyCode:UInt;
-    private var mKeyLocation:UInt;
-    private var mAltKey:Bool;
-    private var mCtrlKey:Bool;
-    private var mShiftKey:Bool;
+    private var __charCode:UInt;
+    private var __keyCode:UInt;
+    private var __keyLocation:UInt;
+    private var __altKey:Bool;
+    private var __ctrlKey:Bool;
+    private var __shiftKey:Bool;
     private var __isDefaultPrevented:Bool;
     
     /** Creates a new KeyboardEvent. */
     public function new(type:String, charCode:UInt=0, keyCode:UInt=0, 
-                                  keyLocation:UInt=0, ctrlKey:Bool=false, 
-                                  altKey:Bool=false, shiftKey:Bool=false)
+                        keyLocation:UInt=0, ctrlKey:Bool=false, 
+                        altKey:Bool=false, shiftKey:Bool=false)
     {
         super(type, false, keyCode);
-        mCharCode = charCode;
-        mKeyCode = keyCode;
-        mKeyLocation = keyLocation;
-        mCtrlKey = ctrlKey;
-        mAltKey = altKey;
-        mShiftKey = shiftKey;
+        __charCode = charCode;
+        __keyCode = keyCode;
+        __keyLocation = keyLocation;
+        __ctrlKey = ctrlKey;
+        __altKey = altKey;
+        __shiftKey = shiftKey;
     }
     
     // prevent default
@@ -66,28 +66,28 @@ class KeyboardEvent extends Event
     
     /** Contains the character code of the key. */
     public var charCode(get, never):UInt;
-    private function get_charCode():UInt { return mCharCode; }
+    private function get_charCode():UInt { return __charCode; }
     
     /** The key code of the key. */
     public var keyCode(get, never):UInt;
-    private function get_keyCode():UInt { return mKeyCode; }
+    private function get_keyCode():UInt { return __keyCode; }
     
     /** Indicates the location of the key on the keyboard. This is useful for differentiating 
      * keys that appear more than once on a keyboard. @see Keylocation */ 
     public var keyLocation(get, never):UInt;
-    private function get_keyLocation():UInt { return mKeyLocation; }
+    private function get_keyLocation():UInt { return __keyLocation; }
     
     /** Indicates whether the Alt key is active on Windows or Linux; 
      * indicates whether the Option key is active on Mac OS. */
     public var altKey(get, never):Bool;
-    private function get_altKey():Bool { return mAltKey; }
+    private function get_altKey():Bool { return __altKey; }
     
     /** Indicates whether the Ctrl key is active on Windows or Linux; 
      * indicates whether either the Ctrl or the Command key is active on Mac OS. */
     public var ctrlKey(get, never):Bool;
-    private function get_ctrlKey():Bool { return mCtrlKey; }
+    private function get_ctrlKey():Bool { return __ctrlKey; }
     
     /** Indicates whether the Shift key modifier is active (true) or inactive (false). */
     public var shiftKey(get, never):Bool;
-    private function get_shiftKey():Bool { return mShiftKey; }
+    private function get_shiftKey():Bool { return __shiftKey; }
 }

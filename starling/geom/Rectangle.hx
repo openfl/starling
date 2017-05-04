@@ -6,15 +6,15 @@ class Rectangle extends ImmutablePolygon
 {
     private var __x:Float;
     private var __y:Float;
-    private var mWidth:Float;
-    private var mHeight:Float;
+    private var __width:Float;
+    private var __height:Float;
 
     public function new(x:Float, y:Float, width:Float, height:Float)
     {
         __x = x;
         __y = y;
-        mWidth = width;
-        mHeight = height;
+        __width = width;
+        __height = height;
 
         super([x, y, x + width, y, x + width, y + height, x, y + height]);
     }
@@ -33,13 +33,13 @@ class Rectangle extends ImmutablePolygon
 
     override public function contains(x:Float, y:Float):Bool
     {
-        return x >= __x && x <= __x + mWidth &&
-               y >= __y && y <= __y + mHeight;
+        return x >= __x && x <= __x + __width &&
+               y >= __y && y <= __y + __height;
     }
 
     override private function get_area():Float
     {
-        return mWidth * mHeight;
+        return __width * __height;
     }
 
     override private function get_isSimple():Bool

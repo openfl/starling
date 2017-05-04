@@ -14,7 +14,7 @@ import starling.events.Event;
 import starling.events.EventDispatcher;
 
 /** Dispatched when any property of the instance changes. */
-[Event(name="change", type="starling.events.Event")]
+@:meta(Event(name="change", type="starling.events.Event"))
 
 /** The padding class stores one number for each of four directions,
  *  thus describing the padding around a 2D object. */
@@ -34,7 +34,7 @@ public class Padding extends EventDispatcher
     /** Sets all four values at once. */
     public function setTo(left:Number=0, right:Number=0, top:Number=0, bottom:Number=0):void
     {
-        var changed:Boolean = _left != left || _right != right || _top != top || _bottom != bottom;
+        var changed:Bool = _left != left || _right != right || _top != top || _bottom != bottom;
 
         _left = left;
         _right = right;

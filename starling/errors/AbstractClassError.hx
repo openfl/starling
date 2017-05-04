@@ -10,7 +10,7 @@
 
 package starling.errors;
 
-import flash.errors.Error;
+import openfl.errors.Error;
 
 /** An AbstractClassError is thrown when you attempt to create an instance of an abstract 
  *  class. */

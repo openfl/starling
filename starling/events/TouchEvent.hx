@@ -57,51 +57,47 @@ class TouchEvent extends Event
     /** Event type for touch or mouse input. */
     public static inline var TOUCH:String = "touch";
     
-    private var mShiftKey:Bool;
-    private var mCtrlKey:Bool;
-    private var mTimestamp:Float;
+    private var __shiftKey:Bool;
+    private var __ctrlKey:Bool;
+    private var __timestamp:Float;
     private var __visitedObjects:Vector<EventDispatcher>;
     
     /** Helper object. */
     private static var sTouches:Vector<Touch> = new Vector<Touch>();
     
     /** Creates a new TouchEvent instance. */
-    public function new(type:String, touches:Vector<Touch>, shiftKey:Bool=false, 
-                               ctrlKey:Bool=false, bubbles:Bool=true)
+    public function new(type:String, touches:Vector<Touch>, shiftKey:Bool=false,
+                        ctrlKey:Bool=false, bubbles:Bool=true)
     {
         super(type, bubbles, touches);
-        
-        mShiftKey = shiftKey;
-        mCtrlKey = ctrlKey;
-        mTimestamp = -1.0;
+
+        __shiftKey = shiftKey;
+        __ctrlKey = ctrlKey;
         __visitedObjects = new Vector<EventDispatcher>();
         
-        var nu__touches:Int=touches.length;
-        for (i in 0...nu__touches)
-            if (touches[i].timestamp > mTimestamp)
-                mTimestamp = touches[i].timestamp;
+        updateTimestamp(touches);
     }
     
-    /** Returns a list of touches that originated over a certain target. If you pass a
-     * 'result' vector, the touches will be added to this vector instead of creating a new 
-     * object. */
+    /** Returns a list of touches that originated over a certain target. If you pass an
+     * <code>out</code> vector, the touches will be added to this vector instead of creating
+     * a new object. */
     public function getTouches(target:DisplayObject, phase:String=null,
-                               result:Vector<Touch>=null):Vector<Touch>
+                               out:Vector<Touch>=null):Vector<Touch>
     {
-        if (result == null) result = new Vector<Touch>();
+        if (out == null) out = new Vector<Touch>();
         var allTouches:Vector<Touch> = cast data;
-        var nu__touches:Int = allTouches.length;
+        var numTouches:Int = allTouches.length;
         
-        for (i in 0...nu__touches)
+        for (i in 0...numTouches)
         {
-            var touch:Touch = cast(allTouches[i], Touch);
+            var touch:Touch = allTouches[i];
             var correctTarget:Bool = touch.isTouching(target);
             var correctPhase:Bool = (phase == null || phase == touch.phase);
                 
             if (correctTarget && correctPhase)
-                result[result.length] = touch; // avoiding 'push'
+                out[out.length] = touch; // avoiding 'push'
         }
-        return result;
+        return out;
     }
     
     /** Returns a touch that originated over a certain target. 
@@ -114,16 +110,16 @@ class TouchEvent extends Event
     public function getTouch(target:DisplayObject, phase:String=null, id:Int=-1):Touch
     {
         getTouches(target, phase, sTouches);
-        var nu__touches:Int = sTouches.length;
+        var numTouches:Int = sTouches.length;
         
-        if (nu__touches > 0) 
+        if (numTouches > 0) 
         {
             var touch:Touch = null;
             
             if (id < 0) touch = sTouches[0];
             else
             {
-                for (i in 0...nu__touches)
+                for (i in 0...numTouches)
                     if (sTouches[i].id == id) { touch = sTouches[i]; break; }
             }
             
@@ -186,7 +182,7 @@ class TouchEvent extends Event
     
     /** The time the event occurred (in seconds since application launch). */
     public var timestamp(get, never):Float;
-    private function get_timestamp():Float { return mTimestamp; }
+    private function get_timestamp():Float { return __timestamp; }
     
     /** All touches that are currently available. */
     public var touches(get, never):Vector<Touch>;
@@ -198,9 +194,9 @@ class TouchEvent extends Event
     
     /** Indicates if the shift key was pressed when the event occurred. */
     public var shiftKey(get, never):Bool;
-    private function get_shiftKey():Bool { return mShiftKey; }
+    private function get_shiftKey():Bool { return __shiftKey; }
     
     /** Indicates if the ctrl key was pressed when the event occurred. (Mac OS: Cmd or Ctrl) */
     public var ctrlKey(get, never):Bool;
-    private function get_ctrlKey():Bool { return mCtrlKey; }
+    private function get_ctrlKey():Bool { return __ctrlKey; }
 }

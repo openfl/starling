@@ -151,7 +151,7 @@ public class VertexDataFormat
     }
 
     /** Indicates if the format contains an attribute with the given name. */
-    public function hasAttribute(attrName:String):Boolean
+    public function hasAttribute(attrName:String):Bool
     {
         var numAttributes:int = _attributes.length;
 

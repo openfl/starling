@@ -43,7 +43,7 @@ public class FilterEffect extends Effect
 
     private var _texture:Texture;
     private var _textureSmoothing:String;
-    private var _textureRepeat:Boolean;
+    private var _textureRepeat:Bool;
 
     /** Creates a new FilterEffect instance. */
     public function FilterEffect()
@@ -94,7 +94,7 @@ public class FilterEffect extends Effect
 
         if (_texture)
         {
-            var repeat:Boolean = _textureRepeat && _texture.root.isPotTexture;
+            var repeat:Bool = _textureRepeat && _texture.root.isPotTexture;
             RenderUtil.setSamplerStateAt(0, _texture.mipMapping, _textureSmoothing, repeat);
             context.setTextureAt(0, _texture.base);
             vertexFormat.setVertexBufferAt(1, vertexBuffer, "texCoords");
@@ -121,7 +121,7 @@ public class FilterEffect extends Effect
      *  @see starling.utils.RenderUtil#createAGALTexOperation()
      */
     protected static function tex(resultReg:String, uvReg:String, sampler:int, texture:Texture,
-                                  convertToPmaIfRequired:Boolean=true):String
+                                  convertToPmaIfRequired:Bool=true):String
     {
         return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture,
             convertToPmaIfRequired);
@@ -141,7 +141,7 @@ public class FilterEffect extends Effect
 
     /** Indicates if pixels at the edges will be repeated or clamped.
      *  Only works for power-of-two textures. @default false */
-    public function get textureRepeat():Boolean { return _textureRepeat; }
-    public function set textureRepeat(value:Boolean):void { _textureRepeat = value; }
+    public function get textureRepeat():Bool { return _textureRepeat; }
+    public function set textureRepeat(value:Bool):void { _textureRepeat = value; }
 }
 }

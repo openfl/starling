@@ -133,7 +133,7 @@ class AssetManager extends EventDispatcher
     private var mNumRestoredTextures:Int;
     private var mNumLoadingQueues:Int = 0;
 
-    private var mDefaultTextureOptions:TextureOptions;
+    private var __defaultTextureOptions:TextureOptions;
     private var mCheckPolicyFile:Bool;
     private var mKeepAtlasXmls:Bool;
     private var mKeepFontXmls:Bool;
@@ -143,7 +143,7 @@ class AssetManager extends EventDispatcher
     
     private var __textures:Map<String, Texture>;
     private var mAtlases:Map<String, TextureAtlas>;
-    private var mSounds:Map<String, Sound>;
+    private var __sounds:Map<String, Sound>;
     private var __xmls:Map<String, Xml>;
     private var __objects:Map<String, Dynamic>;
     private var mByteArrays:Map<String, ByteArray>;
@@ -159,10 +159,10 @@ class AssetManager extends EventDispatcher
     public function new(scaleFactor:Float=1, useMipmaps:Bool=false)
     {
         super();
-        mDefaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
+        __defaultTextureOptions = new TextureOptions(scaleFactor, useMipmaps);
         __textures = new Map();
         mAtlases = new Map();
-        mSounds = new Map();
+        __sounds = new Map();
         __xmls = new Map();
         __objects = new Map();
         mByteArrays = new Map();
@@ -254,14 +254,14 @@ class AssetManager extends EventDispatcher
     /** Returns a sound with a certain name, or null if it's not found. */
     public function getSound(name:String):Sound
     {
-        return mSounds[name];
+        return __sounds[name];
     }
     
     /** Returns all sound names that start with a certain string, sorted alphabetically.
      * If you pass a result vector, the names will be added to that vector. */
     public function getSoundNames(prefix:String="", result:Vector<String>=null):Vector<String>
     {
-        return getDictionaryKeys(mSounds, prefix, result);
+        return getDictionaryKeys(__sounds, prefix, result);
     }
     
     /** Generates a new SoundChannel object to play back the sound. This method returns a 
@@ -269,7 +269,7 @@ class AssetManager extends EventDispatcher
     public function playSound(name:String, startTime:Float=0, loops:Int=0, 
                               transform:SoundTransform=null):SoundChannel
     {
-        if (mSounds.exists(name))
+        if (__sounds.exists(name))
             return getSound(name).play(startTime, loops, transform);
         else 
             return null;
@@ -355,10 +355,10 @@ class AssetManager extends EventDispatcher
     {
         log("Adding sound '" + name + "'");
         
-        if (mSounds.exists(name))
+        if (__sounds.exists(name))
             log("Warning: name was already in use; the previous sound will be replaced.");
 
-        mSounds[name] = sound;
+        __sounds[name] = sound;
     }
     
     /** Register an XML object under a certain name. It will be available right away.
@@ -435,7 +435,7 @@ class AssetManager extends EventDispatcher
     public function removeSound(name:String):Void
     {
         log("Removing sound '"+ name + "'");
-        mSounds.remove(name);
+        __sounds.remove(name);
     }
     
     /** Removes a certain Xml object, optionally disposing it. */
@@ -487,7 +487,7 @@ class AssetManager extends EventDispatcher
 
         __textures = new Map<String, Texture>();
         mAtlases = new Map<String, TextureAtlas>();
-        mSounds = new Map<String, Sound>();
+        __sounds = new Map<String, Sound>();
         __xmls = new Map<String, Xml>();
         __objects = new Map<String, Dynamic>();
         mByteArrays = new Map<String, ByteArray>();
@@ -590,7 +590,7 @@ class AssetManager extends EventDispatcher
         #end
         
         if (name == null)    name = getName(asset);
-        if (options == null) options = mDefaultTextureOptions.clone();
+        if (options == null) options = __defaultTextureOptions.clone();
         else                 options = options.clone();
         
         log("Enqueuing '" + name + "'");
@@ -1307,26 +1307,26 @@ class AssetManager extends EventDispatcher
      * are loaded; for ATF textures, it indicates if mip maps are valid and should be
      * used. @default false */
     public var useMipMaps(get, set):Bool;
-    private function get_useMipMaps():Bool { return mDefaultTextureOptions.mipMapping; }
-    private function set_useMipMaps(value:Bool):Bool { return mDefaultTextureOptions.mipMapping = value; }
+    private function get_useMipMaps():Bool { return __defaultTextureOptions.mipMapping; }
+    private function set_useMipMaps(value:Bool):Bool { return __defaultTextureOptions.mipMapping = value; }
     
     /** Textures that are created from Bitmaps or ATF files will have the repeat setting
      * assigned here. @default false */
     public var textureRepeat(get, set):Bool;
-    private function get_textureRepeat():Bool { return mDefaultTextureOptions.repeat; }
-    private function set_textureRepeat(value:Bool):Bool { return mDefaultTextureOptions.repeat = value; }
+    private function get_textureRepeat():Bool { return __defaultTextureOptions.repeat; }
+    private function set_textureRepeat(value:Bool):Bool { return __defaultTextureOptions.repeat = value; }
 
     /** Textures that are created from Bitmaps or ATF files will have the scale factor 
      * assigned here. @default 1 */
     public var scaleFactor(get, set):Float;
-    private function get_scaleFactor():Float { return mDefaultTextureOptions.scale; }
-    private function set_scaleFactor(value:Float):Float { return mDefaultTextureOptions.scale = value; }
+    private function get_scaleFactor():Float { return __defaultTextureOptions.scale; }
+    private function set_scaleFactor(value:Float):Float { return __defaultTextureOptions.scale = value; }
 
     /** Textures that are created from Bitmaps will be uploaded to the GPU with the
      * <code>Context3DTextureFormat</code> assigned to this property. @default "bgra" */
     public var textureFormat(get, set):Context3DTextureFormat;
-    private function get_textureFormat():Context3DTextureFormat { return mDefaultTextureOptions.format; }
-    private function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return mDefaultTextureOptions.format = value; }
+    private function get_textureFormat():Context3DTextureFormat { return __defaultTextureOptions.format; }
+    private function set_textureFormat(value:Context3DTextureFormat):Context3DTextureFormat { return __defaultTextureOptions.format = value; }
     
     /** Specifies whether a check should be made for the existence of a URL policy file before
      * loading an object from a remote server. More information about this topic can be found 

@@ -246,7 +246,7 @@ public class DistanceFieldStyle extends MeshStyle
     }
 
     /** @private */
-    override public function canBatchWith(meshStyle:MeshStyle):Boolean
+    override public function canBatchWith(meshStyle:MeshStyle):Bool
     {
         var dfStyle:DistanceFieldStyle = meshStyle as DistanceFieldStyle;
         if (dfStyle && super.canBatchWith(meshStyle)) return dfStyle.mode == _mode;
@@ -498,8 +498,8 @@ override protected function createProgram():Program
         // va5 - outer color (rgb, outerAlphaStart)
         // vc5 - shadow offset multiplier (x, y), max local scale (z), global scale (w)
 
-        var isBasicMode:Boolean  = _mode == DistanceFieldStyle.MODE_BASIC;
-        var isShadowMode:Boolean = _mode == DistanceFieldStyle.MODE_SHADOW;
+        var isBasicMode:Bool  = _mode == DistanceFieldStyle.MODE_BASIC;
+        var isShadowMode:Bool = _mode == DistanceFieldStyle.MODE_SHADOW;
 
         /// *** VERTEX SHADER ***
 

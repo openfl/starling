@@ -42,8 +42,8 @@ class ConcreteTexture extends Texture
     
     private var mBase:TextureBase;
     private var mFormat:Context3DTextureFormat;
-    private var mWidth:Int;
-    private var mHeight:Int;
+    private var __width:Int;
+    private var __height:Int;
     private var mMipMapping:Bool;
     private var mPremultipliedAlpha:Bool;
     private var mOptimizedForRenderTexture:Bool;
@@ -67,8 +67,8 @@ class ConcreteTexture extends Texture
         __scale = scale <= 0 ? 1.0 : scale;
         mBase = base;
         mFormat = format;
-        mWidth = width;
-        mHeight = height;
+        __width = width;
+        __height = height;
         mMipMapping = mipMapping;
         mPremultipliedAlpha = premultipliedAlpha;
         mOptimizedForRenderTexture = optimizedForRenderTexture;
@@ -115,9 +115,9 @@ class ConcreteTexture extends Texture
 
         var potData:BitmapData = null;
         
-        if (data.width != mWidth || data.height != mHeight)
+        if (data.width != __width || data.height != __height)
         {
-            potData = new BitmapData(mWidth, mHeight, true, 0);
+            potData = new BitmapData(__width, __height, true, 0);
             potData.copyPixels(data, data.rect, sOrigin);
             data = potData;
         }
@@ -245,10 +245,10 @@ class ConcreteTexture extends Texture
         var context:Context3D = Starling.current.context;
         
         if (Std.is(mBase, flash.display3D.textures.Texture))
-            mBase = context.createTexture(mWidth, mHeight, mFormat, 
+            mBase = context.createTexture(__width, __height, mFormat, 
                                           mOptimizedForRenderTexture);
         else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
-            mBase = context.createRectangleTexture (mWidth, mHeight, mFormat,
+            mBase = context.createRectangleTexture (__width, __height, mFormat,
                                                       mOptimizedForRenderTexture);
         #if flash
         else if (Std.is(mBase, flash.display3D.textures.VideoTexture))
@@ -321,16 +321,16 @@ class ConcreteTexture extends Texture
     private override function get_format():Context3DTextureFormat { return mFormat; }
     
     /** @inheritDoc */
-    private override function get_width():Float  { return mWidth / __scale;  }
+    private override function get_width():Float  { return __width / __scale;  }
     
     /** @inheritDoc */
-    private override function get_height():Float { return mHeight / __scale; }
+    private override function get_height():Float { return __height / __scale; }
     
     /** @inheritDoc */
-    private override function get_nativeWidth():Float { return mWidth; }
+    private override function get_nativeWidth():Float { return __width; }
     
     /** @inheritDoc */
-    private override function get_nativeHeight():Float { return mHeight; }
+    private override function get_nativeHeight():Float { return __height; }
     
     /** The scale factor, which influences width and height properties. */
     private override function get_scale():Float { return __scale; }

@@ -49,7 +49,7 @@ use namespace starling_internal;
  *
  *  <p>The painter is responsible for drawing all display objects to the screen. At its
  *  core, it is a wrapper for many Context3D methods, but that's not all: it also provides
- *  a convenient state mechanism, supports masking and acts as middleman between display
+ *  a convenient state mechanism, supports masking and acts as __iddleman between display
  *  objects and renderers.</p>
  *
  *  <strong>The State Stack</strong>
@@ -81,11 +81,11 @@ public class Painter
 
     private var _stage3D:Stage3D;
     private var _context:Context3D;
-    private var _shareContext:Boolean;
+    private var _shareContext:Bool;
     private var _drawCount:int;
     private var _frameID:uint;
     private var _pixelSize:Number;
-    private var _enableErrorChecking:Boolean;
+    private var _enableErrorChecking:Bool;
     private var _stencilReferenceValues:Dictionary;
     private var _clipRectStack:Vector.<Rectangle>;
     private var _batchCacheExclusions:Vector.<DisplayObject>;
@@ -215,7 +215,7 @@ public class Painter
      *                                otherwise, this setting will be silently ignored.
      */
     public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Number,
-                                        antiAlias:int, enableDepthAndStencil:Boolean):void
+                                        antiAlias:int, enableDepthAndStencil:Bool):void
     {
         if (!_shareContext)
         {
@@ -277,7 +277,7 @@ public class Painter
     }
 
     /** Indicates if a program is registered under a certain name. */
-    public function hasProgram(name:String):Boolean
+    public function hasProgram(name:String):Bool
     {
         return name in programs;
     }
@@ -429,7 +429,7 @@ public class Painter
 
     private function renderMask(mask:DisplayObject):void
     {
-        var wasCacheEnabled:Boolean = cacheEnabled;
+        var wasCacheEnabled:Bool = cacheEnabled;
 
         pushState();
         cacheEnabled = false;
@@ -493,10 +493,10 @@ public class Painter
      *  if it's just a simple (untextured) quad that is parallel to the stage axes. The 'out'
      *  parameter will be filled with the transformation matrix required to move the mask into
      *  stage coordinates. */
-    private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Boolean
+    private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Bool
     {
         var quad:Quad = mask as Quad;
-        var is3D:Boolean = mask.is3D || (maskee && maskee.is3D && mask.stage == null);
+        var is3D:Bool = mask.is3D || (maskee && maskee.is3D && mask.stage == null);
 
         if (quad && !is3D && quad.texture == null)
         {
@@ -713,7 +713,7 @@ public class Painter
             if (target)
             {
                 var antiAlias:int  = _state.renderTargetAntiAlias;
-                var depthAndStencil:Boolean = _state.renderTargetSupportsDepthAndStencil;
+                var depthAndStencil:Bool = _state.renderTargetSupportsDepthAndStencil;
                 _context.setRenderToTexture(target, depthAndStencil, antiAlias);
             }
             else
@@ -806,8 +806,8 @@ public class Painter
      *
      *  @default true
      */
-    public function get cacheEnabled():Boolean { return _batchProcessor == _batchProcessorCurr; }
-    public function set cacheEnabled(value:Boolean):void
+    public function get cacheEnabled():Bool { return _batchProcessor == _batchProcessorCurr; }
+    public function set cacheEnabled(value:Bool):void
     {
         if (value != cacheEnabled)
         {
@@ -849,13 +849,13 @@ public class Painter
 
     /** Indicates if another Starling instance (or another Stage3D framework altogether)
      *  uses the same render context. @default false */
-    public function get shareContext():Boolean { return _shareContext; }
-    public function set shareContext(value:Boolean):void { _shareContext = value; }
+    public function get shareContext():Bool { return _shareContext; }
+    public function set shareContext(value:Bool):void { _shareContext = value; }
 
     /** Indicates if Stage3D render methods will report errors. Activate only when needed,
      *  as this has a negative impact on performance. @default false */
-    public function get enableErrorChecking():Boolean { return _enableErrorChecking; }
-    public function set enableErrorChecking(value:Boolean):void
+    public function get enableErrorChecking():Bool { return _enableErrorChecking; }
+    public function set enableErrorChecking(value:Bool):void
     {
         _enableErrorChecking = value;
         if (_context) _context.enableErrorChecking = value;
@@ -882,7 +882,7 @@ public class Painter
 
     /** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
      *  disposed). */
-    public function get contextValid():Boolean
+    public function get contextValid():Bool
     {
         if (_context)
         {

@@ -36,10 +36,10 @@ public class MeshUtil
     /** Determines if a point is inside a mesh that is spawned up by the given
      *  vertex- and index-data. */
     public static function containsPoint(vertexData:VertexData, indexData:IndexData,
-                                         point:Point):Boolean
+                                         point:Point):Bool
     {
         var i:int;
-        var result:Boolean = false;
+        var result:Bool = false;
         var numIndices:int = indexData.numIndices;
         var p0:Point = Pool.getPoint();
         var p1:Point = Pool.getPoint();

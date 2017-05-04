@@ -152,7 +152,7 @@ public class TrueTypeCompositor implements ITextCompositor
     }
 
     private function autoScaleNativeTextField(textField:flash.text.TextField,
-                                              text:String, isHtmlText:Boolean):void
+                                              text:String, isHtmlText:Bool):void
     {
         var textFormat:flash.text.TextFormat = textField.defaultTextFormat;
         var maxTextWidth:int  = textField.width  - 4;
@@ -179,7 +179,7 @@ class BitmapDataEx extends BitmapData
 {
 private var _scale:Number = 1.0;
 
-function BitmapDataEx(width:int, height:int, transparent:Boolean=true, fillColor:uint=0x0)
+function BitmapDataEx(width:int, height:int, transparent:Bool=true, fillColor:uint=0x0)
 {
     super(width, height, transparent, fillColor);
 }

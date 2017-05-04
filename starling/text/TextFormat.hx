@@ -17,7 +17,7 @@ import starling.events.EventDispatcher;
 import starling.utils.Align;
 
 /** Dispatched when any property of the instance changes. */
-[Event(name="change", type="starling.events.Event")]
+@:meta(Event(name="change", type="starling.events.Event"))
 
 /** The TextFormat class represents character formatting information. It is used by the
  *  TextField and BitmapFont classes to characterize the way the glyphs will be rendered.
@@ -30,12 +30,12 @@ public class TextFormat extends EventDispatcher
     private var _font:String;
     private var _size:Number;
     private var _color:uint;
-    private var _bold:Boolean;
-    private var _italic:Boolean;
-    private var _underline:Boolean;
+    private var _bold:Bool;
+    private var _italic:Bool;
+    private var _underline:Bool;
     private var _horizontalAlign:String;
     private var _verticalAlign:String;
-    private var _kerning:Boolean;
+    private var _kerning:Bool;
     private var _leading:Number;
     private var _letterSpacing:Number;
 
@@ -151,8 +151,8 @@ public class TextFormat extends EventDispatcher
     }
 
     /** Indicates whether the text is bold. @default false */
-    public function get bold():Boolean { return _bold; }
-    public function set bold(value:Boolean):void
+    public function get bold():Bool { return _bold; }
+    public function set bold(value:Bool):void
     {
         if (value != _bold)
         {
@@ -162,8 +162,8 @@ public class TextFormat extends EventDispatcher
     }
 
     /** Indicates whether the text is italicized. @default false */
-    public function get italic():Boolean { return _italic; }
-    public function set italic(value:Boolean):void
+    public function get italic():Bool { return _italic; }
+    public function set italic(value:Bool):void
     {
         if (value != _italic)
         {
@@ -173,8 +173,8 @@ public class TextFormat extends EventDispatcher
     }
 
     /** Indicates whether the text is underlined. @default false */
-    public function get underline():Boolean { return _underline; }
-    public function set underline(value:Boolean):void
+    public function get underline():Bool { return _underline; }
+    public function set underline(value:Bool):void
     {
         if (value != _underline)
         {
@@ -215,8 +215,8 @@ public class TextFormat extends EventDispatcher
 
     /** Indicates whether kerning is enabled. Kerning adjusts the pixels between certain
      *  character pairs to improve readability. @default true */
-    public function get kerning():Boolean { return _kerning; }
-    public function set kerning(value:Boolean):void
+    public function get kerning():Bool { return _kerning; }
+    public function set kerning(value:Bool):void
     {
         if (value != _kerning)
         {

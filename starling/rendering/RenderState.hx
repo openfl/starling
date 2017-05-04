@@ -100,8 +100,8 @@ public class RenderState
         {
             var currentTarget:TextureBase = _renderTarget ? _renderTarget.base : null;
             var nextTarget:TextureBase = renderState._renderTarget ? renderState._renderTarget.base : null;
-            var cullingChanges:Boolean = (_miscOptions & 0xf00) != (renderState._miscOptions & 0xf00);
-            var clipRectChanges:Boolean = _clipRect || renderState._clipRect ?
+            var cullingChanges:Bool = (_miscOptions & 0xf00) != (renderState._miscOptions & 0xf00);
+            var clipRectChanges:Bool = _clipRect || renderState._clipRect ?
                 !RectangleUtil.compare(_clipRect, renderState._clipRect) : false;
 
             if (_blendMode != renderState._blendMode ||
@@ -269,13 +269,13 @@ public class RenderState
      *                    This parameter affects only texture targets. Note that at the time
      *                    of this writing, AIR supports anti-aliasing only on Desktop.
      */
-    public function setRenderTarget(target:Texture, enableDepthAndStencil:Boolean=true,
+    public function setRenderTarget(target:Texture, enableDepthAndStencil:Bool=true,
                                     antiAlias:int=0):void
     {
         var currentTarget:TextureBase = _renderTarget ? _renderTarget.base : null;
         var newTarget:TextureBase = target ? target.base : null;
         var newOptions:uint = MathUtil.min(antiAlias, 0xf) | uint(enableDepthAndStencil) << 4;
-        var optionsChange:Boolean = newOptions != (_miscOptions & 0xff);
+        var optionsChange:Bool = newOptions != (_miscOptions & 0xff);
 
         if (currentTarget != newTarget || optionsChange)
         {
@@ -386,14 +386,14 @@ public class RenderState
 
     /** Indicates if the render target (set via <code>setRenderTarget</code>)
      *  has its depth and stencil buffers enabled. */
-    public function get renderTargetSupportsDepthAndStencil():Boolean
+    public function get renderTargetSupportsDepthAndStencil():Bool
     {
         return (_miscOptions & 0xf0) != 0;
     }
 
     /** Indicates if there have been any 3D transformations.
      *  Returns <code>true</code> if the 3D modelview matrix contains a value. */
-    public function get is3D():Boolean { return _modelviewMatrix3D != null; }
+    public function get is3D():Bool { return _modelviewMatrix3D != null; }
 
     /** @private
      *

@@ -23,7 +23,7 @@ import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 
 /** Dispatched every frame on styles assigned to display objects connected to the stage. */
-[Event(name="enterFrame", type="starling.events.EnterFrameEvent")]
+@:meta(Event(name="enterFrame", type="starling.events.EnterFrameEvent"))
 
 /** MeshStyles provide a means to completely modify the way a mesh is rendered.
  *  The base class provides Starling's standard mesh rendering functionality: colored and
@@ -99,7 +99,7 @@ public class MeshStyle extends EventDispatcher
     private var _target:Mesh;
     private var _texture:Texture;
     private var _textureSmoothing:String;
-    private var _textureRepeat:Boolean;
+    private var _textureRepeat:Bool;
     private var _textureBase:TextureBase; // just a reference to _texture.base
     private var _vertexData:VertexData;   // just a reference to the target's vertex data
     private var _indexData:IndexData;     // just a reference to the target's index data
@@ -164,7 +164,7 @@ public class MeshStyle extends EventDispatcher
      *  The base implementation just checks if the styles are of the same type
      *  and if the textures are compatible.
      */
-    public function canBatchWith(meshStyle:MeshStyle):Boolean
+    public function canBatchWith(meshStyle:MeshStyle):Bool
     {
         if (_type == meshStyle._type)
         {
@@ -427,8 +427,8 @@ public class MeshStyle extends EventDispatcher
 
     /** Indicates if pixels at the edges will be repeated or clamped.
      *  Only works for power-of-two textures. @default false */
-    public function get textureRepeat():Boolean { return _textureRepeat; }
-    public function set textureRepeat(value:Boolean):void { _textureRepeat = value; }
+    public function get textureRepeat():Bool { return _textureRepeat; }
+    public function set textureRepeat(value:Bool):void { _textureRepeat = value; }
 
     /** The target the style is currently assigned to. */
     public function get target():Mesh { return _target; }

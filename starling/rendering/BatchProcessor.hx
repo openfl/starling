@@ -65,7 +65,7 @@ internal class BatchProcessor
      *                    state's <code>modelviewMatrix</code>).
      */
     public function addMesh(mesh:Mesh, state:RenderState, subset:MeshSubset=null,
-                            ignoreTransformations:Boolean=false):void
+                            ignoreTransformations:Bool=false):void
     {
         if (subset == null)
         {

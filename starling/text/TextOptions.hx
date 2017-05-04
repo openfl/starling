@@ -22,16 +22,16 @@ import starling.core.Starling;
  */
 public class TextOptions
 {
-    private var _wordWrap:Boolean;
-    private var _autoScale:Boolean;
+    private var _wordWrap:Bool;
+    private var _autoScale:Bool;
     private var _autoSize:String;
-    private var _isHtmlText:Boolean;
+    private var _isHtmlText:Bool;
     private var _textureScale:Number;
     private var _textureFormat:String;
     private var _styleSheet:StyleSheet;
 
     /** Creates a new TextOptions instance with the given properties. */
-    public function TextOptions(wordWrap:Boolean=true, autoScale:Boolean=false)
+    public function TextOptions(wordWrap:Bool=true, autoScale:Bool=false)
     {
         _wordWrap = wordWrap;
         _autoScale = autoScale;
@@ -63,8 +63,8 @@ public class TextOptions
 
     /** Indicates if the text should be wrapped at word boundaries if it does not fit into
      *  the TextField otherwise. @default true */
-    public function get wordWrap():Boolean { return _wordWrap; }
-    public function set wordWrap(value:Boolean):void { _wordWrap = value; }
+    public function get wordWrap():Bool { return _wordWrap; }
+    public function set wordWrap(value:Bool):void { _wordWrap = value; }
 
     /** Specifies the type of auto-sizing set on the TextField. Custom text compositors may
      *  take this into account, though the basic implementation (done by the TextField itself)
@@ -75,14 +75,14 @@ public class TextOptions
 
     /** Indicates whether the font size is automatically reduced if the complete text does
      *  not fit into the TextField. @default false */
-    public function get autoScale():Boolean { return _autoScale; }
-    public function set autoScale(value:Boolean):void { _autoScale = value; }
+    public function get autoScale():Bool { return _autoScale; }
+    public function set autoScale(value:Bool):void { _autoScale = value; }
 
     /** Indicates if text should be interpreted as HTML code. For a description
      *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
      *  Beware: Only supported for TrueType fonts. @default false */
-    public function get isHtmlText():Boolean { return _isHtmlText; }
-    public function set isHtmlText(value:Boolean):void { _isHtmlText = value; }
+    public function get isHtmlText():Bool { return _isHtmlText; }
+    public function set isHtmlText(value:Bool):void { _isHtmlText = value; }
 
     /** An optional style sheet to be used for HTML text. @default null */
     public function get styleSheet():StyleSheet { return _styleSheet; }

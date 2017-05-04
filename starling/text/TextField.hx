@@ -109,7 +109,7 @@ class TextField extends DisplayObjectContainer
     //    "BGRA_PACKED" in Context3DTextureFormat ? "bgraPacked4444" : "bgra";
 
     private var mFontSize:Float;
-    private var mColor:UInt;
+    private var __color:UInt;
     private var __text:String;
     private var mFontName:String;
     private var mHAlign:String;
@@ -144,7 +144,7 @@ class TextField extends DisplayObjectContainer
         super();
         __text = text != null ? text : "";
         mFontSize = fontSize;
-        mColor = color;
+        __color = color;
         mHAlign = HAlign.CENTER;
         mVAlign = VAlign.CENTER;
         mBorder = null;
@@ -294,7 +294,7 @@ class TextField extends DisplayObjectContainer
         }
         
         var textFormat:TextFormat = new TextFormat(mFontName, 
-            Std.int(mFontSize * scale), mColor, mBold, mItalic, mUnderline, null, null, hAlign);
+            Std.int(mFontSize * scale), __color, mBold, mItalic, mUnderline, null, null, hAlign);
         textFormat.kerning = mKerning;
         textFormat.leading = Std.int(mLeading);
 
@@ -490,7 +490,7 @@ class TextField extends DisplayObjectContainer
         }
         
         bitmapFont.fillQuadBatch(mQuadBatch, width, height, __text,
-                mFontSize, mColor, hAlign, vAlign, mAutoScale, mKerning, mLeading);
+                mFontSize, __color, hAlign, vAlign, mAutoScale, mKerning, mLeading);
         
         mQuadBatch.batchable = mBatchable;
         
@@ -530,7 +530,7 @@ class TextField extends DisplayObjectContainer
         rightLine.width  = 1;     rightLine.height  = height;
         rightLine.x  = width  - 1;
         bottomLine.y = height - 1;
-        topLine.color = rightLine.color = bottomLine.color = leftLine.color = mColor;
+        topLine.color = rightLine.color = bottomLine.color = leftLine.color = __color;
     }
     
     // properties
@@ -642,12 +642,12 @@ class TextField extends DisplayObjectContainer
      * that tinting works correctly. If your bitmap font contains colors, set this property
      * to <code>Color.WHITE</code> to get the desired result. @default black */
     public var color(get, set):UInt;
-    private function get_color():UInt { return mColor; }
+    private function get_color():UInt { return __color; }
     private function set_color(value:UInt):UInt
     {
-        if (mColor != value)
+        if (__color != value)
         {
-            mColor = value;
+            __color = value;
             mRequiresRedraw = true;
         }
         return value;

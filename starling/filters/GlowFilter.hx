@@ -22,7 +22,7 @@ import starling.textures.Texture;
  *
  *  <listing>object.filter = new GlowFilter(0x0, 30, 1, 1.0);</listing>
  */
-public class GlowFilter extends FragmentFilter
+class GlowFilter extends FragmentFilter
 {
     private var _blurFilter:BlurFilter;
     private var _compositeFilter:CompositeFilter;
@@ -37,8 +37,8 @@ public class GlowFilter extends FragmentFilter
      * @param resolution the resolution of the filter texture. '1' means full resolution,
      *                   '0.5' half resolution, etc.
      */
-    public function GlowFilter(color:uint=0xffff00, alpha:Number=1.0, blur:Number=1.0,
-                               resolution:Number=0.5)
+    public function GlowFilter(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+                               resolution:Float=0.5)
     {
         _blurFilter = new BlurFilter(blur, blur, resolution);
         _compositeFilter = new CompositeFilter();
@@ -49,7 +49,7 @@ public class GlowFilter extends FragmentFilter
     }
 
     /** @inheritDoc */
-    override public function dispose():void
+    override public function dispose():Void
     {
         _blurFilter.dispose();
         _compositeFilter.dispose();
@@ -69,19 +69,19 @@ public class GlowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function get numPasses():int
+    override private function get_numPasses():Int
     {
         return _blurFilter.numPasses + _compositeFilter.numPasses;
     }
 
-    private function updatePadding():void
+    private function updatePadding():Void
     {
         padding.copyFrom(_blurFilter.padding);
     }
 
     /** The color of the glow. @default 0xffff00 */
-    public function get color():uint { return _compositeFilter.getColorAt(0); }
-    public function set color(value:uint):void
+    private function get_color():UInt { return _compositeFilter.getColorAt(0); }
+    private function set_color(value:UInt):Void
     {
         if (color != value)
         {
@@ -92,8 +92,8 @@ public class GlowFilter extends FragmentFilter
 
     /** The alpha value of the glow. Values between 0 and 1 modify the opacity;
      *  values > 1 will make it stronger, i.e. produce a harder edge. @default 1.0 */
-    public function get alpha():Number { return _compositeFilter.getAlphaAt(0); }
-    public function set alpha(value:Number):void
+    private function get_alpha():Float { return _compositeFilter.getAlphaAt(0); }
+    private function set_alpha(value:Float):Void
     {
         if (alpha != value)
         {
@@ -105,8 +105,8 @@ public class GlowFilter extends FragmentFilter
     /** The amount of blur with which the glow is created.
      *  The number of required passes will be <code>Math.ceil(value) × 2</code>.
      *  @default 1.0 */
-    public function get blur():Number { return _blurFilter.blurX; }
-    public function set blur(value:Number):void
+    private function get_blur():Float { return _blurFilter.blurX; }
+    private function set_blur(value:Float):Void
     {
         if (blur != value)
         {
@@ -117,8 +117,8 @@ public class GlowFilter extends FragmentFilter
     }
 
     /** @private */
-    override public function get resolution():Number { return _blurFilter.resolution; }
-    override public function set resolution(value:Number):void
+    override private function get_resolution():Float { return _blurFilter.resolution; }
+    override private function set_resolution(value:Float):Void
     {
         if (resolution != value)
         {

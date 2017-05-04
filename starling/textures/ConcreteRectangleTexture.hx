@@ -28,12 +28,12 @@ internal class ConcreteRectangleTexture extends ConcreteTexture
 {
     private var _textureReadyCallback:Function;
 
-    private static var sAsyncSupported:Boolean = true;
+    private static var sAsyncSupported:Bool = true;
 
     /** Creates a new instance with the given parameters. */
     public function ConcreteRectangleTexture(base:RectangleTexture, format:String,
-                                             width:int, height:int, premultipliedAlpha:Boolean,
-                                             optimizedForRenderTexture:Boolean=false,
+                                             width:int, height:int, premultipliedAlpha:Bool,
+                                             optimizedForRenderTexture:Bool=false,
                                              scale:Number=1)
     {
         super(base, format, width, height, false, premultipliedAlpha,
@@ -64,7 +64,7 @@ internal class ConcreteRectangleTexture extends ConcreteTexture
 
     // async upload
 
-    private function upload(source:BitmapData, isAsync:Boolean):void
+    private function upload(source:BitmapData, isAsync:Bool):void
     {
         if (isAsync)
         {

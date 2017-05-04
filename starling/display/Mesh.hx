@@ -8,12 +8,12 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.geom.Point;
-import flash.geom.Rectangle;
+package starling.display;
 
-import starling.core.starling_internal;
+import openfl.errors.ArgumentError;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+
 import starling.geom.Polygon;
 import starling.rendering.IndexData;
 import starling.rendering.Painter;
@@ -23,9 +23,6 @@ import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.utils.MatrixUtil;
 import starling.utils.MeshUtil;
-import starling.utils.execute;
-
-use namespace starling_internal;
 
 /** The base class for all tangible (non-container) display objects, spawned up by a number
  *  of triangles.
@@ -44,36 +41,36 @@ use namespace starling_internal;
  *  @see starling.rendering.VertexData
  *  @see starling.rendering.IndexData
  */
-public class Mesh extends DisplayObject
+class Mesh extends DisplayObject
 {
-    /** @private */ internal var _style:MeshStyle;
-    /** @private */ internal var _vertexData:VertexData;
-    /** @private */ internal var _indexData:IndexData;
-    /** @private */ internal var _pixelSnapping:Boolean;
+    @:allow(starling) private var __style:MeshStyle;
+    @:allow(starling) private var __vertexData:VertexData;
+    @:allow(starling) private var __indexData:IndexData;
+    @:allow(starling) private var __pixelSnapping:Bool;
 
-    private static var sDefaultStyle:Class = MeshStyle;
-    private static var sDefaultStyleFactory:Function = null;
+    private static var sDefaultStyle:Class<Dynamic> = MeshStyle;
+    private static var sDefaultStyleFactory:Mesh->MeshStyle = null;
 
     /** Creates a new mesh with the given vertices and indices.
      *  If you don't pass a style, an instance of <code>MeshStyle</code> will be created
      *  for you. Note that the format of the vertex data will be matched to the
      *  given style right away. */
-    public function Mesh(vertexData:VertexData, indexData:IndexData, style:MeshStyle=null)
+    public function new(vertexData:VertexData, indexData:IndexData, style:MeshStyle=null)
     {
         if (vertexData == null) throw new ArgumentError("VertexData must not be null");
         if (indexData == null)  throw new ArgumentError("IndexData must not be null");
 
-        _vertexData = vertexData;
-        _indexData = indexData;
+        __vertexData = vertexData;
+        __indexData = indexData;
 
         setStyle(style, false);
     }
 
     /** @inheritDoc */
-    override public function dispose():void
+    override public function dispose():Void
     {
-        _vertexData.clear();
-        _indexData.clear();
+        __vertexData.clear();
+        __indexData.clear();
 
         super.dispose();
     }
@@ -88,13 +85,13 @@ public class Mesh extends DisplayObject
     /** @inheritDoc */
     override public function getBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
     {
-        return MeshUtil.calculateBounds(_vertexData, this, targetSpace, out);
+        return MeshUtil.calculateBounds(__vertexData, this, targetSpace, out);
     }
 
     /** @inheritDoc */
-    override public function render(painter:Painter):void
+    override public function render(painter:Painter):Void
     {
-        if (_pixelSnapping)
+        if (__pixelSnapping)
             MatrixUtil.snapToPixels(painter.state.modelviewMatrix, painter.pixelSize);
 
         painter.batchMesh(this);
@@ -115,50 +112,51 @@ public class Mesh extends DisplayObject
      *  @see #defaultStyle
      *  @see #defaultStyleFactory
      */
-    public function setStyle(meshStyle:MeshStyle=null, mergeWithPredecessor:Boolean=true):void
+    public function setStyle(meshStyle:MeshStyle=null, mergeWithPredecessor:Bool=true):Void
     {
         if (meshStyle == null) meshStyle = createDefaultMeshStyle();
-        else if (meshStyle == _style) return;
+        else if (meshStyle == __style) return;
         else if (meshStyle.target) meshStyle.target.setStyle();
 
-        if (_style)
+        if (__style != null)
         {
-            if (mergeWithPredecessor) meshStyle.copyFrom(_style);
-            _style.setTarget();
+            if (mergeWithPredecessor) meshStyle.copyFrom(__style);
+            __style.setTarget();
         }
 
-        _style = meshStyle;
-        _style.setTarget(this, _vertexData, _indexData);
+        __style = meshStyle;
+        __style.setTarget(this, __vertexData, __indexData);
 
         setRequiresRedraw();
     }
 
-    private function createDefaultMeshStyle():MeshStyle
+    private function __createDefaultMeshStyle():MeshStyle
     {
         var meshStyle:MeshStyle;
 
         if (sDefaultStyleFactory != null)
         {
-            if (sDefaultStyleFactory.length == 0) meshStyle = sDefaultStyleFactory();
-            else meshStyle = sDefaultStyleFactory(this);
+            //if (sDefaultStyleFactory.length == 0) meshStyle = sDefaultStyleFactory();
+            //else meshStyle = sDefaultStyleFactory(this);
+            meshStyle = sDefaultStyleFactory(this);
         }
 
         if (meshStyle == null)
-            meshStyle = new sDefaultStyle() as MeshStyle;
+            meshStyle = new sDefaultStyle();
 
         return meshStyle;
     }
 
     /** This method is called whenever the mesh's vertex data was changed.
      *  The base implementation simply forwards to <code>setRequiresRedraw</code>. */
-    public function setVertexDataChanged():void
+    public function setVertexDataChanged():Void
     {
         setRequiresRedraw();
     }
 
     /** This method is called whenever the mesh's index data was changed.
      *  The base implementation simply forwards to <code>setRequiresRedraw</code>. */
-    public function setIndexDataChanged():void
+    public function setIndexDataChanged():Void
     {
         setRequiresRedraw();
     }
@@ -174,61 +172,63 @@ public class Mesh extends DisplayObject
      *  area; some of its optimized methods won't work correctly if that premise is no longer
      *  fulfilled or the original bounds change.</p>
      */
-    public function getVertexPosition(vertexID:int, out:Point=null):Point
+    public function getVertexPosition(vertexID:Int, out:Point=null):Point
     {
-        return _style.getVertexPosition(vertexID, out);
+        return __style.getVertexPosition(vertexID, out);
     }
 
-    public function setVertexPosition(vertexID:int, x:Number, y:Number):void
+    public function setVertexPosition(vertexID:Int, x:Float, y:Float):Void
     {
-        _style.setVertexPosition(vertexID, x, y);
+        __style.setVertexPosition(vertexID, x, y);
     }
 
     /** Returns the alpha value of the vertex at the specified index. */
-    public function getVertexAlpha(vertexID:int):Number
+    public function getVertexAlpha(vertexID:Int):Float
     {
-        return _style.getVertexAlpha(vertexID);
+        return __style.getVertexAlpha(vertexID);
     }
 
     /** Sets the alpha value of the vertex at the specified index to a certain value. */
-    public function setVertexAlpha(vertexID:int, alpha:Number):void
+    public function setVertexAlpha(vertexID:Int, alpha:Float):void
     {
-        _style.setVertexAlpha(vertexID, alpha);
+        __style.setVertexAlpha(vertexID, alpha);
     }
 
     /** Returns the RGB color of the vertex at the specified index. */
-    public function getVertexColor(vertexID:int):uint
+    public function getVertexColor(vertexID:Int):UInt
     {
-        return _style.getVertexColor(vertexID);
+        return __style.getVertexColor(vertexID);
     }
 
     /** Sets the RGB color of the vertex at the specified index to a certain value. */
-    public function setVertexColor(vertexID:int, color:uint):void
+    public function setVertexColor(vertexID:Int, color:UInt):Void
     {
-        _style.setVertexColor(vertexID, color);
+        __style.setVertexColor(vertexID, color);
     }
 
     /** Returns the texture coordinates of the vertex at the specified index. */
-    public function getTexCoords(vertexID:int, out:Point = null):Point
+    public function getTexCoords(vertexID:Int, out:Point = null):Point
     {
-        return _style.getTexCoords(vertexID, out);
+        return __style.getTexCoords(vertexID, out);
     }
 
     /** Sets the texture coordinates of the vertex at the specified index to the given values. */
-    public function setTexCoords(vertexID:int, u:Number, v:Number):void
+    public function setTexCoords(vertexID:Int, u:Float, v:Float):Void
     {
-        _style.setTexCoords(vertexID, u, v);
+        __style.setTexCoords(vertexID, u, v);
     }
 
     // properties
 
     /** The vertex data describing all vertices of the mesh.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    protected function get vertexData():VertexData { return _vertexData; }
+    private var vertexData(get, never):VertexData;
+    private function get_vertexData():VertexData { return __vertexData; }
 
     /** The index data describing how the vertices are interconnected.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    protected function get indexData():IndexData { return _indexData; }
+    private var indexData(get, never):IndexData;
+    private function get_indexData():IndexData { return __indexData; }
 
     /** The style that is used to render the mesh. Styles (which are always subclasses of
      *  <code>MeshStyle</code>) provide a means to completely modify the way a mesh is rendered.
@@ -238,60 +238,72 @@ public class Mesh extends DisplayObject
      *  @default MeshStyle
      *  @see #setStyle()
      */
-    public function get style():MeshStyle { return _style; }
-    public function set style(value:MeshStyle):void
+    public var style(get, set):MeshStyle;
+    private function get_style():MeshStyle { return __style; }
+    private function set_style(value:MeshStyle):MeshStyle
     {
         setStyle(value);
+        return value;
     }
 
     /** The texture that is mapped to the mesh (or <code>null</code>, if there is none). */
-    public function get texture():Texture { return _style.texture; }
-    public function set texture(value:Texture):void { _style.texture = value; }
+    public var texture(get, set):Texture;
+    private function get_texture():Texture { return __style.texture; }
+    private function set_texture(value:Texture):Texture { return __style.texture = value; }
 
     /** Changes the color of all vertices to the same value.
      *  The getter simply returns the color of the first vertex. */
-    public function get color():uint { return _style.color; }
-    public function set color(value:uint):void { _style.color = value; }
+    public var color(get, set):UInt;
+    private function get_color():UInt { return __style.color; }
+    private function set_color(value:UInt):void { return __style.color = value; }
 
     /** The smoothing filter that is used for the texture.
      *  @default bilinear */
-    public function get textureSmoothing():String { return _style.textureSmoothing; }
-    public function set textureSmoothing(value:String):void { _style.textureSmoothing = value; }
+    public var textureSmoothing(get, set):String;
+    private function get_textureSmoothing():String { return __style.textureSmoothing; }
+    private function set_textureSmoothing(value:String):String { return __style.textureSmoothing = value; }
 
     /** Indicates if pixels at the edges will be repeated or clamped. Only works for
      *  power-of-two textures; for a solution that works with all kinds of textures,
      *  see <code>Image.tileGrid</code>. @default false */
-    public function get textureRepeat():Boolean { return _style.textureRepeat; }
-    public function set textureRepeat(value:Boolean):void { _style.textureRepeat = value; }
+    public var textureRepeat(get, set):Bool;
+    private function get_textureRepeat():Bool { return __style.textureRepeat; }
+    private function set_textureRepeat(value:Bool):Bool { return __style.textureRepeat = value; }
 
     /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
      *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
      *  @default false */
-    public function get pixelSnapping():Boolean { return _pixelSnapping; }
-    public function set pixelSnapping(value:Boolean):void { _pixelSnapping = value; }
+    public var pixelSnapping(get, set):Bool;
+    private function get_pixelSnapping():Bool { return __pixelSnapping; }
+    private function set_pixelSnapping(value:Bool):Bool { return __pixelSnapping = value; }
 
     /** The total number of vertices in the mesh. */
-    public function get numVertices():int { return _vertexData.numVertices; }
+    public var numVertices(get, never):Int;
+    private function get_numVertices():Int { return __vertexData.numVertices; }
 
     /** The total number of indices referencing vertices. */
-    public function get numIndices():int { return _indexData.numIndices; }
+    public var numIndices(get, never):Int;
+    private function get_numIndices():Int { return __indexData.numIndices; }
 
     /** The total number of triangles in this mesh.
      *  (In other words: the number of indices divided by three.) */
-    public function get numTriangles():int { return _indexData.numTriangles; }
+    public var numTriangles(get, never):Int;
+    private function get_numTriangles():Int { return __indexData.numTriangles; }
 
     /** The format used to store the vertices. */
-    public function get vertexFormat():VertexDataFormat { return _style.vertexFormat; }
+    public var vertexFormat(get, never):VertexDataFormat;
+    private function get_vertexFormat():VertexDataFormat { return __style.vertexFormat; }
 
     // static properties
 
     /** The default style used for meshes if no specific style is provided. The default is
      *  <code>starling.rendering.MeshStyle</code>, and any assigned class must be a subclass
      *  of the same. */
-    public static function get defaultStyle():Class { return sDefaultStyle; }
-    public static function set defaultStyle(value:Class):void
+    public static var defaultStyle(get, set):Class<Dynamic>;
+    private static function get_defaultStyle():Class<Dynamic> { return sDefaultStyle; }
+    private static function set_defaultStyle(value:Class<Dynamic>):Class<Dynamic>
     {
-        sDefaultStyle = value;
+        return sDefaultStyle = value;
     }
 
     /** A factory method that is used to create the 'MeshStyle' for a mesh if no specific
@@ -308,10 +320,11 @@ public class Mesh extends DisplayObject
      *      return new ColorizeMeshStyle(Math.random() * 0xffffff);
      *  }</listing>
      */
-    public static function get defaultStyleFactory():Function { return sDefaultStyleFactory; }
-    public static function set defaultStyleFactory(value:Function):void
+    public static var defaultStyleFactory(get, set):Mesh->MeshStyle;
+    private static function get_defaultStyleFactory():Mesh->MeshStyle { return sDefaultStyleFactory; }
+    private static function set_defaultStyleFactory(value:Mesh->MeshStyle):Mesh->MeshStyle
     {
-        sDefaultStyleFactory = value;
+        return sDefaultStyleFactory = value;
     }
 
     // static methods
@@ -330,5 +343,4 @@ public class Mesh extends DisplayObject
 
         return new Mesh(vertexData, indexData, style);
     }
-}
 }

@@ -34,16 +34,16 @@ public interface IFilterHelper
      *  <code>null</code> too soon, the filter class probably didn't correctly override
      *  <code>numPasses</code>.</p>
      */
-    function getTexture(resolution:Number=1.0):Texture;
+    function getTexture(resolution:Float=1.0):Texture;
 
     /** Puts a texture back into the pool to be reused later (or to be disposed
      *  with the pool). */
-    function putTexture(texture:Texture):void;
+    function putTexture(texture:Texture):Void;
 
     /** The bounds of the target object (plus padding) in stage coordinates. */
-    function get targetBounds():Rectangle;
+    function get_targetBounds():Rectangle;
 
     /** The display object the filter is currently attached to. */
-    function get target():DisplayObject;
+    function get_target():DisplayObject;
 }
 }

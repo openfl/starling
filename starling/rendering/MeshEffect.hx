@@ -35,8 +35,8 @@ public class MeshEffect extends FilterEffect
         FilterEffect.VERTEX_FORMAT.extend("color:bytes4");
 
     private var _alpha:Number;
-    private var _tinted:Boolean;
-    private var _optimizeIfNotTinted:Boolean;
+    private var _tinted:Bool;
+    private var _optimizeIfNotTinted:Bool;
 
     // helper objects
     private static var sRenderAlpha:Vector.<Number> = new Vector.<Number>(4, true);
@@ -139,7 +139,7 @@ public class MeshEffect extends FilterEffect
      *  that have a different color than fully opaque white. The base <code>MeshEffect</code>
      *  class uses this information to simplify the fragment shader if possible. May be
      *  ignored by subclasses. */
-    public function get tinted():Boolean { return _tinted; }
-    public function set tinted(value:Boolean):void { _tinted = value; }
+    public function get tinted():Bool { return _tinted; }
+    public function set tinted(value:Bool):void { _tinted = value; }
 }
 }

@@ -106,7 +106,7 @@ public class Effect
     private var _vertexBufferSize:int; // in bytes
     private var _indexBuffer:IndexBuffer3D;
     private var _indexBufferSize:int;  // in number of indices
-    private var _indexBufferUsesQuadLayout:Boolean;
+    private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
     private var _onRestore:Function;
@@ -140,7 +140,7 @@ public class Effect
     }
 
     /** Purges one or both of the vertex- and index-buffers. */
-    public function purgeBuffers(vertexBuffer:Boolean=true, indexBuffer:Boolean=true):void
+    public function purgeBuffers(vertexBuffer:Bool=true, indexBuffer:Bool=true):void
     {
         // We wrap the dispose calls in a try/catch block to work around a stage3D problem.
         // Since they are not re-used later, that shouldn't have any evil side effects.
@@ -170,8 +170,8 @@ public class Effect
                                     bufferUsage:String="staticDraw"):void
     {
         var numIndices:int = indexData.numIndices;
-        var isQuadLayout:Boolean = indexData.useQuadLayout;
-        var wasQuadLayout:Boolean = _indexBufferUsesQuadLayout;
+        var isQuadLayout:Bool = indexData.useQuadLayout;
+        var wasQuadLayout:Bool = _indexBufferUsesQuadLayout;
 
         if (_indexBuffer)
         {

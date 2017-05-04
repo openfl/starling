@@ -8,9 +8,9 @@
 //
 // =================================================================================================
 
-package starling.display
-{
-import flash.geom.Matrix;
+package starling.display;
+
+import openfl.geom.Matrix;
 
 import starling.rendering.IndexData;
 import starling.rendering.MeshEffect;
@@ -43,21 +43,21 @@ import starling.utils.MeshSubset;
  *  @see Mesh
  *  @see Sprite
  */
-public class MeshBatch extends Mesh
+class MeshBatch extends Mesh
 {
     /** The maximum number of vertices that fit into one MeshBatch. */
-    public static const MAX_NUM_VERTICES:int = 65535;
+    public static inline var MAX_NUM_VERTICES:Int = 65535;
 
-    private var _effect:MeshEffect;
-    private var _batchable:Boolean;
-    private var _vertexSyncRequired:Boolean;
-    private var _indexSyncRequired:Boolean;
+    private var __effect:MeshEffect;
+    private var __batchable:Bool;
+    private var __vertexSyncRequired:Bool;
+    private var __indexSyncRequired:Bool;
 
     // helper object
     private static var sFullMeshSubset:MeshSubset = new MeshSubset();
 
     /** Creates a new, empty MeshBatch instance. */
-    public function MeshBatch()
+    public function new()
     {
         var vertexData:VertexData = new VertexData();
         var indexData:IndexData = new IndexData();
@@ -66,54 +66,54 @@ public class MeshBatch extends Mesh
     }
 
     /** @inheritDoc */
-    override public function dispose():void
+    override public function dispose():Void
     {
-        if (_effect) _effect.dispose();
+        if (__effect != null) _effect.dispose();
         super.dispose();
     }
 
     /** This method must be called whenever the mesh's vertex data was changed. Makes
      *  sure that the vertex buffer is synchronized before rendering, and forces a redraw. */
-    override public function setVertexDataChanged():void
+    override public function setVertexDataChanged():Void
     {
-        _vertexSyncRequired = true;
+        __vertexSyncRequired = true;
         super.setVertexDataChanged();
     }
 
     /** This method must be called whenever the mesh's index data was changed. Makes
      *  sure that the index buffer is synchronized before rendering, and forces a redraw. */
-    override public function setIndexDataChanged():void
+    override public function setIndexDataChanged():Void
     {
-        _indexSyncRequired = true;
+        __indexSyncRequired = true;
         super.setIndexDataChanged();
     }
 
-    private function setVertexAndIndexDataChanged():void
+    private function __setVertexAndIndexDataChanged():Void
     {
-        _vertexSyncRequired = _indexSyncRequired = true;
+        __vertexSyncRequired = __indexSyncRequired = true;
     }
 
-    private function syncVertexBuffer():void
+    private function __syncVertexBuffer():Void
     {
-        _effect.uploadVertexData(_vertexData);
-        _vertexSyncRequired = false;
+        __effect.uploadVertexData(__vertexData);
+        __vertexSyncRequired = false;
     }
 
-    private function syncIndexBuffer():void
+    private function __syncIndexBuffer():Void
     {
-        _effect.uploadIndexData(_indexData);
-        _indexSyncRequired = false;
+        __effect.uploadIndexData(__indexData);
+        __indexSyncRequired = false;
     }
 
     /** Removes all geometry. */
-    public function clear():void
+    public function clear():Void
     {
-        if (_parent) setRequiresRedraw();
+        if (__parent != null) setRequiresRedraw();
 
-        _vertexData.numVertices = 0;
-        _indexData.numIndices   = 0;
-        _vertexSyncRequired = true;
-        _indexSyncRequired  = true;
+        __vertexData.numVertices = 0;
+        __indexData.numIndices   = 0;
+        __vertexSyncRequired = true;
+        __indexSyncRequired  = true;
     }
 
     /** Adds a mesh to the batch by appending its vertices and indices.
@@ -129,28 +129,28 @@ public class MeshBatch extends Mesh
      *                   without transforming them in any way (no matter the value of the
      *                   <code>matrix</code> parameter).
      */
-    public function addMesh(mesh:Mesh, matrix:Matrix=null, alpha:Number=1.0,
-                            subset:MeshSubset=null, ignoreTransformations:Boolean=false):void
+    public function addMesh(mesh:Mesh, matrix:Matrix=null, alpha:Float=1.0,
+                            subset:MeshSubset=null, ignoreTransformations:Bool=false):Void
     {
         if (ignoreTransformations) matrix = null;
         else if (matrix == null) matrix = mesh.transformationMatrix;
         if (subset == null) subset = sFullMeshSubset;
 
-        var targetVertexID:int = _vertexData.numVertices;
-        var targetIndexID:int  = _indexData.numIndices;
+        var targetVertexID:Int = _vertexData.numVertices;
+        var targetIndexID:Int  = _indexData.numIndices;
         var meshStyle:MeshStyle = mesh._style;
 
         if (targetVertexID == 0)
             setupFor(mesh);
 
-        meshStyle.batchVertexData(_style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
-        meshStyle.batchIndexData(_style, targetIndexID, targetVertexID - subset.vertexID,
+        meshStyle.batchVertexData(__style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
+        meshStyle.batchIndexData(__style, targetIndexID, targetVertexID - subset.vertexID,
             subset.indexID, subset.numIndices);
 
-        if (alpha != 1.0) _vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
-        if (_parent) setRequiresRedraw();
+        if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
+        if (__parent != null) setRequiresRedraw();
 
-        _indexSyncRequired = _vertexSyncRequired = true;
+        __indexSyncRequired = __vertexSyncRequired = true;
     }
 
     /** Adds a mesh to the batch by copying its vertices and indices to the given positions.
@@ -162,39 +162,39 @@ public class MeshBatch extends Mesh
      *  For the latter, indices are aligned in groups of 6 (one quad requires six indices),
      *  and the vertices in groups of 4 (one vertex for every corner).</p>
      */
-    public function addMeshAt(mesh:Mesh, indexID:int, vertexID:int):void
+    public function addMeshAt(mesh:Mesh, indexID:Int, vertexID:Int):Void
     {
-        var numIndices:int = mesh.numIndices;
-        var numVertices:int = mesh.numVertices;
+        var numIndices:Int = mesh.numIndices;
+        var numVertices:Int = mesh.numVertices;
         var matrix:Matrix = mesh.transformationMatrix;
-        var meshStyle:MeshStyle = mesh._style;
+        var meshStyle:MeshStyle = mesh.__style;
 
-        if (_vertexData.numVertices == 0)
+        if (__vertexData.numVertices == 0)
             setupFor(mesh);
 
-        meshStyle.batchVertexData(_style, vertexID, matrix, 0, numVertices);
-        meshStyle.batchIndexData(_style, indexID, vertexID, 0, numIndices);
+        meshStyle.batchVertexData(__style, vertexID, matrix, 0, numVertices);
+        meshStyle.batchIndexData(__style, indexID, vertexID, 0, numIndices);
 
-        if (alpha != 1.0) _vertexData.scaleAlphas("color", alpha, vertexID, numVertices);
-        if (_parent) setRequiresRedraw();
+        if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, vertexID, numVertices);
+        if (__parent != null) setRequiresRedraw();
 
-        _indexSyncRequired = _vertexSyncRequired = true;
+        __indexSyncRequired = __vertexSyncRequired = true;
     }
 
-    private function setupFor(mesh:Mesh):void
+    private function __setupFor(mesh:Mesh):Void
     {
-        var meshStyle:MeshStyle = mesh._style;
-        var meshStyleType:Class = meshStyle.type;
+        var meshStyle:MeshStyle = mesh.__style;
+        var meshStyleType:Class<Dynamic> = meshStyle.type;
 
-        if (_style.type != meshStyleType)
+        if (__style.type != meshStyleType)
         {
-            var newStyle:MeshStyle = new meshStyleType() as MeshStyle;
+            var newStyle:MeshStyle = new meshStyleType();
             newStyle.copyFrom(meshStyle);
             setStyle(newStyle, false);
         }
         else
         {
-            _style.copyFrom(meshStyle);
+            __style.copyFrom(meshStyle);
         }
     }
 
@@ -206,27 +206,27 @@ public class MeshBatch extends Mesh
      *  @param mesh         the mesh to add to the batch.
      *  @param numVertices  if <code>-1</code>, <code>mesh.numVertices</code> will be used
      */
-    public function canAddMesh(mesh:Mesh, numVertices:int=-1):Boolean
+    public function canAddMesh(mesh:Mesh, numVertices:Int=-1):Bool
     {
-        var currentNumVertices:int = _vertexData.numVertices;
+        var currentNumVertices:Int = __vertexData.numVertices;
 
         if (currentNumVertices == 0) return true;
         if (numVertices  < 0) numVertices = mesh.numVertices;
         if (numVertices == 0) return true;
         if (numVertices + currentNumVertices > MAX_NUM_VERTICES) return false;
 
-        return _style.canBatchWith(mesh._style);
+        return __style.canBatchWith(mesh.__style);
     }
 
     /** If the <code>batchable</code> property is enabled, this method will add the batch
      *  to the painter's current batch. Otherwise, this will actually do the drawing. */
-    override public function render(painter:Painter):void
+    override public function render(painter:Painter):Void
     {
-        if (_vertexData.numVertices == 0) return;
-        if (_pixelSnapping) MatrixUtil.snapToPixels(
+        if (__vertexData.numVertices == 0) return;
+        if (__pixelSnapping) MatrixUtil.snapToPixels(
             painter.state.modelviewMatrix, painter.pixelSize);
 
-        if (_batchable)
+        if (__batchable)
         {
             painter.batchMesh(this);
         }
@@ -237,25 +237,25 @@ public class MeshBatch extends Mesh
             painter.prepareToDraw();
             painter.excludeFromCache(this);
 
-            if (_vertexSyncRequired) syncVertexBuffer();
-            if (_indexSyncRequired)  syncIndexBuffer();
+            if (__vertexSyncRequired) syncVertexBuffer();
+            if (__indexSyncRequired)  syncIndexBuffer();
 
-            _style.updateEffect(_effect, painter.state);
-            _effect.render(0, _indexData.numTriangles);
+            __style.updateEffect(_effect, painter.state);
+            __effect.render(0, __indexData.numTriangles);
         }
     }
 
     /** @inheritDoc */
     override public function setStyle(meshStyle:MeshStyle=null,
-                                      mergeWithPredecessor:Boolean=true):void
+                                      mergeWithPredecessor:Bool=true):Void
     {
         super.setStyle(meshStyle, mergeWithPredecessor);
 
-        if (_effect)
-            _effect.dispose();
+        if (__effect != null)
+            __effect.dispose();
 
-        _effect = style.createEffect();
-        _effect.onRestore = setVertexAndIndexDataChanged;
+        __effect = style.createEffect();
+        __effect.onRestore = setVertexAndIndexDataChanged;
 
         setVertexAndIndexDataChanged(); // we've got a new set of buffers!
     }
@@ -263,27 +263,31 @@ public class MeshBatch extends Mesh
     /** The total number of vertices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Make sure that no indices reference those deleted
      *  vertices! */
-    public function set numVertices(value:int):void
+    public var numVertices(never, set):Int;
+    private function set_numVertices(value:Int):Int
     {
-        if (_vertexData.numVertices != value)
+        if (__vertexData.numVertices != value)
         {
-            _vertexData.numVertices = value;
-            _vertexSyncRequired = true;
+            __vertexData.numVertices = value;
+            __vertexSyncRequired = true;
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The total number of indices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Always make sure that the number of indices
      *  is a multiple of three! */
-    public function set numIndices(value:int):void
+    public var numIndices(never, set):Int;
+    private function set_numIndices(value:Int):Int
     {
-        if (_indexData.numIndices != value)
+        if (__indexData.numIndices != value)
         {
-            _indexData.numIndices = value;
-            _indexSyncRequired = true;
+            __indexData.numIndices = value;
+            __indexSyncRequired = true;
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** Indicates if this object will be added to the painter's batch on rendering,
@@ -295,14 +299,15 @@ public class MeshBatch extends Mesh
      *
      *  @default false
      */
-    public function get batchable():Boolean { return _batchable; }
-    public function set batchable(value:Boolean):void
+    public var batchable(get, set):Bool;
+    private function get_batchable():Bool { return _batchable; }
+    private function set_batchable(value:Bool):Bool
     {
-        if (_batchable != value)
+        if (__batchable != value)
         {
-            _batchable = value;
+            __batchable = value;
             setRequiresRedraw();
         }
+        return value;
     }
-}
 }

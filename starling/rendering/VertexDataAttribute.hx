@@ -25,7 +25,7 @@ internal class VertexDataAttribute
 
     public var name:String;
     public var format:String;
-    public var isColor:Boolean;
+    public var isColor:Bool;
     public var offset:int; // in bytes
     public var size:int;   // in bytes
 

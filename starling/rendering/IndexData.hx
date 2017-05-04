@@ -66,7 +66,7 @@ public class IndexData
     private var _rawData:ByteArray;
     private var _numIndices:int;
     private var _initialCapacity:int;
-    private var _useQuadLayout:Boolean;
+    private var _useQuadLayout:Bool;
 
     // basic quad layout
     private static var sQuadData:ByteArray = new ByteArray();
@@ -155,7 +155,7 @@ public class IndexData
         {
             if (target._useQuadLayout)
             {
-                var keepsQuadLayout:Boolean = true;
+                var keepsQuadLayout:Bool = true;
                 var distance:int = targetIndexID - indexID;
                 var distanceInQuads:int = distance / 6;
                 var offsetInQuads:int = offset / 4;
@@ -284,8 +284,8 @@ public class IndexData
         {
             if (a == getBasicQuadIndexAt(_numIndices))
             {
-                var oddTriangleID:Boolean = (_numIndices & 1) != 0;
-                var evenTriangleID:Boolean = !oddTriangleID;
+                var oddTriangleID:Bool = (_numIndices & 1) != 0;
+                var evenTriangleID:Bool = !oddTriangleID;
 
                 if ((evenTriangleID && b == a + 1 && c == b + 1) ||
                      (oddTriangleID && c == a + 1 && b == c + 1))
@@ -435,7 +435,7 @@ public class IndexData
 
     /** Creates an index buffer object with the right size to fit the complete data.
      *  Optionally, the current data is uploaded right away. */
-    public function createIndexBuffer(upload:Boolean=false,
+    public function createIndexBuffer(upload:Bool=false,
                                       bufferUsage:String="staticDraw"):IndexBuffer3D
     {
         var context:Context3D = Starling.context;
@@ -526,8 +526,8 @@ public class IndexData
      *
      *  @default true
      */
-    public function get useQuadLayout():Boolean { return _useQuadLayout; }
-    public function set useQuadLayout(value:Boolean):void
+    public function get useQuadLayout():Bool { return _useQuadLayout; }
+    public function set useQuadLayout(value:Bool):void
     {
         if (value != _useQuadLayout)
         {

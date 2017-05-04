@@ -47,8 +47,8 @@ public class RenderUtil
 
     /** Returns the flags that are required for AGAL texture lookup,
      *  including the '&lt;' and '&gt;' delimiters. */
-    public static function getTextureLookupFlags(format:String, mipMapping:Boolean,
-                                                 repeat:Boolean=false,
+    public static function getTextureLookupFlags(format:String, mipMapping:Bool,
+                                                 repeat:Bool=false,
                                                  smoothing:String="bilinear"):String
     {
         // TODO this method can probably be removed
@@ -104,9 +104,9 @@ public class RenderUtil
 
     /** Calls <code>setSamplerStateAt</code> at the current context,
      *  converting the given parameters to their low level counterparts. */
-    public static function setSamplerStateAt(sampler:int, mipMapping:Boolean,
+    public static function setSamplerStateAt(sampler:int, mipMapping:Bool,
                                              smoothing:String="bilinear",
-                                             repeat:Boolean=false):void
+                                             repeat:Bool=false):void
     {
         var wrap:String = repeat ? Context3DWrapMode.REPEAT : Context3DWrapMode.CLAMP;
         var filter:String;
@@ -155,7 +155,7 @@ public class RenderUtil
      */
     public static function createAGALTexOperation(
             resultReg:String, uvReg:String, sampler:int, texture:Texture,
-            convertToPmaIfRequired:Boolean=true, tempReg:String="ft0"):String
+            convertToPmaIfRequired:Bool=true, tempReg:String="ft0"):String
     {
         var format:String = texture.format;
         var formatFlag:String;
@@ -170,7 +170,7 @@ public class RenderUtil
                 formatFlag = "rgba";
         }
 
-        var needsConversion:Boolean = convertToPmaIfRequired && !texture.premultipliedAlpha;
+        var needsConversion:Bool = convertToPmaIfRequired && !texture.premultipliedAlpha;
         var texReg:String = needsConversion && resultReg == "oc" ? tempReg : resultReg;
         var operation:String = "tex " + texReg + ", " + uvReg + ", fs" + sampler +
                         " <2d, " + formatFlag + ">\n";
