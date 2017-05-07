@@ -65,7 +65,6 @@ class EventDispatcher
                     return;
             }
             listeners[listeners.length] = listener; // avoid 'push'
-			trace("else",type);
         }
 		
     }
