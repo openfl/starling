@@ -51,24 +51,23 @@ class EventDispatcher
     {
         if (listener == null) throw new Error("null listener added");
         
-        if (mEventListeners == null)
-            mEventListeners = new Map<String, Vector<Function>>();
-        
-        var listeners:Vector<Dynamic> = mEventListeners[type];
-        if (listeners == null)
-        {
+        if (mEventListeners == null){
+			mEventListeners = new Map<String, Vector<Function>>();
+		}
+        var listeners:Vector<Function> = mEventListeners[type];
+        if (listeners == null){
             mEventListeners[type] = new Vector<Function>();
             mEventListeners[type].push(listener);
-        }
-        else
-        {
+        }else{
             for (i in 0...listeners.length)
             {
                 if (Reflect.compareMethods (listeners[i], listener)) // check for duplicates
                     return;
             }
             listeners[listeners.length] = listener; // avoid 'push'
+			trace("else",type);
         }
+		
     }
     
     /** Removes an event listener from the object. */
