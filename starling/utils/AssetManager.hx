@@ -1110,7 +1110,7 @@ class AssetManager extends EventDispatcher
             if (SystemUtil.isDesktop)
                 onComplete(asset);
             else
-                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+                SystemUtil.executeWhenApplicationIsActive(onComplete, [asset]);
             #else
             onComplete(asset);
             #end
