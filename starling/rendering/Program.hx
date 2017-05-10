@@ -8,15 +8,14 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import com.adobe.utils.AGALMiniAssembler;
+package starling.rendering;
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.Program3D;
-import flash.events.Event;
-import flash.utils.ByteArray;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Program3D;
+import openfl.events.Event;
+import openfl.utils.AGALMiniAssembler;
+import openfl.utils.ByteArray;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -33,7 +32,7 @@ import starling.errors.MissingContextError;
  *
  *  @see Painter
  */
-public class Program
+class Program
 {
     private var _vertexShader:ByteArray;
     private var _fragmentShader:ByteArray;
@@ -42,7 +41,7 @@ public class Program
     private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
 
     /** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
-    public function Program(vertexShader:ByteArray, fragmentShader:ByteArray)
+    public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
     {
         _vertexShader = vertexShader;
         _fragmentShader = fragmentShader;
@@ -53,7 +52,7 @@ public class Program
     }
 
     /** Disposes the internal Program3D instance. */
-    public function dispose():void
+    public function dispose():Void
     {
         Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         disposeProgram();
@@ -61,7 +60,7 @@ public class Program
 
     /** Creates a new Program instance from AGAL assembly language. */
     public static function fromSource(vertexShader:String, fragmentShader:String,
-                                      agalVersion:uint=1):Program
+                                      agalVersion:UInt=1):Program
     {
         return new Program(
             sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion),
@@ -70,7 +69,7 @@ public class Program
 
     /** Activates the program on the given context. If you don't pass a context, the current
      *  Starling context will be used. */
-    public function activate(context:Context3D=null):void
+    public function activate(context:Context3D=null):Void
     {
         if (context == null)
         {
@@ -87,12 +86,12 @@ public class Program
         context.setProgram(_program3D);
     }
 
-    private function onContextCreated(event:Event):void
+    private function onContextCreated(event:Event):Void
     {
         disposeProgram();
     }
 
-    private function disposeProgram():void
+    private function disposeProgram():Void
     {
         if (_program3D)
         {
@@ -100,5 +99,4 @@ public class Program
             _program3D = null;
         }
     }
-}
 }

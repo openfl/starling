@@ -8,16 +8,18 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.IndexBuffer3D;
-import flash.display3D.VertexBuffer3D;
-import flash.events.Event;
-import flash.geom.Matrix3D;
-import flash.utils.Dictionary;
-import flash.utils.getQualifiedClassName;
+package starling.rendering;
+
+import haxe.Constraints.Function;
+
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.events.Event;
+import openfl.geom.Matrix3D;
+import openfl.utils.Dictionary;
+//import openfl.utils.getQualifiedClassName;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -72,15 +74,15 @@ import starling.utils.execute;
  *    <li><code>createProgram():Program</code> — must create the actual program containing 
  *        vertex- and fragment-shaders. A program will be created only once for each render
  *        context; this is taken care of by the base class.</li>
- *    <li><code>get programVariantName():uint</code> (optional) — override this if your
+ *    <li><code>get programVariantName():UInt</code> (optional) — override this if your
  *        effect requires different programs, depending on its settings. The recommended
  *        way to do this is via a bit-mask that uniquely encodes the current settings.</li>
  *    <li><code>get vertexFormat():String</code> (optional) — must return the
  *        <code>VertexData</code> format that this effect requires for its vertices. If
  *        the effect does not require any special attributes, you can leave this out.</li>
- *    <li><code>beforeDraw(context:Context3D):void</code> — Set up your context by
+ *    <li><code>beforeDraw(context:Context3D):Void</code> — Set up your context by
  *        configuring program constants and buffer attributes.</li>
- *    <li><code>afterDraw(context:Context3D):void</code> — Will be called directly after
+ *    <li><code>afterDraw(context:Context3D):Void</code> — Will be called directly after
  *        <code>context.drawTriangles()</code>. Clean up any context configuration here.</li>
  *  </ul>
  *
@@ -99,13 +101,13 @@ public class Effect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2"</code> */
-    public static const VERTEX_FORMAT:VertexDataFormat =
+    public static var VERTEX_FORMAT:VertexDataFormat =
         VertexDataFormat.fromString("position:float2");
 
     private var _vertexBuffer:VertexBuffer3D;
-    private var _vertexBufferSize:int; // in bytes
+    private var _vertexBufferSize:Int; // in bytes
     private var _indexBuffer:IndexBuffer3D;
-    private var _indexBufferSize:int;  // in number of indices
+    private var _indexBufferSize:Int;  // in number of indices
     private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
@@ -113,13 +115,13 @@ public class Effect
     private var _programBaseName:String;
 
     // helper objects
-    private static var sProgramNameCache:Dictionary = new Dictionary();
+    private static var sProgramNameCache:Map<String, Map<UInt, String>> = new Map();
 
     /** Creates a new effect. */
-    public function Effect()
+    public function new()
     {
         _mvpMatrix3D = new Matrix3D();
-        _programBaseName = getQualifiedClassName(this);
+        _programBaseName = Type.getClassName(Type.getClass(this));
 
         // Handle lost context (using conventional Flash event for weak listener support)
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
@@ -127,20 +129,20 @@ public class Effect
     }
 
     /** Purges the index- and vertex-buffers. */
-    public function dispose():void
+    public function dispose():Void
     {
         Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         purgeBuffers();
     }
 
-    private function onContextCreated(event:Event):void
+    private function onContextCreated(event:Event):Void
     {
         purgeBuffers();
         execute(_onRestore, this);
     }
 
     /** Purges one or both of the vertex- and index-buffers. */
-    public function purgeBuffers(vertexBuffer:Bool=true, indexBuffer:Bool=true):void
+    public function purgeBuffers(vertexBuffer:Bool=true, indexBuffer:Bool=true):Void
     {
         // We wrap the dispose calls in a try/catch block to work around a stage3D problem.
         // Since they are not re-used later, that shouldn't have any evil side effects.
@@ -167,9 +169,9 @@ public class Effect
      *                     causes the creation of a new index buffer.
      */
     public function uploadIndexData(indexData:IndexData,
-                                    bufferUsage:String="staticDraw"):void
+                                    bufferUsage:String="staticDraw"):Void
     {
-        var numIndices:int = indexData.numIndices;
+        var numIndices:Int = indexData.numIndices;
         var isQuadLayout:Bool = indexData.useQuadLayout;
         var wasQuadLayout:Bool = _indexBufferUsesQuadLayout;
 
@@ -203,7 +205,7 @@ public class Effect
      *                     causes the creation of a new vertex buffer.
      */
     public function uploadVertexData(vertexData:VertexData,
-                                     bufferUsage:String="staticDraw"):void
+                                     bufferUsage:String="staticDraw"):Void
     {
         if (_vertexBuffer)
         {
@@ -224,7 +226,7 @@ public class Effect
     /** Draws the triangles described by the index- and vertex-buffers, or a range of them.
      *  This calls <code>beforeDraw</code>, <code>context.drawTriangles</code>, and
      *  <code>afterDraw</code>, in this order. */
-    public function render(firstIndex:int=0, numTriangles:int=-1):void
+    public function render(firstIndex:Int=0, numTriangles:Int=-1):Void
     {
         if (numTriangles < 0) numTriangles = _indexBufferSize / 3;
         if (numTriangles == 0) return;
@@ -246,7 +248,7 @@ public class Effect
      *    <li><code>va0</code> — vertex position (xy)</li>
      *  </ul>
      */
-    protected function beforeDraw(context:Context3D):void
+    protected function beforeDraw(context:Context3D):Void
     {
         program.activate(context);
         vertexFormat.setVertexBufferAt(0, vertexBuffer, "position");
@@ -256,7 +258,7 @@ public class Effect
     /** This method is called by <code>render</code>, directly after
      *  <code>context.drawTriangles</code>. Resets vertex buffer attributes.
      */
-    protected function afterDraw(context:Context3D):void
+    protected function afterDraw(context:Context3D):Void
     {
         context.setVertexBufferAt(0, null);
     }
@@ -289,7 +291,7 @@ public class Effect
      *
      *  @default 0
      */
-    protected function get programVariantName():uint
+    protected function get programVariantName():UInt
     {
         return 0;
     }
@@ -298,7 +300,7 @@ public class Effect
      *  @default the fully qualified class name
      */
     protected function get programBaseName():String { return _programBaseName; }
-    protected function set programBaseName(value:String):void { _programBaseName = value; }
+    protected function set programBaseName(value:String):Void { _programBaseName = value; }
 
     /** Returns the full name of the program, which is used to register it at the current
      *  <code>Painter</code>.
@@ -310,8 +312,8 @@ public class Effect
     protected function get programName():String
     {
         var baseName:String  = this.programBaseName;
-        var variantName:uint = this.programVariantName;
-        var nameCache:Dictionary = sProgramNameCache[baseName];
+        var variantName:UInt = this.programVariantName;
+        var nameCache:Map<UInt, String> = sProgramNameCache[baseName];
 
         if (nameCache == null)
         {
@@ -323,7 +325,7 @@ public class Effect
 
         if (name == null)
         {
-            if (variantName) name = baseName + "#" + variantName.toString(16);
+            if (variantName != 0) name = baseName + "#" + variantName.toString(16);
             else             name = baseName;
 
             nameCache[variantName] = name;
@@ -335,7 +337,8 @@ public class Effect
     /** Returns the current program, either by creating a new one (via
      *  <code>createProgram</code>) or by getting it from the <code>Painter</code>.
      *  Do not override this method! Instead, implement <code>createProgram</code>. */
-    protected function get program():Program
+    private var program(get, never):Program;
+    private function get_program():Program
     {
         var name:String = this.programName;
         var painter:Painter = Starling.painter;
@@ -355,27 +358,33 @@ public class Effect
     /** The function that you provide here will be called after a context loss.
      *  Call both "upload..." methods from within the callback to restore any vertex or
      *  index buffers. The callback will be executed with the effect as its sole parameter. */
-    public function get onRestore():Function { return _onRestore; }
-    public function set onRestore(value:Function):void { _onRestore = value; }
+    public var onRestore(get, set):Function;
+    private function get_onRestore():Function { return _onRestore; }
+    private function set_onRestore(value:Function):Function { return _onRestore = value; }
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2"</code> */
-    public function get vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
+    public var vertexFormat(get, never):VertexDataFormat;
+    private function get_vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
 
     /** The MVP (modelview-projection) matrix transforms vertices into clipspace. */
-    public function get mvpMatrix3D():Matrix3D { return _mvpMatrix3D; }
-    public function set mvpMatrix3D(value:Matrix3D):void { _mvpMatrix3D.copyFrom(value); }
+    public var mvpMatrix3D(get, set):Matrix3D;
+    private function get_mvpMatrix3D():Matrix3D { return _mvpMatrix3D; }
+    private function set_mvpMatrix3D(value:Matrix3D):Matrix3D { _mvpMatrix3D.copyFrom(value); return value; }
 
     /** The internally used index buffer used on rendering. */
-    protected function get indexBuffer():IndexBuffer3D { return _indexBuffer; }
+    private var indexBuffer(get, never):IndexBuffer3D;
+    private function get_indexBuffer():IndexBuffer3D { return _indexBuffer; }
 
     /** The current size of the index buffer (in number of indices). */
-    protected function get indexBufferSize():int { return _indexBufferSize; }
+    private var indexBufferSize(get, never):Int;
+    private function get_indexBufferSize():Int { return _indexBufferSize; }
 
     /** The internally used vertex buffer used on rendering. */
-    protected function get vertexBuffer():VertexBuffer3D { return _vertexBuffer; }
+    private var vertexBuffer(get, never):VertexBuffer3D;
+    private function get_vertexBuffer():VertexBuffer3D { return _vertexBuffer; }
     
     /** The current size of the vertex buffer (in blocks of 32 bits). */
-    protected function get vertexBufferSize():int { return _vertexBufferSize; }
-}
+    private var vertexBufferSize(get, never):Int; 
+    private function get_vertexBufferSize():Int { return _vertexBufferSize; }
 }

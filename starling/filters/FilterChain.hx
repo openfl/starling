@@ -8,8 +8,10 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
+package starling.filters;
+
+import openfl.Vector;
+
 import starling.events.Event;
 import starling.rendering.Painter;
 import starling.textures.Texture;
@@ -21,20 +23,21 @@ import starling.utils.Padding;
  */
 class FilterChain extends FragmentFilter
 {
-    private var _filters:Vector.<FragmentFilter>;
+    private var _filters:Vector<FragmentFilter>;
 
     // helpers
     private static var sPadding:Padding = new Padding();
 
     /** Creates a new chain with the given filters. */
-    public function FilterChain(...args)
+    public function new(args:Array<FragmentFilter>)
     {
-        _filters = new <FragmentFilter>[];
+        _filters = new Vector<FragmentFilter>();
 
-        for (var i:Int = 0, len:Int = args.length; i < len; ++i)
+        var len:Int = args.length;
+        for (i in 0...len)
         {
-            var filter:FragmentFilter = args[i] as FragmentFilter;
-            if (filter) addFilterAt(filter, i);
+            var filter:FragmentFilter = args[i];
+            if (filter != null) addFilterAt(filter, i);
             else throw new ArgumentError("pass only fragment filters to the constructor");
         }
 
@@ -45,7 +48,7 @@ class FilterChain extends FragmentFilter
     /** Disposes the filter chain itself as well as all contained filters. */
     override public function dispose():Void
     {
-        for each (var filter:FragmentFilter in _filters)
+        for (filter in _filters)
             filter.dispose();
 
         _filters.length = 0;
@@ -69,12 +72,12 @@ class FilterChain extends FragmentFilter
         var outTexture:Texture = input0;
         var inTexture:Texture;
 
-        for (var i:Int=0; i<numFilters; ++i)
+        for (i in 0...numFilters)
         {
             inTexture = outTexture;
             outTexture = _filters[i].process(painter, helper, inTexture);
 
-            if (i) helper.putTexture(inTexture);
+            if (i != 0) helper.putTexture(inTexture);
         }
 
         return outTexture;
@@ -86,7 +89,7 @@ class FilterChain extends FragmentFilter
         var numPasses:Int = 0;
         var numFilters:Int = _filters.length;
 
-        for (var i:Int=0; i<numFilters; ++i)
+        for (i in 0...numFilters)
             numPasses += _filters[i].numPasses;
 
         return numPasses;
@@ -127,7 +130,7 @@ class FilterChain extends FragmentFilter
      *  are decremented. If requested, the filter will be disposed right away. */
     public function removeFilterAt(index:Int, dispose:Bool=false):FragmentFilter
     {
-        var filter:FragmentFilter = _filters.removeAt(index) as FragmentFilter;
+        var filter:FragmentFilter = _filters.removeAt(index);
         filter.removeEventListener(Event.CHANGE, setRequiresRedraw);
         if (dispose) filter.dispose();
         setRequiresRedraw();
@@ -158,11 +161,11 @@ class FilterChain extends FragmentFilter
 
     private function onEnterFrame(event:Event):Void
     {
-        var i:Int, numFilters:Int = _filters.length;
-        for (i=0; i<numFilters; ++i) _filters[i].dispatchEvent(event);
+        var numFilters:Int = _filters.length;
+        for (i in 0...numFilters) _filters[i].dispatchEvent(event);
     }
 
     /** Indicates the current chain length. */
+    public var numFilters(get, never):Int;
     private function get_numFilters():Int { return _filters.length; }
-}
 }

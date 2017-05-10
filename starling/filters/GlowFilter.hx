@@ -8,8 +8,8 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
+package starling.filters;
+
 import starling.rendering.Painter;
 import starling.textures.Texture;
 
@@ -37,8 +37,8 @@ class GlowFilter extends FragmentFilter
      * @param resolution the resolution of the filter texture. '1' means full resolution,
      *                   '0.5' half resolution, etc.
      */
-    public function GlowFilter(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
-                               resolution:Float=0.5)
+    public function new(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
+                        resolution:Float=0.5)
     {
         _blurFilter = new BlurFilter(blur, blur, resolution);
         _compositeFilter = new CompositeFilter();
@@ -80,33 +80,38 @@ class GlowFilter extends FragmentFilter
     }
 
     /** The color of the glow. @default 0xffff00 */
+    public var color(get, set):UInt;
     private function get_color():UInt { return _compositeFilter.getColorAt(0); }
-    private function set_color(value:UInt):Void
+    private function set_color(value:UInt):UInt
     {
         if (color != value)
         {
             _compositeFilter.setColorAt(0, value, true);
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The alpha value of the glow. Values between 0 and 1 modify the opacity;
      *  values > 1 will make it stronger, i.e. produce a harder edge. @default 1.0 */
+    public var alpha(get, set):Float;
     private function get_alpha():Float { return _compositeFilter.getAlphaAt(0); }
-    private function set_alpha(value:Float):Void
+    private function set_alpha(value:Float):Float
     {
         if (alpha != value)
         {
             _compositeFilter.setAlphaAt(0, value);
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The amount of blur with which the glow is created.
      *  The number of required passes will be <code>Math.ceil(value) × 2</code>.
      *  @default 1.0 */
+    public var blur(get, set):Float;
     private function get_blur():Float { return _blurFilter.blurX; }
-    private function set_blur(value:Float):Void
+    private function set_blur(value:Float):Float
     {
         if (blur != value)
         {
@@ -114,6 +119,7 @@ class GlowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
 
     /** @private */
@@ -127,5 +133,4 @@ class GlowFilter extends FragmentFilter
             updatePadding();
         }
     }
-}
 }

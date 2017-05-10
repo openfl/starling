@@ -8,11 +8,12 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
-import flash.display3D.Context3DProfile;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
+package starling.filters;
+
+import openfl.display3D.Context3DProfile;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.Vector;
 
 import starling.core.Starling;
 import starling.core.starling_internal;
@@ -22,14 +23,12 @@ import starling.textures.Texture;
 import starling.utils.MathUtil;
 import starling.utils.Pool;
 
-use namespace starling_internal;
-
 /** @private
  *
  *  This class manages texture creation, pooling and disposal of all textures
  *  during filter processing.
  */
-internal class FilterHelper implements IFilterHelper
+class FilterHelper implements IFilterHelper
 {
     private var _width:Float;
     private var _height:Float;
@@ -52,13 +51,13 @@ internal class FilterHelper implements IFilterHelper
     private var sRegion:Rectangle = new Rectangle();
 
     /** Creates a new, empty instance. */
-    public function FilterHelper(textureFormat:String="bgra")
+    public function new(textureFormat:String="bgra")
     {
         _usePotTextures = Starling.current.profile == Context3DProfile.BASELINE_CONSTRAINED;
         _preferredScale = Starling.contentScaleFactor;
         _textureFormat = textureFormat;
         _sizeStep = 64; // must be POT!
-        _pool = new <Texture>[];
+        _pool = new Vector<Texture>();
         _projectionMatrix = new Matrix3D();
         _targetBounds = new Rectangle();
 
@@ -93,7 +92,7 @@ internal class FilterHelper implements IFilterHelper
         if (_numPasses >= 0)
             if (_numPasses-- == 0) return null;
 
-        if (_pool.length)
+        if (_pool.length != 0)
             texture = _pool.pop();
         else
             texture = Texture.empty(_nativeWidth / _scale, _nativeHeight / _scale,
@@ -106,7 +105,7 @@ internal class FilterHelper implements IFilterHelper
             sRegion.setTo(0, 0, _width * resolution, _height * resolution);
             subTexture = texture as SubTexture;
 
-            if (subTexture)
+            if (subTexture != null)
                 subTexture.setTo(texture.root, sRegion, true, null, false, resolution);
             else
                 texture = new SubTexture(texture.root, sRegion, true, null, false, resolution);
@@ -119,7 +118,7 @@ internal class FilterHelper implements IFilterHelper
     /** @inheritDoc */
     public function putTexture(texture:Texture):Void
     {
-        if (texture)
+        if (texture != null)
         {
             if (texture.root.nativeWidth == _nativeWidth && texture.root.nativeHeight == _nativeHeight)
                 _pool.insertAt(_pool.length, texture);
@@ -131,7 +130,8 @@ internal class FilterHelper implements IFilterHelper
     /** Purges the pool and disposes all textures. */
     public function purge():Void
     {
-        for (var i:Int = 0, len:Int = _pool.length; i < len; ++i)
+        var len:Int = _pool.length;
+        for (i in 0...len)
             _pool[i].dispose();
 
         _pool.length = 0;
@@ -181,53 +181,62 @@ internal class FilterHelper implements IFilterHelper
     }
 
     /** The projection matrix that was active when the filter started processing. */
+    public var projectionMatrix3D(get, set):Matrix3D;
     private function get_projectionMatrix3D():Matrix3D { return _projectionMatrix; }
-    private function set_projectionMatrix3D(value:Matrix3D):Void
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D;
     {
         _projectionMatrix.copyFrom(value);
+        return value;
     }
 
     /** The render target that was active when the filter started processing. */
+    public var renderTarget(get, set):Texture;
     private function get_renderTarget():Texture { return _renderTarget; }
-    private function set_renderTarget(value:Texture):Void { _renderTarget = value; }
+    private function set_renderTarget(value:Texture):Texture { return _renderTarget = value; }
 
     /** The clipping rectangle that was active when the filter started processing. */
+    public var clipRect(get, set):Rectangle;
     private function get_clipRect():Rectangle { return _clipRect; }
-    private function set_clipRect(value:Rectangle):Void
+    private function set_clipRect(value:Rectangle):Rectangle
     {
-        if (value)
+        if (value != null)
         {
-            if (_clipRect) _clipRect.copyFrom(value);
+            if (_clipRect != null) _clipRect.copyFrom(value);
             else _clipRect = Pool.getRectangle(value.x, value.y, value.width, value.height);
         }
-        else if (_clipRect)
+        else if (_clipRect != null)
         {
             Pool.putRectangle(_clipRect);
             _clipRect = null;
         }
+        return value;
     }
 
     /** @inheritDoc */
+    public var targetBounds(get, set):Rectangle;
     private function get_targetBounds():Rectangle { return _targetBounds; }
-    private function set_targetBounds(value:Rectangle):Void
+    private function set_targetBounds(value:Rectangle):Rectangle
     {
         _targetBounds.copyFrom(value);
         setSize(value.width, value.height);
+        return value;
     }
 
     /** @inheritDoc */
+    public var target(get, set):DisplayObject;
     private function get_target():DisplayObject { return _target; }
-    private function set_target(value:DisplayObject):Void { _target = value; }
+    private function set_target(value:DisplayObject):DisplayObject { return _target = value; }
 
     /** The scale factor of the returned textures. */
+    public var textureScale(get, set):Float;
     private function get_textureScale():Float { return _preferredScale; }
-    private function set_textureScale(value:Float):Void
+    private function set_textureScale(value:Float):Float
     {
-        _preferredScale = value > 0 ? value : Starling.contentScaleFactor;
+        return _preferredScale = value > 0 ? value : Starling.contentScaleFactor;
     }
 
     /** The texture format of the returned textures. @default BGRA */
+    public var textureFormat(get, set):String;
     private function get_textureFormat():String { return _textureFormat; }
-    private function set_textureFormat(value:String):Void { _textureFormat = value; }
-}
+    private function set_textureFormat(value:String):String { return _textureFormat = value; }
 }

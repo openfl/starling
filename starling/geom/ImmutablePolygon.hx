@@ -1,41 +1,41 @@
 package starling.geom;
 
-import flash.errors.Error;
-import flash.errors.IllegalOperationError;
+import openfl.errors.Error;
+import openfl.errors.IllegalOperationError;
 
 import starling.geom.Polygon;
 
 class ImmutablePolygon extends Polygon
 {
-    private var mFrozen:Bool;
+    private var __frozen:Bool;
 
     public function new(vertices:Array<Dynamic>)
     {
         super(vertices);
-        mFrozen = true;
+        __frozen = true;
     }
 
     override public function addVertices(args:Array<Dynamic>):Void
     {
-        if (mFrozen) throw getImmutableError();
+        if (__frozen) throw getImmutableError();
         else super.addVertices(args);
     }
 
     override public function setVertex(index:Int, x:Float, y:Float):Void
     {
-        if (mFrozen) throw getImmutableError();
+        if (__frozen) throw getImmutableError();
         else super.setVertex(index, x, y);
     }
 
     override public function reverse():Void
     {
-        if (mFrozen) throw getImmutableError();
+        if (__frozen) throw getImmutableError();
         else super.reverse();
     }
 
     override private function set_numVertices(value:Int):Int
     {
-        if (mFrozen) throw getImmutableError();
+        if (__frozen) throw getImmutableError();
         else super.reverse();
         return super.numVertices;
     }

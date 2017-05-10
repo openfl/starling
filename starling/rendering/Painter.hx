@@ -8,20 +8,20 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import flash.display.Stage3D;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DCompareMode;
-import flash.display3D.Context3DStencilAction;
-import flash.display3D.Context3DTriangleFace;
-import flash.display3D.textures.TextureBase;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
-import flash.utils.Dictionary;
+package starling.rendering;
+
+import openfl.display.Stage3D;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DStencilAction;
+import openfl.display3D.Context3DTriangleFace;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.Vector;
 
 import starling.core.starling_internal;
 import starling.display.BlendMode;
@@ -38,8 +38,6 @@ import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 import starling.utils.RenderUtil;
 import starling.utils.SystemUtil;
-
-use namespace starling_internal;
 
 /** A class that orchestrates rendering of all Starling display objects.
  *
@@ -72,23 +70,23 @@ use namespace starling_internal;
  *
  *  @see RenderState
  */
-public class Painter
+class Painter
 {
     // the key for the programs stored in 'sharedData'
-    private static const PROGRAM_DATA_NAME:String = "starling.rendering.Painter.Programs";
+    private static inline var PROGRAM_DATA_NAME:String = "starling.rendering.Painter.Programs";
 
     // members
 
     private var _stage3D:Stage3D;
     private var _context:Context3D;
     private var _shareContext:Bool;
-    private var _drawCount:int;
-    private var _frameID:uint;
-    private var _pixelSize:Number;
+    private var _drawCount:Int;
+    private var _frameID:UInt;
+    private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
-    private var _stencilReferenceValues:Dictionary;
-    private var _clipRectStack:Vector.<Rectangle>;
-    private var _batchCacheExclusions:Vector.<DisplayObject>;
+    private var _stencilReferenceValues:Map<Dynamic, UInt>;
+    private var _clipRectStack:Vector<Rectangle>;
+    private var _batchCacheExclusions:Vector<DisplayObject>;
 
     private var _batchProcessor:BatchProcessor;
     private var _batchProcessorCurr:BatchProcessor; // current  processor
@@ -96,21 +94,21 @@ public class Painter
     private var _batchProcessorSpec:BatchProcessor; // special  processor (no cache)
 
     private var _actualRenderTarget:TextureBase;
-    private var _actualRenderTargetOptions:uint;
+    private var _actualRenderTargetOptions:UInt;
     private var _actualCulling:String;
     private var _actualBlendMode:String;
 
-    private var _backBufferWidth:Number;
-    private var _backBufferHeight:Number;
-    private var _backBufferScaleFactor:Number;
+    private var _backBufferWidth:Float;
+    private var _backBufferHeight:Float;
+    private var _backBufferScaleFactor:Float;
 
     private var _state:RenderState;
-    private var _stateStack:Vector.<RenderState>;
-    private var _stateStackPos:int;
-    private var _stateStackLength:int;
+    private var _stateStack:Vector<RenderState>;
+    private var _stateStackPos:Int;
+    private var _stateStackLength:Int;
 
     // shared data
-    private static var sSharedData:Dictionary = new Dictionary();
+    private static var sSharedData:Map<Stage3D, Map<String, Dynamic>> = new Map();
 
     // helper objects
     private static var sMatrix:Matrix = new Matrix();
@@ -125,7 +123,7 @@ public class Painter
     
     /** Creates a new Painter object. Normally, it's not necessary to create any custom
      *  painters; instead, use the global painter found on the Starling instance. */
-    public function Painter(stage3D:Stage3D)
+    public function new(stage3D:Stage3D)
     {
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
@@ -134,8 +132,8 @@ public class Painter
         _backBufferWidth  = _context ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
-        _stencilReferenceValues = new Dictionary(true);
-        _clipRectStack = new <Rectangle>[];
+        _stencilReferenceValues = new Map();
+        _clipRectStack = new Vector<Rectangle>();
 
         _batchProcessorCurr = new BatchProcessor();
         _batchProcessorCurr.onBatchComplete = drawBatch;
@@ -158,7 +156,7 @@ public class Painter
     
     /** Disposes all mesh batches, programs, and - if it is not being shared -
      *  the render context. */
-    public function dispose():void
+    public function dispose():Void
     {
         _batchProcessorCurr.dispose();
         _batchProcessorPrev.dispose();
@@ -181,12 +179,12 @@ public class Painter
      *
      *  @see starling.utils.RenderUtil
      */
-    public function requestContext3D(renderMode:String, profile:*):void
+    public function requestContext3D(renderMode:String, profile:Dynamic):Void
     {
         RenderUtil.requestContext3D(_stage3D, renderMode, profile);
     }
 
-    private function onContextCreated(event:Object):void
+    private function onContextCreated(event:Dynamic):Void
     {
         _context = _stage3D.context3D;
         _context.enableErrorChecking = _enableErrorChecking;
@@ -214,8 +212,8 @@ public class Painter
      *                                this setting in the app-xml (application descriptor);
      *                                otherwise, this setting will be silently ignored.
      */
-    public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Number,
-                                        antiAlias:int, enableDepthAndStencil:Bool):void
+    public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Float,
+                                        antiAlias:Int, enableDepthAndStencil:Bool):Void
     {
         if (!_shareContext)
         {
@@ -252,14 +250,14 @@ public class Painter
 
     /** Registers a program under a certain name.
      *  If the name was already used, the previous program is overwritten. */
-    public function registerProgram(name:String, program:Program):void
+    public function registerProgram(name:String, program:Program):Void
     {
         deleteProgram(name);
         programs[name] = program;
     }
 
     /** Deletes the program of a certain name. */
-    public function deleteProgram(name:String):void
+    public function deleteProgram(name:String):Void
     {
         var program:Program = getProgram(name);
         if (program)
@@ -290,12 +288,12 @@ public class Painter
      *  the render cache. That way, you can later reference this location to render a subset of
      *  the cache.</p>
      */
-    public function pushState(token:BatchToken=null):void
+    public function pushState(token:BatchToken=null):Void
     {
         _stateStackPos++;
 
         if (_stateStackLength < _stateStackPos + 1) _stateStack[_stateStackLength++] = new RenderState();
-        if (token) _batchProcessor.fillToken(token);
+        if (token != null) _batchProcessor.fillToken(token);
 
         _stateStack[_stateStackPos].copyFrom(_state);
     }
@@ -307,8 +305,8 @@ public class Painter
      *  @param blendMode            Replaces the current blend mode; except for "auto", which
      *                              means the current value remains unchanged.
      */
-    public function setStateTo(transformationMatrix:Matrix, alphaFactor:Number=1.0,
-                               blendMode:String="auto"):void
+    public function setStateTo(transformationMatrix:Matrix, alphaFactor:Float=1.0,
+                               blendMode:String="auto"):Void
     {
         if (transformationMatrix) MatrixUtil.prependMatrix(_state._modelviewMatrix, transformationMatrix);
         if (alphaFactor != 1.0) _state._alpha *= alphaFactor;
@@ -323,7 +321,7 @@ public class Painter
      *  the render cache. That way, you can later reference this location to render a subset of
      *  the cache.</p>
      */
-    public function popState(token:BatchToken=null):void
+    public function popState(token:BatchToken=null):Void
     {
         if (_stateStackPos < 0)
             throw new IllegalOperationError("Cannot pop empty state stack");
@@ -336,7 +334,7 @@ public class Painter
 
     /** Restores the render state that was last pushed to the stack, but does NOT remove
      *  it from the stack. */
-    public function restoreState():void
+    public function restoreState():Void
     {
         if (_stateStackPos < 0)
             throw new IllegalOperationError("Cannot restore from empty state stack");
@@ -346,7 +344,7 @@ public class Painter
 
     /** Updates all properties of the given token so that it describes the current position
      *  within the render cache. */
-    public function fillToken(token:BatchToken):void
+    public function fillToken(token:BatchToken):Void
     {
         if (token) _batchProcessor.fillToken(token);
     }
@@ -369,7 +367,7 @@ public class Painter
      *  in the next frame. If you pass <code>maskee</code>, the method will automatically
      *  call <code>excludeFromCache(maskee)</code> for you.</p>
      */
-    public function drawMask(mask:DisplayObject, maskee:DisplayObject=null):void
+    public function drawMask(mask:DisplayObject, maskee:DisplayObject=null):Void
     {
         if (_context == null) return;
 
@@ -404,7 +402,7 @@ public class Painter
      *  it will be assumed that this erase operation undoes the clipping rectangle change
      *  caused by the corresponding <code>drawMask()</code> call.</p>
      */
-    public function eraseMask(mask:DisplayObject, maskee:DisplayObject=null):void
+    public function eraseMask(mask:DisplayObject, maskee:DisplayObject=null):Void
     {
         if (_context == null) return;
 
@@ -427,7 +425,7 @@ public class Painter
         }
     }
 
-    private function renderMask(mask:DisplayObject):void
+    private function renderMask(mask:DisplayObject):Void
     {
         var wasCacheEnabled:Bool = cacheEnabled;
 
@@ -438,7 +436,7 @@ public class Painter
         var matrix:Matrix = null;
         var matrix3D:Matrix3D = null;
 
-        if (mask.stage)
+        if (mask.stage != null)
         {
             _state.setModelviewMatricesToIdentity();
 
@@ -451,7 +449,7 @@ public class Painter
             else           matrix   = mask.transformationMatrix;
         }
 
-        if (matrix3D) _state.transformModelviewMatrix3D(matrix3D);
+        if (matrix3D != null) _state.transformModelviewMatrix3D(matrix3D);
         else          _state.transformModelviewMatrix(matrix);
 
         mask.render(this);
@@ -461,13 +459,13 @@ public class Painter
         popState();
     }
 
-    private function pushClipRect(clipRect:Rectangle):void
+    private function pushClipRect(clipRect:Rectangle):Void
     {
         var stack:Vector.<Rectangle> = _clipRectStack;
-        var stackLength:uint = stack.length;
+        var stackLength:UInt = stack.length;
         var intersection:Rectangle = Pool.getRectangle();
 
-        if (stackLength)
+        if (stackLength != 0)
             RectangleUtil.intersect(stack[stackLength - 1], clipRect, intersection);
         else
             intersection.copyFrom(clipRect);
@@ -476,10 +474,10 @@ public class Painter
         _state.clipRect = intersection;
     }
 
-    private function popClipRect():void
+    private function popClipRect():Void
     {
         var stack:Vector.<Rectangle> = _clipRectStack;
-        var stackLength:uint = stack.length;
+        var stackLength:UInt = stack.length;
 
         if (stackLength == 0)
             throw new Error("Trying to pop from empty clip rectangle stack");
@@ -498,7 +496,7 @@ public class Painter
         var quad:Quad = mask as Quad;
         var is3D:Bool = mask.is3D || (maskee && maskee.is3D && mask.stage == null);
 
-        if (quad && !is3D && quad.texture == null)
+        if (quad != null && !is3D && quad.texture == null)
         {
             if (mask.stage) mask.getTransformationMatrix(null, out);
             else
@@ -523,19 +521,19 @@ public class Painter
      *  @param subset  The range of vertices to be batched. If <code>null</code>, the complete
      *                 mesh will be used.
      */
-    public function batchMesh(mesh:Mesh, subset:MeshSubset=null):void
+    public function batchMesh(mesh:Mesh, subset:MeshSubset=null):Void
     {
         _batchProcessor.addMesh(mesh, _state, subset);
     }
 
     /** Finishes the current mesh batch and prepares the next one. */
-    public function finishMeshBatch():void
+    public function finishMeshBatch():Void
     {
         _batchProcessor.finishBatch();
     }
 
     /** Completes all unfinished batches, cleanup procedures. */
-    public function finishFrame():void
+    public function finishFrame():Void
     {
         if (_frameID %  99 == 0) _batchProcessorCurr.trim(); // odd number -> alternating processors
         if (_frameID % 150 == 0) _batchProcessorSpec.trim();
@@ -545,16 +543,16 @@ public class Painter
         processCacheExclusions();
     }
 
-    private function processCacheExclusions():void
+    private function processCacheExclusions():Void
     {
-        var i:int, length:int = _batchCacheExclusions.length;
-        for (i=0; i<length; ++i) _batchCacheExclusions[i].excludeFromCache();
+        var i:Int, length:Int = _batchCacheExclusions.length;
+        for (i in 0...length) _batchCacheExclusions[i].excludeFromCache();
         _batchCacheExclusions.length = 0;
     }
 
     /** Resets the current state, state stack, batch processor, stencil reference value,
      *  clipping rectangle, and draw count. Furthermore, depth testing is disabled. */
-    public function nextFrame():void
+    public function nextFrame():Void
     {
         // update batch processors
         _batchProcessor = swapBatchProcessors();
@@ -584,7 +582,7 @@ public class Painter
     /** Draws all meshes from the render cache between <code>startToken</code> and
      *  (but not including) <code>endToken</code>. The render cache contains all meshes
      *  rendered in the previous frame. */
-    public function drawFromCache(startToken:BatchToken, endToken:BatchToken):void
+    public function drawFromCache(startToken:BatchToken, endToken:BatchToken):Void
     {
         var meshBatch:MeshBatch;
         var subset:MeshSubset = sMeshSubset;
@@ -593,7 +591,7 @@ public class Painter
         {
             pushState();
 
-            for (var i:int = startToken.batchID; i <= endToken.batchID; ++i)
+            for (i in startToken.batchID...(endToken.batchID + 1))
             {
                 meshBatch = _batchProcessorPrev.getBatchAt(i);
                 subset.setTo(); // resets subset
@@ -632,12 +630,12 @@ public class Painter
      *  still be cached! This just means that batching is interrupted at this object when
      *  the display tree is traversed.</p>
      */
-    public function excludeFromCache(object:DisplayObject):void
+    public function excludeFromCache(object:DisplayObject):Void
     {
-        if (object) _batchCacheExclusions[_batchCacheExclusions.length] = object;
+        if (object != null) _batchCacheExclusions[_batchCacheExclusions.length] = object;
     }
 
-    private function drawBatch(meshBatch:MeshBatch):void
+    private function drawBatch(meshBatch:MeshBatch):Void
     {
         pushState();
 
@@ -656,7 +654,7 @@ public class Painter
      *  blend mode, render target and clipping rectangle. Always call this method before
      *  <code>context.drawTriangles()</code>.
      */
-    public function prepareToDraw():void
+    public function prepareToDraw():Void
     {
         applyBlendMode();
         applyRenderTarget();
@@ -666,7 +664,7 @@ public class Painter
 
     /** Clears the render context with a certain color and alpha value. Since this also
      *  clears the stencil buffer, the stencil reference value is also reset to '0'. */
-    public function clear(rgb:uint=0, alpha:Number=0.0):void
+    public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
         applyRenderTarget();
         stencilReferenceValue = 0;
@@ -674,14 +672,14 @@ public class Painter
     }
 
     /** Resets the render target to the back buffer and displays its contents. */
-    public function present():void
+    public function present():Void
     {
         _state.renderTarget = null;
         _actualRenderTarget = null;
         _context.present();
     }
 
-    private function applyBlendMode():void
+    private function applyBlendMode():Void
     {
         var blendMode:String = _state.blendMode;
 
@@ -692,7 +690,7 @@ public class Painter
         }
     }
 
-    private function applyCulling():void
+    private function applyCulling():Void
     {
         var culling:String = _state.culling;
 
@@ -703,16 +701,16 @@ public class Painter
         }
     }
 
-    private function applyRenderTarget():void
+    private function applyRenderTarget():Void
     {
         var target:TextureBase = _state.renderTargetBase;
-        var options:uint = _state.renderTargetOptions;
+        var options:UInt = _state.renderTargetOptions;
 
         if (target != _actualRenderTarget || options != _actualRenderTargetOptions)
         {
-            if (target)
+            if (target != null)
             {
-                var antiAlias:int  = _state.renderTargetAntiAlias;
+                var antiAlias:Int  = _state.renderTargetAntiAlias;
                 var depthAndStencil:Bool = _state.renderTargetSupportsDepthAndStencil;
                 _context.setRenderToTexture(target, depthAndStencil, antiAlias);
             }
@@ -725,17 +723,17 @@ public class Painter
         }
     }
 
-    private function applyClipRect():void
+    private function applyClipRect():Void
     {
         var clipRect:Rectangle = _state.clipRect;
 
-        if (clipRect)
+        if (clipRect != null)
         {
-            var width:int, height:int;
+            var width:Int, height:Int;
             var projMatrix:Matrix3D = _state.projectionMatrix3D;
             var renderTarget:Texture = _state.renderTarget;
 
-            if (renderTarget)
+            if (renderTarget != null)
             {
                 width  = renderTarget.root.nativeWidth;
                 height = renderTarget.root.nativeHeight;
@@ -775,28 +773,31 @@ public class Painter
     // properties
     
     /** Indicates the number of stage3D draw calls. */
-    public function get drawCount():int { return _drawCount; }
-    public function set drawCount(value:int):void { _drawCount = value; }
+    public var drawCount(get, set):Int;
+    private function get_drawCount():Int { return _drawCount; }
+    private function set_drawCount(value:Int):Int { return _drawCount = value; }
 
     /** The current stencil reference value of the active render target. This value
      *  is typically incremented when drawing a mask and decrementing when erasing it.
      *  The painter keeps track of one stencil reference value per render target.
      *  Only change this value if you know what you're doing!
      */
-    public function get stencilReferenceValue():uint
+    public var stencilReferenceValue(get, set):UInt;
+    private function get_stencilReferenceValue():UInt
     {
-        var key:Object = _state.renderTarget ? _state.renderTargetBase : this;
-        if (key in _stencilReferenceValues) return _stencilReferenceValues[key];
+        var key:Dynamic = _state.renderTarget ? _state.renderTargetBase : this;
+        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
         else return 0;
     }
 
-    public function set stencilReferenceValue(value:uint):void
+    private function set_stencilReferenceValue(value:UInt):UInt
     {
-        var key:Object = _state.renderTarget ? _state.renderTargetBase : this;
+        var key:Dynamic = _state.renderTarget ? _state.renderTargetBase : this;
         _stencilReferenceValues[key] = value;
 
         if (contextValid)
             _context.setStencilReferenceValue(value);
+        return value;
     }
 
     /** Indicates if the render cache is enabled. Normally, this should be left at the default;
@@ -806,8 +807,9 @@ public class Painter
      *
      *  @default true
      */
-    public function get cacheEnabled():Bool { return _batchProcessor == _batchProcessorCurr; }
-    public function set cacheEnabled(value:Bool):void
+    public var cacheEnabled(get, set):Bool;
+    private function get_cacheEnabled():Bool { return _batchProcessor == _batchProcessorCurr; }
+    private function set_cacheEnabled(value:Bool):Bool
     {
         if (value != cacheEnabled)
         {
@@ -816,6 +818,7 @@ public class Painter
             if (value) _batchProcessor = _batchProcessorCurr;
             else       _batchProcessor = _batchProcessorSpec;
         }
+        return value;
     }
 
     /** The current render state, containing some of the context settings, projection- and
@@ -826,39 +829,47 @@ public class Painter
      *  the current render batch, the batch will be concluded right away. Thus, watch out
      *  for changes of blend mode, clipping rectangle, render target or culling.</p>
      */
-    public function get state():RenderState { return _state; }
+    public var state(get, never):RenderState;
+    private function get_state():RenderState { return _state; }
 
     /** The Stage3D instance this painter renders into. */
-    public function get stage3D():Stage3D { return _stage3D; }
+    public var stage3D(get, never):Stage3D;
+    private function get_stage3D():Stage3D { return _stage3D; }
 
     /** The Context3D instance this painter renders into. */
-    public function get context():Context3D { return _context; }
+    public var context(get, never):Context3D;
+    private function get_context():Context3D { return _context; }
 
     /** Returns the index of the current frame <strong>if</strong> the render cache is enabled;
      *  otherwise, returns zero. To get the frameID regardless of the render cache, call
      *  <code>Starling.frameID</code> instead. */
-    public function set frameID(value:uint):void { _frameID = value; }
-    public function get frameID():uint
+    public var frameID(get, set):UInt;
+    private function set_frameID(value:UInt):UInt { return _frameID = value; }
+    private function get_frameID():UInt
     {
         return _batchProcessor == _batchProcessorCurr ? _frameID : 0;
     }
 
     /** The size (in points) that represents one pixel in the back buffer. */
-    public function get pixelSize():Number { return _pixelSize; }
-    public function set pixelSize(value:Number):void { _pixelSize = value; }
+    public var pixelSize(get, set):Float;
+    private function get_pixelSize():Float { return _pixelSize; }
+    private function set_pixelSize(value:Float):Void { return _pixelSize = value; }
 
     /** Indicates if another Starling instance (or another Stage3D framework altogether)
      *  uses the same render context. @default false */
-    public function get shareContext():Bool { return _shareContext; }
-    public function set shareContext(value:Bool):void { _shareContext = value; }
+    public var shareContext(get, set):Bool;
+    private function get_shareContext():Bool { return _shareContext; }
+    private function set_shareContext(value:Bool):Bool { return _shareContext = value; }
 
     /** Indicates if Stage3D render methods will report errors. Activate only when needed,
      *  as this has a negative impact on performance. @default false */
-    public function get enableErrorChecking():Bool { return _enableErrorChecking; }
-    public function set enableErrorChecking(value:Bool):void
+    public var enableErrorChecking(get, set):Bool;
+    private function get_enableErrorChecking():Bool { return _enableErrorChecking; }
+    private function set_enableErrorChecking(value:Bool):Bool
     {
         _enableErrorChecking = value;
-        if (_context) _context.enableErrorChecking = value;
+        if (_context != null) _context.enableErrorChecking = value;
+        return value;
     }
 
     /** Returns the current width of the back buffer. In most cases, this value is in pixels;
@@ -866,27 +877,31 @@ public class Painter
      *  'supportHighResolutions' setting, you have to multiply with 'backBufferPixelsPerPoint'
      *  for the actual pixel count. Alternatively, use the Context3D-property with the
      *  same name: it will return the exact pixel values. */
-    public function get backBufferWidth():int { return _backBufferWidth; }
+    public var backBufferWidth(get, never):Int;
+    private function get_backBufferWidth():Int { return _backBufferWidth; }
 
     /** Returns the current height of the back buffer. In most cases, this value is in pixels;
      *  however, if the app is running on an HiDPI display with an activated
      *  'supportHighResolutions' setting, you have to multiply with 'backBufferPixelsPerPoint'
      *  for the actual pixel count. Alternatively, use the Context3D-property with the
      *  same name: it will return the exact pixel values. */
-    public function get backBufferHeight():int { return _backBufferHeight; }
+    public var backBufferHeight(get, never):Int;
+    private function get_backBufferHeight():Int { return _backBufferHeight; }
 
     /** The number of pixels per point returned by the 'backBufferWidth/Height' properties.
      *  Except for desktop HiDPI displays with an activated 'supportHighResolutions' setting,
      *  this will always return '1'. */
-    public function get backBufferScaleFactor():Number { return _backBufferScaleFactor; }
+    public var backBufferScaleFactor(get, never):Float;
+    private function get_backBufferScaleFactor():Float { return _backBufferScaleFactor; }
 
     /** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
      *  disposed). */
-    public function get contextValid():Bool
+    public var contextValid(get, never):Bool;
+    private function get_contextValid():Bool
     {
-        if (_context)
+        if (_context != null)
         {
-            const driverInfo:String = _context.driverInfo;
+            var driverInfo:String = _context.driverInfo;
             return driverInfo != null && driverInfo != "" && driverInfo != "Disposed";
         }
         else return false;
@@ -894,9 +909,10 @@ public class Painter
 
     /** The Context3D profile of the current render context, or <code>null</code>
      *  if the context has not been created yet. */
-    public function get profile():String
+    public var profile(get, never):String;
+    private function get_profile():String
     {
-        if (_context) return _context.profile;
+        if (_context != null) return _context.profile;
         else return null;
     }
 
@@ -904,26 +920,27 @@ public class Painter
      *  If you need to share data that is bound to the render context (e.g. textures), use
      *  this dictionary instead of creating a static class variable. That way, the data will
      *  be available for all Starling instances that use this stage3D / context. */
-    public function get sharedData():Dictionary
+    public var sharedData(get, never):Map<String, Dynamic>;
+    private function get_sharedData():Map<String, Dynamic>
     {
-        var data:Dictionary = sSharedData[stage3D] as Dictionary;
+        var data:Map<String, Dynamic> = sSharedData[stage3D];
         if (data == null)
         {
-            data = new Dictionary();
+            data = new Map<String, Dynamic>();
             sSharedData[stage3D] = data;
         }
         return data;
     }
 
+    private var programs(get, never):Map<String, Program>;
     private function get programs():Dictionary
     {
-        var programs:Dictionary = sharedData[PROGRAM_DATA_NAME] as Dictionary;
+        var programs:Map<String, Program> = sharedData[PROGRAM_DATA_NAME];
         if (programs == null)
         {
-            programs = new Dictionary();
+            programs = new Map<String, Program>();
             sharedData[PROGRAM_DATA_NAME] = programs;
         }
         return programs;
     }
-}
 }

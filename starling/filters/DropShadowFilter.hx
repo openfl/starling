@@ -8,8 +8,8 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
+package starling.filters;
+
 import starling.rendering.Painter;
 import starling.textures.Texture;
 import starling.utils.Padding;
@@ -36,9 +36,9 @@ class DropShadowFilter extends FragmentFilter
      * @param resolution the resolution of the filter texture. '1' means full resolution,
      *                   '0.5' half resolution, etc.
      */
-    public function DropShadowFilter(distance:Float=4.0, angle:Float=0.785,
-                                     color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
-                                     resolution:Float=0.5)
+    public function new(distance:Float=4.0, angle:Float=0.785,
+                        color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
+                        resolution:Float=0.5)
     {
         _compositeFilter = new CompositeFilter();
         _blurFilter = new BlurFilter(blur, blur, resolution);
@@ -97,31 +97,36 @@ class DropShadowFilter extends FragmentFilter
     }
 
     /** The color of the shadow. @default 0x0 */
+    public var color(get, set):UInt;
     private function get_color():UInt { return _compositeFilter.getColorAt(0); }
-    private function set_color(value:UInt):Void
+    private function set_color(value:UInt):UInt
     {
         if (color != value)
         {
             _compositeFilter.setColorAt(0, value, true);
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The alpha value of the shadow. Values between 0 and 1 modify the opacity;
      *  values > 1 will make it stronger, i.e. produce a harder edge. @default 0.5 */
+    public var alpha(get, set):Float;
     private function get_alpha():Float { return _compositeFilter.getAlphaAt(0); }
-    private function set_alpha(value:Float):Void
+    private function set_alpha(value:Float):Float
     {
         if (alpha != value)
         {
             _compositeFilter.setAlphaAt(0, value);
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The offset distance for the shadow, in points. @default 4.0 */
+    public var distance(get, set):Float;
     private function get_distance():Float { return _distance; }
-    private function set_distance(value:Float):Void
+    private function set_distance(value:Float):Float
     {
         if (_distance != value)
         {
@@ -129,11 +134,13 @@ class DropShadowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
 
     /** The angle with which the shadow is offset, in radians. @default Math.PI / 4 */
+    public var angle(get, set):Float;
     private function get_angle():Float { return _angle; }
-    private function set_angle(value:Float):Void
+    private function set_angle(value:Float):Float
     {
         if (_angle != value)
         {
@@ -141,13 +148,15 @@ class DropShadowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
 
     /** The amount of blur with which the shadow is created.
      *  The number of required passes will be <code>Math.ceil(value) × 2</code>.
      *  @default 1.0 */
+    public var blur(get, set):Float;
     private function get_blur():Float { return _blurFilter.blurX; }
-    private function set_blur(value:Float):Void
+    private function set_blur(value:Float):Float
     {
         if (blur != value)
         {
@@ -155,11 +164,13 @@ class DropShadowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
 
     /** @private */
+    public var resolution(get, set):Float;
     override private function get_resolution():Float { return _blurFilter.resolution; }
-    override private function set_resolution(value:Float):Void
+    override private function set_resolution(value:Float):Float
     {
         if (resolution != value)
         {
@@ -167,6 +178,6 @@ class DropShadowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
-}
 }

@@ -2,26 +2,28 @@ package starling.geom;
 
 import openfl.Vector;
 
+import starling.rendering.IndexData;
+
 class Ellipse extends ImmutablePolygon
 {
     private var __x:Float;
     private var __y:Float;
-    private var mRadiusX:Float;
-    private var mRadiusY:Float;
+    private var __radiusX:Float;
+    private var __radiusY:Float;
 
     public function new(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1)
     {
         __x = x;
         __y = y;
-        mRadiusX = radiusX;
-        mRadiusY = radiusY;
+        __radiusX = radiusX;
+        __radiusY = radiusY;
 
         super(getVertices(numSides));
     }
 
     private function getVertices(numSides:Int):Array<Float>
     {
-        if (numSides < 0) numSides = Std.int(Math.PI * (mRadiusX + mRadiusY) / 4.0);
+        if (numSides < 0) numSides = Std.int(Math.PI * (__radiusX + __radiusY) / 4.0);
         if (numSides < 6) numSides = 6;
 
         var vertices:Array<Float> = [];
@@ -30,31 +32,25 @@ class Ellipse extends ImmutablePolygon
 
         for (i in 0...numSides)
         {
-            vertices[i * 2    ] = Math.cos(angle) * mRadiusX + __x;
-            vertices[i * 2 + 1] = Math.sin(angle) * mRadiusY + __y;
+            vertices[i * 2    ] = Math.cos(angle) * __radiusX + __x;
+            vertices[i * 2 + 1] = Math.sin(angle) * __radiusY + __y;
             angle += angleDelta;
         }
 
         return vertices;
     }
 
-    override public function triangulate(result:Vector<UInt> = null):Vector<UInt>
+    override public function triangulate(indexData:IndexData=null, offset:Int=0):IndexData
     {
-        if (result == null) result = new Vector<UInt>();
+        if (indexData == null) indexData = new IndexData((numVertices - 2) * 3);
 
         var from:UInt = 1;
         var to:UInt = numVertices - 1;
-        var pos:UInt = result.length;
 
-        //for (var i:Int=from; i<to; ++i)
         for (i in from...to)
-        {
-            result[pos++] = 0;
-            result[pos++] = i;
-            result[pos++] = i + 1;
-        }
+            indexData.addTriangle(offset, offset + i, offset + i + 1);
 
-        return result;
+        return indexData;
     }
 
     override public function contains(x:Float, y:Float):Bool
@@ -62,15 +58,15 @@ class Ellipse extends ImmutablePolygon
         var vx:Float = x - __x;
         var vy:Float = y - __y;
 
-        var a:Float = vx / mRadiusX;
-        var b:Float = vy / mRadiusY;
+        var a:Float = vx / __radiusX;
+        var b:Float = vy / __radiusY;
 
         return a * a + b * b <= 1;
     }
 
     override private function get_area():Float
     {
-        return Math.PI * mRadiusX * mRadiusY;
+        return Math.PI * __radiusX * __radiusY;
     }
 
     override private function get_isSimple():Bool

@@ -8,16 +8,18 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
-import flash.display3D.Context3DTextureFormat;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
+package starling.filters;
+
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.core.starling_internal;
 import starling.display.DisplayObject;
+import starling.display.Mesh;
 import starling.display.Stage;
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -33,10 +35,10 @@ import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 
 /** Dispatched when the settings change in a way that requires a redraw. */
-[Event(name="change", type="starling.events.Event")]
+@:meta(Event(name="change", type="starling.events.Event"))
 
 /** Dispatched every frame on filters assigned to display objects connected to the stage. */
-[Event(name="enterFrame", type="starling.events.EnterFrameEvent")]
+@:meta(Event(name="enterFrame", type="starling.events.EnterFrameEvent"))
 
 /** The FragmentFilter class is the base class for all filter effects in Starling.
  *  All filters must extend this class. You can attach them to any display object through the
@@ -115,7 +117,7 @@ class FragmentFilter extends EventDispatcher
 
     /** Creates a new instance. The base class' implementation just draws the unmodified
      *  input texture. */
-    public function FragmentFilter()
+    public function new()
     {
         _resolution = 1.0;
         _textureFormat = Context3DTextureFormat.BGRA;
@@ -131,15 +133,15 @@ class FragmentFilter extends EventDispatcher
     {
         Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
 
-        if (_helper) _helper.dispose();
-        if (_effect) _effect.dispose();
-        if (_quad)   _quad.dispose();
+        if (_helper != null) _helper.dispose();
+        if (_effect != null) _effect.dispose();
+        if (_quad != null)   _quad.dispose();
 
         _effect = null;
         _quad = null;
     }
 
-    private function onContextCreated(event:Object):Void
+    private function onContextCreated(event:Dynamic):Void
     {
         setRequiresRedraw();
     }
@@ -175,8 +177,8 @@ class FragmentFilter extends EventDispatcher
         var bounds:Rectangle = Pool.getRectangle(); // might be recursive -> no static var
         var drawLastPassToBackBuffer:Bool = false;
         var origResolution:Float = _resolution;
-        var renderSpace:DisplayObject = _target.stage || _target.parent;
-        var isOnStage:Bool = renderSpace is Stage;
+        var renderSpace:DisplayObject = _target.stage != null ? _target.stage : _target.parent;
+        var isOnStage:Bool = Std.is(renderSpace, Stage);
         var stage:Stage = Starling.current.stage;
         var stageBounds:Rectangle;
 
@@ -218,7 +220,7 @@ class FragmentFilter extends EventDispatcher
         _quad.visible = !bounds.isEmpty();
         if (!_quad.visible) { Pool.putRectangle(bounds); return; }
 
-        if (_padding) RectangleUtil.extend(bounds,
+        if (_padding != null) RectangleUtil.extend(bounds,
             _padding.left, _padding.right, _padding.top, _padding.bottom);
 
         // extend to actual pixel bounds for maximum sharpness + to avoid jiggling
@@ -259,7 +261,7 @@ class FragmentFilter extends EventDispatcher
         painter.popState();
         painter.cacheEnabled = wasCacheEnabled; // -> cache again
 
-        if (output) // indirect rendering
+        if (output != null) // indirect rendering
         {
             painter.pushState();
 
@@ -306,7 +308,7 @@ class FragmentFilter extends EventDispatcher
         var bounds:Rectangle = null;
         var renderTarget:Texture;
 
-        if (output) // render to texture
+        if (output != null) // render to texture
         {
             renderTarget = output;
             projectionMatrix = MatrixUtil.createPerspectiveProjectionMatrix(0, 0,
@@ -345,7 +347,7 @@ class FragmentFilter extends EventDispatcher
      *  Must be overridden by all subclasses that do any rendering on their own (instead
      *  of just forwarding processing to other filters).
      */
-    protected function createEffect():FilterEffect
+    private function createEffect():FilterEffect
     {
         return new FilterEffect();
     }
@@ -404,7 +406,8 @@ class FragmentFilter extends EventDispatcher
     // properties
 
     /** The effect instance returning the FilterEffect created via <code>createEffect</code>. */
-    protected function get_effect():FilterEffect
+    private var effect(get, never):FilterEffect;
+    private function get_effect():FilterEffect
     {
         if (_effect == null) _effect = createEffect();
         return _effect;
@@ -412,7 +415,8 @@ class FragmentFilter extends EventDispatcher
 
     /** The VertexData used to process the effect. Per default, uses the format provided
      *  by the effect, and contains four vertices enclosing the target object. */
-    protected function get_vertexData():VertexData
+    private var vertexData(get, never):VertexData;
+    private function get_vertexData():VertexData
     {
         if (_vertexData == null) _vertexData = new VertexData(effect.vertexFormat, 4);
         return _vertexData;
@@ -420,7 +424,8 @@ class FragmentFilter extends EventDispatcher
 
     /** The IndexData used to process the effect. Per default, references a quad (two triangles)
      *  of four vertices. */
-    protected function get_indexData():IndexData
+    private var indexData(get, never):IndexData;
+    private function get_indexData():IndexData
     {
         if (_indexData == null)
         {
@@ -433,15 +438,16 @@ class FragmentFilter extends EventDispatcher
 
     /** Call this method when any of the filter's properties changes.
      *  This will make sure the filter is redrawn in the next frame. */
-    protected function setRequiresRedraw():Void
+    private function setRequiresRedraw():Void
     {
         dispatchEventWith(Event.CHANGE);
-        if (_target) _target.setRequiresRedraw();
-        if (_cached) _cacheRequested = true;
+        if (_target != null) _target.setRequiresRedraw();
+        if (_cached != null) _cacheRequested = true;
     }
 
     /** Indicates the number of rendering passes required for this filter.
      *  Subclasses must override this method if the number of passes is not <code>1</code>. */
+    public var numPasses(get, never):Int;
     private function get_numPasses():Int
     {
         return 1;
@@ -449,11 +455,12 @@ class FragmentFilter extends EventDispatcher
 
     /** Called when assigning a target display object.
      *  Override to plug in class-specific logic. */
-    protected function onTargetAssigned(target:DisplayObject):Void
+    private function onTargetAssigned(target:DisplayObject):Void
     { }
 
     /** Padding can extend the size of the filter texture in all directions.
      *  That's useful when the filter "grows" the bounds of the object in any direction. */
+    public var padding(get, set):Padding;
     private function get_padding():Padding
     {
         if (_padding == null)
@@ -465,12 +472,14 @@ class FragmentFilter extends EventDispatcher
         return _padding;
     }
 
-    private function set_padding(value:Padding):Void
+    private function set_padding(value:Padding):Padding
     {
         padding.copyFrom(value);
+        return value;
     }
 
     /** Indicates if the filter is cached (via the <code>cache</code> method). */
+    public var isCached(get, never):Bool;
     private function get_isCached():Bool { return _cached; }
 
     /** The resolution of the filter texture. "1" means stage resolution, "0.5" half the stage
@@ -478,8 +487,9 @@ class FragmentFilter extends EventDispatcher
      *  output quality. Values greater than 1 are allowed; such values might make sense for a
      *  cached filter when it is scaled up. @default 1
      */
+    public var resolution(get, set):Float;
     private function get_resolution():Float { return _resolution; }
-    private function set_resolution(value:Float):Void
+    private function set_resolution(value:Float):Float
     {
         if (value != _resolution)
         {
@@ -487,23 +497,27 @@ class FragmentFilter extends EventDispatcher
             else throw new ArgumentError("resolution must be > 0");
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The anti-aliasing level. This is only used for rendering the target object
      *  into a texture, not for the filter passes. 0 - none, 4 - maximum. @default 0 */
+    public var antiAliasing(get, set):Int;
     private function get_antiAliasing():Int { return _antiAliasing; }
-    private function set_antiAliasing(value:Int):Void
+    private function set_antiAliasing(value:Int):Int
     {
         if (value != _antiAliasing)
         {
             _antiAliasing = value;
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The smoothing mode of the filter texture. @default bilinear */
+    public var textureSmoothing(get, set):String;
     private function get_textureSmoothing():String { return _textureSmoothing; }
-    private function set_textureSmoothing(value:String):Void
+    private function set_textureSmoothing(value:String):String
     {
         if (value != _textureSmoothing)
         {
@@ -511,11 +525,13 @@ class FragmentFilter extends EventDispatcher
             if (_quad) _quad.textureSmoothing = value;
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** The format of the filter texture. @default BGRA */
+    public var textureFormat(get, set):String;
     private function get_textureFormat():String { return _textureFormat; }
-    private function set_textureFormat(value:String):Void
+    private function set_textureFormat(value:String):String
     {
         if (value != _textureFormat)
         {
@@ -523,6 +539,7 @@ class FragmentFilter extends EventDispatcher
             if (_helper) _helper.textureFormat = value;
             setRequiresRedraw();
         }
+        return value;
     }
 
     /** Indicates if the last filter pass is always drawn directly to the back buffer.
@@ -538,16 +555,17 @@ class FragmentFilter extends EventDispatcher
      *
      *  @default false
      */
+    public var alwaysDrawToBackBuffer(get, set):Bool;
     private function get_alwaysDrawToBackBuffer():Bool { return _alwaysDrawToBackBuffer; }
-    private function set_alwaysDrawToBackBuffer(value:Bool):Void
+    private function set_alwaysDrawToBackBuffer(value:Bool):Bool
     {
-        _alwaysDrawToBackBuffer = value;
+        return _alwaysDrawToBackBuffer = value;
     }
 
     // internal methods
 
     /** @private */
-    starling_internal function setTarget(target:DisplayObject):Void
+    @:allow(starling) private function setTarget(target:DisplayObject):Void
     {
         if (target != _target)
         {
@@ -577,75 +595,66 @@ class FragmentFilter extends EventDispatcher
         }
     }
 }
-}
-
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
-
-import starling.display.DisplayObject;
-import starling.display.Mesh;
-import starling.rendering.IndexData;
-import starling.rendering.VertexData;
-import starling.textures.Texture;
 
 class FilterQuad extends Mesh
 {
-private static var sMatrix:Matrix = new Matrix();
+	private static var sMatrix:Matrix = new Matrix();
 
-public function FilterQuad(smoothing:String)
-{
-    var vertexData:VertexData = new VertexData(null, 4);
-    vertexData.numVertices = 4;
+	public function new(smoothing:String)
+	{
+		var vertexData:VertexData = new VertexData(null, 4);
+		vertexData.numVertices = 4;
 
-    var indexData:IndexData = new IndexData(6);
-    indexData.addQuad(0, 1, 2, 3);
+		var indexData:IndexData = new IndexData(6);
+		indexData.addQuad(0, 1, 2, 3);
 
-    super(vertexData, indexData);
+		super(vertexData, indexData);
 
-    textureSmoothing = smoothing;
-    pixelSnapping = false;
-}
+		textureSmoothing = smoothing;
+		pixelSnapping = false;
+	}
 
-override public function dispose():Void
-{
-    disposeTexture();
-    super.dispose();
-}
+	override public function dispose():Void
+	{
+		disposeTexture();
+		super.dispose();
+	}
 
-public function disposeTexture():Void
-{
-    if (texture)
-    {
-        texture.dispose();
-        texture = null;
-    }
-}
+	public function disposeTexture():Void
+	{
+		if (texture != null)
+		{
+			texture.dispose();
+			texture = null;
+		}
+	}
 
-public function moveVertices(sourceSpace:DisplayObject, targetSpace:DisplayObject):Void
-{
-    if (targetSpace.is3D)
-        throw new Error("cannot move vertices into 3D space");
-    else if (sourceSpace != targetSpace)
-    {
-        targetSpace.getTransformationMatrix(sourceSpace, sMatrix).invert(); // ss could be null!
-        vertexData.transformPoints("position", sMatrix);
-    }
-}
+	public function moveVertices(sourceSpace:DisplayObject, targetSpace:DisplayObject):Void
+	{
+		if (targetSpace.is3D)
+			throw new Error("cannot move vertices into 3D space");
+		else if (sourceSpace != targetSpace)
+		{
+			targetSpace.getTransformationMatrix(sourceSpace, sMatrix).invert(); // ss could be null!
+			vertexData.transformPoints("position", sMatrix);
+		}
+	}
 
-public function setBounds(bounds:Rectangle):Void
-{
-    var vertexData:VertexData = this.vertexData;
-    var attrName:String = "position";
+	public function setBounds(bounds:Rectangle):Void
+	{
+		var vertexData:VertexData = this.vertexData;
+		var attrName:String = "position";
 
-    vertexData.setPoint(0, attrName, bounds.x, bounds.y);
-    vertexData.setPoint(1, attrName, bounds.right, bounds.y);
-    vertexData.setPoint(2, attrName, bounds.x, bounds.bottom);
-    vertexData.setPoint(3, attrName, bounds.right, bounds.bottom);
-}
+		vertexData.setPoint(0, attrName, bounds.x, bounds.y);
+		vertexData.setPoint(1, attrName, bounds.right, bounds.y);
+		vertexData.setPoint(2, attrName, bounds.x, bounds.bottom);
+		vertexData.setPoint(3, attrName, bounds.right, bounds.bottom);
+	}
 
-override private function set_texture(value:Texture):Void
-{
-    super.texture = value;
-    if (value) value.setupTextureCoordinates(vertexData);
-}
+	override private function set_texture(value:Texture):Texture
+	{
+		super.texture = value;
+		if (value != null) value.setupTextureCoordinates(vertexData);
+		return value;
+	}
 }

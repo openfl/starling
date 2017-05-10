@@ -8,14 +8,17 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import flash.display3D.Context3DTriangleFace;
-import flash.display3D.textures.TextureBase;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
+package starling.rendering;
+
+import haxe.Constraints.Function;
+
+import openfl.display3D.Context3DTriangleFace;
+import openfl.display3D.textures.TextureBase;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.Vector;
 
 import starling.display.BlendMode;
 import starling.textures.Texture;
@@ -64,37 +67,37 @@ import starling.utils.RectangleUtil;
  *  @see Painter
  *  @see starling.display.Sprite3D
  */
-public class RenderState
+class RenderState
 {
-    /** @private */ internal var _alpha:Number;
-    /** @private */ internal var _blendMode:String;
-    /** @private */ internal var _modelviewMatrix:Matrix;
+    /** @private */ @:allow(starling) private var _alpha:Float;
+    /** @private */ @:allow(starling) private var _blendMode:String;
+    /** @private */ @:allow(starling) private var _modelviewMatrix:Matrix;
 
-    private static const CULLING_VALUES:Vector.<String> = new <String>
+    private static var CULLING_VALUES:Vector<String> = Vector.ofArray(
         [Context3DTriangleFace.NONE, Context3DTriangleFace.FRONT,
-         Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK];
+         Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK]);
 
-    private var _miscOptions:uint;
+    private var _miscOptions:UInt;
     private var _clipRect:Rectangle;
     private var _renderTarget:Texture;
     private var _onDrawRequired:Function;
     private var _modelviewMatrix3D:Matrix3D;
     private var _projectionMatrix3D:Matrix3D;
-    private var _projectionMatrix3DRev:uint;
+    private var _projectionMatrix3DRev:UInt;
     private var _mvpMatrix3D:Matrix3D;
 
     // helper objects
     private static var sMatrix3D:Matrix3D = new Matrix3D();
-    private static var sProjectionMatrix3DRev:uint = 0;
+    private static var sProjectionMatrix3DRev:UInt = 0;
 
     /** Creates a new render state with the default settings. */
-    public function RenderState()
+    public function new()
     {
         reset();
     }
 
     /** Duplicates all properties of another instance on the current instance. */
-    public function copyFrom(renderState:RenderState):void
+    public function copyFrom(renderState:RenderState):Void
     {
         if (_onDrawRequired != null)
         {
@@ -132,7 +135,7 @@ public class RenderState
 
     /** Resets the RenderState to the default settings.
      *  (Check each property documentation for its default value.) */
-    public function reset():void
+    public function reset():Void
     {
         this.alpha = 1.0;
         this.blendMode = BlendMode.NORMAL;
@@ -154,7 +157,7 @@ public class RenderState
     // matrix methods / properties
 
     /** Prepends the given matrix to the 2D modelview matrix. */
-    public function transformModelviewMatrix(matrix:Matrix):void
+    public function transformModelviewMatrix(matrix:Matrix):Void
     {
         MatrixUtil.prependMatrix(_modelviewMatrix, matrix);
     }
@@ -163,7 +166,7 @@ public class RenderState
      *  The current contents of the 2D modelview matrix is stored in the 3D modelview matrix
      *  before doing so; the 2D modelview matrix is then reset to the identity matrix.
      */
-    public function transformModelviewMatrix3D(matrix:Matrix3D):void
+    public function transformModelviewMatrix3D(matrix:Matrix3D):Void
     {
         if (_modelviewMatrix3D == null)
             _modelviewMatrix3D = Pool.getMatrix3D();
@@ -186,9 +189,9 @@ public class RenderState
      *  <p>If you pass only the first 4 parameters, the camera will be set up above the center
      *  of the stage, with a field of view of 1.0 rad.</p>
      */
-    public function setProjectionMatrix(x:Number, y:Number, width:Number, height:Number,
-                                        stageWidth:Number=0, stageHeight:Number=0,
-                                        cameraPos:Vector3D=null):void
+    public function setProjectionMatrix(x:Float, y:Float, width:Float, height:Float,
+                                        stageWidth:Float=0, stageHeight:Float=0,
+                                        cameraPos:Vector3D=null):Void
     {
         _projectionMatrix3DRev = ++sProjectionMatrix3DRev;
         MatrixUtil.createPerspectiveProjectionMatrix(
@@ -198,7 +201,7 @@ public class RenderState
     /** This method needs to be called whenever <code>projectionMatrix3D</code> was changed
      *  other than via <code>setProjectionMatrix</code>.
      */
-    public function setProjectionMatrixChanged():void
+    public function setProjectionMatrixChanged():Void
     {
         _projectionMatrix3DRev = ++sProjectionMatrix3DRev;
     }
@@ -206,7 +209,7 @@ public class RenderState
     /** Changes the modelview matrices (2D and, if available, 3D) to identity matrices.
      *  An object transformed an identity matrix performs no transformation.
      */
-    public function setModelviewMatricesToIdentity():void
+    public function setModelviewMatricesToIdentity():Void
     {
         _modelviewMatrix.identity();
         if (_modelviewMatrix3D) _modelviewMatrix3D.identity();
@@ -215,25 +218,28 @@ public class RenderState
     /** Returns the current 2D modelview matrix.
      *  CAUTION: Use with care! Each call returns the same instance.
      *  @default identity matrix */
-    public function get modelviewMatrix():Matrix { return _modelviewMatrix; }
-    public function set modelviewMatrix(value:Matrix):void { _modelviewMatrix.copyFrom(value); }
+    public var modelviewMatrix(get, set):Matrix;
+    private function get_modelviewMatrix():Matrix { return _modelviewMatrix; }
+    private function set_modelviewMatrix(value:Matrix):Matrix { _modelviewMatrix.copyFrom(value); return value; }
 
     /** Returns the current 3D modelview matrix, if there have been 3D transformations.
      *  CAUTION: Use with care! Each call returns the same instance.
      *  @default null */
-    public function get modelviewMatrix3D():Matrix3D { return _modelviewMatrix3D; }
-    public function set modelviewMatrix3D(value:Matrix3D):void
+    public var modelviewMatrix3D(get, set):Matrix3D;
+    private function get_modelviewMatrix3D():Matrix3D { return _modelviewMatrix3D; }
+    private function set_modelviewMatrix3D(value:Matrix3D):Matrix3D
     {
-        if (value)
+        if (value != null)
         {
             if (_modelviewMatrix3D == null) _modelviewMatrix3D = Pool.getMatrix3D(false);
             _modelviewMatrix3D.copyFrom(value);
         }
-        else if (_modelviewMatrix3D)
+        else if (_modelviewMatrix3D != null)
         {
             Pool.putMatrix3D(_modelviewMatrix3D);
             _modelviewMatrix3D = null;
         }
+        return value;
     }
 
     /** Returns the current projection matrix. You can use the method 'setProjectionMatrix3D'
@@ -241,19 +247,22 @@ public class RenderState
      *  CAUTION: Use with care! Each call returns the same instance. If you modify the matrix
      *           in place, you have to call <code>setProjectionMatrixChanged</code>.
      *  @default identity matrix */
-    public function get projectionMatrix3D():Matrix3D { return _projectionMatrix3D; }
-    public function set projectionMatrix3D(value:Matrix3D):void
+    public var projectionMatrix3D(get, set):Matrix3D;
+    private function get_projectionMatrix3D():Matrix3D { return _projectionMatrix3D; }
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D
     {
         setProjectionMatrixChanged();
         _projectionMatrix3D.copyFrom(value);
+        return value;
     }
 
     /** Calculates the product of modelview and projection matrix and stores it in a 3D matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
-    public function get mvpMatrix3D():Matrix3D
+    public var mvpMatrix3D(get, never):Matrix3D;
+    private function get_mvpMatrix3D():Matrix3D
     {
         _mvpMatrix3D.copyFrom(_projectionMatrix3D);
-        if (_modelviewMatrix3D) _mvpMatrix3D.prepend(_modelviewMatrix3D);
+        if (_modelviewMatrix3D != null) _mvpMatrix3D.prepend(_modelviewMatrix3D);
         _mvpMatrix3D.prepend(MatrixUtil.convertTo3D(_modelviewMatrix, sMatrix3D));
         return _mvpMatrix3D;
     }
@@ -270,11 +279,11 @@ public class RenderState
      *                    of this writing, AIR supports anti-aliasing only on Desktop.
      */
     public function setRenderTarget(target:Texture, enableDepthAndStencil:Bool=true,
-                                    antiAlias:int=0):void
+                                    antiAlias:Int=0):Void
     {
         var currentTarget:TextureBase = _renderTarget ? _renderTarget.base : null;
         var newTarget:TextureBase = target ? target.base : null;
-        var newOptions:uint = MathUtil.min(antiAlias, 0xf) | uint(enableDepthAndStencil) << 4;
+        var newOptions:UInt = MathUtil.min(antiAlias, 0xf) | uint(enableDepthAndStencil) << 4;
         var optionsChange:Bool = newOptions != (_miscOptions & 0xff);
 
         if (currentTarget != newTarget || optionsChange)
@@ -292,8 +301,9 @@ public class RenderState
      *  this already includes the current object! The value is the product of current object's
      *  alpha value and all its parents. @default 1.0
      */
-    public function get alpha():Number { return _alpha; }
-    public function set alpha(value:Number):void { _alpha = value; }
+    public var alpha(get, set):Float;
+    private function get_alpha():Float { return _alpha; }
+    private function set_alpha(value:Float):Float { return _alpha = value; }
 
     /** The blend mode to be used on rendering. A value of "auto" is ignored, since it
      *  means that the mode should remain unchanged.
@@ -301,30 +311,35 @@ public class RenderState
      *  @default BlendMode.NORMAL
      *  @see starling.display.BlendMode
      */
-    public function get blendMode():String { return _blendMode; }
-    public function set blendMode(value:String):void
+    public var blendMode(get, set):String;
+    private function get_blendMode():String { return _blendMode; }
+    private function set_blendMode(value:String):String
     {
         if (value != BlendMode.AUTO && _blendMode != value)
         {
             if (_onDrawRequired != null) _onDrawRequired();
             _blendMode = value;
         }
+        return value;
     }
 
     /** The texture that is currently being rendered into, or <code>null</code>
      *  to render into the back buffer. On assignment, calls <code>setRenderTarget</code>
      *  with its default parameters. */
-    public function get renderTarget():Texture { return _renderTarget; }
-    public function set renderTarget(value:Texture):void { setRenderTarget(value); }
+    public var renderTarget(get, set):Texture;
+    private function get_renderTarget():Texture { return _renderTarget; }
+    private function set_renderTarget(value:Texture):Texture { setRenderTarget(value); return value; }
 
     /** @private */
-    internal function get renderTargetBase():TextureBase
+    @:allow(starling) private var renderTargetBase(get, never):TextureBase;
+    private function get_renderTargetBase():TextureBase
     {
         return _renderTarget ? _renderTarget.base : null;
     }
 
     /** @private */
-    internal function get renderTargetOptions():uint
+    @:allow(starling) private var renderTargetOptions:UInt;
+    private function get_renderTargetOptions():UInt
     {
         return _miscOptions & 0xff;
     }
@@ -333,23 +348,25 @@ public class RenderState
      *  their orientation relative to the view plane.
      *  @default Context3DTriangleFace.NONE
      */
-    public function get culling():String
+    public var culling(get, set):String;
+    private function get_culling():String
     {
-        var index:int = (_miscOptions & 0xf00) >> 8;
+        var index:Int = (_miscOptions & 0xf00) >> 8;
         return CULLING_VALUES[index];
     }
 
-    public function set culling(value:String):void
+    private function set_culling(value:String):String
     {
         if (this.culling != value)
         {
             if (_onDrawRequired != null) _onDrawRequired();
 
-            var index:int = CULLING_VALUES.indexOf(value);
+            var index:Int = CULLING_VALUES.indexOf(value);
             if (index == -1) throw new ArgumentError("Invalid culling mode");
 
             _miscOptions = (_miscOptions & 0xfffff0ff) | (index << 8);
         }
+        return value;
     }
 
     /** The clipping rectangle can be used to limit rendering in the current render target to
@@ -358,8 +375,9 @@ public class RenderState
      *
      *  @default null
      */
-    public function get clipRect():Rectangle { return _clipRect; }
-    public function set clipRect(value:Rectangle):void
+    public var clipRect(get, set):Rectangle;
+    private function get_clipRect():Rectangle { return _clipRect; }
+    private function set_clipRect(value:Rectangle):Rectangle
     {
         if (!RectangleUtil.compare(_clipRect, value))
         {
@@ -375,32 +393,36 @@ public class RenderState
                 _clipRect = null;
             }
         }
+        return value;
     }
 
     /** The anti-alias setting used when setting the current render target
      *  via <code>setRenderTarget</code>. */
-    public function get renderTargetAntiAlias():int
+    public var renderTargetAntiAlias(get, never):Int;
+    private function get_renderTargetAntiAlias():Int
     {
         return _miscOptions & 0xf;
     }
 
     /** Indicates if the render target (set via <code>setRenderTarget</code>)
      *  has its depth and stencil buffers enabled. */
-    public function get renderTargetSupportsDepthAndStencil():Bool
+    public var renderTargetSupportsDepthAndStencil(get, never):Bool;
+    private function get_renderTargetSupportsDepthAndStencil():Bool
     {
         return (_miscOptions & 0xf0) != 0;
     }
 
     /** Indicates if there have been any 3D transformations.
      *  Returns <code>true</code> if the 3D modelview matrix contains a value. */
-    public function get is3D():Bool { return _modelviewMatrix3D != null; }
+    public var is3D(get, never):Bool;
+    private function get_is3D():Bool { return _modelviewMatrix3D != null; }
 
     /** @private
      *
      *  This callback is executed whenever a state change requires a draw operation.
      *  This is the case if blend mode, render target, culling or clipping rectangle
      *  are changing. */
-    internal function get onDrawRequired():Function { return _onDrawRequired; }
-    internal function set onDrawRequired(value:Function):void { _onDrawRequired = value; }
-}
+    @:allow(starling) private var onDrawRequired(get, set):Function;
+    private function get_onDrawRequired():Function { return _onDrawRequired; }
+    private function set_onDrawRequired(value:Function):Function { return _onDrawRequired = value; }
 }

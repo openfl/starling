@@ -8,9 +8,13 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import flash.geom.Matrix;
+package starling.rendering;
+
+import haxe.Constraints.Function;
+
+import openfl.geom.Matrix;
+import openfl.utils.Dictionary;
+import openfl.Vector;
 
 import starling.display.Mesh;
 import starling.display.MeshBatch;
@@ -19,9 +23,9 @@ import starling.utils.MeshSubset;
 /** This class manages a list of mesh batches of different types;
  *  it acts as a "meta" MeshBatch that initiates all rendering.
  */
-internal class BatchProcessor
+class BatchProcessor
 {
-    private var _batches:Vector.<MeshBatch>;
+    private var _batches:Vector<MeshBatch>;
     private var _batchPool:BatchPool;
     private var _currentBatch:MeshBatch;
     private var _currentStyleType:Class;
@@ -32,17 +36,17 @@ internal class BatchProcessor
     private static var sMeshSubset:MeshSubset = new MeshSubset();
 
     /** Creates a new batch processor. */
-    public function BatchProcessor()
+    public function new()
     {
-        _batches = new <MeshBatch>[];
+        _batches = new Vector<MeshBatch>();
         _batchPool = new BatchPool();
         _cacheToken = new BatchToken();
     }
 
     /** Disposes all batches (including those in the reusable pool). */
-    public function dispose():void
+    public function dispose():Void
     {
-        for each (var batch:MeshBatch in _batches)
+        for (batch in _batches)
             batch.dispose();
 
         _batches.length = 0;
@@ -65,7 +69,7 @@ internal class BatchProcessor
      *                    state's <code>modelviewMatrix</code>).
      */
     public function addMesh(mesh:Mesh, state:RenderState, subset:MeshSubset=null,
-                            ignoreTransformations:Bool=false):void
+                            ignoreTransformations:Bool=false):Void
     {
         if (subset == null)
         {
@@ -94,7 +98,7 @@ internal class BatchProcessor
             }
 
             var matrix:Matrix = state ? state._modelviewMatrix : null;
-            var alpha:Number  = state ? state._alpha : 1.0;
+            var alpha:Float  = state ? state._alpha : 1.0;
 
             _currentBatch.addMesh(mesh, matrix, alpha, subset, ignoreTransformations);
             _cacheToken.vertexID += subset.numVertices;
@@ -104,11 +108,11 @@ internal class BatchProcessor
 
     /** Finishes the current batch, i.e. call the 'onComplete' callback on the batch and
      *  prepares initialization of a new one. */
-    public function finishBatch():void
+    public function finishBatch():Void
     {
         var meshBatch:MeshBatch = _currentBatch;
 
-        if (meshBatch)
+        if (meshBatch != null)
         {
             _currentBatch = null;
             _currentStyleType = null;
@@ -119,11 +123,11 @@ internal class BatchProcessor
     }
 
     /** Clears all batches and adds them to a pool so they can be reused later. */
-    public function clear():void
+    public function clear():Void
     {
-        var numBatches:int = _batches.length;
+        var numBatches:Int = _batches.length;
 
-        for (var i:int=0; i<numBatches; ++i)
+        for (i in 0...numBatches)
             _batchPool.put(_batches[i]);
 
         _batches.length = 0;
@@ -133,13 +137,13 @@ internal class BatchProcessor
     }
 
     /** Returns the batch at a certain index. */
-    public function getBatchAt(batchID:int):MeshBatch
+    public function getBatchAt(batchID:Int):MeshBatch
     {
         return _batches[batchID];
     }
 
     /** Disposes all batches that are currently unused. */
-    public function trim():void
+    public function trim():Void
     {
         _batchPool.purge();
     }
@@ -155,64 +159,61 @@ internal class BatchProcessor
     }
 
     /** The number of batches currently stored in the BatchProcessor. */
-    public function get numBatches():int { return _batches.length; }
+    public var numBatches(get, never):Int;
+    private function get_numBatches():Int { return _batches.length; }
 
     /** This callback is executed whenever a batch is finished and replaced by a new one.
      *  The finished MeshBatch is passed to the callback. Typically, this callback is used
      *  to actually render it. */
-    public function get onBatchComplete():Function { return _onBatchComplete; }
-    public function set onBatchComplete(value:Function):void { _onBatchComplete = value; }
+    public var onBatchComplete(get, set):Function;
+    private function get_onBatchComplete():Function { return _onBatchComplete; }
+    private function set_onBatchComplete(value:Function):Function { return _onBatchComplete = value; }
 }
-}
-
-import flash.utils.Dictionary;
-
-import starling.display.MeshBatch;
 
 class BatchPool
 {
-private var _batchLists:Dictionary;
+	private var _batchLists:Dictionary<Class<Dynamic>, MeshBatch>;
 
-public function BatchPool()
-{
-    _batchLists = new Dictionary();
-}
+	public function new()
+	{
+		_batchLists = new Dictionary();
+	}
 
-public function purge():void
-{
-    for each (var batchList:Vector.<MeshBatch> in _batchLists)
-    {
-        for (var i:int=0; i<batchList.length; ++i)
-            batchList[i].dispose();
+	public function purge():Void
+	{
+		for (batchList in _batchLists.keys())
+		{
+			for (i in 0...batchList.length)
+				batchList[i].dispose();
 
-        batchList.length = 0;
-    }
-}
+			batchList.length = 0;
+		}
+	}
 
-public function get(styleType:Class):MeshBatch
-{
-    var batchList:Vector.<MeshBatch> = _batchLists[styleType];
-    if (batchList == null)
-    {
-        batchList = new <MeshBatch>[];
-        _batchLists[styleType] = batchList;
-    }
+	public function get(styleType:Class<Dynamic>):MeshBatch
+	{
+		var batchList:Vector<MeshBatch> = _batchLists[styleType];
+		if (batchList == null)
+		{
+			batchList = new Vector<MeshBatch>();
+			_batchLists[styleType] = batchList;
+		}
 
-    if (batchList.length > 0) return batchList.pop();
-    else return new MeshBatch();
-}
+		if (batchList.length > 0) return batchList.pop();
+		else return new MeshBatch();
+	}
 
-public function put(meshBatch:MeshBatch):void
-{
-    var styleType:Class = meshBatch.style.type;
-    var batchList:Vector.<MeshBatch> = _batchLists[styleType];
-    if (batchList == null)
-    {
-        batchList = new <MeshBatch>[];
-        _batchLists[styleType] = batchList;
-    }
+	public function put(meshBatch:MeshBatch):Void
+	{
+		var styleType:Class<Dynamic> = meshBatch.style.type;
+		var batchList:Vector<MeshBatch> = _batchLists[styleType];
+		if (batchList == null)
+		{
+			batchList = new Vector<MeshBatch>();
+			_batchLists[styleType] = batchList;
+		}
 
-    meshBatch.clear();
-    batchList[batchList.length] = meshBatch;
-}
+		meshBatch.clear();
+		batchList[batchList.length] = meshBatch;
+	}
 }

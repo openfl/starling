@@ -8,8 +8,8 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
+package starling.rendering;
+
 import starling.utils.StringUtil;
 
 /** Points to a location within a list of MeshBatches.
@@ -25,22 +25,22 @@ import starling.utils.StringUtil;
 public class BatchToken
 {
     /** The ID of the current MeshBatch. */
-    public var batchID:int;
+    public var batchID:Int;
 
     /** The ID of the next vertex within the current MeshBatch. */
-    public var vertexID:int;
+    public var vertexID:Int;
 
     /** The ID of the next index within the current MeshBatch. */
-    public var indexID:int;
+    public var indexID:Int;
 
     /** Creates a new BatchToken. */
-    public function BatchToken(batchID:int=0, vertexID:int=0, indexID:int=0)
+    public function new(batchID:Int=0, vertexID:Int=0, indexID:Int=0)
     {
         setTo(batchID, vertexID, indexID);
     }
 
     /** Copies the properties from the given token to this instance. */
-    public function copyFrom(token:BatchToken):void
+    public function copyFrom(token:BatchToken):Void
     {
         batchID  = token.batchID;
         vertexID = token.vertexID;
@@ -48,7 +48,7 @@ public class BatchToken
     }
 
     /** Changes all properties at once. */
-    public function setTo(batchID:int=0, vertexID:int=0, indexID:int=0):void
+    public function setTo(batchID:Int=0, vertexID:Int=0, indexID:Int=0):Void
     {
         this.batchID = batchID;
         this.vertexID = vertexID;
@@ -56,7 +56,7 @@ public class BatchToken
     }
 
     /** Resets all properties to zero. */
-    public function reset():void
+    public function reset():Void
     {
         batchID = vertexID = indexID = 0;
     }
@@ -73,5 +73,4 @@ public class BatchToken
         return StringUtil.format("[BatchToken batchID={0} vertexID={1} indexID={2}]",
             batchID, vertexID, indexID);
     }
-}
 }

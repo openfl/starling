@@ -8,11 +8,12 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.utils.getQualifiedClassName;
+package starling.rendering;
+
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+//import openfl.utils.getQualifiedClassName;
+import openfl.Vector;
 
 import starling.utils.RenderUtil;
 
@@ -31,18 +32,18 @@ public class MeshEffect extends FilterEffect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
-    public static const VERTEX_FORMAT:VertexDataFormat =
+    public static var VERTEX_FORMAT:VertexDataFormat =
         FilterEffect.VERTEX_FORMAT.extend("color:bytes4");
 
-    private var _alpha:Number;
+    private var _alpha:Float;
     private var _tinted:Bool;
     private var _optimizeIfNotTinted:Bool;
 
     // helper objects
-    private static var sRenderAlpha:Vector.<Number> = new Vector.<Number>(4, true);
+    private static var sRenderAlpha:Vector<Float> = new Vector<Float>(4, true);
 
     /** Creates a new MeshEffect instance. */
-    public function MeshEffect()
+    public function new()
     {
         // Non-tinted meshes may be rendered with a simpler fragment shader, which brings
         // a huge performance benefit on some low-end hardware. However, I don't want
@@ -55,9 +56,9 @@ public class MeshEffect extends FilterEffect
     }
 
     /** @private */
-    override protected function get programVariantName():uint
+    override private function get_programVariantName():UInt
     {
-        var noTinting:uint = uint(_optimizeIfNotTinted && !_tinted && _alpha == 1.0);
+        var noTinting:UInt = Std.int(_optimizeIfNotTinted && !_tinted && _alpha == 1.0);
         return super.programVariantName | (noTinting << 3);
     }
 
@@ -66,7 +67,7 @@ public class MeshEffect extends FilterEffect
     {
         var vertexShader:String, fragmentShader:String;
 
-        if (texture)
+        if (texture != null)
         {
             if (_optimizeIfNotTinted && !_tinted && _alpha == 1.0)
                 return super.createProgram();
@@ -106,7 +107,7 @@ public class MeshEffect extends FilterEffect
      *    <li><code>fs0</code> — texture</li>
      *  </ul>
      */
-    override protected function beforeDraw(context:Context3D):void
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
 
@@ -119,7 +120,7 @@ public class MeshEffect extends FilterEffect
 
     /** This method is called by <code>render</code>, directly after
      *  <code>context.drawTriangles</code>. Resets texture and vertex buffer attributes. */
-    override protected function afterDraw(context:Context3D):void
+    override private function afterDraw(context:Context3D):Void
     {
         context.setVertexBufferAt(2, null);
 
@@ -128,18 +129,19 @@ public class MeshEffect extends FilterEffect
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
-    override public function get vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
+    override private function get_vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
 
     /** The alpha value of the object rendered by the effect. Must be taken into account
      *  by all subclasses. */
-    public function get alpha():Number { return _alpha; }
-    public function set alpha(value:Number):void { _alpha = value; }
+    public var alpha(get, set):Float;
+    private function get_alpha():Float { return _alpha; }
+    private function set_alpha(value:Float):Float { return _alpha = value; }
 
     /** Indicates if the rendered vertices are tinted in any way, i.e. if there are vertices
      *  that have a different color than fully opaque white. The base <code>MeshEffect</code>
      *  class uses this information to simplify the fragment shader if possible. May be
      *  ignored by subclasses. */
-    public function get tinted():Bool { return _tinted; }
-    public function set tinted(value:Bool):void { _tinted = value; }
-}
+    public var tinted(get, set):Bool;
+    private function get_tinted():Bool { return _tinted; }
+    private function set_tinted(value:Bool):Bool { return _tinted = value; }
 }

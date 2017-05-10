@@ -26,11 +26,11 @@ internal class VertexDataAttribute
     public var name:String;
     public var format:String;
     public var isColor:Bool;
-    public var offset:int; // in bytes
-    public var size:int;   // in bytes
+    public var offset:Int; // in bytes
+    public var size:Int;   // in bytes
 
     /** Creates a new instance with the given properties. */
-    public function VertexDataAttribute(name:String, format:String, offset:int)
+    public function VertexDataAttribute(name:String, format:String, offset:Int)
     {
         if (!(format in FORMAT_SIZES))
             throw new ArgumentError(

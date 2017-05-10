@@ -8,9 +8,9 @@
 //
 // =================================================================================================
 
-package starling.filters
-{
-import flash.geom.Rectangle;
+package starling.filters;
+
+import openfl.geom.Rectangle;
 
 import starling.display.DisplayObject;
 import starling.textures.Texture;
@@ -21,7 +21,7 @@ import starling.textures.Texture;
  *
  *  @see FragmentFilter#process()
  */
-public interface IFilterHelper
+interface IFilterHelper
 {
     /** Gets a pass texture from the pool, or creates a new one (cleared and ready to be used
      *  as render target). Its size is dictated by the bounds of the target display object
@@ -41,9 +41,8 @@ public interface IFilterHelper
     function putTexture(texture:Texture):Void;
 
     /** The bounds of the target object (plus padding) in stage coordinates. */
-    function get_targetBounds():Rectangle;
+    var targetBounds(get, never):Rectangle;
 
     /** The display object the filter is currently attached to. */
-    function get_target():DisplayObject;
-}
+    var target(get, never):DisplayObject;
 }

@@ -44,7 +44,7 @@ import starling.utils.StringUtil;
 public class VertexDataFormat
 {
     private var _format:String;
-    private var _vertexSize:int;
+    private var _vertexSize:Int;
     private var _attributes:Vector.<VertexDataAttribute>;
 
     // format cache
@@ -114,25 +114,25 @@ public class VertexDataFormat
     // query methods
 
     /** Returns the size of a certain vertex attribute in bytes. */
-    public function getSize(attrName:String):int
+    public function getSize(attrName:String):Int
     {
         return getAttribute(attrName).size;
     }
 
     /** Returns the size of a certain vertex attribute in 32 bit units. */
-    public function getSizeIn32Bits(attrName:String):int
+    public function getSizeIn32Bits(attrName:String):Int
     {
         return getAttribute(attrName).size / 4;
     }
 
     /** Returns the offset (in bytes) of an attribute within a vertex. */
-    public function getOffset(attrName:String):int
+    public function getOffset(attrName:String):Int
     {
         return getAttribute(attrName).offset;
     }
 
     /** Returns the offset (in 32 bit units) of an attribute within a vertex. */
-    public function getOffsetIn32Bits(attrName:String):int
+    public function getOffsetIn32Bits(attrName:String):Int
     {
         return getAttribute(attrName).offset / 4;
     }
@@ -145,7 +145,7 @@ public class VertexDataFormat
     }
 
     /** Returns the name of the attribute at the given position within the vertex format. */
-    public function getName(attrIndex:int):String
+    public function getName(attrIndex:Int):String
     {
         return _attributes[attrIndex].name;
     }
@@ -153,9 +153,9 @@ public class VertexDataFormat
     /** Indicates if the format contains an attribute with the given name. */
     public function hasAttribute(attrName:String):Bool
     {
-        var numAttributes:int = _attributes.length;
+        var numAttributes:Int = _attributes.length;
 
-        for (var i:int=0; i<numAttributes; ++i)
+        for (var i:Int=0; i<numAttributes; ++i)
             if (_attributes[i].name == attrName) return true;
 
         return false;
@@ -167,7 +167,7 @@ public class VertexDataFormat
      *  program input. This wraps the <code>Context3D</code>-method with the same name,
      *  automatically replacing <code>attrName</code> with the corresponding values for
      *  <code>bufferOffset</code> and <code>format</code>. */
-    public function setVertexBufferAt(index:int, buffer:VertexBuffer3D, attrName:String):void
+    public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, attrName:String):Void
     {
         var attribute:VertexDataAttribute = getAttribute(attrName);
         Starling.context.setVertexBufferAt(index, buffer, attribute.offset / 4, attribute.format);
@@ -175,7 +175,7 @@ public class VertexDataFormat
 
     // parsing
 
-    private function parseFormat(format:String):void
+    private function parseFormat(format:String):Void
     {
         if (format != null && format != "")
         {
@@ -183,10 +183,10 @@ public class VertexDataFormat
             _format = "";
 
             var parts:Array = format.split(",");
-            var numParts:int = parts.length;
-            var offset:int = 0;
+            var numParts:Int = parts.length;
+            var offset:Int = 0;
 
-            for (var i:int=0; i<numParts; ++i)
+            for (var i:Int=0; i<numParts; ++i)
             {
                 var attrDesc:String = parts[i];
                 var attrParts:Array = attrDesc.split(":");
@@ -228,8 +228,8 @@ public class VertexDataFormat
     /** @private */
     internal function getAttribute(attrName:String):VertexDataAttribute
     {
-        var i:int, attribute:VertexDataAttribute;
-        var numAttributes:int = _attributes.length;
+        var i:Int, attribute:VertexDataAttribute;
+        var numAttributes:Int = _attributes.length;
 
         for (i=0; i<numAttributes; ++i)
         {
@@ -255,19 +255,19 @@ public class VertexDataFormat
     }
 
     /** The size (in bytes) of each vertex. */
-    public function get vertexSize():int
+    public function get vertexSize():Int
     {
         return _vertexSize;
     }
 
     /** The size (in 32 bit units) of each vertex. */
-    public function get vertexSizeIn32Bits():int
+    public function get vertexSizeIn32Bits():Int
     {
         return _vertexSize / 4;
     }
 
     /** The number of attributes per vertex. */
-    public function get numAttributes():int
+    public function get numAttributes():Int
     {
         return _attributes.length;
     }

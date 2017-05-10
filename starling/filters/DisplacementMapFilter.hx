@@ -369,18 +369,23 @@ class DisplacementMapEffect extends FilterEffect
     private function get_componentX():UInt { return _componentX; }
     private function set_componentX(value:UInt):UInt { return _componentX = value; }
 
+	public var componentY(get, set):UInt;
     private function get_componentY():UInt { return _componentY; }
     private function set_componentY(value:UInt):UInt { return _componentY = value; }
 
+	public var scaleX(get, set):Float;
     private function get_scaleX():Float { return _scaleX; }
     private function set_scaleX(value:Float):Float { return _scaleX = value; }
 
+	public var scaleY(get, set):Float;
     private function get_scaleY():Float { return _scaleY; }
     private function set_scaleY(value:Float):Void { _scaleY = value; }
 
+	public var mapTexture(get, set):Texture;
     private function get_mapTexture():Texture { return _mapTexture; }
     private function set_mapTexture(value:Texture):Void { _mapTexture = value; }
 
+	public var mapRepeat(get, set):Bool;
     private function get_mapRepeat():Bool { return _mapRepeat; }
     private function set_mapRepeat(value:Bool):Void { _mapRepeat = value; }
 }
