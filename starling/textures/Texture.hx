@@ -387,7 +387,7 @@ class Texture
         Reflect.callMethod(base, Reflect.getProperty(base, "attach" + type), [attachment]);
         base.addEventListener(TEXTURE_READY, function onTextureReady(event:Dynamic):Void
         {
-            //base.removeEventListener(TEXTURE_READY, onTextureReady);
+            base.removeEventListener(TEXTURE_READY, onTextureReady);
             if (onComplete != null) onComplete(texture);
         });
 
