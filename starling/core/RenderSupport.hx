@@ -728,15 +728,7 @@ class RenderSupport
         else if (smoothing == TextureSmoothing.BILINEAR)
         {
             options.push("linear");
-			
-			#if (js && html5)
-			/* The underlying OpenFL implementation of this appears to be broken
-			 * The 'mipnearest' variable results in no smoothing being applied to the texture.
-			 */
-            options.push(mipMapping ? "miplinear" : "mipnone");
-			#else
             options.push(mipMapping ? "mipnearest" : "mipnone");
-			#end
         }
         else
         {
