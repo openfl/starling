@@ -236,9 +236,12 @@ class QuadBatch extends DisplayObject
         }
         else
         {
-            // as last parameter, we could also use 'mNumQuads * 4', but on some
-            // GPU hardware (iOS!), this is slower than updating the complete buffer.
+            // on some GPU hardware (iOS!), it's faster to update the complete buffer
+            #if (ios || android)
             mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
+            #else
+            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mNumQuads * 4);
+            #end
             mSyncRequired = false;
         }
     }
