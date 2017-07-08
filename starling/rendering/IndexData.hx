@@ -406,7 +406,7 @@ class IndexData
         sQuadData.position = sQuadData.length;
         sQuadDataNumIndices = newNumQuads * 6;
 
-        for (i = oldNumQuads; i < newNumQuads; ++i)
+        for (i in oldNumQuads...newNumQuads)
         {
             sQuadData.writeShort(4 * i);
             sQuadData.writeShort(4 * i + 1);

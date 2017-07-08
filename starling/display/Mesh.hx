@@ -142,7 +142,7 @@ class Mesh extends DisplayObject
         }
 
         if (meshStyle == null)
-            meshStyle = new sDefaultStyle();
+            meshStyle = Type.createInstance(sDefaultStyle, []);
 
         return meshStyle;
     }
@@ -189,7 +189,7 @@ class Mesh extends DisplayObject
     }
 
     /** Sets the alpha value of the vertex at the specified index to a certain value. */
-    public function setVertexAlpha(vertexID:Int, alpha:Float):void
+    public function setVertexAlpha(vertexID:Int, alpha:Float):Void
     {
         __style.setVertexAlpha(vertexID, alpha);
     }
@@ -255,7 +255,7 @@ class Mesh extends DisplayObject
      *  The getter simply returns the color of the first vertex. */
     public var color(get, set):UInt;
     private function get_color():UInt { return __style.color; }
-    private function set_color(value:UInt):void { return __style.color = value; }
+    private function set_color(value:UInt):Void { return __style.color = value; }
 
     /** The smoothing filter that is used for the texture.
      *  @default bilinear */

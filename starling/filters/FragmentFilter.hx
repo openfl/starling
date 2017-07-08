@@ -17,7 +17,6 @@ import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 
 import starling.core.Starling;
-import starling.core.starling_internal;
 import starling.display.DisplayObject;
 import starling.display.Mesh;
 import starling.display.Stage;
@@ -318,12 +317,12 @@ class FragmentFilter extends EventDispatcher
         else // render to back buffer
         {
             bounds = helper.targetBounds;
-            renderTarget = (helper as FilterHelper).renderTarget;
-            projectionMatrix = (helper as FilterHelper).projectionMatrix3D;
+            renderTarget = cast(helper, FilterHelper).renderTarget;
+            projectionMatrix = cast(helper, FilterHelper).projectionMatrix3D;
             effect.textureSmoothing = _textureSmoothing;
 
             // restore clipRect (projection matrix influences clipRect!)
-            painter.state.clipRect = (helper as FilterHelper).clipRect;
+            painter.state.clipRect = cast(helper, FilterHelper).clipRect;
             painter.state.projectionMatrix3D.copyFrom(projectionMatrix);
         }
 

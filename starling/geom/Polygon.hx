@@ -174,15 +174,15 @@ class Polygon
         // Implementation inspired by:
         // -> http://polyk.ivank.net
 
-        var numVertices:int = this.numVertices;
-        var numTriangles:int = this.numTriangles;
-        var i:int, restIndexPos:int, numRestIndices:int;
+        var numVertices:Int = this.numVertices;
+        var numTriangles:Int = this.numTriangles;
+        var i:Int, restIndexPos:Int, numRestIndices:Int;
 
         if (indexData == null) indexData = new IndexData(numTriangles * 3);
         if (numTriangles == 0) return indexData;
 
         sRestIndices.length = numVertices;
-        for (i=0; i<numVertices; ++i) sRestIndices[i] = i;
+        for (i in 0...numVertices) sRestIndices[i] = i;
 
         restIndexPos = 0;
         numRestIndices = numVertices;
