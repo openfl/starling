@@ -8,8 +8,8 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
+package starling.utils;
+
 import flash.display.Stage3D;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DMipFilter;
@@ -19,7 +19,7 @@ import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DWrapMode;
 import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.utils.setTimeout;
+//import flash.utils.setTimeout;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -27,18 +27,17 @@ import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 
 /** A utility class containing methods related to Stage3D and rendering in general. */
-public class RenderUtil
+class RenderUtil
 {
     /** @private */
-    public function RenderUtil()
+    private function new()
     {
-        throw new AbstractClassError();
     }
 
     /** Clears the render context with a certain color and alpha value. */
-    public static function clear(rgb:uint=0, alpha:Number=0.0):void
+    public static function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
-        Starling.context.clear(
+        Starling.current.context.clear(
                 Color.getRed(rgb)   / 255.0,
                 Color.getGreen(rgb) / 255.0,
                 Color.getBlue(rgb)  / 255.0,
@@ -77,12 +76,12 @@ public class RenderUtil
      *
      *  @return a bit field using the 3 least significant bits.
      */
-    public static function getTextureVariantBits(texture:Texture):uint
+    public static function getTextureVariantBits(texture:Texture):UInt
     {
         if (texture == null) return 0;
 
-        var bitField:uint = 0;
-        var formatBits:uint = 0;
+        var bitField:UInt = 0;
+        var formatBits:UInt = 0;
 
         switch (texture.format)
         {
@@ -104,9 +103,9 @@ public class RenderUtil
 
     /** Calls <code>setSamplerStateAt</code> at the current context,
      *  converting the given parameters to their low level counterparts. */
-    public static function setSamplerStateAt(sampler:int, mipMapping:Bool,
+    public static function setSamplerStateAt(sampler:Int, mipMapping:Bool,
                                              smoothing:String="bilinear",
-                                             repeat:Bool=false):void
+                                             repeat:Bool=false):Void
     {
         var wrap:String = repeat ? Context3DWrapMode.REPEAT : Context3DWrapMode.CLAMP;
         var filter:String;
@@ -154,7 +153,7 @@ public class RenderUtil
      *  @return the AGAL source code, line break(s) included.
      */
     public static function createAGALTexOperation(
-            resultReg:String, uvReg:String, sampler:int, texture:Texture,
+            resultReg:String, uvReg:String, sampler:Int, texture:Texture,
             convertToPmaIfRequired:Bool=true, tempReg:String="ft0"):String
     {
         var format:String = texture.format;
@@ -208,7 +207,7 @@ public class RenderUtil
      *                   profile automatically. This will try all known Stage3D profiles,
      *                   beginning with the most powerful.</p>
      */
-    public static function requestContext3D(stage3D:Stage3D, renderMode:String, profile:*):void
+    public static function requestContext3D(stage3D:Stage3D, renderMode:String, profile:Dynamic):Void
     {
         var profiles:Array;
         var currentProfile:String;
@@ -216,10 +215,10 @@ public class RenderUtil
         if (profile == "auto")
             profiles = ["standardExtended", "standard", "standardConstrained",
                         "baselineExtended", "baseline", "baselineConstrained"];
-        else if (profile is String)
-            profiles = [profile as String];
-        else if (profile is Array)
-            profiles = profile as Array;
+        else if (Std.is(profile, String))
+            profiles = [Std.string(profile)];
+        else if (Std.is(profile, Array))
+            profiles = cast(profile, Array<Dynamic>);
         else
             throw new ArgumentError("Profile must be of type 'String' or 'Array'");
 
@@ -228,7 +227,7 @@ public class RenderUtil
 
         requestNextProfile();
 
-        function requestNextProfile():void
+        function requestNextProfile():Void
         {
             currentProfile = profiles.shift();
 
@@ -240,7 +239,7 @@ public class RenderUtil
             }
         }
 
-        function onCreated(event:Event):void
+        function onCreated(event:Event):Void
         {
             var context:Context3D = stage3D.context3D;
 
@@ -255,7 +254,7 @@ public class RenderUtil
             }
         }
 
-        function onError(event:Event):void
+        function onError(event:Event):Void
         {
             if (profiles.length != 0)
             {
@@ -265,11 +264,10 @@ public class RenderUtil
             else onFinished();
         }
 
-        function onFinished():void
+        function onFinished():Void
         {
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             stage3D.removeEventListener(ErrorEvent.ERROR, onError);
         }
     }
-}
 }

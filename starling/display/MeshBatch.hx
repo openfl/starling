@@ -188,7 +188,7 @@ class MeshBatch extends Mesh
 
         if (__style.type != meshStyleType)
         {
-            var newStyle:MeshStyle = new meshStyleType();
+            var newStyle:MeshStyle = Type.createInstance(meshStyleType, []);
             newStyle.copyFrom(meshStyle);
             setStyle(newStyle, false);
         }

@@ -8,10 +8,12 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
+package starling.rendering;
+
 import flash.display3D.VertexBuffer3D;
 import flash.utils.Dictionary;
+
+import openfl.Vector;
 
 import starling.core.Starling;
 import starling.utils.StringUtil;
@@ -41,7 +43,7 @@ import starling.utils.StringUtil;
  *
  *  @see VertexData
  */
-public class VertexDataFormat
+class VertexDataFormat
 {
     private var _format:String;
     private var _vertexSize:Int;
@@ -52,9 +54,9 @@ public class VertexDataFormat
 
     /** Don't use the constructor, but call <code>VertexDataFormat.fromString</code> instead.
      *  This allows for efficient format caching. */
-    public function VertexDataFormat()
+    public function new()
     {
-        _attributes = new Vector.<VertexDataAttribute>();
+        _attributes = new Vector<VertexDataAttribute>();
     }
 
     /** Creates a new VertexDataFormat instance from the given String, or returns one from

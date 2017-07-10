@@ -23,7 +23,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
 import openfl.Vector;
 
-import starling.core.starling_internal;
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
 import starling.display.Mesh;
@@ -145,11 +144,11 @@ class Painter
         _batchProcessorSpec.onBatchComplete = drawBatch;
 
         _batchProcessor = _batchProcessorCurr;
-        _batchCacheExclusions = new Vector.<DisplayObject>();
+        _batchCacheExclusions = new Vector<DisplayObject>();
 
         _state = new RenderState();
         _state.onDrawRequired = finishMeshBatch;
-        _stateStack = new <RenderState>[];
+        _stateStack = new Vector<RenderState>();
         _stateStackPos = -1;
         _stateStackLength = 0;
     }
@@ -263,7 +262,7 @@ class Painter
         if (program)
         {
             program.dispose();
-            delete programs[name];
+            programs.remove(name);
         }
     }
 
@@ -271,13 +270,13 @@ class Painter
      *  this name has been registered. */
     public function getProgram(name:String):Program
     {
-        return programs[name] as Program;
+        return programs[name];
     }
 
     /** Indicates if a program is registered under a certain name. */
     public function hasProgram(name:String):Bool
     {
-        return name in programs;
+        return programs.exists(name);
     }
 
     // state stack
@@ -461,7 +460,7 @@ class Painter
 
     private function pushClipRect(clipRect:Rectangle):Void
     {
-        var stack:Vector.<Rectangle> = _clipRectStack;
+        var stack:Vector<Rectangle> = _clipRectStack;
         var stackLength:UInt = stack.length;
         var intersection:Rectangle = Pool.getRectangle();
 
@@ -476,7 +475,7 @@ class Painter
 
     private function popClipRect():Void
     {
-        var stack:Vector.<Rectangle> = _clipRectStack;
+        var stack:Vector<Rectangle> = _clipRectStack;
         var stackLength:UInt = stack.length;
 
         if (stackLength == 0)
@@ -493,7 +492,7 @@ class Painter
      *  stage coordinates. */
     private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Bool
     {
-        var quad:Quad = mask as Quad;
+        var quad:Quad = Std.is(quad, Quad) ? cast mask : null;
         var is3D:Bool = mask.is3D || (maskee && maskee.is3D && mask.stage == null);
 
         if (quad != null && !is3D && quad.texture == null)
@@ -933,7 +932,7 @@ class Painter
     }
 
     private var programs(get, never):Map<String, Program>;
-    private function get programs():Dictionary
+    private function get_programs():Map
     {
         var programs:Map<String, Program> = sharedData[PROGRAM_DATA_NAME];
         if (programs == null)

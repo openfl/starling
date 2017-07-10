@@ -28,7 +28,7 @@ import starling.utils.RenderUtil;
  *  @see FilterEffect
  *  @see starling.styles.MeshStyle
  */
-public class MeshEffect extends FilterEffect
+class MeshEffect extends FilterEffect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
@@ -63,7 +63,7 @@ public class MeshEffect extends FilterEffect
     }
 
     /** @private */
-    override protected function createProgram():Program
+    override private function createProgram():Program
     {
         var vertexShader:String, fragmentShader:String;
 

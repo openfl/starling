@@ -8,39 +8,38 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
+package starling.utils;
+
 /** A class describing a range of vertices and indices, thus referencing a subset of a Mesh. */
-public class MeshSubset
+class MeshSubset
 {
     /** The ID of the first vertex. */
-    public var vertexID:int;
+    public var vertexID:Int;
 
     /** The total number of vertices. */
-    public var numVertices:int;
+    public var numVertices:Int;
 
     /** The ID of the first index. */
-    public var indexID:int;
+    public var indexID:Int;
 
     /** The total number of indices. */
-    public var numIndices:int;
+    public var numIndices:Int;
 
     /** Creates a new MeshSubset. */
-    public function MeshSubset(vertexID:int=0, numVertices:int=-1,
-                               indexID:int=0,  numIndices:int=-1)
+    public function new(vertexID:Int=0, numVertices:Int=-1,
+                        indexID:Int=0,  numIndices:Int=-1)
     {
         setTo(vertexID, numVertices, indexID, numIndices);
     }
 
     /** Changes all properties at once.
      *  Call without any arguments to reference a complete mesh. */
-    public function setTo(vertexID:int=0, numVertices:int=-1,
-                           indexID:int=0, numIndices:int=-1):void
+    public function setTo(vertexID:Int=0, numVertices:Int=-1,
+                           indexID:Int=0, numIndices:Int=-1):Void
     {
         this.vertexID = vertexID;
         this.numVertices = numVertices;
         this.indexID = indexID;
         this.numIndices = numIndices;
     }
-}
 }

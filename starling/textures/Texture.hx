@@ -146,7 +146,7 @@ class Texture
      *  SubTextures (created with 'Texture.fromTexture') just reference other textures and
      *  and do not take up resources themselves; this is also true for textures from an
      *  atlas. */
-    public function dispose():void
+    public function dispose():Void
     {
         // override in subclasses
     }
@@ -185,6 +185,41 @@ class Texture
         }
         else
             throw new ArgumentError("Unsupported 'data' type: " + Type.getClassName(data));
+    }
+
+    /** Creates a texture from a <code>TextureBase</code> object.
+     *
+     *  @param base     a Stage3D texture object created through the current context.
+     *  @param width    the width of the texture in pixels (not points!).
+     *  @param height   the height of the texture in pixels (not points!).
+     *  @param options  specifies options about the texture settings, e.g. the scale factor.
+     *                  If left empty, the default options will be used. Note that not all
+     *                  options are supported by all texture types.
+     */
+    public static function fromTextureBase(base:TextureBase, width:Int, height:Int,
+                                           options:TextureOptions=null):ConcreteTexture
+    {
+        if (options == null) options = sDefaultOptions;
+
+        if (Std.is(base, flash.display3D.textures.Texture))
+        {
+            return new ConcretePotTexture(cast(base, flash.display3D.textures.Texture),
+                    options.format, width, height, options.mipMapping,
+                    options.premultipliedAlpha, options.optimizeForRenderToTexture,
+                    options.scale);
+        }
+        else if (Std.is(base, RectangleTexture))
+        {
+            return new ConcreteRectangleTexture(cast(base, RectangleTexture),
+                    options.format, width, height, options.premultipliedAlpha,
+                    options.optimizeForRenderToTexture, options.scale);
+        }
+        else if (Std.is(base, VideoTexture))
+        {
+            return new ConcreteVideoTexture(cast(base, VideoTexture), options.scale);
+        }
+        else
+            throw new ArgumentError("Unsupported 'base' type: " + getQualifiedClassName(base));
     }
 
     /** Creates a texture object from an embedded asset class. Textures created with this
@@ -516,7 +551,7 @@ class Texture
                     actualWidth, actualHeight, format, optimizeForRenderToTexture);
 
             concreteTexture = new ConcreteRectangleTexture(
-                    nativeTexture as RectangleTexture, format, actualWidth, actualHeight,
+                    cast(nativeTexture, RectangleTexture), format, actualWidth, actualHeight,
                     premultipliedAlpha, optimizeForRenderToTexture, scale);
         }
         else
@@ -572,43 +607,92 @@ class Texture
      *                     vertices at the correct position within the given bounds,
      *                     distorted appropriately.
      */
-    public function adjustVertexData(vertexData:VertexData, vertexID:Int, count:Int):Void
+    public function setupVertexPositions(vertexData:VertexData, vertexID:Int=0,
+                                         attrName:String="position",
+                                         bounds:Rectangle=null):Void
     {
         // override in subclass
     }
 
-    /** Converts texture coordinates into the format required for rendering. While the texture
-     * coordinates of an image always use the range <code>[0, 1]</code>, the actual
-     * coordinates could be different: you might be working with a SubTexture. This method
-     * adjusts the coordinates accordingly.
+    /** Sets up a VertexData instance with the correct texture coordinates for
+     *  4 vertices so that the texture is mapped to the complete quad.
      *
-     * @param texCoords  a vector containing UV coordinates (optionally, among other data).
-     *                   U and V coordinates always have to come in pairs. The vector is
-     *                   modified in place.
-     * @param startIndex the index of the first U coordinate in the vector.
-     * @param stride     the distance (in vector elements) of consecutive UV pairs.
-     * @param count      the number of UV pairs that should be adjusted, or "-1" for all of them.
+     *  @param vertexData  the vertex data to which the texture coordinates will be written.
+     *  @param vertexID    the start position within the VertexData instance.
+     *  @param attrName    the attribute name referencing the vertex positions.
      */
-    public function adjustTexCoords(texCoords:Vector<Float>,
-                                    startIndex:Int=0, stride:Int=0, count:Int=-1):Void
+    public function setupTextureCoordinates(vertexData:VertexData, vertexID:Int=0,
+                                            attrName:String="texCoords"):Void
     {
-        // override in subclasses
+        setTexCoords(vertexData, vertexID    , attrName, 0.0, 0.0);
+        setTexCoords(vertexData, vertexID + 1, attrName, 1.0, 0.0);
+        setTexCoords(vertexData, vertexID + 2, attrName, 0.0, 1.0);
+        setTexCoords(vertexData, vertexID + 3, attrName, 1.0, 1.0);
+    }
+
+    /** Transforms the given texture coordinates from the local coordinate system
+     *  into the root texture's coordinate system. */
+    public function localToGlobal(u:Float, v:Float, out:Point=null):Point
+    {
+        if (out == null) out = new Point();
+        if (this == root) out.setTo(u, v);
+        else MatrixUtil.transformCoords(transformationMatrixToRoot, u, v, out);
+        return out;
+    }
+
+    /** Transforms the given texture coordinates from the root texture's coordinate system
+     *  to the local coordinate system. */
+    public function globalToLocal(u:Float, v:Float, out:Point=null):Point
+    {
+        if (out == null) out = new Point();
+        if (this == root) out.setTo(u, v);
+        else
+        {
+            sMatrix.identity();
+            sMatrix.copyFrom(transformationMatrixToRoot);
+            sMatrix.invert();
+            MatrixUtil.transformCoords(sMatrix, u, v, out);
+        }
+        return out;
+    }
+
+    /** Writes the given texture coordinates to a VertexData instance after transforming
+     *  them into the root texture's coordinate system. That way, the texture coordinates
+     *  can be used directly to sample the texture in the fragment shader. */
+    public function setTexCoords(vertexData:VertexData, vertexID:Int, attrName:String,
+                                 u:Float, v:Float):Void
+    {
+        localToGlobal(u, v, sPoint);
+        vertexData.setPoint(vertexID, attrName, sPoint.x, sPoint.y);
+    }
+
+    /** Reads a pair of texture coordinates from the given VertexData instance and transforms
+     *  them into the current texture's coordinate system. (Remember, the VertexData instance
+     *  will always contain the coordinates in the root texture's coordinate system!) */
+    public function getTexCoords(vertexData:VertexData, vertexID:Int,
+                                 attrName:String="texCoords", out:Point=null):Point
+    {
+        if (out == null) out = new Point();
+        vertexData.getPoint(vertexID, attrName, out);
+        return globalToLocal(out.x, out.y, out);
     }
 
     // properties
 
     /** The texture frame if it has one (see class description), otherwise <code>null</code>.
-     * Only SubTextures can have a frame.
-     *
-     * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
+     *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
     public var frame(get, never):Rectangle;
     private function get_frame():Rectangle { return null; }
 
-    /** Indicates if the texture should repeat like a wallpaper or stretch the outermost pixels.
-     * Note: this only works in textures with sidelengths that are powers of two and
-     * that are not loaded from a texture atlas (i.e. no subtextures). @default false */
-    public var repeat(get, never):Bool;
-    private function get_repeat():Bool { return false; }
+    /** The height of the texture in points, taking into account the frame rectangle
+     *  (if there is one). */
+    public var frameWidth(get, never):Float;
+    private function get_frameWidth():Float { return frame ? frame.width : width; }
+
+    /** The width of the texture in points, taking into account the frame rectangle
+     *  (if there is one). */
+    public var frameHeight(get, never):Float;
+    private function get_frameHeight():Float { return frame ? frame.height : height; }
 
     /** The width of the texture in points. */
     public var width(get, never):Float;
@@ -649,6 +733,20 @@ class Texture
     /** Indicates if the alpha values are premultiplied into the RGB values. */
     public var premultipliedAlpha(get, never):Bool;
     private function get_premultipliedAlpha():Bool { return false; }
+
+    /** The matrix that is used to transform the texture coordinates into the coordinate
+     *  space of the parent texture, if there is one. @default null
+     *
+     *  <p>CAUTION: not a copy, but the actual object! Never modify this matrix!</p> */
+    public var transformationMatrix(get, never):Matrix;
+    private function get_transformationMatrix():Matrix { return null; }
+
+    /** The matrix that is used to transform the texture coordinates into the coordinate
+     *  space of the root texture, if this instance is not the root. @default null
+     *
+     *  <p>CAUTION: not a copy, but the actual object! Never modify this matrix!</p> */
+    public var transformationMatrixToRoot(get, never):Matrix;
+    private function get_transformationMatrixToRoot():Matrix { return null; }
 
     /** Returns the maximum size constraint (for both width and height) for textures in the
      * current Context3D profile. */
