@@ -5,7 +5,7 @@
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
 	"version": "1.8.9",
-	"releasenote": "TextureAtlas XMLHttpRequest parsing fix",
+	"releasenote": "TextureAtlas xml parsing fix",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {
 		
