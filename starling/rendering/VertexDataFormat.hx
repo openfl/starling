@@ -47,11 +47,17 @@ class VertexDataFormat
 {
     private var _format:String;
     private var _vertexSize:Int;
-    private var _attributes:Vector.<VertexDataAttribute>;
+    private var _attributes:Vector<VertexDataAttribute>;
 
     // format cache
     private static var sFormats:Dictionary = new Dictionary();
-
+	
+	var attributes(get, null):Vector<VertexDataAttribute>;
+    public var formatString(get, null):String;
+    public var vertexSize(get, null):Int;
+    public var vertexSizeIn32Bits(get, null):Int;
+    public var numAttributes(get, null):Int;
+    
     /** Don't use the constructor, but call <code>VertexDataFormat.fromString</code> instead.
      *  This allows for efficient format caching. */
     public function new()
@@ -157,7 +163,7 @@ class VertexDataFormat
     {
         var numAttributes:Int = _attributes.length;
 
-        for (var i:Int=0; i<numAttributes; ++i)
+        for (i in 0...numAttributes)
             if (_attributes[i].name == attrName) return true;
 
         return false;
@@ -188,7 +194,7 @@ class VertexDataFormat
             var numParts:Int = parts.length;
             var offset:Int = 0;
 
-            for (var i:Int=0; i<numParts; ++i)
+            for (i in 0...numParts)
             {
                 var attrDesc:String = parts[i];
                 var attrParts:Array = attrDesc.split(":");
@@ -228,12 +234,12 @@ class VertexDataFormat
     // internal methods
 
     /** @private */
-    internal function getAttribute(attrName:String):VertexDataAttribute
+    /*internal*/ function getAttribute(attrName:String):VertexDataAttribute
     {
         var i:Int, attribute:VertexDataAttribute;
         var numAttributes:Int = _attributes.length;
 
-        for (i=0; i<numAttributes; ++i)
+        for (i in 0...numAttributes)
         {
             attribute = _attributes[i];
             if (attribute.name == attrName) return attribute;
@@ -243,7 +249,7 @@ class VertexDataFormat
     }
 
     /** @private */
-    internal function get attributes():Vector.<VertexDataAttribute>
+    /*internal*/ function get_attributes():Vector<VertexDataAttribute>
     {
         return _attributes;
     }
@@ -251,27 +257,26 @@ class VertexDataFormat
     // properties
 
     /** Returns the normalized format string. */
-    public function get formatString():String
+    function get_formatString():String
     {
         return _format;
     }
 
     /** The size (in bytes) of each vertex. */
-    public function get vertexSize():Int
+    function get_vertexSize():Int
     {
         return _vertexSize;
     }
 
     /** The size (in 32 bit units) of each vertex. */
-    public function get vertexSizeIn32Bits():Int
+    function get_vertexSizeIn32Bits():Int
     {
         return _vertexSize / 4;
     }
 
     /** The number of attributes per vertex. */
-    public function get numAttributes():Int
+    function get_numAttributes():Int
     {
         return _attributes.length;
     }
-}
 }

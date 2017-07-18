@@ -167,7 +167,7 @@ class Image extends Quad
     override private function set_scaleX(value:Float):Float
     {
         super.scaleX = value;
-        if (texture != && (__scale9Grid != null || __tileGrid != null)) __setupVertices();
+        if (texture != null && (__scale9Grid != null || __tileGrid != null)) __setupVertices();
         return value;
     }
 
@@ -450,7 +450,7 @@ class Image extends Quad
         var texAttrName:String = "texCoords";
         var currentX:Float;
         var currentY:Float = startY;
-        var vertexID:int = 0;
+        var vertexID:Int = 0;
 
         indexData.numIndices = 0;
 

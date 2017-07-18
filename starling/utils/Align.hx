@@ -8,30 +8,30 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
+package starling.utils;
+
 import starling.errors.AbstractClassError;
 
 /** A class that provides constant values for horizontal and vertical alignment of objects. */
-public final class Align
+class Align
 {
     /** @private */
     public function Align() { throw new AbstractClassError(); }
     
     /** Horizontal left alignment. */
-    public static const LEFT:String   = "left";
+    public static inline var LEFT:String   = "left";
     
     /** Horizontal right alignment. */
-    public static const RIGHT:String  = "right";
+    public static inline var RIGHT:String  = "right";
 
     /** Vertical top alignment. */
-    public static const TOP:String = "top";
+    public static inline var TOP:String = "top";
 
     /** Vertical bottom alignment. */
-    public static const BOTTOM:String = "bottom";
+    public static inline var BOTTOM:String = "bottom";
 
     /** Centered alignment. */
-    public static const CENTER:String = "center";
+    public static inline var CENTER:String = "center";
     
     /** Indicates whether the given alignment string is valid. */
     public static function isValid(align:String):Bool
@@ -51,5 +51,4 @@ public final class Align
     {
         return align == TOP || align == CENTER || align == BOTTOM;
     }
-}
 }

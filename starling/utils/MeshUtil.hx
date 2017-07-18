@@ -8,8 +8,8 @@
 //
 // =================================================================================================
 
-package starling.utils
-{
+package starling.utils;
+
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Point;
@@ -23,7 +23,7 @@ import starling.rendering.IndexData;
 import starling.rendering.VertexData;
 
 /** A utility class that helps with tasks that are common when working with meshes. */
-public class MeshUtil
+class MeshUtil
 {
     // helper objects
     private static var sPoint3D:Vector3D = new Vector3D();
@@ -38,26 +38,29 @@ public class MeshUtil
     public static function containsPoint(vertexData:VertexData, indexData:IndexData,
                                          point:Point):Bool
     {
-        var i:int;
+        var i:Int;
         var result:Bool = false;
-        var numIndices:int = indexData.numIndices;
+        var numIndices:Int = indexData.numIndices;
         var p0:Point = Pool.getPoint();
         var p1:Point = Pool.getPoint();
         var p2:Point = Pool.getPoint();
-
-        for (i=0; i<numIndices; i+=3)
+		
+		var i:Int = 0;
+        while (i < numIndices)
         {
             vertexData.getPoint(indexData.getIndex(i  ), "position", p0);
             vertexData.getPoint(indexData.getIndex(i+1), "position", p1);
-            vertexData.getPoint(indexData.getIndex(i+2), "position", p2);
-
+            vertexData.getPoint(indexData.getIndex(i + 2), "position", p2);
+			
             if (MathUtil.isPointInTriangle(point, p0, p1, p2))
             {
                 result = true;
+				i = numIndices;
                 break;
             }
+			
+			i += 3;
         }
-
         Pool.putPoint(p0);
         Pool.putPoint(p1);
         Pool.putPoint(p2);
@@ -89,5 +92,4 @@ public class MeshUtil
 
         return out;
     }
-}
 }

@@ -27,7 +27,7 @@ import starling.utils.RenderUtil;
  *  @see MeshEffect
  *  @see starling.filters.FragmentFilter
  */
-public class FilterEffect extends Effect
+class FilterEffect extends Effect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2"</code> */

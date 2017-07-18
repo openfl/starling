@@ -11,6 +11,7 @@
 package starling.display;
 
 import haxe.Constraints.Function;
+import openfl.display.BitmapData;
 
 import openfl.errors.ArgumentError;
 import openfl.errors.IllegalOperationError;

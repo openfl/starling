@@ -16,12 +16,12 @@ import flash.errors.ArgumentError;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+import starling.rendering.VertexData;
 
 import openfl.Vector;
 
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
-import starling.utils.VertexData;
 
 /** A SubTexture represents a section of another texture. This is achieved solely by 
  *  manipulation of texture coordinates, making the class very efficient. 

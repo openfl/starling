@@ -22,7 +22,7 @@ import starling.utils.StringUtil;
  *
  *  @see Painter
  */
-public class BatchToken
+class BatchToken
 {
     /** The ID of the current MeshBatch. */
     public var batchID:Int;
