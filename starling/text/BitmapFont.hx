@@ -17,17 +17,15 @@ import openfl.errors.Error;
 import openfl.Vector;
 
 import starling.display.Image;
-import starling.display.QuadBatch;
+import starling.display.MeshBatch;
 import starling.display.Sprite;
-import starling.textures.ConcreteTexture;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
-import starling.utils.HAlign;
-import starling.utils.VAlign;
-import starling.utils.ArrayUtil;
+import starling.utils.Align;
+import starling.utils.StringUtil;
 import starling.text.BitmapChar;
 
-/** The BitmapFont class parses bitmap font files and arranges the glyphs 
+/** The BitmapFont class parses bitmap font files and arranges the glyphs
  *  in the form of a text.
  *
  *  The class parses the XML format as it is used in the 
@@ -57,7 +55,7 @@ import starling.text.BitmapChar;
  *  <code>name</code> value of the bitmap font. This will make the text field use the bitmap
  *  font.  
  */ 
-class BitmapFont
+class BitmapFont implements ITextCompositor
 {
     /** Use this constant for the <code>fontSize</code> property of the TextField class to 
      * render the bitmap font in exactly the size it was created. */ 
@@ -72,17 +70,19 @@ class BitmapFont
     private static inline var CHAR_CARRIAGE_RETURN:Int = 13;
     
     private var __texture:Texture;
-    private var mChars:Map<Int, BitmapChar>;
+    private var __chars:Map<Int, BitmapChar>;
     private var __name:String;
-    private var mSize:Float;
-    private var mLineHeight:Float;
-    private var mBaseline:Float;
-    private var mOffsetX:Float;
-    private var mOffsetY:Float;
-    private var mHelperImage:Image;
+    private var __size:Float;
+    private var __lineHeight:Float;
+    private var __baseline:Float;
+    private var __offsetX:Float;
+    private var __offsetY:Float;
+    private var __padding:Float;
+    private var __helperImage:Image;
 
-    /** Helper objects. */
+    // helper objects
     private static var sLines:Array<Vector<CharLocation>> = [];
+    private static var sDefaultOptions:TextOptions = new TextOptions();
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
      * If you don't pass any data, the "mini" font will be created. */
@@ -96,15 +96,15 @@ class BitmapFont
         }
         else if (texture != null && fontXml == null)
         {
-            throw new ArgumentError("fontXml cannot be null!");
+            throw new ArgumentError("Set both of the 'texture' and 'fontXml' arguments to valid objects or leave both of them null.");
         }
         
         __name = "unknown";
-        mLineHeight = mSize = mBaseline = 14;
-        mOffsetX = mOffsetY = 0.0;
+        __lineHeight = __size = __baseline = 14;
+        __offsetX = __offsetY = __padding = 0.0;
         __texture = texture;
-        mChars = new Map<Int, BitmapChar>();
-        mHelperImage = new Image(texture);
+        __chars = new Map<Int, BitmapChar>();
+        __helperImage = new Image(texture);
         
         parseFontXml(fontXml);
     }
@@ -118,30 +118,30 @@ class BitmapFont
     
     private function parseFontXml(fontXml:Xml):Void
     {
-		var scale:Float = __texture.scale;
+        var scale:Float = __texture.scale;
         var frame:Rectangle = __texture.frame;
         var frameX:Float = frame != null ? frame.x : 0;
         var frameY:Float = frame != null ? frame.y : 0;
-		
+
         var info:Xml = fontXml.elementsNamed("info").next();
-		if (info == null) {
-			fontXml = fontXml.firstElement();
-			info = fontXml.elementsNamed("info").next();
-		}
-		
+	if (info == null) {
+            fontXml = fontXml.firstElement();
+            info = fontXml.elementsNamed("info").next();
+        }
+
         var common:Xml = fontXml.elementsNamed("common").next();
         __name = info.get("face");
-        mSize = Std.parseFloat(info.get("size")) / scale;
-        mLineHeight = Std.parseFloat(common.get("lineHeight")) / scale;
-        mBaseline = Std.parseFloat(common.get("base")) / scale;
+        __size = Std.parseFloat(info.get("size")) / scale;
+        __lineHeight = Std.parseFloat(common.get("lineHeight")) / scale;
+        __baseline = Std.parseFloat(common.get("base")) / scale;
         
         if (info.get("smooth") == "0")
             smoothing = TextureSmoothing.NONE;
         
-        if (mSize <= 0)
+        if (__size <= 0)
         {
             trace("[Starling] Warning: invalid font size in '" + __name + "' font.");
-            mSize = (mSize == 0.0 ? 16.0 : mSize * -1.0);
+            __size = (__size == 0.0 ? 16.0 : __size * -1.0);
         }
         
         var chars:Xml = fontXml.elementsNamed("chars").next();
@@ -171,7 +171,7 @@ class BitmapFont
                 var first:Int = Std.parseInt(kerningElement.get("first"));
                 var second:Int = Std.parseInt(kerningElement.get("second"));
                 var amount:Float = Std.parseFloat(kerningElement.get("amount")) / scale;
-                if (mChars.exists(second)) getChar(second).addKerning(first, amount);
+                if (__chars.exists(second)) getChar(second).addKerning(first, amount);
             }
         }
     }
@@ -179,13 +179,13 @@ class BitmapFont
     /** Returns a single bitmap char with a certain character ID. */
     public function getChar(charID:Int):BitmapChar
     {
-        return mChars[charID];   
+        return __chars[charID];
     }
     
     /** Adds a bitmap char with a certain character ID. */
     public function addChar(charID:Int, bitmapChar:BitmapChar):Void
     {
-        mChars[charID] = bitmapChar;
+        __chars[charID] = bitmapChar;
     }
     
     /** Returns a vector containing all the character IDs that are contained in this font. */
@@ -193,7 +193,7 @@ class BitmapFont
     {
         if (result == null) result = new Vector<Int>();
 
-        for (key in mChars.keys())
+        for (key in __chars.keys())
             result[result.length] = key;
 
         return result;
@@ -223,13 +223,9 @@ class BitmapFont
 
     /** Creates a sprite that contains a certain text, made up by one image per char. */
     public function createSprite(width:Float, height:Float, text:String,
-                                 fontSize:Float=-1, color:UInt=0xffffff, 
-                                 hAlign:String="center", vAlign:String="center",      
-                                 autoScale:Bool=true, 
-                                 kerning:Bool=true):Sprite
+                                 format:TextFormat, options:TextOptions=null):Sprite
     {
-        var charLocations:Vector<CharLocation> = arrangeChars(width, height, text, fontSize, 
-                                                               hAlign, vAlign, autoScale, kerning);
+        var charLocations:Vector<CharLocation> = arrangeChars(width, height, text, format, options);
         var numChars:Int = charLocations.length;
         var sprite:Sprite = new Sprite();
         
@@ -239,8 +235,9 @@ class BitmapFont
             var char:Image = charLocation.char.createImage();
             char.x = charLocation.x;
             char.y = charLocation.y;
-            char.scaleX = char.scaleY = charLocation.scale;
-            char.color = color;
+            char.scale = charLocation.scale;
+            char.color = format.color;
+            char.textureSmoothing = smoothing;
             sprite.addChild(char);
         }
         
@@ -249,61 +246,73 @@ class BitmapFont
     }
     
     /** Draws text into a QuadBatch. */
-    public function fillQuadBatch(quadBatch:QuadBatch, width:Float, height:Float, text:String,
-                                  fontSize:Float=-1, color:UInt=0xffffff, 
-                                  hAlign:String="center", vAlign:String="center",      
-                                  autoScale:Bool=true, 
-                                  kerning:Bool=true, leading:Float=0):Void
+    public function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
+                                  format:TextFormat, options:TextOptions=null):Void
     {
         var charLocations:Vector<CharLocation> = arrangeChars(
-                width, height, text, fontSize, hAlign, vAlign, autoScale, kerning, leading);
+                width, height, text, format, options);
         var numChars:Int = charLocations.length;
-        mHelperImage.color = color;
+        __helperImage.color = color;
         
         for (i in 0...numChars)
         {
             var charLocation:CharLocation = charLocations[i];
-            mHelperImage.texture = charLocation.char.texture;
-            mHelperImage.readjustSize();
-            mHelperImage.x = charLocation.x;
-            mHelperImage.y = charLocation.y;
-            mHelperImage.scaleX = mHelperImage.scaleY = charLocation.scale;
-            quadBatch.addImage(mHelperImage);
+            _helperImage.texture = charLocation.char.texture;
+            _helperImage.readjustSize();
+            _helperImage.x = charLocation.x;
+            _helperImage.y = charLocation.y;
+            _helperImage.scale = charLocation.scale;
+            meshBatch.addMesh(_helperImage);
         }
 
         CharLocation.rechargePool();
     }
+
+    /** @inheritDoc */
+    public function clearMeshBatch(meshBatch:MeshBatch):Void
+    {
+        meshBatch.clear();
+    }
     
     /** Arranges the characters of a text inside a rectangle, adhering to the given settings. 
-     * Returns a Vector of CharLocations. */
-    private function arrangeChars(width:Float, height:Float, text:String, fontSize:Float=-1,
-                                  hAlign:String="center", vAlign:String="center",
-                                  autoScale:Bool=true, kerning:Bool=true,
-                                  leading:Float=0):Vector<CharLocation>
+     *  Returns a Vector of CharLocations. */
+    private function arrangeChars(width:Float, height:Float, text:String,
+                                  format:TextFormat, options:TextOptions):Vector<CharLocation>
     {
         if (text == null || text.length == 0) return CharLocation.vectorFromPool();
-        if (fontSize < 0) fontSize *= -mSize;
-        
+        if (options == null) options = sDefaultOptions;
+
+        var kerning:Bool = format.kerning;
+        var leading:Float = format.leading;
+        var hAlign:String = format.horizontalAlign;
+        var vAlign:String = format.verticalAlign;
+        var fontSize:Float = format.size;
+        var autoScale:Bool = options.autoScale;
+        var wordWrap:Bool = options.wordWrap;
+
         var finished:Bool = false;
         var charLocation:CharLocation;
         var numChars:Int;
-        var containerWidth:Float = 0.0;
-        var containerHeight:Float = 0.0;
-        var scale:Float = 0.0;
-        var currentX:Float = 0;
-        var currentY:Float = 0;
+        var containerWidth:Float;
+        var containerHeight:Float;
+        var scale:Float;
+        var i:Int, j:Int;
+
+        if (fontSize < 0) fontSize *= -_size;
         
         while (!finished)
         {
-            ArrayUtil.clear(sLines);
-            scale = fontSize / mSize;
-            containerWidth  = width / scale;
-            containerHeight = height / scale;
+            sLines.length = 0;
+            scale = fontSize / _size;
+            containerWidth  = (width  - 2 * _padding) / scale;
+            containerHeight = (height - 2 * _padding) / scale;
             
-            if (mLineHeight <= containerHeight)
+            if (__lineHeight <= containerHeight)
             {
                 var lastWhiteSpace:Int = -1;
                 var lastCharID:Int = -1;
+                var currentX:Float = 0;
+                var currentY:Float = 0;
                 var currentLine:Vector<CharLocation> = CharLocation.vectorFromPool();
                 
                 numChars = text.length;
@@ -320,8 +329,7 @@ class BitmapFont
                     }
                     else if (char == null)
                     {
-                        trace("[Starling] Font: " + __name + " missing character: " +
-                            text.charAt(i) + " id: " + charID);
+                        trace("[Starling] Font: "+ name + " missing character: " + text.charAt(i) + " id: "+ charID);
                     }
                     else
                     {
@@ -341,20 +349,33 @@ class BitmapFont
                         
                         if (charLocation.x + char.width > containerWidth)
                         {
-                            // when autoscaling, we must not split a word in half -> restart
-                            if (autoScale && lastWhiteSpace == -1)
-                                break;
+                            if (wordWrap)
+                            {
+                                // when autoscaling, we must not split a word in half -> restart
+                                if (autoScale && lastWhiteSpace == -1)
+                                    break;
 
-                            // remove characters and add them again to next line
-                            var numCharsToRemove:Int = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace;
+                                // remove characters and add them again to next line
+                                var numCharsToRemove:Int = lastWhiteSpace == -1 ? 1 : i - lastWhiteSpace;
 
-                            for (j in 0...numCharsToRemove) // faster than 'splice'
+                                for (j in 0...numCharsToRemove) // faster than 'splice'
+                                    currentLine.pop();
+
+                                if (currentLine.length == 0)
+                                    break;
+
+                                i -= numCharsToRemove;
+                            }
+                            else
+                            {
+                                if (autoScale) break;
                                 currentLine.pop();
-                            
-                            if (currentLine.length == 0)
-                                break;
-                            
-                            i -= numCharsToRemove;
+
+                                // continue with next line, if there is one
+                                while (i < numChars - 1 && text.charCodeAt(i) != CHAR_NEWLINE)
+                                    ++i;
+                            }
+
                             lineFull = true;
                         }
                     }
@@ -371,11 +392,11 @@ class BitmapFont
                         if (lastWhiteSpace == i)
                             currentLine.pop();
                         
-                        if (currentY + leading + 2 * mLineHeight <= containerHeight)
+                        if (currentY + leading + 2 * __lineHeight <= containerHeight)
                         {
                             currentLine = CharLocation.vectorFromPool();
                             currentX = 0;
-                            currentY += mLineHeight + leading;
+                            currentY += __lineHeight + leading;
                             lastWhiteSpace = -1;
                             lastCharID = -1;
                         }
@@ -386,7 +407,7 @@ class BitmapFont
                     }
                 ++i;
                 } // for each char
-            } // if (mLineHeight <= containerHeight)
+            } // if (__lineHeight <= containerHeight)
             
             if (autoScale && !finished && fontSize > 3)
                 fontSize -= 1;
@@ -396,7 +417,7 @@ class BitmapFont
         
         var finalLocations:Vector<CharLocation> = CharLocation.vectorFromPool();
         var numLines:Int = sLines.length;
-        var bottom:Float = currentY + mLineHeight;
+        var bottom:Float = currentY + __lineHeight;
         var yOffset:Int = 0;
         
         if (vAlign == VAlign.BOTTOM)      yOffset = Std.int(containerHeight - bottom);
@@ -420,8 +441,8 @@ class BitmapFont
             for (c in 0...numChars)
             {
                 charLocation = line[c];
-                charLocation.x = scale * (charLocation.x + xOffset + mOffsetX);
-                charLocation.y = scale * (charLocation.y + yOffset + mOffsetY);
+                charLocation.x = scale * (charLocation.x + xOffset + __offsetX);
+                charLocation.y = scale * (charLocation.y + yOffset + __offsetY);
                 charLocation.scale = scale;
                 
                 if (charLocation.char.width > 0 && charLocation.char.height > 0)
@@ -438,34 +459,34 @@ class BitmapFont
     
     /** The native size of the font. */
     public var size(get, never):Float;
-    private function get_size():Float { return mSize; }
+    private function get_size():Float { return __size; }
     
     /** The height of one line in points. */
     public var lineHeight(get, never):Float;
-    private function get_lineHeight():Float { return mLineHeight; }
-    private function set_lineHeight(value:Float):Void { mLineHeight = value; }
+    private function get_lineHeight():Float { return __lineHeight; }
+    private function set_lineHeight(value:Float):Void { __lineHeight = value; }
     
     /** The smoothing filter that is used for the texture. */ 
     public var smoothing(get, set):String;
-    private function get_smoothing():String { return mHelperImage.smoothing; }
-    private function set_smoothing(value:String):String { return mHelperImage.smoothing = value; } 
+    private function get_smoothing():String { return __helperImage.smoothing; }
+    private function set_smoothing(value:String):String { return __helperImage.smoothing = value; } 
     
     /** The baseline of the font. This property does not affect text rendering;
      * it's just an information that may be useful for exact text placement. */
     public var baseline(get, set):Float;
-    private function get_baseline():Float { return mBaseline; }
-    private function set_baseline(value:Float):Float { return mBaseline = value; }
+    private function get_baseline():Float { return __baseline; }
+    private function set_baseline(value:Float):Float { return __baseline = value; }
     
     /** An offset that moves any generated text along the x-axis (in points).
      * Useful to make up for incorrect font data. @default 0. */ 
     public var offsetX(get, set):Float;
-    private function get_offsetX():Float { return mOffsetX; }
-    private function set_offsetX(value:Float):Float { return mOffsetX = value; }
+    private function get_offsetX():Float { return __offsetX; }
+    private function set_offsetX(value:Float):Float { return __offsetX = value; }
     
     /** An offset that moves any generated text along the y-axis (in points).
      * Useful to make up for incorrect font data. @default 0. */
-    private function get_offsetY():Float { return mOffsetY; }
-    private function set_offsetY(value:Float):Float { return mOffsetY = value; }
+    private function get_offsetY():Float { return __offsetY; }
+    private function set_offsetY(value:Float):Float { return __offsetY = value; }
 
     /** The underlying texture that contains all the chars. */
     private function get_texture():Texture { return __texture; }
