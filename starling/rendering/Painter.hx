@@ -932,7 +932,7 @@ class Painter
     }
 
     private var programs(get, never):Map<String, Program>;
-    private function get_programs():Map
+    private function get_programs():Map<String, Program>
     {
         var programs:Map<String, Program> = sharedData[PROGRAM_DATA_NAME];
         if (programs == null)

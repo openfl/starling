@@ -25,6 +25,9 @@ class MatrixUtil
         [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
     private static var sRawData2:Vector<Float> = Vector.ofArray(
         [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
+	private static var sPoint3D:Vector3D = new Vector3D();
+	private static var sMatrixData:Vector<Float> = Vector.ofArray(
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     
     /** Converts a 2D matrix to a 3D matrix. If you pass a 'resultMatrix',
      * the result will be stored in this matrix instead of creating a new object. */
@@ -184,4 +187,178 @@ class MatrixUtil
                      matrix.d * cosX - matrix.b * sinX,
                      matrix.tx, matrix.ty);
     }
+	
+	/** Converts a Matrix3D instance to a String, which is useful when debugging. Per default,
+	 *  the raw data is displayed transposed, so that the columns are displayed vertically. */
+	public static function toString3D(matrix:Matrix3D, transpose:Bool=true,
+									  precision:Int=3):String
+	{
+		if (transpose) matrix.transpose();
+		matrix.copyRawDataTo(sRawData2);
+		if (transpose) matrix.transpose();
+
+		return "[Matrix3D rawData=\n" + formatRawData(sRawData2, 4, 4, precision) + "\n]";
+	}
+
+	/** Converts a Matrix instance to a String, which is useful when debugging. */
+	public static function toString(matrix:Matrix, precision:Int=3):String
+	{
+		sRawData2[0] = matrix.a; sRawData2[1] = matrix.c; sRawData2[2] = matrix.tx;
+		sRawData2[3] = matrix.b; sRawData2[4] = matrix.d; sRawData2[5] = matrix.ty;
+
+		return "[Matrix rawData=\n" + formatRawData(sRawData2, 3, 2, precision) + "\n]";
+	}
+
+	private static function formatRawData(data:Vector<Float>, numCols:Int, numRows:Int,
+										  precision:Int, indent:String="  "):String
+	{
+		var result:String = indent;
+		var numValues:Int = numCols * numRows;
+		var highestValue:Float = 0.0;
+		var valueString:String;
+		var value:Float;
+
+		for(i in 0...numValues)
+		{
+			value = Math.abs(data[i]);
+			if (value > highestValue) highestValue = value;
+		}
+
+		var numChars:Int = toFixed(highestValue, precision).length + 1;
+
+		for(y in 0...numRows)
+		{
+			for(x in 0...numCols)
+			{
+				value = data[numCols * y + x];
+				valueString = toFixed(value, precision);
+
+				while (valueString.length < numChars) valueString = " " + valueString;
+
+				result += valueString;
+				if (x != numCols - 1) result += ", ";
+			}
+
+			if (y != numRows - 1) result += "\n" + indent;
+		}
+
+		return result;
+	}
+	
+	/** Simpliest but not accurate realization of toFixed */
+	private static function toFixed(value:Float, precision:Int):String
+	{
+		return Std.string(Std.int(value * precision) / precision);
+	}
+
+	/** Updates the given matrix so that it points exactly to pixel boundaries. This works
+	 *  only if the object is unscaled and rotated by a multiple of 90 degrees.
+	 *
+	 *  @param matrix    The matrix to manipulate in place (normally the modelview matrix).
+	 *  @param pixelSize The size (in points) that represents one pixel in the back buffer.
+	 */
+	public static function snapToPixels(matrix:Matrix, pixelSize:Float):Void
+	{
+		// Snapping only makes sense if the object is unscaled and rotated only by
+		// multiples of 90 degrees. If that's the case can be found out by looking
+		// at the modelview matrix.
+
+		var E:Float = 0.0001;
+
+		var doSnap:Bool = false;
+		var aSq:Float, bSq:Float, cSq:Float, dSq:Float;
+
+		if (matrix.b + E > 0 && matrix.b - E < 0 && matrix.c + E > 0 && matrix.c - E < 0)
+		{
+			// what we actually want is 'Math.abs(matrix.a)', but squaring
+			// the value works just as well for our needs & is faster.
+
+			aSq = matrix.a * matrix.a;
+			dSq = matrix.d * matrix.d;
+			doSnap = aSq + E > 1 && aSq - E < 1 && dSq + E > 1 && dSq - E < 1;
+		}
+		else if (matrix.a + E > 0 && matrix.a - E < 0 && matrix.d + E > 0 && matrix.d - E < 0)
+		{
+			bSq = matrix.b * matrix.b;
+			cSq = matrix.c * matrix.c;
+			doSnap = bSq + E > 1 && bSq - E < 1 && cSq + E > 1 && cSq - E < 1;
+		}
+
+		if (doSnap)
+		{
+			matrix.tx = Math.round(matrix.tx / pixelSize) * pixelSize;
+			matrix.ty = Math.round(matrix.ty / pixelSize) * pixelSize;
+		}
+	}
+
+	/** Creates a perspective projection matrix suitable for 2D and 3D rendering.
+	 *
+	 *  <p>The first 4 parameters define which area of the stage you want to view (the camera
+	 *  will 'zoom' to exactly this region). The final 3 parameters determine the perspective
+	 *  in which you're looking at the stage.</p>
+	 *
+	 *  <p>The stage is always on the rectangle that is spawned up between x- and y-axis (with
+	 *  the given size). All objects that are exactly on that rectangle (z equals zero) will be
+	 *  rendered in their true size, without any distortion.</p>
+	 *
+	 *  <p>If you pass only the first 4 parameters, the camera will be set up above the center
+	 *  of the stage, with a field of view of 1.0 rad.</p>
+	 */
+	public static function createPerspectiveProjectionMatrix(
+			x:Float, y:Float, width:Float, height:Float,
+			stageWidth:Float=0, stageHeight:Float=0, cameraPos:Vector3D=null,
+			out:Matrix3D=null):Matrix3D
+	{
+		if (out == null) out = new Matrix3D();
+		if (stageWidth  <= 0) stageWidth = width;
+		if (stageHeight <= 0) stageHeight = height;
+		if (cameraPos == null)
+		{
+			cameraPos = sPoint3D;
+			cameraPos.setTo(
+					stageWidth / 2, stageHeight / 2,   // -> center of stage
+					stageWidth / Math.tan(0.5) * 0.5); // -> fieldOfView = 1.0 rad
+		}
+
+		var focalLength:Float = Math.abs(cameraPos.z);
+		var offsetX:Float = cameraPos.x - stageWidth  / 2;
+		var offsetY:Float = cameraPos.y - stageHeight / 2;
+		var far:Float    = focalLength * 20;
+		var near:Float   = 1;
+		var scaleX:Float = stageWidth  / width;
+		var scaleY:Float = stageHeight / height;
+
+		// set up general perspective
+		sMatrixData[ 0] =  2 * focalLength / stageWidth;  // 0,0
+		sMatrixData[ 5] = -2 * focalLength / stageHeight; // 1,1  [negative to invert y-axis]
+		sMatrixData[10] =  far / (far - near);            // 2,2
+		sMatrixData[14] = -far * near / (far - near);     // 2,3
+		sMatrixData[11] =  1;                             // 3,2
+
+		// now zoom in to visible area
+		sMatrixData[0] *=  scaleX;
+		sMatrixData[5] *=  scaleY;
+		sMatrixData[8]  =  scaleX - 1 - 2 * scaleX * (x - offsetX) / stageWidth;
+		sMatrixData[9]  = -scaleY + 1 + 2 * scaleY * (y - offsetY) / stageHeight;
+
+		out.copyRawDataFrom(sMatrixData);
+		out.prependTranslation(
+				-stageWidth /2.0 - offsetX,
+				-stageHeight/2.0 - offsetY,
+				focalLength);
+
+		return out;
+	}
+
+	/** Creates a orthographic projection matrix suitable for 2D rendering. */
+	public static function createOrthographicProjectionMatrix(
+			x:Float, y:Float, width:Float, height:Float, out:Matrix=null):Matrix
+	{
+		if (out == null) out = new Matrix();
+
+		out.setTo(2.0/width, 0, 0, -2.0/height,
+				-(2*x + width) / width, (2*y + height) / height);
+
+		return out;
+	}
 }

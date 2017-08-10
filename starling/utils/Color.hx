@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.utils;
+import openfl.Vector;
 
 /** A utility class containing predefined colors and methods converting between different
  *  color representations. */
@@ -56,4 +57,58 @@ class Color
     {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
+	
+	/** Converts a color to a vector containing the RGBA components (in this order) scaled
+	 *  between 0 and 1. */
+	public static function toVector(color:UInt, out:Vector<Float>=null):Vector<Float>
+	{
+		if (out == null) out = new Vector<Float>(4, true);
+
+		out[0] = ((color >> 16) & 0xff) / 255.0;
+		out[1] = ((color >>  8) & 0xff) / 255.0;
+		out[2] = ( color        & 0xff) / 255.0;
+		out[3] = ((color >> 24) & 0xff) / 255.0;
+
+		return out;
+	}
+
+	/** Multiplies all channels of an (A)RGB color with a certain factor. */
+	public static function multiply(color:UInt, factor:Float):UInt
+	{
+		if (factor == 0.0) return 0x0;
+
+		var alpha:UInt = Math.round(((color >> 24) & 0xff) * factor);
+		var red:UInt   = Math.round(((color >> 16) & 0xff) * factor);
+		var green:UInt = Math.round(((color >>  8) & 0xff) * factor);
+		var blue:UInt  = Math.round(( color        & 0xff) * factor);
+
+		if (alpha > 255) alpha = 255;
+		if (red   > 255) red   = 255;
+		if (green > 255) green = 255;
+		if (blue  > 255) blue  = 255;
+
+		return argb(alpha, red, green, blue);
+	}
+
+	/** Calculates a smooth transition between one color to the next.
+	 *  <code>ratio</code> is expected between 0 and 1. */
+	public static function interpolate(startColor:UInt, endColor:UInt, ratio:Float):UInt
+	{
+		var startA:UInt = (startColor >> 24) & 0xff;
+		var startR:UInt = (startColor >> 16) & 0xff;
+		var startG:UInt = (startColor >>  8) & 0xff;
+		var startB:UInt = (startColor      ) & 0xff;
+
+		var endA:UInt = (endColor >> 24) & 0xff;
+		var endR:UInt = (endColor >> 16) & 0xff;
+		var endG:UInt = (endColor >>  8) & 0xff;
+		var endB:UInt = (endColor      ) & 0xff;
+
+		var newA:UInt = startA + Math.round((endA - startA) * ratio);
+		var newR:UInt = startR + Math.round((endR - startR) * ratio);
+		var newG:UInt = startG + Math.round((endG - startG) * ratio);
+		var newB:UInt = startB + Math.round((endB - startB) * ratio);
+
+		return (newA << 24) | (newR << 16) | (newG << 8) | newB;
+	}
 }

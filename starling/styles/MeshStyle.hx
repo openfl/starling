@@ -94,7 +94,7 @@ class MeshStyle extends EventDispatcher
     /** The vertex format expected by this style (the same as found in the MeshEffect-class). */
     public static inline var VERTEX_FORMAT:VertexDataFormat = MeshEffect.VERTEX_FORMAT;
 
-    private var _type:Class;
+    private var _type:Class<Dynamic>;
     private var _target:Mesh;
     private var _texture:Texture;
     private var _textureSmoothing:String;

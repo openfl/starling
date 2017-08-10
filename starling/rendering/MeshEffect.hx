@@ -45,6 +45,7 @@ class MeshEffect extends FilterEffect
     /** Creates a new MeshEffect instance. */
     public function new()
     {
+		super();
         // Non-tinted meshes may be rendered with a simpler fragment shader, which brings
         // a huge performance benefit on some low-end hardware. However, I don't want
         // subclasses to become any more complicated because of this optimization (they

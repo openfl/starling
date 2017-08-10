@@ -175,7 +175,7 @@ class TouchProcessor
 
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method makes sure each bubble target is visited only once.
-        _touchEvent.resetTo(TouchEvent.TOUCH, _currentTouches, shiftDown, ctrlDown);
+        __touchEvent.resetTo(TouchEvent.TOUCH, __currentTouches, shiftDown, ctrlDown);
 
         // hit test our updated touches
         for (touch in touches)
@@ -199,14 +199,14 @@ class TouchProcessor
         // target to notify it that it's no longer being hovered over.
         for (touchData in sHoveringTouchData)
             if (cast (touchData.touch, Touch).target != touchData.target)
-                touchEvent.dispatch(touchData.bubbleChain);
+                __touchEvent.dispatch(touchData.bubbleChain);
         
         // dispatch events for the rest of our updated touches
         for (touch in touches)
-            touch.dispatchEvent(touchEvent);
+            touch.dispatchEvent(__touchEvent);
 
         // clean up any references
-        _touchEvent.resetTo(TouchEvent.TOUCH);
+        __touchEvent.resetTo(TouchEvent.TOUCH);
     }
     
     /** Enqueues a new touch our mouse event with the given properties. */

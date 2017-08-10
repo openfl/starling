@@ -116,7 +116,7 @@ class StatsDisplay extends Sprite
         var fpsText:String = __fps < 100 ? Math.round(__fps * 10) / 10 : Math.round(__fps);
         var memText:String = __memory < 100 ? Math.round(__memory * 10) / 10 : Math.round(__memory);
         var gpuMemText:String = __gpuMemory < 100 ? Math.round(__gpuMemory * 10) / 10 : Math.round(__gpuMemory);
-        var drwText:String = (__totalTime > 0 ? __drawCount-2 : __drawCount) // ignore self
+        var drwText:String = (__totalTime > 0 ? __drawCount - 2 : __drawCount); // ignore self
 
         __values.text = fpsText + "\n" + memText + "\n" +
             (__gpuMemory >= 0 ? gpuMemText + "\n" : "") + drwText;
@@ -128,7 +128,7 @@ class StatsDisplay extends Sprite
         __skipCount += 1;
     }
     
-    public override function render(support:RenderSupport, parentAlpha:Float):Void
+    public override function render(painter:Painter):Void
     {
         // By calling 'finishQuadBatch' and 'excludeFromCache', we can make sure that the stats
         // display is always rendered with exactly two draw calls. That is taken into account
