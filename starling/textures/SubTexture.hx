@@ -193,7 +193,6 @@ class SubTexture extends Texture
      * space of the parent texture (used internally by the "adjust..."-methods).
      *
      * <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    public var transformationMatrix(get, never):Matrix;
     private function get_transformationMatrix():Matrix { return __transformationMatrix; }
     
     /** @inheritDoc */

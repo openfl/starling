@@ -10,6 +10,7 @@
 
 package starling.filters;
 
+import haxe.Constraints.Function;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;

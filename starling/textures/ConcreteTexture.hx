@@ -27,7 +27,6 @@ import flash.utils.ByteArray;
 
 import haxe.Constraints.Function;
 
-import starling.core.RenderSupport;
 import starling.core.Starling;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;

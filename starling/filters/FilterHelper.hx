@@ -16,7 +16,6 @@ import openfl.geom.Rectangle;
 import openfl.Vector;
 
 import starling.core.Starling;
-import starling.core.starling_internal;
 import starling.display.DisplayObject;
 import starling.textures.SubTexture;
 import starling.textures.Texture;
@@ -34,7 +33,7 @@ class FilterHelper implements IFilterHelper
     private var _height:Float;
     private var _nativeWidth:Int;
     private var _nativeHeight:Int;
-    private var _pool:Vector.<Texture>;
+    private var _pool:Vector<Texture>;
     private var _usePotTextures:Bool;
     private var _textureFormat:String;
     private var _preferredScale:Float;
@@ -103,7 +102,7 @@ class FilterHelper implements IFilterHelper
             !MathUtil.isEquivalent(texture.scale,  _scale * resolution))
         {
             sRegion.setTo(0, 0, _width * resolution, _height * resolution);
-            subTexture = texture as SubTexture;
+            subTexture = cast texture;
 
             if (subTexture != null)
                 subTexture.setTo(texture.root, sRegion, true, null, false, resolution);
@@ -183,7 +182,7 @@ class FilterHelper implements IFilterHelper
     /** The projection matrix that was active when the filter started processing. */
     public var projectionMatrix3D(get, set):Matrix3D;
     private function get_projectionMatrix3D():Matrix3D { return _projectionMatrix; }
-    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D;
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D
     {
         _projectionMatrix.copyFrom(value);
         return value;

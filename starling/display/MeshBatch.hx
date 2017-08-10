@@ -136,12 +136,12 @@ class MeshBatch extends Mesh
         else if (matrix == null) matrix = mesh.transformationMatrix;
         if (subset == null) subset = sFullMeshSubset;
 
-        var targetVertexID:Int = _vertexData.numVertices;
-        var targetIndexID:Int  = _indexData.numIndices;
-        var meshStyle:MeshStyle = mesh._style;
+        var targetVertexID:Int = __vertexData.numVertices;
+        var targetIndexID:Int  = __indexData.numIndices;
+        var meshStyle:MeshStyle = mesh.__style;
 
         if (targetVertexID == 0)
-            setupFor(mesh);
+            __setupFor(mesh);
 
         meshStyle.batchVertexData(__style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
         meshStyle.batchIndexData(__style, targetIndexID, targetVertexID - subset.vertexID,
@@ -170,7 +170,7 @@ class MeshBatch extends Mesh
         var meshStyle:MeshStyle = mesh.__style;
 
         if (__vertexData.numVertices == 0)
-            setupFor(mesh);
+            __setupFor(mesh);
 
         meshStyle.batchVertexData(__style, vertexID, matrix, 0, numVertices);
         meshStyle.batchIndexData(__style, indexID, vertexID, 0, numIndices);
@@ -237,10 +237,10 @@ class MeshBatch extends Mesh
             painter.prepareToDraw();
             painter.excludeFromCache(this);
 
-            if (__vertexSyncRequired) syncVertexBuffer();
-            if (__indexSyncRequired)  syncIndexBuffer();
+            if (__vertexSyncRequired) __syncVertexBuffer();
+            if (__indexSyncRequired)  __syncIndexBuffer();
 
-            __style.updateEffect(_effect, painter.state);
+            __style.updateEffect(__effect, painter.state);
             __effect.render(0, __indexData.numTriangles);
         }
     }
@@ -255,15 +255,14 @@ class MeshBatch extends Mesh
             __effect.dispose();
 
         __effect = style.createEffect();
-        __effect.onRestore = setVertexAndIndexDataChanged;
+        __effect.onRestore = __setVertexAndIndexDataChanged;
 
-        setVertexAndIndexDataChanged(); // we've got a new set of buffers!
+        __setVertexAndIndexDataChanged(); // we've got a new set of buffers!
     }
 
     /** The total number of vertices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Make sure that no indices reference those deleted
      *  vertices! */
-    public var numVertices(never, set):Int;
     private function set_numVertices(value:Int):Int
     {
         if (__vertexData.numVertices != value)
@@ -278,7 +277,6 @@ class MeshBatch extends Mesh
     /** The total number of indices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Always make sure that the number of indices
      *  is a multiple of three! */
-    public var numIndices(never, set):Int;
     private function set_numIndices(value:Int):Int
     {
         if (__indexData.numIndices != value)

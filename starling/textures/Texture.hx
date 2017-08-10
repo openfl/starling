@@ -365,7 +365,7 @@ class Texture
      *                    This is "false" for most ATF files, but can be customized in some
      *                    tools.
      */
-    public static function fromAtfData(data:ByteArray, scale:Number=1, useMipMaps:Bool=true,
+    public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
                                        async:Function=null, premultipliedAlpha:Bool=false):Texture
     {
         var context:Context3D = Starling.current.context;
@@ -523,7 +523,7 @@ class Texture
      *                 efficient "RectangleTexture".
      */
     public static function empty(width:Float, height:Float, premultipliedAlpha:Bool=true,
-                                 mipMapping:Bool=false, optimizeForRenderToTexture:Boolean=false,
+                                 mipMapping:Bool=false, optimizeForRenderToTexture:Bool=false,
                                  scale:Float=-1, format:String="bgra",
                                  forcePotTexture:Bool=false):Texture
     {

@@ -99,7 +99,7 @@ class TextField extends DisplayObjectContainer
     private var _textBounds:Rectangle;
     private var _hitArea:Rectangle;
     private var _compositor:ITextCompositor;
-    private var _requiresRecomposition:Boolean;
+    private var _requiresRecomposition:Bool;
     private var _border:DisplayObjectContainer;
     private var _meshBatch:MeshBatch;
     private var _style:MeshStyle;
@@ -550,7 +550,7 @@ class TextField extends DisplayObjectContainer
 
     /** Unregisters the bitmap font and, optionally, disposes it. */
     @:deprecated("replaced by `unregisterCompositor`")
-    public static function unregisterBitmapFont(name:String, dispose:Boolean=true):Void
+    public static function unregisterBitmapFont(name:String, dispose:Bool=true):Void
     {
         unregisterCompositor(name, dispose);
     }

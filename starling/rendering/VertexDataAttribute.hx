@@ -8,14 +8,15 @@
 //
 // =================================================================================================
 
-package starling.rendering
-{
+package starling.rendering;
+import openfl.errors.ArgumentError;
+import openfl.utils.Dictionary;
 /** Holds the properties of a single attribute in a VertexDataFormat instance.
  *  The member variables must never be changed; they are only <code>public</code>
  *  for performance reasons. */
-internal class VertexDataAttribute
+class VertexDataAttribute
 {
-    private static const FORMAT_SIZES:Object = {
+    private static var FORMAT_SIZES:Dictionary<String, Int> = {
         "bytes4": 4,
         "float1": 4,
         "float2": 8,
@@ -41,7 +42,6 @@ internal class VertexDataAttribute
         this.format = format;
         this.offset = offset;
         this.size = FORMAT_SIZES[format];
-        this.isColor = name.indexOf("color") != -1 || name.indexOf("Color") != -1
+        this.isColor = name.indexOf("color") != -1 || name.indexOf("Color") != -1;
     }
-}
 }

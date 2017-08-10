@@ -25,11 +25,6 @@ class Padding extends EventDispatcher
     private var _top:Float;
     private var _bottom:Float;
 	
-	public var set_left(get, set):Float;
-    public var set_right(get, set):Float;
-    public var set_top(get, set):Float;
-    public var set_bottom(get, set):Float;
-	
     /** Creates a new instance with the given properties. */
     public function Padding(left:Float=0, right:Float=0, top:Float=0, bottom:Float=0)
     {
@@ -64,8 +59,9 @@ class Padding extends EventDispatcher
     }
 
     /** The padding on the left side. */
-    function get_left():Float { return _left; }
-    function set_left(value:Float):Float
+	public var left(get, set):Float;
+    private function get_left():Float { return _left; }
+    private function set_left(value:Float):Float
     {
         if (_left != value)
         {
@@ -76,8 +72,9 @@ class Padding extends EventDispatcher
     }
 
     /** The padding on the right side. */
-    function get_right():Float { return _right; }
-    function set_right(value:Float):Float
+	public var right(get, set):Float;
+    private function get_right():Float { return _right; }
+    private function set_right(value:Float):Float
     {
         if (_right != value)
         {
@@ -88,8 +85,9 @@ class Padding extends EventDispatcher
     }
 
     /** The padding towards the top. */
-    function get_top():Float { return _top; }
-    function set_top(value:Float):Float
+	public var top(get, set):Float;
+    private function get_top():Float { return _top; }
+    private function set_top(value:Float):Float
     {
         if (_top != value)
         {
@@ -100,8 +98,9 @@ class Padding extends EventDispatcher
     }
 
     /** The padding towards the bottom. */
-    function get_bottom():Float { return _bottom; }
-    function set_bottom(value:Float):Float
+	public var bottom(get, set):Float;
+    private function get_bottom():Float { return _bottom; }
+    private function set_bottom(value:Float):Float
     {
         if (_bottom != value)
         {

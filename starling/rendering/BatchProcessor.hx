@@ -28,7 +28,7 @@ class BatchProcessor
     private var _batches:Vector<MeshBatch>;
     private var _batchPool:BatchPool;
     private var _currentBatch:MeshBatch;
-    private var _currentStyleType:Class;
+    private var _currentStyleType:Class<Dynamic>;
     private var _onBatchComplete:Function;
     private var _cacheToken:BatchToken;
 

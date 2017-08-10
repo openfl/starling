@@ -57,6 +57,7 @@ class Mesh extends DisplayObject
      *  given style right away. */
     public function new(vertexData:VertexData, indexData:IndexData, style:MeshStyle=null)
     {
+		super();
         if (vertexData == null) throw new ArgumentError("VertexData must not be null");
         if (indexData == null)  throw new ArgumentError("IndexData must not be null");
 
@@ -114,9 +115,9 @@ class Mesh extends DisplayObject
      */
     public function setStyle(meshStyle:MeshStyle=null, mergeWithPredecessor:Bool=true):Void
     {
-        if (meshStyle == null) meshStyle = createDefaultMeshStyle();
+        if (meshStyle == null) meshStyle = __createDefaultMeshStyle();
         else if (meshStyle == __style) return;
-        else if (meshStyle.target) meshStyle.target.setStyle();
+        else if (meshStyle.target != null) meshStyle.target.setStyle();
 
         if (__style != null)
         {

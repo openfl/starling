@@ -19,11 +19,9 @@ import openfl.display3D.VertexBuffer3D;
 import openfl.events.Event;
 import openfl.geom.Matrix3D;
 import openfl.utils.Dictionary;
-//import openfl.utils.getQualifiedClassName;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
-import starling.utils.execute;
 
 /** An effect encapsulates all steps of a Stage3D draw operation. It configures the
  *  render context and sets up shader programs as well as index- and vertex-buffers, thus
@@ -97,7 +95,7 @@ import starling.utils.execute;
  *  @see starling.filters.FragmentFilter
  *  @see starling.utils.RenderUtil
  */
-public class Effect
+class Effect
 {
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2"</code> */
@@ -248,7 +246,7 @@ public class Effect
      *    <li><code>va0</code> — vertex position (xy)</li>
      *  </ul>
      */
-    protected function beforeDraw(context:Context3D):Void
+    private function beforeDraw(context:Context3D):Void
     {
         program.activate(context);
         vertexFormat.setVertexBufferAt(0, vertexBuffer, "position");
@@ -258,7 +256,7 @@ public class Effect
     /** This method is called by <code>render</code>, directly after
      *  <code>context.drawTriangles</code>. Resets vertex buffer attributes.
      */
-    protected function afterDraw(context:Context3D):Void
+    private function afterDraw(context:Context3D):Void
     {
         context.setVertexBufferAt(0, null);
     }
@@ -272,7 +270,7 @@ public class Effect
      *
      *  <p>The basic implementation always outputs pure white.</p>
      */
-    protected function createProgram():Program
+    private function createProgram():Program
     {
         var vertexShader:String = [
             "m44 op, va0, vc0", // 4x4 matrix transform to output clipspace
@@ -291,7 +289,8 @@ public class Effect
      *
      *  @default 0
      */
-    protected function get programVariantName():UInt
+	public var programVariantName(get, never):UInt;
+    private function get_programVariantName():UInt
     {
         return 0;
     }
@@ -299,8 +298,9 @@ public class Effect
     /** Returns the base name for the program.
      *  @default the fully qualified class name
      */
-    protected function get programBaseName():String { return _programBaseName; }
-    protected function set programBaseName(value:String):Void { _programBaseName = value; }
+	public var programBaseName(get, set):UInt;
+    private function get_programBaseName():String { return _programBaseName; }
+    private function set_programBaseName(value:String):Void { _programBaseName = value; }
 
     /** Returns the full name of the program, which is used to register it at the current
      *  <code>Painter</code>.
@@ -309,7 +309,8 @@ public class Effect
      *  names (e.g. <code>LightEffect#42</code>). It shouldn't be necessary to override
      *  this method.</p>
      */
-    protected function get programName():String
+	public var programName(get, never):String;
+    private function get_programName():String
     {
         var baseName:String  = this.programBaseName;
         var variantName:UInt = this.programVariantName;
