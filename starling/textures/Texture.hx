@@ -259,16 +259,17 @@ class Texture
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
                                           optimizeForRenderToTexture:Bool=false,
                                           scale:Float=1, format:Context3DTextureFormat=BGRA,
-                                          repeat:Bool=false):Texture
+                                          repeat:Bool = false,
+										  async:Dynamic = null):Texture
     {
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
 
-        texture.root.uploadBitmapData(data);
+        texture.root.uploadBitmapData(data, async);
         texture.root.onRestore = function():Void
         {
-            texture.root.uploadBitmapData(data);
+            texture.root.uploadBitmapData(data, async);
         };
 
         return texture;
