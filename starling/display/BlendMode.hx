@@ -19,7 +19,7 @@ import flash.errors.ArgumentError;
  *  represents a particular four-value vector that is multiplied with the source or destination
  *  color in the blending formula. The blending formula is:</p>
  * 
- *  <pre>result = source × sourceFactor + destination × destinationFactor</pre>
+ *  <pre>result = source Ã— sourceFactor + destination Ã— destinationFactor</pre>
  * 
  *  <p>In the formula, the source color is the output color of the pixel shader program. The 
  *  destination color is the color that currently exists in the color buffer, as set by 
