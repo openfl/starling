@@ -106,7 +106,6 @@ class Canvas extends DisplayObjectContainer
     {
         removeChildren(0, -1, true);
         __polygons.length = 0;
-        __destroyBuffers();
     }
 
     private function __appendPolygon(polygon:Polygon):Void

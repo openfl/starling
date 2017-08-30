@@ -14,10 +14,11 @@ import utils.RoundButton;
             "Pushing the bird only works when the touch occurs within a circle." + 
             "This can be accomplished by overriding the method 'hitTest'.";
         
-        var infoText:TextField = new TextField(300, 100, description, "DejaVu Sans");
+        var infoText:TextField = new TextField(300, 100, description);
+        infoText.format.font = "DejaVu Sans";
         infoText.x = infoText.y = 10;
-        infoText.vAlign = Align.TOP;
-        infoText.hAlign = Align.CENTER;
+        infoText.format.verticalAlign = Align.TOP;
+        infoText.format.horizontalAlign = Align.CENTER;
         addChild(infoText);
         
         // 'RoundButton' is a helper class of the Demo, not a part of Starling!

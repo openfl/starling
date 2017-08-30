@@ -10,13 +10,11 @@
 
 package starling.textures;
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.VertexBuffer3D;
-import flash.display3D.textures.TextureBase;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
+import haxe.Constraints.Function;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.display.BlendMode;
@@ -25,6 +23,7 @@ import starling.display.Image;
 import starling.filters.FragmentFilter;
 import starling.rendering.Painter;
 import starling.rendering.RenderState;
+import starling.utils.Execute.execute;
 
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
  * 
@@ -99,281 +98,241 @@ import starling.rendering.RenderState;
  */
 class RenderTexture extends SubTexture
 {
-    private static inline var CONTEXT_POT_SUPPORT_KEY:String = "RenderTexture.supportsNonPotDimensions";
-    private static inline var PMA:Bool = true;
-    
-    private var mActiveTexture:Texture;
-    private var mBufferTexture:Texture;
-    private var mHelperImage:Image;
-    private var __drawing:Bool;
-    private var mBufferReady:Bool;
-    private var __isPersistent:Bool;
-    private var __support:RenderSupport;
-    
-    /** helper object */
+    private static inline var USE_DOUBLE_BUFFERING_DATA_NAME:String =
+        "starling.textures.RenderTexture.useDoubleBuffering";
+
+    private var _activeTexture:Texture;
+    private var _bufferTexture:Texture;
+    private var _helperImage:Image;
+    private var _drawing:Bool;
+    private var _bufferReady:Bool;
+    private var _isPersistent:Bool;
+
+    // helper object
     private static var sClipRect:Rectangle = new Rectangle();
     
-    /** Indicates if new persistent textures should use a single render buffer instead of
-     * the default double buffering approach. That's faster and requires less memory, but is
-     * not supported on all hardware.
-     *
-     * <p>You can safely enable this property on all iOS and Desktop systems. On Android,
-     * it's recommended to enable it only on reasonably modern hardware, e.g. only when
-     * at least one of the 'Standard' profiles is supported.</p>
-     *
-     * <p>Beware: this feature requires at least Flash/AIR version 15.</p>
-     *
-     * @default false
-     */
-    public static var optimizePersistentBuffers:Bool = false;
-
     /** Creates a new RenderTexture with a certain size (in points). If the texture is
-     * persistent, the contents of the texture remains intact after each draw call, allowing
-     * you to use the texture just like a canvas. If it is not, it will be cleared before each
-     * draw call.
+     *  persistent, its contents remains intact after each draw call, allowing you to use the
+     *  texture just like a canvas. If it is not, it will be cleared before each draw call.
      *
-     * <p>Beware that persistence requires an additional texture buffer (i.e. the required
-     * memory is doubled). You can avoid that via 'optimizePersistentBuffers', though.</p>
+     *  <p>Non-persistent textures can be used more efficiently on older devices; on modern
+     *  hardware, it does not make a difference. For more information, have a look at the
+     *  documentation of the <code>useDoubleBuffering</code> property.</p>
      */
     public function new(width:Int, height:Int, persistent:Bool=true,
-                        scale:Float=-1, format:Context3DTextureFormat=null, repeat:Bool=false)
+                        scale:Float=-1, format:String="bgra")
     {
-        if (format == null) format = Context3DTextureFormat.BGRA;
-        // TODO: when Adobe has fixed this bug on the iPad 1 (see 'supportsNonPotDimensions'),
-        //       we can remove 'legalWidth/Height' and just pass on the original values.
-        //
-        // [Workaround]
+        _isPersistent = persistent;
+        _activeTexture = Texture.empty(width, height, true, false, true, scale, format);
+        _activeTexture.root.onRestore = _activeTexture.root.clear;
 
-        if (scale <= 0) scale = Starling.current.contentScaleFactor;
+        super(_activeTexture, new Rectangle(0, 0, width, height), true, null, false);
 
-        var legalWidth:Float  = width;
-        var legalHeight:Float = height;
-
-        if (!supportsNonPotDimensions)
+        if (persistent && useDoubleBuffering)
         {
-            legalWidth  = getNextPowerOfTwo(Std.int(width  * scale)) / scale;
-            legalHeight = getNextPowerOfTwo(Std.int(height * scale)) / scale;
-        }
-
-        // [/Workaround]
-
-        mActiveTexture = Texture.empty(legalWidth, legalHeight, PMA, false, true, scale, format, repeat);
-        mActiveTexture.root.onRestore = mActiveTexture.root.clear;
-        
-        super(mActiveTexture, new Rectangle(0, 0, width, height), true, null, false);
-        
-        var rootWidth:Float  = mActiveTexture.root.width;
-        var rootHeight:Float = mActiveTexture.root.height;
-        
-        __isPersistent = persistent;
-        __support = new RenderSupport();
-        __support.setProjectionMatrix(0, 0, rootWidth, rootHeight, width, height);
-        
-        if (persistent && (!optimizePersistentBuffers || !SystemUtil.supportsRelaxedTargetClearRequirement))
-        {
-            mBufferTexture = Texture.empty(legalWidth, legalHeight, PMA, false, true, scale, format, repeat);
-            mBufferTexture.root.onRestore = mBufferTexture.root.clear;
-            mHelperImage = new Image(mBufferTexture);
-            mHelperImage.smoothing = TextureSmoothing.NONE; // solves some antialias-issues
+            _bufferTexture = Texture.empty(width, height, true, false, true, scale, format);
+            _bufferTexture.root.onRestore = _bufferTexture.root.clear;
+            _helperImage = new Image(_bufferTexture);
+            _helperImage.textureSmoothing = TextureSmoothing.NONE; // solves some aliasing-issues
         }
     }
     
     /** @inheritDoc */
     public override function dispose():Void
     {
-        __support.dispose();
-        mActiveTexture.dispose();
+        _activeTexture.dispose();
         
         if (isDoubleBuffered)
         {
-            mBufferTexture.dispose();
-            mHelperImage.dispose();
+            _bufferTexture.dispose();
+            _helperImage.dispose();
         }
         
         super.dispose();
     }
     
     /** Draws an object into the texture. Note that any filters on the object will currently
-     * be ignored.
+     *  be ignored.
      * 
-     * @param object       The object to draw.
-     * @param matrix       If 'matrix' is null, the object will be drawn adhering its 
-     *                     properties for position, scale, and rotation. If it is not null,
-     *                     the object will be drawn in the orientation depicted by the matrix.
-     * @param alpha        The object's alpha value will be multiplied with this value.
-     * @param antiAliasing Only supported beginning with AIR 13, and only on Desktop.
-     *                     Values range from 0 (no antialiasing) to 4 (best quality).
+     *  @param object       The object to draw.
+     *  @param matrix       If 'matrix' is null, the object will be drawn adhering its 
+     *                      properties for position, scale, and rotation. If it is not null,
+     *                      the object will be drawn in the orientation depicted by the matrix.
+     *  @param alpha        The object's alpha value will be multiplied with this value.
+     *  @param antiAliasing Values range from 0 (no antialiasing) to 4 (best quality).
+     *                      Beginning with AIR 22, this feature is supported on all platforms
+     *                      (except for software rendering mode).
      */
     public function draw(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0,
                          antiAliasing:Int=0):Void
     {
         if (object == null) return;
         
-        if (__drawing)
-            render(object, matrix, alpha);
+        if (_drawing)
+            __render(object, matrix, alpha);
         else
-            renderBundled(render, object, matrix, alpha, antiAliasing);
+            __renderBundled(__render, object, matrix, alpha, antiAliasing);
     }
     
     /** Bundles several calls to <code>draw</code> together in a block. This avoids buffer 
-     * switches and allows you to draw multiple objects into a non-persistent texture.
-     * Note that the 'antiAliasing' setting provided here overrides those provided in
-     * individual 'draw' calls.
-     * 
-     * @param drawingBlock  a callback with the form: <pre>function():void;</pre>
-     * @param antiAliasing  Only supported beginning with AIR 13, and only on Desktop.
-     *                      Values range from 0 (no antialiasing) to 4 (best quality). */
-    public function drawBundled(drawingBlock:DisplayObject->Matrix->Float->Void, antiAliasing:Int=0):Void
+     *  switches and allows you to draw multiple objects into a non-persistent texture.
+     *  Note that the 'antiAliasing' setting provided here overrides those provided in
+     *  individual 'draw' calls.
+     *  
+     *  @param drawingBlock  a callback with the form: <pre>function():void;</pre>
+     *  @param antiAliasing  Values range from 0 (no antialiasing) to 4 (best quality).
+     *                       Beginning with AIR 22, this feature is supported on all platforms
+     *                       (except for software rendering mode).
+     */
+    public function drawBundled(drawingBlock:Function, antiAliasing:Int=0):Void
     {
-        renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
+        __renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
     }
     
-    private function render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
+    private function __render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
     {
+        var painter:Painter = Starling.current.painter;
+        var state:RenderState = painter.state;
+        var wasCacheEnabled:Bool = painter.cacheEnabled;
         var filter:FragmentFilter = object.filter;
         var mask:DisplayObject = object.mask;
 
-        __support.loadIdentity();
-        __support.blendMode = object.blendMode == BlendMode.AUTO ?
+        painter.cacheEnabled = false;
+        painter.pushState();
+
+        state.alpha = object.alpha * alpha;
+        state.setModelviewMatricesToIdentity();
+        state.blendMode = object.blendMode == BlendMode.AUTO ?
             BlendMode.NORMAL : object.blendMode;
 
-        if (matrix != null) __support.prependMatrix(matrix);
-        else        __support.transformMatrix(object);
+        if (matrix != null) state.transformModelviewMatrix(matrix);
+        else        state.transformModelviewMatrix(object.transformationMatrix);
 
-        if (mask != null)   __support.pushMask(mask);
+        if (mask != null)   painter.drawMask(mask);
 
-        if (filter != null) filter.render(object, __support, alpha);
-        else        object.render(__support, alpha);
+        if (filter != null) filter.render(painter);
+        else        object.render(painter);
 
-        if (mask != null)   __support.popMask();
+        if (mask != null)   painter.eraseMask(mask);
+
+        painter.popState();
+        painter.cacheEnabled = wasCacheEnabled;
     }
     
-    private function renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
-                                   matrix:Matrix=null, alpha:Float=1.0,
-                                   antiAliasing:Int=0):Void
+    private function __renderBundled(renderBlock:Function, object:DisplayObject=null,
+                                     matrix:Matrix=null, alpha:Float=1.0,
+                                     antiAliasing:Int=0):Void
     {
-        var context:Context3D = Starling.current.context;
-        if (context == null) throw new MissingContextError();
+        var painter:Painter = Starling.current.painter;
+        var state:RenderState = painter.state;
+
         if (!Starling.current.contextValid) return;
 
         // switch buffers
         if (isDoubleBuffered)
         {
-            var tmpTexture:Texture = mActiveTexture;
-            mActiveTexture = mBufferTexture;
-            mBufferTexture = tmpTexture;
-            mHelperImage.texture = mBufferTexture;
+            var tmpTexture:Texture = _activeTexture;
+            _activeTexture = _bufferTexture;
+            _bufferTexture = tmpTexture;
+            _helperImage.texture = _bufferTexture;
         }
 
-        var previousRenderTarget:Texture = __support.renderTarget;
-        
-        // limit drawing to relevant area
-        sClipRect.setTo(0, 0, mActiveTexture.width, mActiveTexture.height);
+        painter.pushState();
 
-        __support.pushClipRect(sClipRect);
-        __support.setRenderTarget(mActiveTexture, antiAliasing);
+        var rootTexture:Texture = _activeTexture.root;
+        state.setProjectionMatrix(0, 0, rootTexture.width, rootTexture.height, width, height);
+
+        // limit drawing to relevant area
+        sClipRect.setTo(0, 0, _activeTexture.width, _activeTexture.height);
+
+        state.clipRect = sClipRect;
+        state.setRenderTarget(_activeTexture, true, antiAliasing);
+        painter.prepareToDraw();
         
-        if (isDoubleBuffered || !isPersistent || !mBufferReady)
-            __support.clear();
+        if (isDoubleBuffered || !isPersistent || !_bufferReady)
+            painter.clear();
 
         // draw buffer
-        if (isDoubleBuffered && mBufferReady)
-            mHelperImage.render(__support, 1.0);
+        if (isDoubleBuffered && _bufferReady)
+            _helperImage.render(painter);
         else
-            mBufferReady = true;
+            _bufferReady = true;
         
         try
         {
-            __drawing = true;
-            renderBlock(object, matrix, alpha);
+            _drawing = true;
+            execute(renderBlock, [object, matrix, alpha]);
         }
-        //finally
-        {
-            __drawing = false;
-            __support.finishQuadBatch();
-            __support.nextFrame();
-            __support.renderTarget = previousRenderTarget;
-            __support.popClipRect();
-        }
+        catch (e:Dynamic) {}
+        
+        _drawing = false;
+        painter.popState();
     }
     
     /** Clears the render texture with a certain color and alpha value. Call without any
-     * arguments to restore full transparency. */
-    public function clear(rgb:UInt=0, alpha:Float=0.0):Void
+     *  arguments to restore full transparency. */
+    public function clear(color:UInt=0, alpha:Float=0.0):Void
     {
-        if (!Starling.current.contextValid) return;
-        var previousRenderTarget:Texture = __support.renderTarget;
-
-        __support.renderTarget = mActiveTexture;
-        __support.clear(rgb, alpha);
-        __support.renderTarget = previousRenderTarget;
-        mBufferReady = true;
-    }
-    
-    /** On the iPad 1 (and maybe other hardware?) clearing a non-POT RectangleTexture causes
-     * an error in the next "createVertexBuffer" call. Thus, we're forced to make this
-     * really...elegant check here. */
-    private var supportsNonPotDimensions(get, never):Bool;
-    private function get_supportsNonPotDimensions():Bool
-    {
-        // TODO: Check if the device supports npot texture
-        return true;
-        //var target:Starling = Starling.current;
-        //var context:Context3D = Starling.current.context;
-        //var support:Dynamic = target.contextData[CONTEXT_POT_SUPPORT_KEY];
-//
-        //if (support == null)
-        //{
-            //if (target.profile != "baselineConstrained" && "createRectangleTexture" in context)
-            //{
-                //var texture:TextureBase;
-                //var buffer:VertexBuffer3D;
-//
-                //try
-                //{
-                    //texture = context["createRectangleTexture"](2, 3, "bgra", true);
-                    //context.setRenderToTexture(texture);
-                    //context.clear();
-                    //context.setRenderToBackBuffer();
-                    //context.createVertexBuffer(1, 1);
-                    //support = true;
-                //}
-                //catch (e:Error)
-                //{
-                    //support = false;
-                //}
-                ////finally
-                //{
-                    //if (texture) texture.dispose();
-                    //if (buffer) buffer.dispose();
-                //}
-            //}
-            //else
-            //{
-                //support = false;
-            //}
-//
-            //target.contextData[CONTEXT_POT_SUPPORT_KEY] = support;
-        //}
-
-        //return support;
+        _activeTexture.root.clear(color, alpha);
+        _bufferReady = true;
     }
 
     // properties
 
     /** Indicates if the render texture is using double buffering. This might be necessary for
-     * persistent textures, depending on the runtime version and the value of
-     * 'forceDoubleBuffering'. */
+     *  persistent textures, depending on the runtime version and the value of
+     *  'forceDoubleBuffering'. */
     private var isDoubleBuffered(get, never):Bool;
-    private function get_isDoubleBuffered():Bool { return mBufferTexture != null; }
+    private function get_isDoubleBuffered():Bool { return _bufferTexture != null; }
 
     /** Indicates if the texture is persistent over multiple draw calls. */
     public var isPersistent(get, never):Bool;
-    private function get_isPersistent():Bool { return __isPersistent; }
+    private function get_isPersistent():Bool { return _isPersistent; }
     
     /** @inheritDoc */
-    private override function get_base():TextureBase { return mActiveTexture.base; }
+    private override function get_base():TextureBase { return _activeTexture.base; }
     
     /** @inheritDoc */
-    private override function get_root():ConcreteTexture { return mActiveTexture.root; }
+    private override function get_root():ConcreteTexture { return _activeTexture.root; }
+
+    /** Indicates if new persistent textures should use double buffering. Single buffering
+     *  is faster and requires less memory, but is not supported on all hardware.
+     *
+     *  <p>By default, applications running with the profile "baseline" or "baselineConstrained"
+     *  will use double buffering; all others use just a single buffer. You can override this
+     *  behavior, though, by assigning a different value at runtime.</p>
+     *
+     *  @default true for "baseline" and "baselineConstrained", false otherwise
+     */
+    public static var useDoubleBuffering(get, set):Bool;
+    private static function get_useDoubleBuffering():Bool
+    {
+        if (Starling.current != null)
+        {
+            var painter:Painter = Starling.current.painter;
+            var sharedData = painter.sharedData;
+
+            if (sharedData.exists(USE_DOUBLE_BUFFERING_DATA_NAME))
+            {
+                return sharedData[USE_DOUBLE_BUFFERING_DATA_NAME];
+            }
+            else
+            {
+                var profile:String = painter.profile != null ? painter.profile : "baseline";
+                var value:Bool = profile == "baseline" || profile == "baselineConstrained";
+                sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
+                return value;
+            }
+        }
+        else return false;
+    }
+
+    private static function set_useDoubleBuffering(value:Bool):Bool
+    {
+        if (Starling.current == null)
+            throw new IllegalOperationError("Starling not yet initialized");
+        else
+            Starling.current.painter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
+        return value;
+    }
 }

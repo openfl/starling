@@ -710,12 +710,13 @@ class VertexData
     {
         var pos:Int = attrName == "color" ? _colOffset : getAttribute(attrName).offset;
         _tinted = false;
+        var white:UInt = 0xffffffff;
 
         for (i in 0..._numVertices)
         {
             _rawData.position = pos;
-
-            if (_rawData.readUnsignedInt() != 0xffffffff)
+            
+            if (_rawData.readUnsignedInt() != white)
             {
                 _tinted = true;
                 break;
@@ -838,7 +839,7 @@ class VertexData
         if (alpha > 1.0)      alpha = 1.0;
         else if (alpha < 0.0) alpha = 0.0;
 
-        var rgba:UInt = ((color << 8) & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
+        var rgba:Int = ((color << 8) & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
 
         if (rgba == 0xffffffff && numVertices == _numVertices) _tinted = false;
         else if (rgba != 0xffffffff) _tinted = true;

@@ -10,7 +10,7 @@
 
 package starling.styles
 {
-import flash.geom.Matrix;
+import openfl.geom.Matrix;
 
 import starling.display.Mesh;
 import starling.rendering.MeshEffect;
@@ -460,8 +460,8 @@ public class DistanceFieldStyle extends MeshStyle
 }
 }
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 
 import starling.rendering.MeshEffect;
 import starling.rendering.Program;

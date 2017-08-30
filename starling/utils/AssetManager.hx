@@ -10,30 +10,30 @@
 
 package starling.utils;
 
-import flash.display.Bitmap;
-import flash.display.Loader;
-import flash.display.LoaderInfo;
-import flash.display3D.Context3DTextureFormat;
-import flash.errors.ArgumentError;
-import flash.errors.Error;
-import flash.events.HTTPStatusEvent;
-import flash.events.IOErrorEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.media.Sound;
-import flash.media.SoundChannel;
-import flash.media.SoundTransform;
+import openfl.display.Bitmap;
+import openfl.display.Loader;
+import openfl.display.LoaderInfo;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.events.HTTPStatusEvent;
+import openfl.events.IOErrorEvent;
+import openfl.events.ProgressEvent;
+import openfl.events.SecurityErrorEvent;
+import openfl.media.Sound;
+import openfl.media.SoundChannel;
+import openfl.media.SoundTransform;
 #if flash
 import flash.net.FileReference;
 #end
-import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
+import openfl.net.URLLoader;
+import openfl.net.URLLoaderDataFormat;
+import openfl.net.URLRequest;
 #if flash
 import flash.system.ImageDecodingPolicy;
 #end
-import flash.system.LoaderContext;
-import flash.system.System;
+import openfl.system.LoaderContext;
+import openfl.system.System;
 
 import haxe.Json;
 import haxe.Timer;

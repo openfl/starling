@@ -1,12 +1,13 @@
 package scenes;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.utils.Dictionary;
-import starling.display.DisplayObject;
-import starling.utils.Max;
+
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.utils.Dictionary;
+import openfl.Vector;
 
 import starling.display.BlendMode;
 import starling.display.Button;
+import starling.display.DisplayObject;
 import starling.display.Image;
 import starling.events.Event;
 import starling.events.Touch;
@@ -14,43 +15,46 @@ import starling.events.TouchEvent;
 import starling.events.TouchPhase;
 import starling.text.TextField;
 import starling.textures.RenderTexture;
-import openfl.Vector;
+import starling.utils.Max;
+
+import utils.MenuButton;
 
 @:keep class RenderTextureScene extends Scene
 {
-    private var mRenderTexture:RenderTexture;
-    private var mCanvas:Image;
-    private var mBrush:Image;
-    private var mButton:Button;
-    private var mColors:Map<Int, UInt>;
+    private var _renderTexture:RenderTexture;
+    private var _canvas:Image;
+    private var _brush:Image;
+    private var _button:Button;
+    private var _colors:Map<Int, UInt>;
     
     public function new()
     {
         super();
-        mColors = new Map<Int, UInt>();
-        mRenderTexture = new RenderTexture(320, 435);
+        _colors = new Map<Int, UInt>();
+        _renderTexture = new RenderTexture(320, 435);
         
-        mCanvas = new Image(mRenderTexture);
-        mCanvas.addEventListener(TouchEvent.TOUCH, onTouch);
-        addChild(mCanvas);
+        _canvas = new Image(_renderTexture);
+        _canvas.addEventListener(TouchEvent.TOUCH, onTouch);
+        addChild(_canvas);
         
-        mBrush = new Image(Game.assets.getTexture("brush"));
-        mBrush.pivotX = mBrush.width / 2;
-        mBrush.pivotY = mBrush.height / 2;
-        mBrush.blendMode = BlendMode.NORMAL;
+        _brush = new Image(Game.assets.getTexture("brush"));
+        _brush.pivotX = _brush.width / 2;
+        _brush.pivotY = _brush.height / 2;
+        _brush.blendMode = BlendMode.NORMAL;
         
         var infoText:TextField = new TextField(256, 128, "Touch the screen\nto draw!");
-        infoText.fontSize = 24;
+        infoText.format.font = "DejaVu Sans";
+        infoText.format.size = 24;
         infoText.x = Constants.CenterX - infoText.width / 2;
         infoText.y = Constants.CenterY - infoText.height / 2;
-        mRenderTexture.draw(infoText);
+        _renderTexture.draw(infoText);
+        infoText.dispose();
         
-        mButton = new Button(Game.assets.getTexture("button_normal"), "Mode: Draw");
-        mButton.fontName = "DejaVu Sans";
-        mButton.x = Std.int(Constants.CenterX - mButton.width / 2);
-        mButton.y = 15;
-        mButton.addEventListener(Event.TRIGGERED, onButtonTriggered);
-        addChild(mButton);
+        _button = new MenuButton("Mode: Draw");
+        _button.x = Std.int(Constants.CenterX - _button.width / 2);
+        _button.y = 15;
+        _button.addEventListener(Event.TRIGGERED, onButtonTriggered);
+        addChild(_button);
     }
     
     private function onTouch(event:TouchEvent):Void
@@ -59,46 +63,49 @@ import openfl.Vector;
         // strictly necessary, but it's faster when you are drawing with several fingers
         // simultaneously.
         
-        mRenderTexture.drawBundled(function(unused0:DisplayObject, unused1:flash.geom.Matrix, unused2:Float):Void
+        _renderTexture.drawBundled(function(unused0:DisplayObject, unused1:flash.geom.Matrix, unused2:Float):Void
         {
-            var touches:Vector<Touch> = event.getTouches(mCanvas);
+            var touches:Vector<Touch> = event.getTouches(_canvas);
         
             for (touch in touches)
             {
                 if (touch.phase == TouchPhase.BEGAN)
-                    mColors[touch.id] = Std.int(Math.random() * Max.UINT_MAX_VALUE);
+                    _colors[touch.id] = Std.int(Math.random() * Max.UINT_MAX_VALUE);
                 
                 if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                     continue;
                 
-                var location:Point = touch.getLocation(mCanvas);
-                mBrush.x = location.x;
-                mBrush.y = location.y;
-                mBrush.color = mColors[touch.id];
-                mBrush.rotation = Math.random() * Math.PI * 2.0;
+                var location:Point = touch.getLocation(_canvas);
+                _brush.x = location.x;
+                _brush.y = location.y;
+                _brush.color = _colors[touch.id];
+                _brush.rotation = Math.random() * Math.PI * 2.0;
                 
-                mRenderTexture.draw(mBrush);
+                _renderTexture.draw(_brush);
+                
+                // necessary because 'Starling.skipUnchangedFrames == true'
+                setRequiresRedraw();
             }
         });
     }
     
     private function onButtonTriggered():Void
     {
-        if (mBrush.blendMode == BlendMode.NORMAL)
+        if (_brush.blendMode == BlendMode.NORMAL)
         {
-            mBrush.blendMode = BlendMode.ERASE;
-            mButton.text = "Mode: Erase";
+            _brush.blendMode = BlendMode.ERASE;
+            _button.text = "Mode: Erase";
         }
         else
         {
-            mBrush.blendMode = BlendMode.NORMAL;
-            mButton.text = "Mode: Draw";
+            _brush.blendMode = BlendMode.NORMAL;
+            _button.text = "Mode: Draw";
         }
     }
     
     public override function dispose():Void
     {
-        mRenderTexture.dispose();
+        _renderTexture.dispose();
         super.dispose();
     }
 }

@@ -1,12 +1,12 @@
 package;
 
-import flash.display.Bitmap;
-import flash.display.Sprite;
-import flash.display3D.Context3DRenderMode;
-import flash.errors.Error;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import flash.system.System;
+import openfl.display.Bitmap;
+import openfl.display.Sprite;
+import openfl.display3D.Context3DRenderMode;
+import openfl.errors.Error;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
+import openfl.system.System;
 import openfl.display.StageScaleMode;
 import openfl.utils.ByteArray;
 

@@ -10,6 +10,7 @@
 
 package starling.filters;
 
+import openfl.errors.ArgumentError;
 import openfl.Vector;
 
 import starling.events.Event;
@@ -31,6 +32,8 @@ class FilterChain extends FragmentFilter
     /** Creates a new chain with the given filters. */
     public function new(args:Array<FragmentFilter>)
     {
+        super();
+        
         _filters = new Vector<FragmentFilter>();
 
         var len:Int = args.length;
@@ -42,7 +45,7 @@ class FilterChain extends FragmentFilter
         }
 
         updatePadding();
-        addEventListener(Event.ENTER_FRAME, onEnterFrame);
+        addEventListener(Event.ENTER_FRAME, __onEnterFrame);
     }
 
     /** Disposes the filter chain itself as well as all contained filters. */
@@ -57,7 +60,7 @@ class FilterChain extends FragmentFilter
     }
 
     /** @private */
-    override protected function setRequiresRedraw():Void
+    override private function setRequiresRedraw():Void
     {
         updatePadding();
         super.setRequiresRedraw();
@@ -147,7 +150,7 @@ class FilterChain extends FragmentFilter
     {
         sPadding.setTo();
 
-        for each (var filter:FragmentFilter in _filters)
+        for (filter in _filters)
         {
             var padding:Padding = filter.padding;
             if (padding.left   > sPadding.left)   sPadding.left   = padding.left;
@@ -159,7 +162,7 @@ class FilterChain extends FragmentFilter
         this.padding.copyFrom(sPadding);
     }
 
-    private function onEnterFrame(event:Event):Void
+    private function __onEnterFrame(event:Event):Void
     {
         var numFilters:Int = _filters.length;
         for (i in 0...numFilters) _filters[i].dispatchEvent(event);

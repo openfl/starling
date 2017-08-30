@@ -11,6 +11,7 @@
 package starling.textures;
 
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -157,7 +158,7 @@ class SubTexture extends Texture
     private override function get_root():ConcreteTexture { return _parent.root; }
     
     /** @inheritDoc */
-    private override function get_format():String { return _parent.format; }
+    private override function get_format():Context3DTextureFormat { return _parent.format; }
     
     /** @inheritDoc */
     private override function get_width():Float { return _width; }

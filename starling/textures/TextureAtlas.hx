@@ -10,7 +10,7 @@
 
 package starling.textures;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 import openfl.Vector;
 

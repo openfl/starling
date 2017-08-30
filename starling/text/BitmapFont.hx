@@ -10,8 +10,8 @@
 
 package starling.text;
 
-import flash.errors.ArgumentError;
-import flash.geom.Rectangle;
+import openfl.errors.ArgumentError;
+import openfl.geom.Rectangle;
 import openfl.errors.Error;
 
 import openfl.Vector;
@@ -294,9 +294,9 @@ class BitmapFont implements ITextCompositor
         var finished:Bool = false;
         var charLocation:CharLocation;
         var numChars:Int;
-        var containerWidth:Float;
-        var containerHeight:Float;
-        var scale:Float;
+        var containerWidth:Float = 0;
+        var containerHeight:Float = 0;
+        var scale:Float = 0;
         var i:Int, j:Int;
 
         if (fontSize < 0) fontSize *= -__size;
@@ -309,8 +309,6 @@ class BitmapFont implements ITextCompositor
             scale = fontSize / __size;
             containerWidth  = (width  - 2 * __padding) / scale;
             containerHeight = (height - 2 * __padding) / scale;
-            
-            
             
             if (__lineHeight <= containerHeight)
             {

@@ -40,6 +40,8 @@ class DropShadowFilter extends FragmentFilter
                         color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
                         resolution:Float=0.5)
     {
+        super();
+        
         _compositeFilter = new CompositeFilter();
         _blurFilter = new BlurFilter(blur, blur, resolution);
         _distance = distance;
@@ -168,7 +170,6 @@ class DropShadowFilter extends FragmentFilter
     }
 
     /** @private */
-    public var resolution(get, set):Float;
     override private function get_resolution():Float { return _blurFilter.resolution; }
     override private function set_resolution(value:Float):Float
     {

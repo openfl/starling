@@ -447,7 +447,7 @@ class FragmentFilter extends EventDispatcher
     {
         dispatchEventWith(Event.CHANGE);
         if (_target != null) _target.setRequiresRedraw();
-        if (_cached != null) _cacheRequested = true;
+        if (_cached) _cacheRequested = true;
     }
 
     /** Indicates the number of rendering passes required for this filter.

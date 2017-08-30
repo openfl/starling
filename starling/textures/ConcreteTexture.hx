@@ -15,6 +15,7 @@ import haxe.Constraints.Function;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.Error;
 #if flash
 import flash.media.Camera;
@@ -265,7 +266,7 @@ class ConcreteTexture extends Texture
     private override function get_root():ConcreteTexture { return this; }
 
     /** @inheritDoc */
-    private override function get_format():String { return _format; }
+    private override function get_format():Context3DTextureFormat { return _format; }
 
     /** @inheritDoc */
     private override function get_width():Float  { return _width / _scale;  }

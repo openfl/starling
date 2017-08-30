@@ -10,9 +10,9 @@
 
 package starling.events;
 
-import flash.display.BitmapData;
-import flash.display.Shape;
-import flash.geom.Point;
+import openfl.display.BitmapData;
+import openfl.display.Shape;
+import openfl.geom.Point;
 
 import starling.core.Starling;
 import starling.display.Image;

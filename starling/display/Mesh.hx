@@ -133,7 +133,7 @@ class Mesh extends DisplayObject
 
     private function __createDefaultMeshStyle():MeshStyle
     {
-        var meshStyle:MeshStyle;
+        var meshStyle:MeshStyle = null;
 
         if (sDefaultStyleFactory != null)
         {

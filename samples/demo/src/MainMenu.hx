@@ -1,7 +1,4 @@
 package;
-#if 0
-import flash.utils.getQualifiedClassName;
-#end
 
 import scenes.AnimationScene;
 import scenes.BenchmarkScene;
@@ -15,7 +12,6 @@ import scenes.Sprite3DScene;
 import scenes.TextScene;
 import scenes.TextureScene;
 import scenes.TouchScene;
-
 #if demo_video
 import scenes.VideoScene;
 #end
@@ -72,7 +68,6 @@ class MainMenu extends Sprite
             var button:Button = new MenuButton(sceneTitle);
             button.height = 42;
             button.readjustSize();
-            button.fontName = "DejaVu Sans";
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = #if demo_video 145 #else 155 #end + Std.int(count / 2) * 46;
             button.name = Type.getClassName(sceneClass);
@@ -87,7 +82,8 @@ class MainMenu extends Sprite
         // show information about rendering method (hardware/software)
         
         var driverInfo:String = Starling.current.context.driverInfo;
-        var infoText:TextField = new TextField(310, 64, driverInfo, "DejaVu Sans");
+        var infoText:TextField = new TextField(310, 64, driverInfo);
+        infoText.format.font = "DejaVu Sans";
         infoText.format.size = 10;
         infoText.format.verticalAlign = Align.BOTTOM;
         infoText.x = 5;

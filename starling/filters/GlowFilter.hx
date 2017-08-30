@@ -40,6 +40,8 @@ class GlowFilter extends FragmentFilter
     public function new(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
                         resolution:Float=0.5)
     {
+        super();
+        
         _blurFilter = new BlurFilter(blur, blur, resolution);
         _compositeFilter = new CompositeFilter();
         _compositeFilter.setColorAt(0, color, true);
@@ -124,7 +126,7 @@ class GlowFilter extends FragmentFilter
 
     /** @private */
     override private function get_resolution():Float { return _blurFilter.resolution; }
-    override private function set_resolution(value:Float):Void
+    override private function set_resolution(value:Float):Float
     {
         if (resolution != value)
         {
@@ -132,5 +134,6 @@ class GlowFilter extends FragmentFilter
             setRequiresRedraw();
             updatePadding();
         }
+        return value;
     }
 }

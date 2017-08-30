@@ -74,11 +74,11 @@ class RenderState
     /** @private */ @:allow(starling) private var _blendMode:String;
     /** @private */ @:allow(starling) private var _modelviewMatrix:Matrix;
 
-    private static var CULLING_VALUES:Vector<String> = Vector.ofArray(
+    private static var CULLING_VALUES:Vector<Context3DTriangleFace> = Vector.ofArray(
         [Context3DTriangleFace.NONE, Context3DTriangleFace.FRONT,
          Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK]);
 
-    private var _miscOptions:UInt;
+    private var _miscOptions:UInt = 0;
     private var _clipRect:Rectangle;
     private var _renderTarget:Texture;
     private var _onDrawRequired:Function;

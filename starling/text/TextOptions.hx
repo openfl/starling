@@ -10,8 +10,10 @@
 
 package starling.text;
 
-import flash.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DTextureFormat;
+#if flash
 import flash.text.StyleSheet;
+#end
 
 import starling.core.Starling;
 
@@ -28,7 +30,9 @@ class TextOptions
     private var __isHtmlText:Bool;
     private var __textureScale:Float;
     private var __textureFormat:String;
+    #if flash
     private var __styleSheet:StyleSheet;
+    #end
 
     /** Creates a new TextOptions instance with the given properties. */
     public function new(wordWrap:Bool=true, autoScale:Bool=false)
@@ -36,7 +40,7 @@ class TextOptions
         __wordWrap = wordWrap;
         __autoScale = autoScale;
         __autoSize = TextFieldAutoSize.NONE;
-        __textureScale = Starling.current.contentScaleFactor;
+        __textureScale = Starling.current != null ? Starling.current.contentScaleFactor : 1;
         __textureFormat = Context3DTextureFormat.BGR_PACKED;
         __isHtmlText = false;
     }
@@ -50,7 +54,9 @@ class TextOptions
         __isHtmlText = options.__isHtmlText;
         __textureScale = options.__textureScale;
         __textureFormat = options.__textureFormat;
+        #if flash
         __styleSheet = options.__styleSheet;
+        #end
     }
 
     /** Creates a clone of this instance. */
@@ -88,10 +94,12 @@ class TextOptions
     private function get_isHtmlText():Bool { return __isHtmlText; }
     private function set_isHtmlText(value:Bool):Bool { return __isHtmlText = value; }
 
+    #if flash
     /** An optional style sheet to be used for HTML text. @default null */
 	public var styleSheet(get, set):StyleSheet;
     private function get_styleSheet():StyleSheet { return __styleSheet; }
     private function set_styleSheet(value:StyleSheet):StyleSheet { return __styleSheet = value; }
+    #end
 
     /** The scale factor of any textures that are created during text composition.
      *  @default Starling.contentScaleFactor */

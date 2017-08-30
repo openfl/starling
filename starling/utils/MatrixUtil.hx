@@ -10,10 +10,10 @@
 
 package starling.utils;
 
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Vector3D;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Vector3D;
 
 import openfl.Vector;
 
@@ -25,9 +25,9 @@ class MatrixUtil
         [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
     private static var sRawData2:Vector<Float> = Vector.ofArray(
         [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
-	private static var sPoint3D:Vector3D = new Vector3D();
-	private static var sMatrixData:Vector<Float> = Vector.ofArray(
-			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sMatrixData:Vector<Float> = Vector.ofArray(
+        [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     
     /** Converts a 2D matrix to a 3D matrix. If you pass a 'resultMatrix',
      * the result will be stored in this matrix instead of creating a new object. */

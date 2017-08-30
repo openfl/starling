@@ -168,7 +168,7 @@ class RenderUtil
             resultReg:String, uvReg:String, sampler:Int, texture:Texture,
             convertToPmaIfRequired:Bool=true, tempReg:String="ft0"):String
     {
-        var format:String = texture.format;
+        var format = texture.format;
         var formatFlag:String;
 
         switch (format)
@@ -239,9 +239,6 @@ class RenderUtil
         var onError:Event->Void = null;
         var onCreated:Event->Void = null;
         
-        stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
-        stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
-        
         requestNextProfile = function():Void
         {
             currentProfile = profiles.shift();
@@ -253,8 +250,6 @@ class RenderUtil
                 else throw error;
             }
         }
-        
-        requestNextProfile();
 
         onCreated = function(event:Event):Void
         {
@@ -286,5 +281,10 @@ class RenderUtil
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             stage3D.removeEventListener(ErrorEvent.ERROR, onError);
         }
+        
+        stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
+        stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
+        
+        requestNextProfile();
     }
 }

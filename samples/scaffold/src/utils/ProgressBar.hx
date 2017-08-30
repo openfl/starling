@@ -1,9 +1,9 @@
 package utils;
 
-import flash.display.GradientType;
-import flash.display.Shape;
-import flash.display.Sprite;
-import flash.geom.Matrix;
+import openfl.display.GradientType;
+import openfl.display.Shape;
+import openfl.display.Sprite;
+import openfl.geom.Matrix;
 
 class ProgressBar extends Sprite
 {

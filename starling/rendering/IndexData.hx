@@ -71,7 +71,7 @@ class IndexData
 
     // basic quad layout
     private static var sQuadData:ByteArray = new ByteArray();
-    private static var sQuadDataNumIndices:UInt = 0;
+    private static var sQuadDataNumIndices:Int = 0;
 
     // helper objects
     private static var sVector:Vector<UInt> = new Vector<UInt>();
@@ -418,7 +418,7 @@ class IndexData
     }
 
     /** Returns the index that's expected at this position if following basic quad layout. */
-    private static function getBasicQuadIndexAt(indexID:Int):Int
+    private static function getBasicQuadIndexAt(indexID:Int):UInt
     {
         var quadID:Int = Std.int(indexID / 6);
         var posInQuad:Int = Std.int(indexID - quadID * 6); // => indexID % 6

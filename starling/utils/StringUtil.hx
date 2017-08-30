@@ -48,7 +48,7 @@ class StringUtil
      */
     public static function trimStart(string:String):String
     {
-        var pos:Int;
+        var pos:Int = 0;
         var length:Int = string.length;
 
         while(pos < length) {

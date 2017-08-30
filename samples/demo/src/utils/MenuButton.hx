@@ -9,7 +9,7 @@ class MenuButton extends Button
 {
     public function new(text:String, width:Float=128, height:Float=32)
     {
-        super(Game.assets.getTexture("button"), text);
+        super(Game.assets.getTexture("button_normal"), text);
     
         this.textFormat.font = "DejaVu Sans";
         this.scale9Grid = new Rectangle(12.5, 12.5, 20, 20);

@@ -273,7 +273,7 @@ class Juggler implements IAnimatable
      */
     public function repeatCall(call:Function, interval:Float, repeatCount:Int=0, args:Array<Dynamic> = null):UInt
     {
-        if (call == null) return null;
+        if (call == null) return 0;
         if (args == null) args = [];
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);

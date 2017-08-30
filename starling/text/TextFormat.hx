@@ -41,9 +41,11 @@ class TextFormat extends EventDispatcher
     private var __letterSpacing:Float;
 
     /** Creates a new TextFormat instance with the given properties. */
-    public function TextFormat(font:String="Verdana", size:Float=12, color:UInt=0x0,
-                               horizontalAlign:String="center", verticalAlign:String="center")
+    public function new(font:String="Verdana", size:Float=12, color:UInt=0x0,
+                        horizontalAlign:String="center", verticalAlign:String="center")
     {
+        super();
+        
         __font = font;
         __size = size;
         __color = color;

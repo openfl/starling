@@ -12,6 +12,7 @@ package starling.filters;
 
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
+import openfl.errors.ArgumentError;
 import openfl.geom.Point;
 import openfl.Vector;
 
@@ -20,6 +21,7 @@ import starling.rendering.Painter;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 import starling.textures.Texture;
+import starling.utils.ArrayUtil;
 import starling.utils.Color;
 import starling.utils.RenderUtil;
 import starling.utils.StringUtil;
@@ -33,7 +35,9 @@ class CompositeFilter extends FragmentFilter
 {
     /** Creates a new instance. */
     public function new()
-    { }
+    {
+        super();
+    }
 
     /** Combines up to four input textures into one new texture,
      *  adhering to the properties of each layer. */
@@ -129,6 +133,8 @@ class CompositeEffect extends FilterEffect
 
     public function new(numLayers:Int=4)
     {
+        super();
+        
         if (numLayers < 1 || numLayers > 4)
             throw new ArgumentError("number of layers must be between 1 and 4");
 
@@ -143,10 +149,10 @@ class CompositeEffect extends FilterEffect
         return _layers[layerID];
     }
 
-    private function getUsedLayers(out:Array=null):Array<CompositeLayer>
+    private function getUsedLayers(out:Array<CompositeLayer>=null):Array<CompositeLayer>
     {
         if (out == null) out = [];
-        else out.length = 0;
+        else ArrayUtil.clear(out);
 
         for (layer in _layers)
             if (layer.texture != null) out[out.length] = layer;
@@ -183,15 +189,15 @@ class CompositeEffect extends FilterEffect
                 layer = _layers[i];
 
                 fragmentShader.push(
-                    tex(fti, vi, i, layers[i].texture)  // fti => texture i color
+                    FilterEffect.tex(fti, vi, i, layers[i].texture)  // fti => texture i color
                 );
 
                 if (layer.replaceColor)
-                    fragmentShader.push(
-                        "mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w",
-                        "sat " + fti + ".w,   " + fti + ".w    ", // make sure alpha <= 1.0
-                        "mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www"
-                    );
+                {
+                    fragmentShader.push("mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w");
+                    fragmentShader.push("sat " + fti + ".w,   " + fti + ".w    "); // make sure alpha <= 1.0
+                    fragmentShader.push("mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www");
+                }
                 else
                     fragmentShader.push(
                         "mul " + fti + ", " + fti + ", " + fci // fti *= color
@@ -200,11 +206,9 @@ class CompositeEffect extends FilterEffect
                 if (i != 0)
                 {
                     // "normal" blending: src × ONE + dst × ONE_MINUS_SOURCE_ALPHA
-                    fragmentShader.push(
-                        "sub ft4, ft5, " + fti + ".wwww", // ft4 => 1 - src.alpha
-                        "mul ft0, ft0, ft4",              // ft0 => dst * (1 - src.alpha)
-                        "add ft0, ft0, " + fti            // ft0 => src + (dst * 1 - src.alpha)
-                    );
+                    fragmentShader.push("sub ft4, ft5, " + fti + ".wwww"); // ft4 => 1 - src.alpha
+                    fragmentShader.push("mul ft0, ft0, ft4");              // ft0 => dst * (1 - src.alpha)
+                    fragmentShader.push("add ft0, ft0, " + fti);           // ft0 => src + (dst * 1 - src.alpha)
                 }
             }
 
@@ -223,7 +227,7 @@ class CompositeEffect extends FilterEffect
         var bits:UInt;
         var totalBits:UInt = 0;
         var layer:CompositeLayer;
-        var layers:Array = getUsedLayers(sLayers);
+        var layers = getUsedLayers(sLayers);
         var numLayers:Int = layers.length;
         var variantBits:UInt;
 
@@ -231,7 +235,7 @@ class CompositeEffect extends FilterEffect
         {
             layer = layers[i];
             variantBits = RenderUtil.getTextureVariantBits(layer.texture);
-            bits = variantBits != 0 ? variantBits : (Std.int(layer.replaceColor) << 3);
+            bits = variantBits != 0 ? variantBits : ((layer.replaceColor ? 1 : 0) << 3);
             totalBits |= bits << (i * 4);
         }
 
@@ -248,7 +252,7 @@ class CompositeEffect extends FilterEffect
      */
     override private function beforeDraw(context:Context3D):Void
     {
-        var layers:Array<CompositeLayers> = getUsedLayers(sLayers);
+        var layers:Array<CompositeLayer> = getUsedLayers(sLayers);
         var numLayers:Int = layers.length;
 
         if (numLayers != 0)
@@ -303,10 +307,11 @@ class CompositeEffect extends FilterEffect
     public var numLayers(get, never):Int;
     private function get_numLayers():Int { return _layers.length; }
 
-    override private function set_texture(value:Texture):Void
+    override private function set_texture(value:Texture):Texture
     {
         _layers[0].texture = value;
         super.texture = value;
+        return value;
     }
 }
 

@@ -147,7 +147,7 @@ class StatsDisplay extends Sprite
         #if flash
         return Reflect.hasField(Starling.current.context, "totalGPUMemory");
         #else
-        return Starling.context.totalGPUMemory != 0;
+        return Starling.current.context.totalGPUMemory != 0;
         #end
     }
     

@@ -11,8 +11,8 @@
 package starling.display;
 
 import haxe.Constraints.Function;
-
 import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.media.Sound;
 import openfl.media.SoundTransform;
@@ -196,8 +196,8 @@ class MovieClip extends Image implements IAnimatable
     public function reverseFrames():Void
     {
         __frames.reverse();
-        __currentTime = totalTime - _currentTime;
-        __currentFrameID = numFrames - _currentFrameID - 1;
+        __currentTime = totalTime - __currentTime;
+        __currentFrameID = numFrames - __currentFrameID - 1;
         updateStartTimes();
     }
     
@@ -287,7 +287,7 @@ class MovieClip extends Image implements IAnimatable
             else return;
         }
 
-        var finalFrameID:Int = _frames.length - 1;
+        var finalFrameID:Int = __frames.length - 1;
         var restTimeInFrame:Float = frame.duration - __currentTime + frame.startTime;
         var dispatchCompleteEvent:Bool = false;
         var frameAction:Function = null;
@@ -369,7 +369,7 @@ class MovieClip extends Image implements IAnimatable
     }
     
     /** The time that has passed since the clip was started (each loop starts at zero). */
-    public var currentTime(get, never):Float;
+    public var currentTime(get, set):Float;
     private function get_currentTime():Float { return __currentTime; }
     private function set_currentTime(value:Float):Float
     {
@@ -384,6 +384,7 @@ class MovieClip extends Image implements IAnimatable
 
         var frame:MovieClipFrame = __frames[__currentFrameID];
         texture = frame.texture;
+        return value;
     }
 
     /** Indicates if the clip should loop. @default true */
@@ -409,6 +410,7 @@ class MovieClip extends Image implements IAnimatable
     {
         if (value < 0 || value >= numFrames) throw new ArgumentError("Invalid frame id");
         currentTime = __frames[value].startTime;
+        return value;
     }
     
     /** The default number of frames per second. Individual frames can have different 
@@ -448,5 +450,49 @@ class MovieClip extends Image implements IAnimatable
     private function get_isComplete():Bool
     {
         return !__loop && __currentTime >= totalTime;
+    }
+}
+
+
+private class MovieClipFrame
+{
+    public function new(texture:Texture, duration:Float=0.1,  startTime:Float=0)
+    {
+        this.texture = texture;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public var texture:Texture;
+    public var sound:Sound;
+    public var duration:Float;
+    public var startTime:Float;
+    public var action:Function;
+
+    public function playSound(transform:SoundTransform):Void
+    {
+        if (sound != null) sound.play(0, 0, transform);
+    }
+
+    public function executeAction(movie:MovieClip, frameID:Int):Void
+    {
+        if (action != null)
+        {
+            #if (flash || js)
+            var numArgs:Int = untyped action.length;
+            #elseif neko
+            var numArgs:Int = untyped ($nargs)(action);
+            #elseif cpp
+            var numArgs:Int = untyped action.__ArgCount();
+            #else
+            var numArgs:Int = 2;
+            #end
+
+            if (numArgs == 0) action();
+            else if (numArgs == 1) action(movie);
+            else if (numArgs == 2) action(movie, frameID);
+            else throw new Error("Frame actions support zero, one or two parameters: " +
+                    "movie:MovieClip, frameID:int");
+        }
     }
 }

@@ -48,7 +48,9 @@ import starling.utils.Execute.execute;
 
         if (!_disposed)
         {
+            #if flash
             videoBase.attachCamera(null);
+            #end
             videoBase.attachNetStream(null);
             _disposed = true;
         }

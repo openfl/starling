@@ -27,7 +27,7 @@ class Execute
             #elseif cpp
             var maxNumArgs:Int = untyped func.__ArgCount();
             #else
-            maxNumArgs = -1;
+            var maxNumArgs:Int = -1;
             #end
 
             for (i in args.length...maxNumArgs)

@@ -102,7 +102,7 @@ class FilterHelper implements IFilterHelper
             !MathUtil.isEquivalent(texture.scale,  _scale * resolution))
         {
             sRegion.setTo(0, 0, _width * resolution, _height * resolution);
-            subTexture = cast texture;
+            subTexture = Std.is(texture, SubTexture) ? cast texture : null;
 
             if (subTexture != null)
                 subTexture.setTo(texture.root, sRegion, true, null, false, resolution);

@@ -99,16 +99,18 @@ class BlurFilter extends FragmentFilter
     }
 
     /** @private */
-    override private function set_resolution(value:Float):Void
+    override private function set_resolution(value:Float):Float
     {
         super.resolution = value;
         updatePadding();
+        return value;
     }
 
     /** @private */
     override private function get_numPasses():Int
     {
-        return (Math.ceil(__blurX) + Math.ceil(__blurY)) || 1;
+        var passes = Math.ceil(__blurX) + Math.ceil(__blurY);
+        return passes != 0 ? passes : 1;
     }
 
     private function updatePadding():Void
@@ -166,6 +168,7 @@ class BlurEffect extends FilterEffect
      */
     public function new(direction:String="horizontal", strength:Float=1):Void
     {
+        super();
         this.strength  = strength;
         this.direction = direction;
     }
@@ -190,22 +193,22 @@ class BlurEffect extends FilterEffect
         // ft5   - output color
 
         var fragmentShader:String = [
-            tex("ft0", "v0", 0, texture),    // read center pixel
+            FilterEffect.tex("ft0", "v0", 0, texture),    // read center pixel
             "mul ft5, ft0, fc0.xxxx       ", // multiply with center weight
 
-            tex("ft1", "v1", 0, texture),    // read pixel -2
+            FilterEffect.tex("ft1", "v1", 0, texture),    // read pixel -2
             "mul ft1, ft1, fc0.zzzz       ", // multiply with weight
             "add ft5, ft5, ft1            ", // add to output color
 
-            tex("ft2", "v2", 0, texture),    // read pixel -1
+            FilterEffect.tex("ft2", "v2", 0, texture),    // read pixel -1
             "mul ft2, ft2, fc0.yyyy       ", // multiply with weight
             "add ft5, ft5, ft2            ", // add to output color
 
-            tex("ft3", "v3", 0, texture),    // read pixel +1
+            FilterEffect.tex("ft3", "v3", 0, texture),    // read pixel +1
             "mul ft3, ft3, fc0.yyyy       ", // multiply with weight
             "add ft5, ft5, ft3            ", // add to output color
 
-            tex("ft4", "v4", 0, texture),    // read pixel +2
+            FilterEffect.tex("ft4", "v4", 0, texture),    // read pixel +2
             "mul ft4, ft4, fc0.zzzz       ", // multiply with weight
             "add  oc, ft5, ft4            "  // add to output color
         ].join("\n");

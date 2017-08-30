@@ -147,13 +147,13 @@ class Effect
         // We wrap the dispose calls in a try/catch block to work around a stage3D problem.
         // Since they are not re-used later, that shouldn't have any evil side effects.
 
-        if (_vertexBuffer != null && vertexBuffer != null)
+        if (_vertexBuffer != null && vertexBuffer)
         {
             try { _vertexBuffer.dispose(); } catch (e:Error) {}
             _vertexBuffer = null;
         }
 
-        if (_indexBuffer != null && indexBuffer != null)
+        if (_indexBuffer != null && indexBuffer)
         {
             try { _indexBuffer.dispose(); } catch (e:Error) {}
             _indexBuffer = null;

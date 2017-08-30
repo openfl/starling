@@ -22,6 +22,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
+import openfl.utils.Dictionary;
+import openfl.utils.Object;
 import openfl.Vector;
 
 import starling.display.BlendMode;
@@ -81,10 +83,10 @@ class Painter
     private var _context:Context3D;
     private var _shareContext:Bool;
     private var _drawCount:Int;
-    private var _frameID:UInt;
+    private var _frameID:UInt = 0;
     private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
-    private var _stencilReferenceValues:Map<Dynamic, UInt>;
+    private var _stencilReferenceValues:Dictionary<Object, UInt>;
     private var _clipRectStack:Vector<Rectangle>;
     private var _batchCacheExclusions:Vector<DisplayObject>;
 
@@ -128,11 +130,11 @@ class Painter
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-        _shareContext = _context != null && _context.driverInfo != "Disposed";
+        _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
-        _stencilReferenceValues = new Map();
+        _stencilReferenceValues = new Dictionary();
         _clipRectStack = new Vector<Rectangle>();
 
         _batchProcessorCurr = new BatchProcessor();

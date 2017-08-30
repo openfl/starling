@@ -12,6 +12,7 @@ package starling.filters;
 
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
+import openfl.errors.ArgumentError;
 import openfl.Vector;
 
 import starling.rendering.FilterEffect;
@@ -55,6 +56,7 @@ class ColorMatrixFilter extends FragmentFilter
      */
     public function new(matrix:Vector<Float>=null)
     {
+        super();
         if (matrix != null) colorEffect.matrix = matrix;
     }
 
@@ -178,16 +180,19 @@ class ColorMatrixFilter extends FragmentFilter
                                  m15:Float, m16:Float, m17:Float, m18:Float, m19:Float):Void
     {
         sMatrix.length = 0;
-        sMatrix.push(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9,
-            m10, m11, m12, m13, m14, m15, m16, m17, m18, m19);
-
+        sMatrix[0] = m0; sMatrix[1] = m1; sMatrix[2] = m2; sMatrix[3] = m3;
+        sMatrix[4] = m4; sMatrix[5] = m5; sMatrix[6] = m6; sMatrix[7] = m7;
+        sMatrix[8] = m8; sMatrix[9] = m9; sMatrix[10] = m10; sMatrix[11] = m11;
+        sMatrix[12] = m12; sMatrix[13] = m13; sMatrix[14] = m14; sMatrix[15] = m15;
+        sMatrix[16] = m16; sMatrix[17] = m17; sMatrix[18] = m18; sMatrix[19] = m19;
+        
         concat(sMatrix);
     }
 
     /** A vector of 20 items arranged as a 4x5 matrix. */
     public var matrix(get, set):Vector<Float>;
     private function get_matrix():Vector<Float> { return colorEffect.matrix; }
-    private function set_matrix(value:Vector<Float>):Void
+    private function set_matrix(value:Vector<Float>):Vector<Float>
     {
         colorEffect.matrix = value;
         setRequiresRedraw();
@@ -215,6 +220,8 @@ class ColorMatrixEffect extends FilterEffect
 
     public function new():Void
     {
+        super();
+        
         _userMatrix   = new Vector<Float>();
         _shaderMatrix = new Vector<Float>();
 
@@ -225,7 +232,7 @@ class ColorMatrixEffect extends FilterEffect
     {
         var vertexShader:String = FilterEffect.STD_VERTEX_SHADER;
         var fragmentShader:String = [
-            tex("ft0", "v0", 0, texture),      // read texture color
+            FilterEffect.tex("ft0", "v0", 0, texture),      // read texture color
             "max ft0, ft0, fc5              ", // avoid division through zero in next step
             "div ft0.xyz, ft0.xyz, ft0.www  ", // restore original (non-PMA) RGB values
             "m44 ft0, ft0, fc0              ", // multiply color with 4x4 matrix
@@ -287,21 +294,19 @@ class ColorMatrixEffect extends FilterEffect
         // and it needs the offsets in the range 0-1.
 
         _shaderMatrix.length = 0;
-        _shaderMatrix.push(
-            _userMatrix[0 ], _userMatrix[ 1], _userMatrix[ 2], _userMatrix[ 3],
-            _userMatrix[5 ], _userMatrix[ 6], _userMatrix[ 7], _userMatrix[ 8],
-            _userMatrix[10], _userMatrix[11], _userMatrix[12], _userMatrix[13],
-            _userMatrix[15], _userMatrix[16], _userMatrix[17], _userMatrix[18],
-            _userMatrix[ 4] / 255.0, _userMatrix[9] / 255.0,  _userMatrix[14] / 255.0,
-            _userMatrix[19] / 255.0
-        );
+        _shaderMatrix.push(_userMatrix[0 ]); _shaderMatrix.push(_userMatrix[ 1]); _shaderMatrix.push(_userMatrix[ 2]); _shaderMatrix.push(_userMatrix[ 3]);
+        _shaderMatrix.push(_userMatrix[5 ]); _shaderMatrix.push(_userMatrix[ 6]); _shaderMatrix.push(_userMatrix[ 7]); _shaderMatrix.push(_userMatrix[ 8]);
+        _shaderMatrix.push(_userMatrix[10]); _shaderMatrix.push(_userMatrix[11]); _shaderMatrix.push(_userMatrix[12]); _shaderMatrix.push(_userMatrix[13]);
+        _shaderMatrix.push(_userMatrix[15]); _shaderMatrix.push(_userMatrix[16]); _shaderMatrix.push(_userMatrix[17]); _shaderMatrix.push(_userMatrix[18]);
+        _shaderMatrix.push(_userMatrix[ 4] / 255.0); _shaderMatrix.push(_userMatrix[9] / 255.0); _shaderMatrix.push(_userMatrix[14] / 255.0);
+        _shaderMatrix.push(_userMatrix[19] / 255.0);
     }
 
     // properties
 
     public var matrix(get, set):Vector<Float>;
     private function get_matrix():Vector<Float> { return _userMatrix; }
-    private function set_matrix(value:Vector<Float>):Void
+    private function set_matrix(value:Vector<Float>):Vector<Float>
     {
         if (value != null && value.length != 20)
             throw new ArgumentError("Invalid matrix length: must be 20");
@@ -309,7 +314,10 @@ class ColorMatrixEffect extends FilterEffect
         if (value == null)
         {
             _userMatrix.length = 0;
-            _userMatrix.push.apply(_userMatrix, IDENTITY);
+            for (val in IDENTITY)
+            {
+                _userMatrix.push(val);
+            }
         }
         else
         {
@@ -317,5 +325,6 @@ class ColorMatrixEffect extends FilterEffect
         }
 
         updateShaderMatrix();
+        return value;
     }
 }

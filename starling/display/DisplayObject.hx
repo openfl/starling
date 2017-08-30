@@ -575,7 +575,7 @@ class DisplayObject extends EventDispatcher
     public function setRequiresRedraw():Void
     {
         var parent:DisplayObject = __parent != null ? __parent : __maskee;
-        var frameID:Int = Starling.current.frameID;
+        var frameID:UInt = Starling.current != null ? Starling.current.frameID : 0;
 
         __lastParentOrSelfChangeFrameID = frameID;
         __hasVisibleArea = __alpha  != 0.0 && __visible && __maskee == null &&

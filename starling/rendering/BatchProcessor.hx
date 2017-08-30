@@ -11,8 +11,8 @@
 package starling.rendering;
 
 import haxe.Constraints.Function;
-
 import openfl.geom.Matrix;
+import openfl.utils.Dictionary;
 import openfl.Vector;
 
 import starling.display.Mesh;
@@ -171,48 +171,53 @@ class BatchProcessor
 
 class BatchPool
 {
-	private var _batchLists:Map<Class<Dynamic>, Vector<MeshBatch>>;
+    private var _batchLists:Dictionary<Class<Dynamic>, Vector<MeshBatch>>;
 
-	public function new()
-	{
-		_batchLists = new Map();
-	}
+    public function new()
+    {
+        _batchLists = new Dictionary<Class<Dynamic>, Vector<MeshBatch>>();
+    }
 
-	public function purge():Void
-	{
-		for (batchList in _batchLists)
-		{
-			for (i in 0...batchList.length)
-				batchList[i].dispose();
+    public function purge():Void
+    {
+        for (batchList in _batchLists.each())
+        {
+            if (batchList != null)
+            {
+                for (i in 0...batchList.length)
+                {
+                    if (batchList[i] != null)
+                        batchList[i].dispose();
+                }
+                batchList.length = 0;
+            }
+        }
+    }
 
-			batchList.length = 0;
-		}
-	}
+    public function get(styleType:Class<Dynamic>):MeshBatch
+    {
+        var batchList:Vector<MeshBatch> = _batchLists[styleType];
+        if (batchList == null)
+        {
+            batchList = new Vector<MeshBatch>();
+            _batchLists[styleType] = batchList;
+        }
 
-	public function get(styleType:Class<Dynamic>):MeshBatch
-	{
-		var batchList:Vector<MeshBatch> = _batchLists[styleType];
-		if (batchList == null)
-		{
-			batchList = new Vector<MeshBatch>();
-			_batchLists[styleType] = batchList;
-		}
+        if (batchList.length > 0) return batchList.pop();
+        else return new MeshBatch();
+    }
 
-		if (batchList.length > 0) return batchList.pop();
-		else return new MeshBatch();
-	}
+    public function put(meshBatch:MeshBatch):Void
+    {
+        var styleType:Class<Dynamic> = meshBatch.style.type;
+        var batchList:Vector<MeshBatch> = _batchLists[styleType];
+        if (batchList == null)
+        {
+            batchList = new Vector<MeshBatch>();
+            _batchLists[styleType] = batchList;
+        }
 
-	public function put(meshBatch:MeshBatch):Void
-	{
-		var styleType:Class<Dynamic> = meshBatch.style.type;
-		var batchList:Vector<MeshBatch> = _batchLists[styleType];
-		if (batchList == null)
-		{
-			batchList = new Vector<MeshBatch>();
-			_batchLists[styleType] = batchList;
-		}
-
-		meshBatch.clear();
-		batchList[batchList.length] = meshBatch;
-	}
+        meshBatch.clear();
+        batchList[batchList.length] = meshBatch;
+    }
 }

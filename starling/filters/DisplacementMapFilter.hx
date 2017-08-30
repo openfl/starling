@@ -60,6 +60,8 @@ class DisplacementMapFilter extends FragmentFilter
                         componentX:UInt=0, componentY:UInt=0,
                         scaleX:Float=0.0, scaleY:Float=0.0)
     {
+        super();
+        
         _mapX = _mapY = 0;
 
         this.mapTexture = mapTexture;
@@ -143,7 +145,7 @@ class DisplacementMapFilter extends FragmentFilter
 
     /** Describes which color channel to use in the map image to displace the y result.
      *  Possible values are constants from the BitmapDataChannel class. */
-    public var getComponentY(get, set):UInt;
+    public var componentY(get, set):UInt;
     private function get_componentY():UInt { return dispEffect.componentY; }
     private function set_componentY(value:UInt):UInt
     {
@@ -248,6 +250,7 @@ class DisplacementMapEffect extends FilterEffect
 
     public function new()
     {
+        super();
         _componentX = _componentY = 0;
         _scaleX = _scaleY = 0;
     }
@@ -274,14 +277,14 @@ class DisplacementMapEffect extends FilterEffect
             // fc2-5: matrix
 
             var fragmentShader:String = [
-                tex("ft0", "v1", 1, _mapTexture, false), // read map texture
+                FilterEffect.tex("ft0", "v1", 1, _mapTexture, false), // read map texture
                 "sub ft1, ft0, fc0",          // subtract 0.5 -> range [-0.5, 0.5]
                 "mul ft1.xy, ft1.xy, ft0.ww", // zero displacement when alpha == 0
                 "m44 ft2, ft1, fc2",          // multiply matrix with displacement values
                 "add ft3,  v0, ft2",          // add displacement values to texture coords
                 "sat ft3.xy, ft3.xy",         // move texture coords into range 0-1
                 "min ft3.xy, ft3.xy, fc1.xy", // move texture coords into range 0-maxUV
-                tex("oc", "ft3", 0, texture)  // read input texture at displaced coords
+                FilterEffect.tex("oc", "ft3", 0, texture)  // read input texture at displaced coords
             ].join("\n");
 
             return Program.fromSource(vertexShader, fragmentShader);
@@ -338,7 +341,7 @@ class DisplacementMapEffect extends FilterEffect
         if (out == null) out = new Matrix3D();
 
         var columnX:Int, columnY:Int;
-        var scale:Float = Starling.contentScaleFactor;
+        var scale:Float = Starling.current.contentScaleFactor;
         var textureWidth:Float  = texture.root.nativeWidth;
         var textureHeight:Float = texture.root.nativeHeight;
 
@@ -355,8 +358,8 @@ class DisplacementMapEffect extends FilterEffect
         else if (_componentY == BitmapDataChannel.BLUE)  columnY = 2;
         else                                             columnY = 3;
 
-        sMatrixData[int(columnX * 4    )] = _scaleX * scale / textureWidth;
-        sMatrixData[int(columnY * 4 + 1)] = _scaleY * scale / textureHeight;
+        sMatrixData[Std.int(columnX * 4    )] = _scaleX * scale / textureWidth;
+        sMatrixData[Std.int(columnY * 4 + 1)] = _scaleY * scale / textureHeight;
 
         out.copyRawDataFrom(sMatrixData);
 
@@ -379,13 +382,13 @@ class DisplacementMapEffect extends FilterEffect
 
 	public var scaleY(get, set):Float;
     private function get_scaleY():Float { return _scaleY; }
-    private function set_scaleY(value:Float):Void { _scaleY = value; }
+    private function set_scaleY(value:Float):Float { return _scaleY = value; }
 
 	public var mapTexture(get, set):Texture;
     private function get_mapTexture():Texture { return _mapTexture; }
-    private function set_mapTexture(value:Texture):Void { _mapTexture = value; }
+    private function set_mapTexture(value:Texture):Texture { return _mapTexture = value; }
 
 	public var mapRepeat(get, set):Bool;
     private function get_mapRepeat():Bool { return _mapRepeat; }
-    private function set_mapRepeat(value:Bool):Void { _mapRepeat = value; }
+    private function set_mapRepeat(value:Bool):Bool { return _mapRepeat = value; }
 }

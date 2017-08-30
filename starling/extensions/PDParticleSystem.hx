@@ -12,8 +12,8 @@ package starling.extensions;
 
 import haxe.xml.Fast;
 
-import flash.display3D.Context3DBlendFactor;
-import flash.errors.ArgumentError;
+import openfl.display3D.Context3DBlendFactor;
+import openfl.errors.ArgumentError;
 
 import starling.textures.Texture;
 import starling.utils.MathUtil;

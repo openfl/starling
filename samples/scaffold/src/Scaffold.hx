@@ -1,13 +1,13 @@
 package;
 
-import flash.display.Bitmap;
-import flash.display.Loader;
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import flash.system.System;
-import flash.utils.ByteArray;
+import openfl.display.Bitmap;
+import openfl.display.Loader;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
+import openfl.system.System;
+import openfl.utils.ByteArray;
 import haxe.Timer;
 
 import lime.system.System in LimeSystem;

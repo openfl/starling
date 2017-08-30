@@ -205,7 +205,7 @@ import utils.MenuButton;
         
         var fps:Int = Std.int(Starling.current.nativeStage.frameRate);
         var numChildren:Int = _container.numChildren;
-        var resultString:String = format("Result:\n{0} objects\nwith {1} fps",
+        var resultString:String = StringUtil.format("Result:\n{0} objects\nwith {1} fps",
                                                [numChildren, fps]);
         trace(~/\n/g.replace(resultString, " "));
 
