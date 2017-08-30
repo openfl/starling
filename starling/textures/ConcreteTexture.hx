@@ -10,336 +10,281 @@
 
 package starling.textures;
 
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.TextureBase;
-import flash.errors.Error;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import haxe.Constraints.Function;
+
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.Error;
 #if flash
 import flash.media.Camera;
 #end
-import flash.net.NetStream;
-import flash.utils.ByteArray;
-
-import haxe.Constraints.Function;
+import openfl.net.NetStream;
+import openfl.system.Capabilities;
+import openfl.utils.ByteArray;
 
 import starling.core.Starling;
-import starling.errors.MissingContextError;
+import starling.errors.AbstractClassError;
+import starling.errors.AbstractMethodError;
 import starling.errors.NotSupportedError;
 import starling.events.Event;
+import starling.rendering.Painter;
 import starling.utils.Color;
-import starling.utils.SystemUtil;
+import starling.utils.Execute.execute;
 
-/** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture. */
+/** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture
+*  and providing utility methods for data upload, etc.
+*
+*  <p>This class cannot be instantiated directly; create instances using
+*  <code>Texture.fromTextureBase</code> instead. However, that's only necessary when
+*  you need to wrap a <code>TextureBase</code> object in a Starling texture;
+*  the preferred way of creating textures is to use one of the other
+*  <code>Texture.from...</code> factory methods in the <code>Texture</code> class.</p>
+*
+*  @see Texture
+*/
 class ConcreteTexture extends Texture
 {
-    private static inline var TEXTURE_READY:String = "textureReady"; // defined here for backwards compatibility
-    
-    private var mBase:TextureBase;
-    private var mFormat:Context3DTextureFormat;
-    private var __width:Int;
-    private var __height:Int;
-    private var mMipMapping:Bool;
-    private var mPremultipliedAlpha:Bool;
-    private var mOptimizedForRenderTexture:Bool;
-    private var __scale:Float;
-    private var __repeat:Bool;
-    private var __onRestore:Function;
-    private var mDataUploaded:Bool;
-    private var __textureReadyCallback:Function;
-    
-    /** helper object */
-    private static var sOrigin:Point = new Point();
-    
-    /** Creates a ConcreteTexture object from a TextureBase, storing information about size,
-     * mip-mapping, and if the channels contain premultiplied alpha values. */
-    public function new(base:TextureBase, format:Context3DTextureFormat, width:Int, height:Int, 
+    private var _base:TextureBase;
+    private var _format:String;
+    private var _width:Int;
+    private var _height:Int;
+    private var _mipMapping:Bool;
+    private var _premultipliedAlpha:Bool;
+    private var _optimizedForRenderTexture:Bool;
+    private var _scale:Float;
+    private var _onRestore:Function;
+    private var _dataUploaded:Bool;
+
+    /** @private
+    *
+    *  Creates a ConcreteTexture object from a TextureBase, storing information about size,
+    *  mip-mapping, and if the channels contain premultiplied alpha values. May only be
+    *  called from subclasses.
+    *
+    *  <p>Note that <code>width</code> and <code>height</code> are expected in pixels,
+    *  i.e. they do not take the scale factor into account.</p>
+    */
+    private function new(base:TextureBase, format:String, width:Int, height:Int,
                         mipMapping:Bool, premultipliedAlpha:Bool,
-                        optimizedForRenderTexture:Bool=false,
-                        scale:Float=1, repeat:Bool=false)
+                        optimizedForRenderTexture:Bool=false, scale:Float=1)
     {
         super();
-        __scale = scale <= 0 ? 1.0 : scale;
-        mBase = base;
-        mFormat = format;
-        __width = width;
-        __height = height;
-        mMipMapping = mipMapping;
-        mPremultipliedAlpha = premultipliedAlpha;
-        mOptimizedForRenderTexture = optimizedForRenderTexture;
-        __repeat = repeat;
-        __onRestore = null;
-        mDataUploaded = false;
-        __textureReadyCallback = null;
+        _scale = scale <= 0 ? 1.0 : scale;
+        _base = base;
+        _format = format;
+        _width = width;
+        _height = height;
+        _mipMapping = mipMapping;
+        _premultipliedAlpha = premultipliedAlpha;
+        _optimizedForRenderTexture = optimizedForRenderTexture;
+        _onRestore = null;
+        _dataUploaded = false;
     }
-    
+
     /** Disposes the TextureBase object. */
     public override function dispose():Void
     {
-        if (mBase != null)
-        {
-            mBase.removeEventListener(TEXTURE_READY, onTextureReady);
-            mBase.dispose();
-        }
+        if (_base != null) _base.dispose();
 
         this.onRestore = null; // removes event listener
         super.dispose();
     }
-    
-    // texture data upload
-    
-    /** Uploads a bitmap to the texture. The existing contents will be replaced.
-     * If the size of the bitmap does not match the size of the texture, the bitmap will be
-     * cropped or filled up with transparent pixels */
-    public function uploadBitmap(bitmap:Bitmap):Void
-    {
-        uploadBitmapData(bitmap.bitmapData);
-    }
-    
-    /** Uploads bitmap data to the texture. The existing contents will be replaced.
-     * If the size of the bitmap does not match the size of the texture, the bitmap will be
-     * cropped or filled up with transparent pixels */
-    public function uploadBitmapData(data:BitmapData):Void
-    {
-        if (!Starling.current.isRendering && !SystemUtil.isDesktop)
-        {
-            trace("[Starling] Warning: uploading bitmap data while Starling is not rendering " +
-                  "may cause a crash on some platforms. Ignoring request.");
-            return;
-        }
 
-        var potData:BitmapData = null;
-        
-        if (data.width != __width || data.height != __height)
-        {
-            potData = new BitmapData(__width, __height, true, 0);
-            potData.copyPixels(data, data.rect, sOrigin);
-            data = potData;
-        }
-        
-        if (Std.is(mBase, flash.display3D.textures.Texture))
-        {
-            var potTexture:flash.display3D.textures.Texture = 
-                cast mBase;
-            
-            potTexture.uploadFromBitmapData(data);
-            
-            if (mMipMapping && data.width > 1 && data.height > 1)
-            {
-                var currentWidth:Int  = data.width  >> 1;
-                var currentHeight:Int = data.height >> 1;
-                var level:Int = 1;
-                var canvas:BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
-                var transform:Matrix = new Matrix(.5, 0, 0, .5);
-                var bounds:Rectangle = new Rectangle();
-                
-                while (currentWidth >= 1 || currentHeight >= 1)
-                {
-                    bounds.width = currentWidth; bounds.height = currentHeight;
-                    canvas.fillRect(bounds, 0);
-                    canvas.draw(data, transform, null, null, null, true);
-                    potTexture.uploadFromBitmapData(canvas, level++);
-                    transform.scale(0.5, 0.5);
-                    currentWidth  = currentWidth  >> 1;
-                    currentHeight = currentHeight >> 1;
-                }
-                
-                canvas.dispose();
-            }
-        }
-        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
-        {
-            var baseTexture:flash.display3D.textures.RectangleTexture = cast mBase;
-            baseTexture.uploadFromBitmapData(data);
-        }
-        
-        if (potData != null) potData.dispose();
-        mDataUploaded = true;
+    // texture data upload
+
+    /** Uploads a bitmap to the texture. The existing contents will be replaced.
+    *  If the size of the bitmap does not match the size of the texture, the bitmap will be
+    *  cropped or filled up with transparent pixels.
+    *
+    *  <p>Pass a callback function or <code>true</code> to attempt asynchronous texture upload.
+    *  If the current platform or runtime version does not support asynchronous texture loading,
+    *  the callback will still be executed.</p>
+    *
+    *  <p>This is the expected function definition:
+    *  <code>function(texture:Texture, error:ErrorEvent):void;</code>
+    *  The second parameter is optional and typically <code>null</code>.</p>
+    */
+    public function uploadBitmap(bitmap:Bitmap, async:Dynamic=null):Void
+    {
+        uploadBitmapData(bitmap.bitmapData, async);
     }
-    
+
+    /** Uploads bitmap data to the texture. The existing contents will be replaced.
+    *  If the size of the bitmap does not match the size of the texture, the bitmap will be
+    *  cropped or filled up with transparent pixels.
+    *
+    *  <p>Pass a callback function or <code>true</code> to attempt asynchronous texture upload.
+    *  If the current platform or runtime version does not support asynchronous texture loading,
+    *  the callback will still be executed.</p>
+    *
+    *  <p>This is the expected function definition:
+    *  <code>function(texture:Texture, error:ErrorEvent):void;</code>
+    *  The second parameter is optional and typically <code>null</code>.</p>
+    */
+    public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
+    {
+        throw new NotSupportedError();
+    }
+
     /** Uploads ATF data from a ByteArray to the texture. Note that the size of the
-     * ATF-encoded data must be exactly the same as the original texture size.
-     * 
-     * <p>The 'async' parameter may be either a boolean value or a callback function.
-     * If it's <code>false</code> or <code>null</code>, the texture will be decoded
-     * synchronously and will be visible right away. If it's <code>true</code> or a function,
-     * the data will be decoded asynchronously. The texture will remain unchanged until the
-     * upload is complete, at which time the callback function will be executed. This is the
-     * expected function definition: <code>function(texture:Texture):void;</code></p>
-     */
+    *  ATF-encoded data must be exactly the same as the original texture size.
+    *  
+    *  <p>The 'async' parameter may be either a boolean value or a callback function.
+    *  If it's <code>false</code> or <code>null</code>, the texture will be decoded
+    *  synchronously and will be visible right away. If it's <code>true</code> or a function,
+    *  the data will be decoded asynchronously. The texture will remain unchanged until the
+    *  upload is complete, at which time the callback function will be executed. This is the
+    *  expected function definition: <code>function(texture:Texture):void;</code></p>
+    */
     public function uploadAtfData(data:ByteArray, offset:Int=0, async:Dynamic=null):Void
     {
-        var isAsync:Bool = Reflect.isFunction(async) || async == true;
-        var potTexture:flash.display3D.textures.Texture = 
-              Std.is(mBase, flash.display3D.textures.Texture) ? cast mBase : null;
-        
-        if (potTexture == null)
-            throw new Error("This texture type does not support ATF data");
-        
-        if (Reflect.isFunction(async))
-        {
-            __textureReadyCallback = async;
-            mBase.addEventListener(TEXTURE_READY, onTextureReady);
-        }
-        
-        potTexture.uploadCompressedTextureFromByteArray(data, offset, isAsync);
-        mDataUploaded = true;
+        throw new NotSupportedError();
     }
 
+    /** Specifies a video stream to be rendered within the texture. */
     public function attachNetStream(netStream:NetStream, onComplete:Function=null):Void
     {
         attachVideo("NetStream", netStream, onComplete);
     }
 
     #if flash
+    /** Specifies a video stream from a camera to be rendered within the texture. */
     public function attachCamera(camera:Camera, onComplete:Function=null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }
     #end
 
+    /** @private */
     @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:Function=null):Void
     {
-        var className:String = Type.getClassName(Type.getClass(mBase));
-
-        if (className == "flash.display3D.textures.VideoTexture")
-        {
-            mDataUploaded = true;
-            __textureReadyCallback = onComplete;
-            Reflect.callMethod(mBase, Reflect.getProperty(mBase, "attach" + type), attachment);
-            mBase.addEventListener(TEXTURE_READY, onTextureReady);
-        }
-        else throw new Error("This texture type does not support " + type + " data");
+        throw new NotSupportedError();
     }
 
-    private function onTextureReady(event:Dynamic):Void
-    {
-        mBase.removeEventListener(TEXTURE_READY, onTextureReady);
-        if (__textureReadyCallback != null) __textureReadyCallback(this);
-        __textureReadyCallback = null;
-    }
-    
     // texture backup (context loss)
-    
+
     private function onContextCreated():Void
     {
-        // recreate the underlying texture & restore contents
-        createBase();
-        if (__onRestore != null) __onRestore();
-        
-        // if no texture has been uploaded above, we init the texture with transparent pixels.
-        if (!mDataUploaded) clear();
-    }
-    
-    /** Recreates the underlying Stage3D texture object with the same dimensions and attributes
-     * as the one that was passed to the constructor. You have to upload new data before the
-     * texture becomes usable again. Beware: this method does <strong>not</strong> dispose
-     * the current base. */
-    private function createBase():Void
-    {
-        var context:Context3D = Starling.current.context;
-        
-        if (Std.is(mBase, flash.display3D.textures.Texture))
-            mBase = context.createTexture(__width, __height, mFormat, 
-                                          mOptimizedForRenderTexture);
-        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
-            mBase = context.createRectangleTexture (__width, __height, mFormat,
-                                                      mOptimizedForRenderTexture);
-        #if flash
-        else if (Std.is(mBase, flash.display3D.textures.VideoTexture))
-            mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
-        #end
-        else
-            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(Type.getClass(mBase)));
+        _dataUploaded = false;
+        _base = createBase();      // recreate the underlying texture
+        execute(_onRestore, [this]); // restore contents
 
-        mDataUploaded = false;
+        // if no texture has been uploaded above, we init the texture with transparent pixels.
+        if (!_dataUploaded) clear();
     }
-    
+
+    /** Recreates the underlying Stage3D texture object with the same dimensions and attributes
+    *  as the one that was passed to the constructor. You have to upload new data before the
+    *  texture becomes usable again. Beware: this method does <strong>not</strong> dispose
+    *  the current base. */
+    private function createBase():TextureBase
+    {
+        throw new AbstractMethodError();
+    }
+
+    /** Recreates the underlying Stage3D texture. May be used to manually restore a texture.
+    *  Beware that new data needs to be uploaded to the texture before it can be used. */
+    @:allow(starling) private function recreateBase():Void
+    {
+        _base = createBase();
+    }
+
     /** Clears the texture with a certain color and alpha value. The previous contents of the
-     * texture is wiped out. Beware: this method resets the render target to the back buffer; 
-     * don't call it from within a render method. */ 
+    *  texture is wiped out. */
     public function clear(color:UInt=0x0, alpha:Float=0.0):Void
     {
-        var context:Context3D = Starling.current.context;
-        if (context == null) throw new MissingContextError();
-        
-        if (mPremultipliedAlpha && alpha < 1.0)
+        if (_premultipliedAlpha && alpha < 1.0)
             color = Color.rgb(Std.int(Color.getRed(color)   * alpha),
                               Std.int(Color.getGreen(color) * alpha),
                               Std.int(Color.getBlue(color)  * alpha));
-        
-        context.setRenderToTexture(mBase);
-        
+
+        var painter:Painter = Starling.current.painter;
+        painter.pushState();
+        painter.state.renderTarget = this;
+
         // we wrap the clear call in a try/catch block as a workaround for a problem of
         // FP 11.8 plugin/projector: calling clear on a compressed texture doesn't work there
         // (while it *does* work on iOS + Android).
         
-        try { RenderSupport._clear(color, alpha); }
+        try { painter.clear(color, alpha); }
         catch (e:Error) {}
         
-        context.setRenderToBackBuffer();
-        mDataUploaded = true;
+        painter.popState();
+        setDataUploaded();
     }
-    
+
+    /** Notifies the instance that the base texture may now be used for rendering. */
+    private function setDataUploaded():Void
+    {
+        _dataUploaded = true;
+    }
+
     // properties
-    
+
     /** Indicates if the base texture was optimized for being used in a render texture. */
     public var optimizedForRenderTexture(get, never):Bool;
-    private function get_optimizedForRenderTexture():Bool { return mOptimizedForRenderTexture; }
-    
-    /** If Starling's "handleLostContext" setting is enabled, the function that you provide
-     * here will be called after a context loss. On execution, a new base texture will
-     * already have been created; however, it will be empty. Call one of the "upload..."
-     * methods from within the callbacks to restore the actual texture data. */
+    private function get_optimizedForRenderTexture():Bool { return _optimizedForRenderTexture; }
+
+    /** Indicates if the base texture is a standard power-of-two dimensioned texture of type
+    *  <code>flash.display3D.textures.Texture</code>. */
+    public var isPotTexture(get, never):Bool;
+    private function get_isPotTexture():Bool { return false; }
+
+    /** The function that you provide here will be called after a context loss.
+    *  On execution, a new base texture will already have been created; however,
+    *  it will be empty. Call one of the "upload..." methods from within the callback
+    *  to restore the actual texture data.
+    *
+    *  <listing>
+    *  var texture:Texture = Texture.fromBitmap(new EmbeddedBitmap());
+    *  texture.root.onRestore = function():void
+    *  {
+    *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
+    *  };</listing>
+    */
     public var onRestore(get, set):Function;
-    private function get_onRestore():Function { return __onRestore; }
+    private function get_onRestore():Function { return _onRestore; }
     private function set_onRestore(value:Function):Function
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
-        if (Starling.handleLostContext && value != null)
+        if (value != null)
         {
-            __onRestore = value;
+            _onRestore = value;
             Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         }
-        else __onRestore = null;
+        else _onRestore = null;
         return value;
     }
-    
+
     /** @inheritDoc */
-    private override function get_base():TextureBase { return mBase; }
-    
+    private override function get_base():TextureBase { return _base; }
+
     /** @inheritDoc */
     private override function get_root():ConcreteTexture { return this; }
-    
+
     /** @inheritDoc */
-    private override function get_format():Context3DTextureFormat { return mFormat; }
-    
+    private override function get_format():String { return _format; }
+
     /** @inheritDoc */
-    private override function get_width():Float  { return __width / __scale;  }
-    
+    private override function get_width():Float  { return _width / _scale;  }
+
     /** @inheritDoc */
-    private override function get_height():Float { return __height / __scale; }
-    
+    private override function get_height():Float { return _height / _scale; }
+
     /** @inheritDoc */
-    private override function get_nativeWidth():Float { return __width; }
-    
+    private override function get_nativeWidth():Float { return _width; }
+
     /** @inheritDoc */
-    private override function get_nativeHeight():Float { return __height; }
-    
-    /** The scale factor, which influences width and height properties. */
-    private override function get_scale():Float { return __scale; }
-    
+    private override function get_nativeHeight():Float { return _height; }
+
     /** @inheritDoc */
-    private override function get_mipMapping():Bool { return mMipMapping; }
-    
+    private override function get_scale():Float { return _scale; }
+
     /** @inheritDoc */
-    private override function get_premultipliedAlpha():Bool { return mPremultipliedAlpha; }
-    
+    private override function get_mipMapping():Bool { return _mipMapping; }
+
     /** @inheritDoc */
-    private override function get_repeat():Bool { return __repeat; }
+    private override function get_premultipliedAlpha():Bool { return _premultipliedAlpha; }
 }

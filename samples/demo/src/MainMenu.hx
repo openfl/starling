@@ -27,8 +27,9 @@ import starling.display.Sprite;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
 import starling.text.TextField;
-import starling.textures.Texture;
-import starling.utils.VAlign;
+import starling.utils.Align;
+
+import utils.MenuButton;
 
 class MainMenu extends Sprite
 {
@@ -61,7 +62,6 @@ class MainMenu extends Sprite
             #end
         ];
         
-        var buttonTexture:Texture = Game.assets.getTexture("button_medium");
         var count:Int = 0;
         
         for (sceneToCreate in scenesToCreate)
@@ -69,7 +69,9 @@ class MainMenu extends Sprite
             var sceneTitle:String = sceneToCreate[0];
             var sceneClass:Class<Dynamic>  = sceneToCreate[1];
             
-            var button:Button = new Button(buttonTexture, sceneTitle);
+            var button:Button = new MenuButton(sceneTitle);
+            button.height = 42;
+            button.readjustSize();
             button.fontName = "DejaVu Sans";
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = #if demo_video 145 #else 155 #end + Std.int(count / 2) * 46;
@@ -85,10 +87,11 @@ class MainMenu extends Sprite
         // show information about rendering method (hardware/software)
         
         var driverInfo:String = Starling.current.context.driverInfo;
-        var infoText:TextField = new TextField(310, 64, driverInfo, "DejaVu Sans", 10);
+        var infoText:TextField = new TextField(310, 64, driverInfo, "DejaVu Sans");
+        infoText.format.size = 10;
+        infoText.format.verticalAlign = Align.BOTTOM;
         infoText.x = 5;
         infoText.y = 475 - infoText.height;
-        infoText.vAlign = VAlign.BOTTOM;
         infoText.addEventListener(TouchEvent.TOUCH, onInfoTextTouched);
         addChildAt(infoText, 0);
     }

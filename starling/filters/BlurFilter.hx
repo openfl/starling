@@ -39,6 +39,7 @@ class BlurFilter extends FragmentFilter
      */
     public function new(blurX:Float=1.0, blurY:Float=1.0, resolution:Float=1.0)
     {
+        super();
         __blurX = blurX;
         __blurY = blurY;
         this.resolution = resolution;
@@ -112,8 +113,8 @@ class BlurFilter extends FragmentFilter
 
     private function updatePadding():Void
     {
-        var paddingX:Float = (__blurX ? Math.ceil(Math.abs(__blurX)) + 3 : 1) / resolution;
-        var paddingY:Float = (__blurY ? Math.ceil(Math.abs(__blurY)) + 3 : 1) / resolution;
+        var paddingX:Float = (__blurX != 0 ? Math.ceil(Math.abs(__blurX)) + 3 : 1) / resolution;
+        var paddingY:Float = (__blurY != 0 ? Math.ceil(Math.abs(__blurY)) + 3 : 1) / resolution;
 
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }

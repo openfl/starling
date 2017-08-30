@@ -92,7 +92,7 @@ import starling.textures.TextureSmoothing;
 class MeshStyle extends EventDispatcher
 {
     /** The vertex format expected by this style (the same as found in the MeshEffect-class). */
-    public static inline var VERTEX_FORMAT:VertexDataFormat = MeshEffect.VERTEX_FORMAT;
+    public static var VERTEX_FORMAT:VertexDataFormat = MeshEffect.VERTEX_FORMAT;
 
     private var _type:Class<Dynamic>;
     private var _target:Mesh;
@@ -121,7 +121,7 @@ class MeshStyle extends EventDispatcher
     public function copyFrom(meshStyle:MeshStyle):Void
     {
         _texture = meshStyle._texture;
-        _textureBase = _texture ? _texture.base : null; // fixes outdated base, too
+        _textureBase = _texture != null ? _texture.base : null; // fixes outdated base, too
         _textureRepeat = meshStyle._textureRepeat;
         _textureSmoothing = meshStyle._textureSmoothing;
     }
@@ -171,7 +171,7 @@ class MeshStyle extends EventDispatcher
             var newTexture:Texture = meshStyle._texture;
 
             if (_texture == null && newTexture == null) return true;
-            else if (_texture && newTexture)
+            else if (_texture != null && newTexture != null)
                 return _textureBase == meshStyle._textureBase &&
                        _textureSmoothing == meshStyle._textureSmoothing &&
                        _textureRepeat == meshStyle._textureRepeat;
@@ -212,21 +212,21 @@ class MeshStyle extends EventDispatcher
      *  The call is simply forwarded to the target mesh. */
     private function setRequiresRedraw():Void
     {
-        if (_target) _target.setRequiresRedraw();
+        if (_target != null) _target.setRequiresRedraw();
     }
 
     /** Call this method when the vertex data changed.
      *  The call is simply forwarded to the target mesh. */
     private function setVertexDataChanged():Void
     {
-        if (_target) _target.setVertexDataChanged();
+        if (_target != null) _target.setVertexDataChanged();
     }
 
     /** Call this method when the index data changed.
      *  The call is simply forwarded to the target mesh. */
     private function setIndexDataChanged():Void
     {
-        if (_target) _target.setIndexDataChanged();
+        if (_target != null) _target.setIndexDataChanged();
     }
 
     /** Called when assigning a target mesh. Override to plug in class-specific logic. */
@@ -404,7 +404,7 @@ class MeshStyle extends EventDispatcher
             if (value != null)
             {
                 var i:Int;
-                var numVertices:Int = _vertexData ? _vertexData.numVertices : 0;
+                var numVertices:Int = _vertexData != null ? _vertexData.numVertices : 0;
 
                 for (i in 0...numVertices)
                 {
@@ -417,7 +417,7 @@ class MeshStyle extends EventDispatcher
             else setRequiresRedraw();
 
             _texture = value;
-            _textureBase = value ? value.base : null;
+            _textureBase = value != null ? value.base : null;
         }
         return value;
     }

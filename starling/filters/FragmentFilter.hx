@@ -11,7 +11,10 @@
 package starling.filters;
 
 import haxe.Constraints.Function;
+
 import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
@@ -119,6 +122,8 @@ class FragmentFilter extends EventDispatcher
      *  input texture. */
     public function new()
     {
+        super();
+        
         _resolution = 1.0;
         _textureFormat = Context3DTextureFormat.BGRA;
         _textureSmoothing = TextureSmoothing.BILINEAR;
@@ -224,9 +229,9 @@ class FragmentFilter extends EventDispatcher
             _padding.left, _padding.right, _padding.top, _padding.bottom);
 
         // extend to actual pixel bounds for maximum sharpness + to avoid jiggling
-        RectangleUtil.extendToWholePixels(bounds, Starling.contentScaleFactor);
+        RectangleUtil.extendToWholePixels(bounds, Starling.current.contentScaleFactor);
 
-        _helper.textureScale = Starling.contentScaleFactor * _resolution;
+        _helper.textureScale = Starling.current.contentScaleFactor * _resolution;
         _helper.projectionMatrix3D = painter.state.projectionMatrix3D;
         _helper.renderTarget = painter.state.renderTarget;
         _helper.clipRect = painter.state.clipRect;
@@ -383,7 +388,7 @@ class FragmentFilter extends EventDispatcher
     /** @private */
     override public function addEventListener(type:String, listener:Function):Void
     {
-        if (type == Event.ENTER_FRAME && _target)
+        if (type == Event.ENTER_FRAME && _target != null)
             _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 
         super.addEventListener(type, listener);
@@ -392,7 +397,7 @@ class FragmentFilter extends EventDispatcher
     /** @private */
     override public function removeEventListener(type:String, listener:Function):Void
     {
-        if (type == Event.ENTER_FRAME && _target)
+        if (type == Event.ENTER_FRAME && _target != null)
             _target.removeEventListener(type, onEnterFrame);
 
         super.removeEventListener(type, listener);
@@ -522,7 +527,7 @@ class FragmentFilter extends EventDispatcher
         if (value != _textureSmoothing)
         {
             _textureSmoothing = value;
-            if (_quad) _quad.textureSmoothing = value;
+            if (_quad != null) _quad.textureSmoothing = value;
             setRequiresRedraw();
         }
         return value;
@@ -536,7 +541,7 @@ class FragmentFilter extends EventDispatcher
         if (value != _textureFormat)
         {
             _textureFormat = value;
-            if (_helper) _helper.textureFormat = value;
+            if (_helper != null) _helper.textureFormat = value;
             setRequiresRedraw();
         }
         return value;
@@ -574,18 +579,18 @@ class FragmentFilter extends EventDispatcher
 
             if (target == null)
             {
-                if (_helper) _helper.purge();
-                if (_effect) _effect.purgeBuffers();
-                if (_quad)   _quad.disposeTexture();
+                if (_helper != null) _helper.purge();
+                if (_effect != null) _effect.purgeBuffers();
+                if (_quad != null)   _quad.disposeTexture();
             }
 
-            if (prevTarget)
+            if (prevTarget != null)
             {
                 prevTarget.filter = null;
                 prevTarget.removeEventListener(Event.ENTER_FRAME, onEnterFrame);
             }
 
-            if (target)
+            if (target != null)
             {
                 if (hasEventListener(Event.ENTER_FRAME))
                     target.addEventListener(Event.ENTER_FRAME, onEnterFrame);

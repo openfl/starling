@@ -23,6 +23,7 @@ import starling.filters.FragmentFilter;
 import starling.rendering.BatchToken;
 import starling.rendering.Painter;
 import starling.utils.MatrixUtil;
+import starling.utils.Max;
 
 /**
  *  A DisplayObjectContainer represents a collection of display objects.
@@ -372,7 +373,7 @@ class DisplayObjectContainer extends DisplayObject
         {
             child = __children[i];
             
-            if (child.hasVisibleArea)
+            if (child.__hasVisibleArea)
             {
                 if (i != 0)
                     painter.restoreState();

@@ -8,27 +8,31 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
-import flash.display.BitmapData;
-import flash.display3D.textures.TextureBase;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.utils.ByteArray;
-import flash.utils.setTimeout;
+package starling.textures;
+
+import haxe.Constraints.Function;
+import haxe.Timer;
+
+import openfl.display.BitmapData;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.events.ErrorEvent;
+import openfl.events.Event;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 
 import starling.core.Starling;
 import starling.utils.MathUtil;
-import starling.utils.execute;
+import starling.utils.Execute.execute;
 
 /** @private
  *
  *  A concrete texture that wraps a <code>Texture</code> base.
  *  For internal use only. */
-internal class ConcretePotTexture extends ConcreteTexture
+@:allow(starling) class ConcretePotTexture extends ConcreteTexture
 {
     private var _textureReadyCallback:Function;
 
@@ -38,10 +42,10 @@ internal class ConcretePotTexture extends ConcreteTexture
     private static var sAsyncSupported:Bool = true;
 
     /** Creates a new instance with the given parameters. */
-    public function ConcretePotTexture(base:flash.display3D.textures.Texture, format:String,
-                                       width:int, height:int, mipMapping:Bool,
-                                       premultipliedAlpha:Bool,
-                                       optimizedForRenderTexture:Bool=false, scale:Number=1)
+    private function new(base:openfl.display3D.textures.Texture, format:String,
+                         width:Int, height:Int, mipMapping:Bool,
+                         premultipliedAlpha:Bool,
+                         optimizedForRenderTexture:Bool=false, scale:Float=1)
     {
         super(base, format, width, height, mipMapping, premultipliedAlpha,
               optimizedForRenderTexture, scale);
@@ -54,31 +58,31 @@ internal class ConcretePotTexture extends ConcreteTexture
     }
 
     /** @inheritDoc */
-    override public function dispose():void
+    override public function dispose():Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         super.dispose();
     }
 
     /** @inheritDoc */
-    override protected function createBase():TextureBase
+    override private function createBase():TextureBase
     {
-        return Starling.context.createTexture(
-                nativeWidth, nativeHeight, format, optimizedForRenderTexture);
+        return Starling.current.context.createTexture(
+                Std.int(nativeWidth), Std.int(nativeHeight), format, optimizedForRenderTexture);
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:*=null):void
+    override public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
     {
         var buffer:BitmapData = null;
-        var isAsync:Bool = async is Function || async === true;
+        var isAsync:Bool = Std.is(async, Function) || async == true;
 
-        if (async is Function)
-            _textureReadyCallback = async as Function;
+        if (Std.is(async, Function))
+            _textureReadyCallback = cast async;
 
         if (data.width != nativeWidth || data.height != nativeHeight)
         {
-            buffer = new BitmapData(nativeWidth, nativeHeight, true, 0);
+            buffer = new BitmapData(Std.int(nativeWidth), Std.int(nativeHeight), true, 0);
             buffer.copyPixels(data, data.rect, sOrigin);
             data = buffer;
         }
@@ -87,9 +91,9 @@ internal class ConcretePotTexture extends ConcreteTexture
 
         if (mipMapping && data.width > 1 && data.height > 1)
         {
-            var currentWidth:int  = data.width  >> 1;
-            var currentHeight:int = data.height >> 1;
-            var level:int = 1;
+            var currentWidth:Int  = data.width  >> 1;
+            var currentHeight:Int = data.height >> 1;
+            var level:Int = 1;
             var canvas:BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
             var bounds:Rectangle = sRectangle;
             var matrix:Matrix = sMatrix;
@@ -109,22 +113,22 @@ internal class ConcretePotTexture extends ConcreteTexture
             canvas.dispose();
         }
 
-        if (buffer) buffer.dispose();
+        if (buffer != null) buffer.dispose();
 
         setDataUploaded();
     }
 
     /** @inheritDoc */
-    override public function get isPotTexture():Bool { return true; }
+    override private function get_isPotTexture():Bool { return true; }
 
     /** @inheritDoc */
-    override public function uploadAtfData(data:ByteArray, offset:int = 0, async:* = null):void
+    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
     {
-        var isAsync:Bool = async is Function || async === true;
+        var isAsync:Bool = Std.is(async, Function) || async == true;
 
-        if (async is Function)
+        if (Std.is(async, Function))
         {
-            _textureReadyCallback = async as Function;
+            _textureReadyCallback = cast async;
             base.addEventListener(Event.TEXTURE_READY, onTextureReady);
         }
 
@@ -132,7 +136,7 @@ internal class ConcretePotTexture extends ConcreteTexture
         setDataUploaded();
     }
 
-    private function upload(source:BitmapData, mipLevel:uint, isAsync:Bool):void
+    private function upload(source:BitmapData, mipLevel:UInt, isAsync:Bool):Void
     {
         if (isAsync)
         {
@@ -146,11 +150,12 @@ internal class ConcretePotTexture extends ConcreteTexture
         }
     }
 
-    private function uploadAsync(source:BitmapData, mipLevel:uint):void
+    private function uploadAsync(source:BitmapData, mipLevel:UInt):Void
     {
         if (sAsyncSupported)
         {
-            try { base["uploadFromBitmapDataAsync"](source, mipLevel); }
+            var method = Reflect.field(base, "uploadFromBitmapDataAsync");
+            try { Reflect.callMethod(method, method, [source, mipLevel]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)
@@ -162,23 +167,25 @@ internal class ConcretePotTexture extends ConcreteTexture
 
         if (!sAsyncSupported)
         {
-            setTimeout(base.dispatchEvent, 1, new Event(Event.TEXTURE_READY));
+            Timer.delay(function () {
+                base.dispatchEvent(new Event(Event.TEXTURE_READY));
+            }, 1);
             potBase.uploadFromBitmapData(source);
         }
     }
 
-    private function onTextureReady(event:Event):void
+    private function onTextureReady(event:Event):Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         base.removeEventListener(ErrorEvent.ERROR, onTextureReady);
 
-        execute(_textureReadyCallback, this, event as ErrorEvent);
+        execute(_textureReadyCallback, [this, event]);
         _textureReadyCallback = null;
     }
 
-    private function get potBase():flash.display3D.textures.Texture
+    private var potBase(get, never):openfl.display3D.textures.Texture;
+    private function get_potBase():openfl.display3D.textures.Texture
     {
-        return base as flash.display3D.textures.Texture;
+        return cast base;
     }
-}
 }

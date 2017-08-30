@@ -72,12 +72,12 @@ class Quad extends Mesh
         if (width == 0.0 || height == 0.0)
             throw new ArgumentError("Invalid size: width and height must not be zero");
 
-        setupVertices();
+        __setupVertices();
         this.color = color;
     }
 
     /** Sets up vertex- and index-data according to the current settings. */
-    private function setupVertices():Void
+    private function __setupVertices():Void
     {
         var posAttr:String = "position";
         var texAttr:String = "texCoords";
@@ -96,15 +96,15 @@ class Quad extends Mesh
 
         if (texture != null)
         {
-            texture.setupVertexPositions(vertexData, 0, "position", _bounds);
+            texture.setupVertexPositions(vertexData, 0, "position", __bounds);
             texture.setupTextureCoordinates(vertexData, 0, texAttr);
         }
         else
         {
-            vertexData.setPoint(0, posAttr, _bounds.left,  _bounds.top);
-            vertexData.setPoint(1, posAttr, _bounds.right, _bounds.top);
-            vertexData.setPoint(2, posAttr, _bounds.left,  _bounds.bottom);
-            vertexData.setPoint(3, posAttr, _bounds.right, _bounds.bottom);
+            vertexData.setPoint(0, posAttr, __bounds.left,  __bounds.top);
+            vertexData.setPoint(1, posAttr, __bounds.right, __bounds.top);
+            vertexData.setPoint(2, posAttr, __bounds.left,  __bounds.bottom);
+            vertexData.setPoint(3, posAttr, __bounds.right, __bounds.bottom);
 
             vertexData.setPoint(0, texAttr, 0.0, 0.0);
             vertexData.setPoint(1, texAttr, 1.0, 0.0);
@@ -122,7 +122,7 @@ class Quad extends Mesh
 
         if (targetSpace == this) // optimization
         {
-            out.copyFrom(_bounds);
+            out.copyFrom(__bounds);
         }
         else if (targetSpace == parent && !isRotated) // optimization
         {
@@ -130,7 +130,7 @@ class Quad extends Mesh
             var scaleY:Float = this.scaleY;
 
             out.setTo(   x - pivotX * scaleX,     y - pivotY * scaleY,
-                      _bounds.width * scaleX, _bounds.height * scaleY);
+                      __bounds.width * scaleX, __bounds.height * scaleY);
 
             if (scaleX < 0) { out.width  *= -1; out.x -= out.width;  }
             if (scaleY < 0) { out.height *= -1; out.y -= out.height; }
@@ -164,13 +164,13 @@ class Quad extends Mesh
      *  values for width and height. */
     public function readjustSize(width:Float=-1, height:Float=-1):Void
     {
-        if (width  <= 0) width  = texture ? texture.frameWidth  : __bounds.width;
-        if (height <= 0) height = texture ? texture.frameHeight : __bounds.height;
+        if (width  <= 0) width  = texture != null ? texture.frameWidth  : __bounds.width;
+        if (height <= 0) height = texture != null ? texture.frameHeight : __bounds.height;
 
         if (width != __bounds.width || height != __bounds.height)
         {
             __bounds.setTo(0, 0, width, height);
-            setupVertices();
+            __setupVertices();
         }
     }
 
@@ -203,7 +203,7 @@ class Quad extends Mesh
         if (value != texture)
         {
             super.texture = value;
-            setupVertices();
+            __setupVertices();
         }
         return value;
     }

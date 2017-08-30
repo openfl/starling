@@ -16,13 +16,13 @@ import openfl.utils.Dictionary;
  *  for performance reasons. */
 class VertexDataAttribute
 {
-    private static var FORMAT_SIZES:Dictionary<String, Int> = {
-        "bytes4": 4,
-        "float1": 4,
-        "float2": 8,
-        "float3": 12,
-        "float4": 16
-    };
+    private static var FORMAT_SIZES:Map<String, Int> = [
+        "bytes4" => 4,
+        "float1" => 4,
+        "float2" => 8,
+        "float3" => 12,
+        "float4" => 16
+    ];
 
     public var name:String;
     public var format:String;
@@ -31,9 +31,9 @@ class VertexDataAttribute
     public var size:Int;   // in bytes
 
     /** Creates a new instance with the given properties. */
-    public function VertexDataAttribute(name:String, format:String, offset:Int)
+    public function new(name:String, format:String, offset:Int)
     {
-        if (!(format in FORMAT_SIZES))
+        if (!FORMAT_SIZES.exists(format))
             throw new ArgumentError(
                 "Invalid attribute format: " + format + ". " +
                 "Use one of the following: 'float1'-'float4', 'bytes4'");

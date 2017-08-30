@@ -80,7 +80,7 @@ class Mesh extends DisplayObject
     override public function hitTest(localPoint:Point):DisplayObject
     {
         if (!visible || !touchable || !hitTestMask(localPoint)) return null;
-        else return MeshUtil.containsPoint(_vertexData, _indexData, localPoint) ? this : null;
+        else return MeshUtil.containsPoint(__vertexData, __indexData, localPoint) ? this : null;
     }
 
     /** @inheritDoc */
@@ -256,7 +256,7 @@ class Mesh extends DisplayObject
      *  The getter simply returns the color of the first vertex. */
     public var color(get, set):UInt;
     private function get_color():UInt { return __style.color; }
-    private function set_color(value:UInt):Void { return __style.color = value; }
+    private function set_color(value:UInt):UInt { return __style.color = value; }
 
     /** The smoothing filter that is used for the texture.
      *  @default bilinear */

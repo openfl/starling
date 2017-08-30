@@ -11,10 +11,11 @@
 package starling.events;
 
 import openfl.errors.Error;
-import flash.geom.Point;
+import openfl.geom.Point;
 import openfl.Lib;
 import openfl.Vector;
 
+import starling.core.Starling;
 import starling.display.DisplayObject;
 import starling.display.Stage;
 import starling.utils.MathUtil;
@@ -133,7 +134,7 @@ class TouchProcessor
 
             // analyze new touches, but each ID only once
             while (__queue.length > 0 &&
-                  !containsTouchWithID(sUpdatedTouches, __queue[mQueue.length-1][0]))
+                  !containsTouchWithID(sUpdatedTouches, __queue[__queue.length-1][0]))
             {
                 var touchArgs:Array<Dynamic> = __queue.pop();
                 touch = createOrUpdateTouch(
@@ -241,7 +242,7 @@ class TouchProcessor
         var distRight:Float = __stage.stageWidth - distLeft;
         var distTop:Float = mouse.globalY;
         var distBottom:Float = __stage.stageHeight - distTop;
-        var minDist:Float = MathUtil.min([distLeft, distRight, distTop, distBottom]);
+        var minDist:Float = MathUtil.minValues([distLeft, distRight, distTop, distBottom]);
         
         // the new hover point should be just outside the stage, near the point where
         // the mouse point was last to be seen.
@@ -379,7 +380,8 @@ class TouchProcessor
         __simulateMultitouch = value;
         var target:Starling = Starling.current;
 
-        var createTouchMarker = function():Void
+        var createTouchMarker:Void->Void = null;
+        createTouchMarker = function():Void
         {
             target.removeEventListener(Event.CONTEXT3D_CREATE, createTouchMarker);
 

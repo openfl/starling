@@ -8,63 +8,67 @@
 //
 // =================================================================================================
 
-package starling.textures
-{
-import flash.display.BitmapData;
-import flash.display3D.textures.RectangleTexture;
-import flash.display3D.textures.TextureBase;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-import flash.utils.setTimeout;
+package starling.textures;
+
+import haxe.Constraints.Function;
+import haxe.Timer;
+
+import openfl.display.BitmapData;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.Error;
+import openfl.events.ErrorEvent;
+import openfl.events.Event;
 
 import starling.core.Starling;
-import starling.utils.execute;
+import starling.utils.Execute.execute;
 
 /** @private
  *
  *  A concrete texture that wraps a <code>RectangleTexture</code> base.
  *  For internal use only. */
-internal class ConcreteRectangleTexture extends ConcreteTexture
+@:allow(starling) class ConcreteRectangleTexture extends ConcreteTexture
 {
     private var _textureReadyCallback:Function;
 
     private static var sAsyncSupported:Bool = true;
 
     /** Creates a new instance with the given parameters. */
-    public function ConcreteRectangleTexture(base:RectangleTexture, format:String,
-                                             width:int, height:int, premultipliedAlpha:Bool,
-                                             optimizedForRenderTexture:Bool=false,
-                                             scale:Number=1)
+    private function new(base:RectangleTexture, format:String,
+                         width:Int, height:Int, premultipliedAlpha:Bool,
+                         optimizedForRenderTexture:Bool=false,
+                         scale:Float=1)
     {
         super(base, format, width, height, false, premultipliedAlpha,
               optimizedForRenderTexture, scale);
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:*=null):void
+    override public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
     {
-        if (async is Function)
-            _textureReadyCallback = async as Function;
+        if (Std.is(async, Function))
+            _textureReadyCallback = cast async;
 
         upload(data, async != null);
         setDataUploaded();
     }
 
     /** @inheritDoc */
-    override protected function createBase():TextureBase
+    override private function createBase():TextureBase
     {
-        return Starling.context.createRectangleTexture(
-                nativeWidth, nativeHeight, format, optimizedForRenderTexture);
+        return Starling.current.context.createRectangleTexture(
+                Std.int(nativeWidth), Std.int(nativeHeight), format, optimizedForRenderTexture);
     }
 
-    private function get rectBase():RectangleTexture
+    public var rectBase(get, never):RectangleTexture;
+    private function get_rectBase():RectangleTexture
     {
-        return base as RectangleTexture;
+        return cast base;
     }
 
     // async upload
 
-    private function upload(source:BitmapData, isAsync:Bool):void
+    private function upload(source:BitmapData, isAsync:Bool):Void
     {
         if (isAsync)
         {
@@ -78,11 +82,12 @@ internal class ConcreteRectangleTexture extends ConcreteTexture
         }
     }
 
-    private function uploadAsync(source:BitmapData):void
+    private function uploadAsync(source:BitmapData):Void
     {
         if (sAsyncSupported)
         {
-            try { base["uploadFromBitmapDataAsync"](source); }
+            var method = Reflect.field(base, "uploadFromBitmapDataAsync");
+            try { Reflect.callMethod(method, method, [source]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)
@@ -94,18 +99,19 @@ internal class ConcreteRectangleTexture extends ConcreteTexture
 
         if (!sAsyncSupported)
         {
-            setTimeout(base.dispatchEvent, 1, new Event(Event.TEXTURE_READY));
+            Timer.delay(function() {
+                base.dispatchEvent(new Event(Event.TEXTURE_READY));
+            }, 1);
             rectBase.uploadFromBitmapData(source);
         }
     }
 
-    private function onTextureReady(event:Event):void
+    private function onTextureReady(event:Event):Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         base.removeEventListener(ErrorEvent.ERROR, onTextureReady);
 
-        execute(_textureReadyCallback, this, event as ErrorEvent);
+        execute(_textureReadyCallback, [this, event]);
         _textureReadyCallback = null;
     }
-}
 }

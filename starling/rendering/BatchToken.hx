@@ -71,6 +71,6 @@ class BatchToken
     public function toString():String
     {
         return StringUtil.format("[BatchToken batchID={0} vertexID={1} indexID={2}]",
-            batchID, vertexID, indexID);
+            [ batchID, vertexID, indexID ]);
     }
 }

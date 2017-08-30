@@ -65,7 +65,7 @@ class Image extends Quad
     {
         super(100, 100);
         this.texture = texture;
-        __readjustSize();
+        readjustSize();
     }
 
     /** The current scaling grid that is in effect. If set to null, the image is scaled just
@@ -101,7 +101,7 @@ class Image extends Quad
             if (__scale9Grid == null) __scale9Grid = value.clone();
             else __scale9Grid.copyFrom(value);
 
-            __readjustSize();
+            readjustSize();
             __tileGrid = null;
         }
         else __scale9Grid = null;
@@ -185,7 +185,7 @@ class Image extends Quad
         if (value != texture)
         {
             super.texture = value;
-            if (__scale9Grid != null && value != null) __readjustSize();
+            if (__scale9Grid != null && value != null) readjustSize();
         }
         return value;
     }
@@ -312,7 +312,7 @@ class Image extends Quad
         sTexRows[2] = sBasRows[2] / pixelBounds.height;
         sTexRows[1] = 1.0 - sTexRows[0] - sTexRows[2];
 
-        numVertices = setupScale9GridAttributes(
+        numVertices = __setupScale9GridAttributes(
             sPadding.left, sPadding.top, sPosCols, sPosRows, sTexCols, sTexRows);
 
         // update indices
@@ -329,8 +329,8 @@ class Image extends Quad
 
         if (numVertices != prevNumVertices)
         {
-            var color:UInt   = prevNumVertices ? vertexData.getColor(0) : 0xffffff;
-            var alpha:Float  = prevNumVertices ? vertexData.getAlpha(0) : 1.0;
+            var color:UInt   = prevNumVertices != 0 ? vertexData.getColor(0) : 0xffffff;
+            var alpha:Float  = prevNumVertices != 0 ? vertexData.getAlpha(0) : 1.0;
             vertexData.colorize("color", color, alpha);
         }
 
@@ -418,8 +418,8 @@ class Image extends Quad
         var indexData:IndexData   = this.indexData;
         var bounds:Rectangle = getBounds(this, sBounds);
         var prevNumVertices:Int = vertexData.numVertices;
-        var color:UInt   = prevNumVertices ? vertexData.getColor(0) : 0xffffff;
-        var alpha:Float  = prevNumVertices ? vertexData.getAlpha(0) : 1.0;
+        var color:UInt   = prevNumVertices != 0 ? vertexData.getColor(0) : 0xffffff;
+        var alpha:Float  = prevNumVertices != 0 ? vertexData.getAlpha(0) : 1.0;
         var invScaleX:Float = scaleX > 0 ? 1.0 / scaleX : -1.0 / scaleX;
         var invScaleY:Float = scaleY > 0 ? 1.0 / scaleY : -1.0 / scaleY;
         var frameWidth:Float  = __tileGrid.width  > 0 ? __tileGrid.width  : texture.frameWidth;
@@ -428,8 +428,8 @@ class Image extends Quad
         frameWidth  *= invScaleX;
         frameHeight *= invScaleY;
 
-        var tileX:Float = frame ? -frame.x * (frameWidth  / frame.width)  : 0;
-        var tileY:Float = frame ? -frame.y * (frameHeight / frame.height) : 0;
+        var tileX:Float = frame != null ? -frame.x * (frameWidth  / frame.width)  : 0;
+        var tileY:Float = frame != null ? -frame.y * (frameHeight / frame.height) : 0;
         var tileWidth:Float  = texture.width  * (frameWidth  / texture.frameWidth);
         var tileHeight:Float = texture.height * (frameHeight / texture.frameHeight);
         var modX:Float = (__tileGrid.x * invScaleX) % frameWidth;

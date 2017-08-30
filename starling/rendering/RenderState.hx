@@ -14,6 +14,7 @@ import haxe.Constraints.Function;
 
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.textures.TextureBase;
+import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
@@ -101,10 +102,10 @@ class RenderState
     {
         if (_onDrawRequired != null)
         {
-            var currentTarget:TextureBase = _renderTarget ? _renderTarget.base : null;
-            var nextTarget:TextureBase = renderState._renderTarget ? renderState._renderTarget.base : null;
+            var currentTarget:TextureBase = _renderTarget != null ? _renderTarget.base : null;
+            var nextTarget:TextureBase = renderState._renderTarget != null ? renderState._renderTarget.base : null;
             var cullingChanges:Bool = (_miscOptions & 0xf00) != (renderState._miscOptions & 0xf00);
-            var clipRectChanges:Bool = _clipRect || renderState._clipRect ?
+            var clipRectChanges:Bool = _clipRect != null || renderState._clipRect != null ?
                 !RectangleUtil.compare(_clipRect, renderState._clipRect) : false;
 
             if (_blendMode != renderState._blendMode ||
@@ -126,10 +127,10 @@ class RenderState
             _projectionMatrix3D.copyFrom(renderState._projectionMatrix3D);
         }
 
-        if (_modelviewMatrix3D || renderState._modelviewMatrix3D)
+        if (_modelviewMatrix3D != null || renderState._modelviewMatrix3D != null)
             this.modelviewMatrix3D = renderState._modelviewMatrix3D;
 
-        if (_clipRect || renderState._clipRect)
+        if (_clipRect != null || renderState._clipRect != null)
             this.clipRect = renderState._clipRect;
     }
 
@@ -145,10 +146,10 @@ class RenderState
         this.clipRect = null;
         _projectionMatrix3DRev = 0;
 
-        if (_modelviewMatrix) _modelviewMatrix.identity();
+        if (_modelviewMatrix != null) _modelviewMatrix.identity();
         else _modelviewMatrix = new Matrix();
 
-        if (_projectionMatrix3D) _projectionMatrix3D.identity();
+        if (_projectionMatrix3D != null) _projectionMatrix3D.identity();
         else _projectionMatrix3D = new Matrix3D();
 
         if (_mvpMatrix3D == null) _mvpMatrix3D = new Matrix3D();
@@ -212,7 +213,7 @@ class RenderState
     public function setModelviewMatricesToIdentity():Void
     {
         _modelviewMatrix.identity();
-        if (_modelviewMatrix3D) _modelviewMatrix3D.identity();
+        if (_modelviewMatrix3D != null) _modelviewMatrix3D.identity();
     }
 
     /** Returns the current 2D modelview matrix.
@@ -281,9 +282,9 @@ class RenderState
     public function setRenderTarget(target:Texture, enableDepthAndStencil:Bool=true,
                                     antiAlias:Int=0):Void
     {
-        var currentTarget:TextureBase = _renderTarget ? _renderTarget.base : null;
-        var newTarget:TextureBase = target ? target.base : null;
-        var newOptions:UInt = MathUtil.min(antiAlias, 0xf) | uint(enableDepthAndStencil) << 4;
+        var currentTarget:TextureBase = _renderTarget != null ? _renderTarget.base : null;
+        var newTarget:TextureBase = target != null ? target.base : null;
+        var newOptions:UInt = Std.int(MathUtil.min(antiAlias, 0xf)) | (enableDepthAndStencil ? 1 : 0) << 4;
         var optionsChange:Bool = newOptions != (_miscOptions & 0xff);
 
         if (currentTarget != newTarget || optionsChange)
@@ -334,7 +335,7 @@ class RenderState
     @:allow(starling) private var renderTargetBase(get, never):TextureBase;
     private function get_renderTargetBase():TextureBase
     {
-        return _renderTarget ? _renderTarget.base : null;
+        return _renderTarget != null ? _renderTarget.base : null;
     }
 
     /** @private */
@@ -382,12 +383,12 @@ class RenderState
         if (!RectangleUtil.compare(_clipRect, value))
         {
             if (_onDrawRequired != null) _onDrawRequired();
-            if (value)
+            if (value != null)
             {
                 if (_clipRect == null) _clipRect = Pool.getRectangle();
                 _clipRect.copyFrom(value);
             }
-            else if (_clipRect)
+            else if (_clipRect != null)
             {
                 Pool.putRectangle(_clipRect);
                 _clipRect = null;

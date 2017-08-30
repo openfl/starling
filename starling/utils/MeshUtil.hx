@@ -78,7 +78,7 @@ class MeshUtil
 
         var stage:Stage = sourceSpace.stage;
 
-        if (sourceSpace.is3D && stage)
+        if (sourceSpace.is3D && stage != null)
         {
             stage.getCameraPosition(targetSpace, sPoint3D);
             sourceSpace.getTransformationMatrix3D(targetSpace, sMatrix3D);

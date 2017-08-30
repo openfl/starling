@@ -10,7 +10,8 @@
 
 package starling.text;
 
-import flash.text.TextFormat;
+import openfl.errors.ArgumentError;
+import openfl.text.TextFormat;
 
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -97,14 +98,14 @@ class TextFormat extends EventDispatcher
         if (out == null) out = new flash.text.TextFormat();
 
         out.font = __font;
-        out.size = __size;
+        out.size = Std.int(__size);
         out.color = __color;
         out.bold = __bold;
         out.italic = __italic;
         out.underline = __underline;
         out.align = __horizontalAlign;
         out.kerning = __kerning;
-        out.leading = __leading;
+        out.leading = Std.int(__leading);
         out.letterSpacing = __letterSpacing;
 
         return out;
@@ -117,26 +118,28 @@ class TextFormat extends EventDispatcher
      */
 	public var font(get, set):String;
     private function get_font():String { return __font; }
-    private function set_font(value:String):Void
+    private function set_font(value:String):String
     {
         if (value != __font)
         {
             __font = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for
      *  the original size. */
 	public var size(get, set):Float;
     private function get_size():Float { return __size; }
-    private function set_size(value:Float):Void
+    private function set_size(value:Float):Float
     {
         if (value != __size)
         {
             __size = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** The color of the text. Note that bitmap fonts should be exported in plain white so
@@ -144,56 +147,60 @@ class TextFormat extends EventDispatcher
      *  to <code>Color.WHITE</code> to get the desired result. @default black */
 	public var color(get, set):UInt;
     private function get_color():UInt { return __color; }
-    private function set_color(value:UInt):Void
+    private function set_color(value:UInt):UInt
     {
         if (value != __color)
         {
             __color = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** Indicates whether the text is bold. @default false */
 	public var bold(get, set):Bool;
     private function get_bold():Bool { return __bold; }
-    private function set_bold(value:Bool):Void
+    private function set_bold(value:Bool):Bool
     {
         if (value != __bold)
         {
             __bold = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** Indicates whether the text is italicized. @default false */
 	public var italic(get, set):Bool;
     private function get_italic():Bool { return __italic; }
-    private function set_italic(value:Bool):Void
+    private function set_italic(value:Bool):Bool
     {
         if (value != __italic)
         {
             __italic = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 	
     /** Indicates whether the text is underlined. @default false */
 	public var underline(get, set):Bool;
     private function get_underline():Bool { return __underline; }
-    private function set_underline(value:Bool):Void
+    private function set_underline(value:Bool):Bool
     {
         if (value != __underline)
         {
             __underline = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** The horizontal alignment of the text. @default center
      *  @see starling.utils.Align */
 	public var horizontalAlign(get, set):String;
     private function get_horizontalAlign():String { return __horizontalAlign; }
-    private function set_horizontalAlign(value:String):Void
+    private function set_horizontalAlign(value:String):String
     {
         if (!Align.isValidHorizontal(value))
             throw new ArgumentError("Invalid horizontal alignment");
@@ -203,13 +210,14 @@ class TextFormat extends EventDispatcher
             __horizontalAlign = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** The vertical alignment of the text. @default center
      *  @see starling.utils.Align */
 	public var verticalAlign(get, set):String;
     private function get_verticalAlign():String { return __verticalAlign; }
-    private function set_verticalAlign(value:String):Void
+    private function set_verticalAlign(value:String):String
     {
         if (!Align.isValidVertical(value))
             throw new ArgumentError("Invalid vertical alignment");
@@ -219,42 +227,46 @@ class TextFormat extends EventDispatcher
             __verticalAlign = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** Indicates whether kerning is enabled. Kerning adjusts the pixels between certain
      *  character pairs to improve readability. @default true */
 	public var kerning(get, set):Bool;
     private function get_kerning():Bool { return __kerning; }
-    private function set_kerning(value:Bool):Void
+    private function set_kerning(value:Bool):Bool
     {
         if (value != __kerning)
         {
             __kerning = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 
     /** The amount of vertical space (called 'leading') between lines. @default 0 */
 	public var leading(get, set):Float;
     private function get_leading():Float { return __leading; }
-    private function set_leading(value:Float):Void
+    private function set_leading(value:Float):Float
     {
         if (value != __leading)
         {
             __leading = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 	
     /** A number representing the amount of space that is uniformly distributed between all characters. @default 0 */
 	public var letterSpacing(get, set):Float;
     private function get_letterSpacing():Float { return __letterSpacing; }
-    private function set_letterSpacing(value:Float):Void
+    private function set_letterSpacing(value:Float):Float
     {
         if (value != __letterSpacing)
         {
             __letterSpacing = value;
             dispatchEventWith(Event.CHANGE);
         }
+        return value;
     }
 }

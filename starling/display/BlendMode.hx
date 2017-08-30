@@ -13,13 +13,15 @@ package starling.display;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.errors.ArgumentError;
 
+import starling.core.Starling;
+
 /** A class that provides constant values for visual blend mode effects. 
  *   
  *  <p>A blend mode is always defined by two 'Context3DBlendFactor' values. A blend factor 
  *  represents a particular four-value vector that is multiplied with the source or destination
  *  color in the blending formula. The blending formula is:</p>
  * 
- *  <pre>result = source × sourceFactor + destination × destinationFactor</pre>
+ *  <pre>result = source ï¿½ sourceFactor + destination ï¿½ destinationFactor</pre>
  * 
  *  <p>In the formula, the source color is the output color of the pixel shader program. The 
  *  destination color is the color that currently exists in the color buffer, as set by 
@@ -45,9 +47,9 @@ class BlendMode
      *  register a new blend mode using <code>BlendMode.register</code>. */
     public function new(name:String, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor)
     {
-        _name = name;
-        _sourceFactor = sourceFactor;
-        _destinationFactor = destinationFactor;
+        __name = name;
+        __sourceFactor = sourceFactor;
+        __destinationFactor = destinationFactor;
     }
     
     /** Inherits the blend mode from this display object's parent. */
@@ -119,7 +121,7 @@ class BlendMode
     /** Sets the appropriate blend factors for source and destination on the current context. */
     public function activate():Void
     {
-        Starling.context.setBlendFactors(_sourceFactor, _destinationFactor);
+        Starling.current.context.setBlendFactors(__sourceFactor, __destinationFactor);
     }
 
     /** Returns the name of the blend mode. */

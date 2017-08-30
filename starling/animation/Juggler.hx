@@ -181,7 +181,7 @@ class Juggler implements IAnimatable
         while (i >= 0)
         {
             delayedCall = Std.is(__objects[i], DelayedCall) ? cast __objects[i] : null;
-            if (delayedCall != null && delayedCall.callback == callback)
+            if (delayedCall != null && delayedCall.__callback == callback)
             {
                 delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
                 __objects[i] = null;
@@ -219,7 +219,7 @@ class Juggler implements IAnimatable
             while (i >= 0)
             {
                 delayedCall = Std.is(__objects[i], DelayedCall) ? cast __objects[i] : null;
-                if (delayedCall != null && delayedCall.callback == callback) return true;
+                if (delayedCall != null && delayedCall.__callback == callback) return true;
                 --i;
             }
         }
@@ -414,8 +414,8 @@ class Juggler implements IAnimatable
      *  effects. Values below '1' will make all animations run slower, values above '1' faster.
      *  @default 1.0 */
     public var timeScale(get, set):Float;
-    private function get_timeScale():Float { return _timeScale; }
-    private function set_timeScale(value:Float):Float { return _timeScale = value; }
+    private function get_timeScale():Float { return __timeScale; }
+    private function set_timeScale(value:Float):Float { return __timeScale = value; }
 
     /** The actual vector that contains all objects that are currently being animated. */
     private var objects(get, never):Vector<IAnimatable>;

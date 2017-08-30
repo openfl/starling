@@ -16,6 +16,7 @@ import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.textures.TextureBase;
+import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
@@ -97,8 +98,8 @@ class Painter
     private var _actualCulling:String;
     private var _actualBlendMode:String;
 
-    private var _backBufferWidth:Float;
-    private var _backBufferHeight:Float;
+    private var _backBufferWidth:Int;
+    private var _backBufferHeight:Int;
     private var _backBufferScaleFactor:Float;
 
     private var _state:RenderState;
@@ -127,9 +128,9 @@ class Painter
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-        _shareContext = _context && _context.driverInfo != "Disposed";
-        _backBufferWidth  = _context ? _context.backBufferWidth  : 0;
-        _backBufferHeight = _context ? _context.backBufferHeight : 0;
+        _shareContext = _context != null && _context.driverInfo != "Disposed";
+        _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
+        _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
         _stencilReferenceValues = new Map();
         _clipRectStack = new Vector<Rectangle>();
@@ -164,7 +165,7 @@ class Painter
         if (!_shareContext)
         {
             _context.dispose(false);
-            sSharedData = new Dictionary();
+            sSharedData = new Map();
         }
     }
 
@@ -216,7 +217,7 @@ class Painter
     {
         if (!_shareContext)
         {
-            enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
+            enableDepthAndStencil = enableDepthAndStencil && SystemUtil.supportsDepthAndStencil;
 
             // Changing the stage3D position might move the back buffer to invalid bounds
             // temporarily. To avoid problems, we set it to the smallest possible size first.
@@ -236,12 +237,12 @@ class Painter
             _stage3D.x = viewPort.x;
             _stage3D.y = viewPort.y;
 
-            _context.configureBackBuffer(viewPort.width, viewPort.height,
+            _context.configureBackBuffer(Std.int(viewPort.width), Std.int(viewPort.height),
                 antiAlias, enableDepthAndStencil, contentScaleFactor != 1.0);
         }
 
-        _backBufferWidth  = viewPort.width;
-        _backBufferHeight = viewPort.height;
+        _backBufferWidth  = Std.int(viewPort.width);
+        _backBufferHeight = Std.int(viewPort.height);
         _backBufferScaleFactor = contentScaleFactor;
     }
 
@@ -259,7 +260,7 @@ class Painter
     public function deleteProgram(name:String):Void
     {
         var program:Program = getProgram(name);
-        if (program)
+        if (program != null)
         {
             program.dispose();
             programs.remove(name);
@@ -307,7 +308,7 @@ class Painter
     public function setStateTo(transformationMatrix:Matrix, alphaFactor:Float=1.0,
                                blendMode:String="auto"):Void
     {
-        if (transformationMatrix) MatrixUtil.prependMatrix(_state._modelviewMatrix, transformationMatrix);
+        if (transformationMatrix != null) MatrixUtil.prependMatrix(_state._modelviewMatrix, transformationMatrix);
         if (alphaFactor != 1.0) _state._alpha *= alphaFactor;
         if (blendMode != BlendMode.AUTO) _state.blendMode = blendMode;
     }
@@ -328,7 +329,7 @@ class Painter
         _state.copyFrom(_stateStack[_stateStackPos]); // -> might cause 'finishMeshBatch'
         _stateStackPos--;
 
-        if (token) _batchProcessor.fillToken(token);
+        if (token != null) _batchProcessor.fillToken(token);
     }
 
     /** Restores the render state that was last pushed to the stack, but does NOT remove
@@ -345,7 +346,7 @@ class Painter
      *  within the render cache. */
     public function fillToken(token:BatchToken):Void
     {
-        if (token) _batchProcessor.fillToken(token);
+        if (token != null) _batchProcessor.fillToken(token);
     }
 
     // masks
@@ -483,7 +484,7 @@ class Painter
 
         stackLength--;
         Pool.putRectangle(stack.pop());
-        _state.clipRect = stackLength ? stack[stackLength - 1] : null;
+        _state.clipRect = stackLength != 0 ? stack[stackLength - 1] : null;
     }
 
     /** Figures out if the mask can be represented by a scissor rectangle; this is possible
@@ -492,12 +493,12 @@ class Painter
      *  stage coordinates. */
     private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Bool
     {
-        var quad:Quad = Std.is(quad, Quad) ? cast mask : null;
-        var is3D:Bool = mask.is3D || (maskee && maskee.is3D && mask.stage == null);
+        var quad:Quad = Std.is(mask, Quad) ? cast mask : null;
+        var is3D:Bool = mask.is3D || (maskee != null && maskee.is3D && mask.stage == null);
 
         if (quad != null && !is3D && quad.texture == null)
         {
-            if (mask.stage) mask.getTransformationMatrix(null, out);
+            if (mask.stage != null) mask.getTransformationMatrix(null, out);
             else
             {
                 out.copyFrom(mask.transformationMatrix);
@@ -609,7 +610,7 @@ class Painter
                     subset.numIndices  = endToken.indexID  - subset.indexID;
                 }
 
-                if (subset.numVertices)
+                if (subset.numVertices != 0)
                 {
                     _state.alpha = 1.0;
                     _state.blendMode = meshBatch.blendMode;
@@ -734,8 +735,8 @@ class Painter
 
             if (renderTarget != null)
             {
-                width  = renderTarget.root.nativeWidth;
-                height = renderTarget.root.nativeHeight;
+                width  = Std.int(renderTarget.root.nativeWidth);
+                height = Std.int(renderTarget.root.nativeHeight);
             }
             else
             {
@@ -784,14 +785,14 @@ class Painter
     public var stencilReferenceValue(get, set):UInt;
     private function get_stencilReferenceValue():UInt
     {
-        var key:Dynamic = _state.renderTarget ? _state.renderTargetBase : this;
+        var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
         if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
         else return 0;
     }
 
     private function set_stencilReferenceValue(value:UInt):UInt
     {
-        var key:Dynamic = _state.renderTarget ? _state.renderTargetBase : this;
+        var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
         _stencilReferenceValues[key] = value;
 
         if (contextValid)
@@ -852,7 +853,7 @@ class Painter
     /** The size (in points) that represents one pixel in the back buffer. */
     public var pixelSize(get, set):Float;
     private function get_pixelSize():Float { return _pixelSize; }
-    private function set_pixelSize(value:Float):Void { return _pixelSize = value; }
+    private function set_pixelSize(value:Float):Float { return _pixelSize = value; }
 
     /** Indicates if another Starling instance (or another Stage3D framework altogether)
      *  uses the same render context. @default false */

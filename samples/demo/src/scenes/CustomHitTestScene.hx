@@ -1,7 +1,7 @@
 package scenes;
+
 import starling.text.TextField;
-import starling.utils.HAlign;
-import starling.utils.VAlign;
+import starling.utils.Align;
 
 import utils.RoundButton;
 
@@ -16,8 +16,8 @@ import utils.RoundButton;
         
         var infoText:TextField = new TextField(300, 100, description, "DejaVu Sans");
         infoText.x = infoText.y = 10;
-        infoText.vAlign = VAlign.TOP;
-        infoText.hAlign = HAlign.CENTER;
+        infoText.vAlign = Align.TOP;
+        infoText.hAlign = Align.CENTER;
         addChild(infoText);
         
         // 'RoundButton' is a helper class of the Demo, not a part of Starling!

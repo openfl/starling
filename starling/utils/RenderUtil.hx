@@ -10,21 +10,25 @@
 
 package starling.utils;
 
-import flash.display.Stage3D;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DMipFilter;
-import flash.display3D.Context3DRenderMode;
-import flash.display3D.Context3DTextureFilter;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.Context3DWrapMode;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-//import flash.utils.setTimeout;
+import haxe.Timer;
+
+import openfl.display.Stage3D;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DRenderMode;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DWrapMode;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.events.ErrorEvent;
+import openfl.events.Event;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
+import starling.utils.Execute.execute;
 
 /** A utility class containing methods related to Stage3D and rendering in general. */
 class RenderUtil
@@ -52,21 +56,29 @@ class RenderUtil
     {
         // TODO this method can probably be removed
 
-        var options:Array = ["2d", repeat ? "repeat" : "clamp"];
+        var options = ["2d", repeat ? "repeat" : "clamp"];
 
         if (format == Context3DTextureFormat.COMPRESSED)
             options.push("dxt1");
         else if (format == "compressedAlpha")
             options.push("dxt5");
 
-        if (smoothing == TextureSmoothing.NONE)
-            options.push("nearest", mipMapping ? "mipnearest" : "mipnone");
+        if (smoothing == TextureSmoothing.NONE) {
+            options.push("nearest");
+            options.push(mipMapping ? "mipnearest" : "mipnone");
+        }
         else if (smoothing == TextureSmoothing.BILINEAR)
-            options.push("linear", mipMapping ? "mipnearest" : "mipnone");
+        {
+            options.push("linear");
+            options.push(mipMapping ? "mipnearest" : "mipnone");
+        }
         else
-            options.push("linear", mipMapping ? "miplinear" : "mipnone");
+        {
+            options.push("linear");
+            options.push (mipMapping ? "miplinear" : "mipnone");
+        }
 
-        return "<" + options.join() + ">";
+        return "<" + options.join(",") + ">";
     }
 
     /** Returns a bit field uniquely describing texture format and premultiplied alpha,
@@ -86,9 +98,9 @@ class RenderUtil
         switch (texture.format)
         {
             case Context3DTextureFormat.COMPRESSED_ALPHA:
-                formatBits = 3; break;
+                formatBits = 3;
             case Context3DTextureFormat.COMPRESSED:
-                formatBits = 2; break;
+                formatBits = 2;
             default:
                 formatBits = 1;
         }
@@ -127,7 +139,7 @@ class RenderUtil
             mipFilter = mipMapping ? Context3DMipFilter.MIPLINEAR : Context3DMipFilter.MIPNONE;
         }
 
-        Starling.context.setSamplerStateAt(sampler, wrap, filter, mipFilter);
+        Starling.current.context.setSamplerStateAt(sampler, wrap, filter, mipFilter);
     }
 
     /** Creates an AGAL source string with a <code>tex</code> operation, including an options
@@ -162,9 +174,9 @@ class RenderUtil
         switch (format)
         {
             case Context3DTextureFormat.COMPRESSED:
-                formatFlag = "dxt1"; break;
+                formatFlag = "dxt1";
             case Context3DTextureFormat.COMPRESSED_ALPHA:
-                formatFlag = "dxt5"; break;
+                formatFlag = "dxt5";
             default:
                 formatFlag = "rgba";
         }
@@ -209,7 +221,7 @@ class RenderUtil
      */
     public static function requestContext3D(stage3D:Stage3D, renderMode:String, profile:Dynamic):Void
     {
-        var profiles:Array;
+        var profiles:Array<Dynamic>;
         var currentProfile:String;
 
         if (profile == "auto")
@@ -222,24 +234,29 @@ class RenderUtil
         else
             throw new ArgumentError("Profile must be of type 'String' or 'Array'");
 
+        var requestNextProfile:Void->Void = null;
+        var onFinished:Void->Void = null;
+        var onError:Event->Void = null;
+        var onCreated:Event->Void = null;
+        
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
         stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
-
-        requestNextProfile();
-
-        function requestNextProfile():Void
+        
+        requestNextProfile = function():Void
         {
             currentProfile = profiles.shift();
 
-            try { execute(stage3D.requestContext3D, renderMode, currentProfile); }
+            try { execute(stage3D.requestContext3D, [renderMode, currentProfile]); }
             catch (error:Error)
             {
-                if (profiles.length != 0) setTimeout(requestNextProfile, 1);
+                if (profiles.length != 0) Timer.delay(requestNextProfile, 1);
                 else throw error;
             }
         }
+        
+        requestNextProfile();
 
-        function onCreated(event:Event):Void
+        onCreated = function(event:Event):Void
         {
             var context:Context3D = stage3D.context3D;
 
@@ -254,17 +271,17 @@ class RenderUtil
             }
         }
 
-        function onError(event:Event):Void
+        onError = function(event:Event):Void
         {
             if (profiles.length != 0)
             {
                 event.stopImmediatePropagation();
-                setTimeout(requestNextProfile, 1);
+                Timer.delay(requestNextProfile, 1);
             }
             else onFinished();
         }
 
-        function onFinished():Void
+        onFinished = function():Void
         {
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             stage3D.removeEventListener(ErrorEvent.ERROR, onError);

@@ -10,31 +10,29 @@
 
 package starling.utils;
 
-import flash.errors.ArgumentError;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.Vector;
 
 /** A utility class containing methods related to the Rectangle class. */
 class RectangleUtil
 {
-    /** Helper objects. */
-    private static var sHelperPoint:Point = new Point();
-    private static var sPositions:Array<Point> =
-        [ new Point(0, 0), new Point(1, 0), new Point(0, 1), new Point(1, 1) ];
-
-    /** The largest representable number. */
-    private static inline var MAX_VALUE:Float = 1.79e+308;
-
-    /** The largest representable number. */
-    private static inline var MIN_VALUE:Float = 5e-324;
+    // helper objects
+    private static var sPoint:Point = new Point();
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sPositions:Vector<Point> =
+        Vector.ofArray([new Point(), new Point(), new Point(), new Point()]);
     
     /** Calculates the intersection between two Rectangles. If the rectangles do not intersect,
-     * this method returns an empty Rectangle object with its properties set to 0. */
+     *  this method returns an empty Rectangle object with its properties set to 0. */
     public static function intersect(rect1:Rectangle, rect2:Rectangle, 
-                                     resultRect:Rectangle=null):Rectangle
+                                     out:Rectangle=null):Rectangle
     {
-        if (resultRect == null) resultRect = new Rectangle();
+        if (out == null) out = new Rectangle();
         
         var left:Float   = rect1.x      > rect2.x      ? rect1.x      : rect2.x;
         var right:Float  = rect1.right  < rect2.right  ? rect1.right  : rect2.right;
@@ -42,29 +40,29 @@ class RectangleUtil
         var bottom:Float = rect1.bottom < rect2.bottom ? rect1.bottom : rect2.bottom;
         
         if (left > right || top > bottom)
-            resultRect.setEmpty();
+            out.setEmpty();
         else
-            resultRect.setTo(left, top, right-left, bottom-top);
+            out.setTo(left, top, right-left, bottom-top);
         
-        return resultRect;
+        return out;
     }
     
     /** Calculates a rectangle with the same aspect ratio as the given 'rectangle',
-     * centered within 'into'.  
+     *  centered within 'into'.  
      * 
-     * <p>This method is useful for calculating the optimal viewPort for a certain display 
-     * size. You can use different scale modes to specify how the result should be calculated;
-     * furthermore, you can avoid pixel alignment errors by only allowing whole-number  
-     * multipliers/divisors (e.g. 3, 2, 1, 1/2, 1/3).</p>
-     * 
-     * @see starling.utils.ScaleMode
+     *  <p>This method is useful for calculating the optimal viewPort for a certain display 
+     *  size. You can use different scale modes to specify how the result should be calculated;
+     *  furthermore, you can avoid pixel alignment errors by only allowing whole-number  
+     *  multipliers/divisors (e.g. 3, 2, 1, 1/2, 1/3).</p>
+     *  
+     *  @see starling.utils.ScaleMode
      */
     public static function fit(rectangle:Rectangle, into:Rectangle, 
                                scaleMode:String="showAll", pixelPerfect:Bool=false,
-                               resultRect:Rectangle=null):Rectangle
+                               out:Rectangle=null):Rectangle
     {
         if (!ScaleMode.isValid(scaleMode)) throw new ArgumentError("Invalid scaleMode: " + scaleMode);
-        if (resultRect == null) resultRect = new Rectangle();
+        if (out == null) out = new Rectangle();
         
         var width:Float   = rectangle.width;
         var height:Float  = rectangle.height;
@@ -86,12 +84,12 @@ class RectangleUtil
         width  *= factor;
         height *= factor;
         
-        resultRect.setTo(
+        out.setTo(
             into.x + (into.width  - width)  / 2,
             into.y + (into.height - height) / 2,
             width, height);
         
-        return resultRect;
+        return out;
     }
     
     /** Calculates the next whole-number multiplier or divisor, moving either up or down. */
@@ -122,7 +120,7 @@ class RectangleUtil
     }
     
     /** If the rectangle contains negative values for width or height, all coordinates
-     * are adjusted so that the rectangle describes the same region with positive values. */
+     *  are adjusted so that the rectangle describes the same region with positive values. */
     public static function normalize(rect:Rectangle):Void
     {
         if (rect.width < 0)
@@ -138,30 +136,118 @@ class RectangleUtil
         }
     }
 
-    /** Calculates the bounds of a rectangle after transforming it by a matrix.
-     * If you pass a 'resultRect', the result will be stored in this rectangle
-     * instead of creating a new object. */
-    public static function getBounds(rectangle:Rectangle, transformationMatrix:Matrix,
-                                     resultRect:Rectangle=null):Rectangle
+    /** Extends the rectangle in all four directions. */
+    public static function extend(rect:Rectangle, left:Float=0, right:Float=0,
+                                  top:Float=0, bottom:Float=0):Void
     {
-        if (resultRect == null) resultRect = new Rectangle();
+        rect.x -= left;
+        rect.y -= top;
+        rect.width  += left + right;
+        rect.height += top  + bottom;
+    }
+
+    /** Extends the rectangle in all four directions so that it is exactly on pixel bounds. */
+    public static function extendToWholePixels(rect:Rectangle, scaleFactor:Float=1):Void
+    {
+        var left:Float   = Math.floor(rect.x     * scaleFactor) / scaleFactor;
+        var top:Float    = Math.floor(rect.y     * scaleFactor) / scaleFactor;
+        var right:Float  = Math.ceil(rect.right  * scaleFactor) / scaleFactor;
+        var bottom:Float = Math.ceil(rect.bottom * scaleFactor) / scaleFactor;
+
+        rect.setTo(left, top, right - left, bottom - top);
+    }
+
+    /** Calculates the bounds of a rectangle after transforming it by a matrix.
+     *  If you pass an <code>out</code>-rectangle, the result will be stored in this rectangle
+     *  instead of creating a new object. */
+    public static function getBounds(rectangle:Rectangle, matrix:Matrix,
+                                     out:Rectangle=null):Rectangle
+    {
+        if (out == null) out = new Rectangle();
         
-        var minX:Float = MAX_VALUE, maxX:Float = -MAX_VALUE;
-        var minY:Float = MAX_VALUE, maxY:Float = -MAX_VALUE;
+        var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
+        var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
+        var positions:Vector<Point> = getPositions(rectangle, sPositions);
         
         for (i in 0...4)
         {
-            MatrixUtil.transformCoords(transformationMatrix,
-                sPositions[i].x * rectangle.width, sPositions[i].y * rectangle.height,
-                sHelperPoint);
-            
-            if (minX > sHelperPoint.x) minX = sHelperPoint.x;
-            if (maxX < sHelperPoint.x) maxX = sHelperPoint.x;
-            if (minY > sHelperPoint.y) minY = sHelperPoint.y;
-            if (maxY < sHelperPoint.y) maxY = sHelperPoint.y;
+            MatrixUtil.transformCoords(matrix, positions[i].x, positions[i].y, sPoint);
+
+            if (minX > sPoint.x) minX = sPoint.x;
+            if (maxX < sPoint.x) maxX = sPoint.x;
+            if (minY > sPoint.y) minY = sPoint.y;
+            if (maxY < sPoint.y) maxY = sPoint.y;
         }
         
-        resultRect.setTo(minX, minY, maxX - minX, maxY - minY);
-        return resultRect;
+        out.setTo(minX, minY, maxX - minX, maxY - minY);
+        return out;
+    }
+
+    /** Calculates the bounds of a rectangle projected into the XY-plane of a certain 3D space
+     *  as they appear from the given camera position. Note that 'camPos' is expected in the
+     *  target coordinate system (the same that the XY-plane lies in).
+     *
+     *  <p>If you pass an 'out' Rectangle, the result will be stored in this rectangle
+     *  instead of creating a new object.</p> */
+    public static function getBoundsProjected(rectangle:Rectangle, matrix:Matrix3D,
+                                              camPos:Vector3D, out:Rectangle=null):Rectangle
+    {
+        if (out == null) out = new Rectangle();
+        if (camPos == null) throw new ArgumentError("camPos must not be null");
+
+        var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
+        var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
+        var positions:Vector<Point> = getPositions(rectangle, sPositions);
+
+        for (i in 0...4)
+        {
+            var position:Point = positions[i];
+
+            if (matrix != null)
+                MatrixUtil.transformCoords3D(matrix, position.x, position.y, 0, sPoint3D);
+            else
+                sPoint3D.setTo(position.x, position.y, 0);
+
+            MathUtil.intersectLineWithXYPlane(camPos, sPoint3D, sPoint);
+
+            if (minX > sPoint.x) minX = sPoint.x;
+            if (maxX < sPoint.x) maxX = sPoint.x;
+            if (minY > sPoint.y) minY = sPoint.y;
+            if (maxY < sPoint.y) maxY = sPoint.y;
+        }
+
+        out.setTo(minX, minY, maxX - minX, maxY - minY);
+        return out;
+    }
+
+    /** Returns a vector containing the positions of the four edges of the given rectangle. */
+    public static function getPositions(rectangle:Rectangle,
+                                        out:Vector<Point>=null):Vector<Point>
+    {
+        if (out == null) out = new Vector<Point>(4, true);
+
+        for (i in 0...4)
+            if (out[i] == null) out[i] = new Point();
+
+        out[0].x = rectangle.left;  out[0].y = rectangle.top;
+        out[1].x = rectangle.right; out[1].y = rectangle.top;
+        out[2].x = rectangle.left;  out[2].y = rectangle.bottom;
+        out[3].x = rectangle.right; out[3].y = rectangle.bottom;
+        return out;
+    }
+
+    /** Compares all properties of the given rectangle, returning true only if
+     *  they are equal (with the given accuracy 'e'). */
+    public static function compare(r1:Rectangle, r2:Rectangle, e:Float=0.0001):Bool
+    {
+        if (r1 == null) return r2 == null;
+        else if (r2 == null) return false;
+        else
+        {
+            return r1.x > r2.x - e && r1.x < r2.x + e &&
+                   r1.y > r2.y - e && r1.y < r2.y + e &&
+                   r1.width  > r2.width  - e && r1.width  < r2.width  + e &&
+                   r1.height > r2.height - e && r1.height < r2.height + e;
+        }
     }
 }

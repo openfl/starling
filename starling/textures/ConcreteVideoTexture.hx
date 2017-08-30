@@ -10,57 +10,104 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.TextureBase;
-import flash.errors.ArgumentError;
+import haxe.Constraints.Function;
 
-/** A concrete texture that may only be used for a 'VideoTexture' base.
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.VideoTexture;
+import openfl.events.Event;
+
+import starling.core.Starling;
+import starling.utils.Execute.execute;
+
+/** @private
+ *
+ *  A concrete texture that wraps a <code>VideoTexture</code> base.
  *  For internal use only. */
-class ConcreteVideoTexture extends ConcreteTexture
+@:allow(starling) class ConcreteVideoTexture extends ConcreteTexture
 {
-    /** Creates a new VideoTexture. 'base' must be of type 'VideoTexture'. */
-    public function new(base:TextureBase, scale:Float = 1)
+    private var _textureReadyCallback:Function;
+    private var _disposed:Bool;
+
+    /** Creates a new instance with the given parameters.
+     *  <code>base</code> must be of type <code>flash.display3D.textures.VideoTexture</code>.
+     */
+    private function new(base:VideoTexture, scale:Float=1)
     {
-        // we must not reference the "VideoTexture" class directly
-        // because it's only available in AIR.
+        super(base, Context3DTextureFormat.BGRA, base.videoWidth, base.videoHeight, false,
+              false, false, scale);
+    }
 
-        var format:Context3DTextureFormat = Context3DTextureFormat.BGRA;
-        var width:Null<Int>  = Reflect.getProperty(base, "videoWidth");
-        var height:Null<Int> = Reflect.getProperty(base, "videoHeight");
-        if (width == null) width = 0;
-        if (height == null) height = 0;
+    /** @inheritDoc */
+    override public function dispose():Void
+    {
+        base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
 
-        super(base, format, width, height, false, false, false, scale, false);
+        // It shouldn't be necessary to manually release the attachments.
+        // The following is a workaround for bugs #4198120 and #4198123 in the Adobe Bugbase.
 
-        #if flash
-        var baseClass:Class<Dynamic> = Type.getClass(base);
-        var className:String = Type.getClassName(baseClass);
-        if (className != "flash.display3D.textures.VideoTexture")
-            throw new ArgumentError("'base' must be VideoTexture");
-        #end
+        if (!_disposed)
+        {
+            videoBase.attachCamera(null);
+            videoBase.attachNetStream(null);
+            _disposed = true;
+        }
+
+        super.dispose();
+    }
+
+    /** @inheritDoc */
+    override private function createBase():TextureBase
+    {
+        return Starling.current.context.createVideoTexture();
+    }
+
+    /** @private */
+    override private function attachVideo(type:String, attachment:Dynamic,
+                                           onComplete:Function=null):Void
+    {
+        _textureReadyCallback = onComplete;
+        var method = Reflect.field(base, "attach" + type);
+        Reflect.callMethod(method, method, [attachment]);
+        base.addEventListener(Event.TEXTURE_READY, onTextureReady);
+
+        setDataUploaded();
+    }
+
+    private function onTextureReady(event:Event):Void
+    {
+        base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+        execute(_textureReadyCallback, [this]);
+        _textureReadyCallback = null;
     }
 
     /** The actual width of the video in pixels. */
     override private function get_nativeWidth():Float
     {
-        return Reflect.getProperty(base, "videoWidth");
+        return videoBase.videoWidth;
     }
 
     /** The actual height of the video in pixels. */
     override private function get_nativeHeight():Float
     {
-        return Reflect.getProperty(base, "videoHeight");
+        return videoBase.videoHeight;
     }
 
-    /** inheritDoc */
+    /** @inheritDoc */
     override private function get_width():Float
     {
         return nativeWidth / scale;
     }
 
-    /** inheritDoc */
+    /** @inheritDoc */
     override private function get_height():Float
     {
         return nativeHeight / scale;
+    }
+
+    private var videoBase(get, never):VideoTexture;
+    private function get_videoBase():VideoTexture
+    {
+        return cast base;
     }
 }

@@ -16,12 +16,14 @@ import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.geom.Matrix3D;
 import openfl.utils.Dictionary;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
+import starling.utils.Execute.execute;
 
 /** An effect encapsulates all steps of a Stage3D draw operation. It configures the
  *  render context and sets up shader programs as well as index- and vertex-buffers, thus
@@ -136,7 +138,7 @@ class Effect
     private function onContextCreated(event:Event):Void
     {
         purgeBuffers();
-        execute(_onRestore, this);
+        execute(_onRestore, [this]);
     }
 
     /** Purges one or both of the vertex- and index-buffers. */
@@ -145,13 +147,13 @@ class Effect
         // We wrap the dispose calls in a try/catch block to work around a stage3D problem.
         // Since they are not re-used later, that shouldn't have any evil side effects.
 
-        if (_vertexBuffer && vertexBuffer)
+        if (_vertexBuffer != null && vertexBuffer != null)
         {
             try { _vertexBuffer.dispose(); } catch (e:Error) {}
             _vertexBuffer = null;
         }
 
-        if (_indexBuffer && indexBuffer)
+        if (_indexBuffer != null && indexBuffer != null)
         {
             try { _indexBuffer.dispose(); } catch (e:Error) {}
             _indexBuffer = null;
@@ -173,7 +175,7 @@ class Effect
         var isQuadLayout:Bool = indexData.useQuadLayout;
         var wasQuadLayout:Bool = _indexBufferUsesQuadLayout;
 
-        if (_indexBuffer)
+        if (_indexBuffer != null)
         {
             if (numIndices <= _indexBufferSize)
             {
@@ -205,7 +207,7 @@ class Effect
     public function uploadVertexData(vertexData:VertexData,
                                      bufferUsage:String="staticDraw"):Void
     {
-        if (_vertexBuffer)
+        if (_vertexBuffer != null)
         {
             if (vertexData.size <= _vertexBufferSize)
                 vertexData.uploadToVertexBuffer(_vertexBuffer);
@@ -226,10 +228,10 @@ class Effect
      *  <code>afterDraw</code>, in this order. */
     public function render(firstIndex:Int=0, numTriangles:Int=-1):Void
     {
-        if (numTriangles < 0) numTriangles = _indexBufferSize / 3;
+        if (numTriangles < 0) numTriangles = Std.int(_indexBufferSize / 3);
         if (numTriangles == 0) return;
 
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
 
         beforeDraw(context);
@@ -298,9 +300,9 @@ class Effect
     /** Returns the base name for the program.
      *  @default the fully qualified class name
      */
-	public var programBaseName(get, set):UInt;
+	public var programBaseName(get, set):String;
     private function get_programBaseName():String { return _programBaseName; }
-    private function set_programBaseName(value:String):Void { _programBaseName = value; }
+    private function set_programBaseName(value:String):String { return _programBaseName = value; }
 
     /** Returns the full name of the program, which is used to register it at the current
      *  <code>Painter</code>.
@@ -318,7 +320,7 @@ class Effect
 
         if (nameCache == null)
         {
-            nameCache = new Dictionary();
+            nameCache = new Map();
             sProgramNameCache[baseName] = nameCache;
         }
 
@@ -326,7 +328,7 @@ class Effect
 
         if (name == null)
         {
-            if (variantName != 0) name = baseName + "#" + variantName.toString(16);
+            if (variantName != 0) name = baseName + "#" + StringTools.hex(variantName);
             else             name = baseName;
 
             nameCache[variantName] = name;
@@ -342,7 +344,7 @@ class Effect
     private function get_program():Program
     {
         var name:String = this.programName;
-        var painter:Painter = Starling.painter;
+        var painter:Painter = Starling.current.painter;
         var program:Program = painter.getProgram(name);
 
         if (program == null)

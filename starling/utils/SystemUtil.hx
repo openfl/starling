@@ -10,18 +10,19 @@
 
 package starling.utils;
 
-import flash.display3D.Context3D;
-import flash.events.Event;
-import flash.events.EventDispatcher;
-import flash.system.Capabilities;
-import flash.Lib;
-
 import haxe.Constraints.Function;
 
 import lime.app.Application;
 import lime.app.Config.WindowConfig;
 
+import openfl.display3D.Context3D;
 import openfl.errors.Error;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
+import openfl.text.Font;
+import openfl.text.FontStyle;
+import openfl.system.Capabilities;
+import openfl.Lib;
 
 /** A utility class with methods related to the current platform and runtime. */
 class SystemUtil
@@ -30,8 +31,10 @@ class SystemUtil
     private static var sApplicationActive:Bool = true;
     private static var sWaitingCalls:Array<Array<Dynamic>> = [];
     private static var sPlatform:String;
+    private static var sDesktop:Bool;
     private static var sVersion:String;
     private static var sAIR:Bool;
+    private static var sEmbeddedFonts:Array<Font> = null;
     private static var sSupportsDepthAndStencil:Bool = true;
     
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
@@ -43,6 +46,7 @@ class SystemUtil
         sInitialized = true;
         sPlatform = Capabilities.version.substr(0, 3);
         sVersion = Capabilities.version.substr(4);
+        sDesktop = ~/(WIN|MAC|LNX)/.match(sPlatform);
         
         try
         {
@@ -128,8 +132,7 @@ class SystemUtil
     private static function get_isDesktop():Bool
     {
         initialize();
-        return #if desktop true #else false #end;
-        //return ~/(WIN|MAC|LNX)/.match(sPlatform);
+        return sDesktop;
     }
     
     /** Returns the three-letter platform string of the current system. These are
@@ -148,21 +151,6 @@ class SystemUtil
     {
         initialize();
         return sVersion;
-    }
-
-    /** Prior to Flash/AIR 15, there was a restriction that the clear function must be
-     * called on a render target before drawing. This requirement was removed subsequently,
-     * and this property indicates if that's the case in the current runtime. */
-    public static var supportsRelaxedTargetClearRequirement(get, never):Bool;
-    private static function get_supportsRelaxedTargetClearRequirement():Bool
-    {
-        #if flash
-        var reg = ~/\d+/;
-        reg.match(sVersion);
-        return Std.parseInt(reg.matched(0)) >= 15;
-        #else
-        return true;
-        #end
     }
 
     /** Returns the value of the 'initialWindow.depthAndStencil' node of the application
@@ -192,5 +180,42 @@ class SystemUtil
         #else
         return Context3D.supportsVideoTexture;
         #end
+    }
+    
+    /** Updates the list of embedded fonts. To be called when a font is loaded at runtime. */
+    public static function updateEmbeddedFonts():Void
+    {
+        sEmbeddedFonts = null; // will be updated in 'isEmbeddedFont()'
+    }
+
+    /** Figures out if an embedded font with the specified style is available.
+     *  The fonts are enumerated only once; if you load a font at runtime, be sure to call
+     *  'updateEmbeddedFonts' before calling this method.
+     *
+     *  @param fontName  the name of the font
+     *  @param bold      indicates if the font has a bold style
+     *  @param italic    indicates if the font has an italic style
+     *  @param fontType  the type of the font (one of the constants defined in the FontType class)
+     */
+    public static function isEmbeddedFont(fontName:String, bold:Bool=false, italic:Bool=false,
+                                          fontType:String="embedded"):Bool
+    {
+        if (sEmbeddedFonts == null)
+            sEmbeddedFonts = Font.enumerateFonts(false);
+
+        for (font in sEmbeddedFonts)
+        {
+            var style:String = font.fontStyle;
+            var isBold:Bool = style == FontStyle.BOLD || style == FontStyle.BOLD_ITALIC;
+            var isItalic:Bool = style == FontStyle.ITALIC || style == FontStyle.BOLD_ITALIC;
+
+            if (fontName == font.fontName && bold == isBold && italic == isItalic &&
+                fontType == font.fontType)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

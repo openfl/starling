@@ -10,14 +10,15 @@
 
 package starling.text;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 #if flash
 import flash.text.StyleSheet;
 #end
-import flash.utils.Dictionary;
+import openfl.utils.Dictionary;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;
@@ -113,13 +114,15 @@ class TextField extends DisplayObjectContainer
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String="", format:TextFormat=null)
     {
-        _text = text ? text : "";
+        super();
+        
+        _text = text != null ? text : "";
         _hitArea = new Rectangle(0, 0, width, height);
         _requiresRecomposition = true;
         _compositor = sDefaultCompositor;
         _options = new TextOptions();
 
-        _format = format ? format.clone() : new TextFormat();
+        _format = format != null ? format.clone() : new TextFormat();
         _format.addEventListener(Event.CHANGE, setRequiresRecomposition);
 
         _meshBatch = new MeshBatch();
@@ -161,7 +164,7 @@ class TextField extends DisplayObjectContainer
                 registerCompositor(compositor, fontName);
             }
 
-            _compositor = compositor ? compositor : sDefaultCompositor;
+            _compositor = compositor != null ? compositor : sDefaultCompositor;
 
             updateText();
             updateBorder();
@@ -174,8 +177,8 @@ class TextField extends DisplayObjectContainer
     
     private function updateText():Void
     {
-        var width:Number  = _hitArea.width;
-        var height:Number = _hitArea.height;
+        var width:Float  = _hitArea.width;
+        var height:Float = _hitArea.height;
         var format:TextFormat = _helperFormat;
 
         // By working on a copy of the TextFormat, we make sure that modifications done
@@ -193,7 +196,7 @@ class TextField extends DisplayObjectContainer
         if (isVerticalAutoSize) height = 100000;
 
         _meshBatch.x = _meshBatch.y = 0;
-        _options.textureScale = Starling.contentScaleFactor;
+        _options.textureScale = Starling.current.contentScaleFactor;
         _options.textureFormat = sDefaultTextureFormat;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
 
@@ -299,15 +302,17 @@ class TextField extends DisplayObjectContainer
         // not change the scaling, but make the texture bigger/smaller, while the size 
         // of the text/font stays the same (this applies to the height, as well).
 
-        _hitArea.width = value / (scaleX || 1.0);
+        _hitArea.width = value / (scaleX != 0 ? scaleX : 1.0);
         setRequiresRecomposition();
+        return value;
     }
     
     /** @inheritDoc */
     private override function set_height(value:Float):Float
     {
-        _hitArea.height = value / (scaleY || 1.0);
+        _hitArea.height = value / (scaleY != 0 ? scaleY : 1.0);
         setRequiresRecomposition();
+        return value;
     }
     
     /** The displayed text. */
@@ -515,14 +520,15 @@ class TextField extends DisplayObjectContainer
     public static function registerCompositor(compositor:ITextCompositor, name:String):Void
     {
         if (name == null) throw new ArgumentError("name must not be null");
-        compositors[convertToLowerCase(name)] = compositor;
+        TextField.compositors[convertToLowerCase(name)] = compositor;
     }
 
     /** Unregisters the text compositor and, optionally, disposes it. */
     public static function unregisterCompositor(name:String, dispose:Bool=true):Void
     {
         name = convertToLowerCase(name);
-
+        var compositors = TextField.compositors;
+        
         if (dispose && compositors.exists(name))
             compositors[name].dispose();
 
@@ -565,14 +571,15 @@ class TextField extends DisplayObjectContainer
     
     /** Stores the currently available text compositors. Since compositors will only work
      *  in one Stage3D context, they are saved in Starling's 'contextData' property. */
+    private static var compositors(get, never):Map<String, ITextCompositor>;
     private static function get_compositors():Map<String, ITextCompositor>
     {
-        var compositors:Map<String, ITextCompositor> = Starling.painter.sharedData[COMPOSITOR_DATA_NAME];
+        var compositors:Map<String, ITextCompositor> = Starling.current.painter.sharedData[COMPOSITOR_DATA_NAME];
         
         if (compositors == null)
         {
             compositors = new Map();
-            Starling.painter.sharedData[COMPOSITOR_DATA_NAME] = compositors;
+            Starling.current.painter.sharedData[COMPOSITOR_DATA_NAME] = compositors;
         }
         
         return compositors;

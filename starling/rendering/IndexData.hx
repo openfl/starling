@@ -158,8 +158,8 @@ class IndexData
             {
                 var keepsQuadLayout:Bool = true;
                 var distance:Int = targetIndexID - indexID;
-                var distanceInQuads:Int = distance / 6;
-                var offsetInQuads:Int = offset / 4;
+                var distanceInQuads:Int = Std.int(distance / 6);
+                var offsetInQuads:Int = Std.int(offset / 4);
 
                 // This code is executed very often. If it turns out that both IndexData
                 // instances use a quad layout, we don't need to do anything here.
@@ -181,7 +181,7 @@ class IndexData
                 else
                 {
                     for (i in 0...numIndices)
-                        keepsQuadLayout &&=
+                        keepsQuadLayout = keepsQuadLayout && 
                             getBasicQuadIndexAt(indexID + i) + offset ==
                             getBasicQuadIndexAt(targetIndexID + i);
                 }
@@ -195,7 +195,7 @@ class IndexData
 
             if ((offset & 3) == 0) // => offset % 4 == 0
             {
-                indexID += 6 * offset / 4;
+                indexID += Std.int(6 * offset / 4);
                 offset = 0;
                 ensureQuadDataCapacity(indexID + numIndices);
             }
@@ -364,7 +364,7 @@ class IndexData
     public function toString():String
     {
         var string:String = StringUtil.format("[IndexData numIndices={0} indices=\"{1}\"]",
-            _numIndices, toVector(sVector).join());
+            [_numIndices, toVector(sVector).join()]);
 
         sVector.length = 0;
         return string;
@@ -386,7 +386,7 @@ class IndexData
                 _rawData.length = _numIndices * INDEX_SIZE;      // -> actual length
             }
 
-            if (_numIndices)
+            if (_numIndices != 0)
                 _rawData.writeBytes(sQuadData, 0, _numIndices * INDEX_SIZE);
         }
     }
@@ -399,7 +399,7 @@ class IndexData
         if (sQuadDataNumIndices >= numIndices) return;
 
         var i:Int;
-        var oldNumQuads:Int = sQuadDataNumIndices / 6;
+        var oldNumQuads:Int = Std.int(sQuadDataNumIndices / 6);
         var newNumQuads:Int = Math.ceil(numIndices / 6);
 
         sQuadData.endian = Endian.LITTLE_ENDIAN;
@@ -420,8 +420,8 @@ class IndexData
     /** Returns the index that's expected at this position if following basic quad layout. */
     private static function getBasicQuadIndexAt(indexID:Int):Int
     {
-        var quadID:Int = indexID / 6;
-        var posInQuad:Int = indexID - quadID * 6; // => indexID % 6
+        var quadID:Int = Std.int(indexID / 6);
+        var posInQuad:Int = Std.int(indexID - quadID * 6); // => indexID % 6
         var offset:Int;
 
         if (posInQuad == 0) offset = 0;
@@ -439,7 +439,7 @@ class IndexData
     public function createIndexBuffer(upload:Bool=false,
                                       bufferUsage:String="staticDraw"):IndexBuffer3D
     {
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
         if (_numIndices == 0) return null;
 
@@ -504,13 +504,13 @@ class IndexData
     /** The number of triangles that can be spawned up with the contained indices.
      *  (In other words: the number of indices divided by three.) */
     public var numTriangles(get, set):Int;
-    private function get_numTriangles():Int { return _numIndices / 3; }
+    private function get_numTriangles():Int { return Std.int(_numIndices / 3); }
     private function set_numTriangles(value:Int):Int { return numIndices = value * 3; }
 
     /** The number of quads that can be spawned up with the contained indices.
      *  (In other words: the number of triangles divided by two.) */
     public var numQuads(get, set):Int;
-    private function get_numQuads():Int { return _numIndices / 6; }
+    private function get_numQuads():Int { return Std.int(_numIndices / 6); }
     private function set_numQuads(value:Int):Int { return numIndices = value * 6; }
 
     /** The number of bytes required for each index value. */

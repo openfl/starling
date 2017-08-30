@@ -13,7 +13,6 @@ package starling.rendering;
 import haxe.Constraints.Function;
 
 import openfl.geom.Matrix;
-import openfl.utils.Dictionary;
 import openfl.Vector;
 
 import starling.display.Mesh;
@@ -92,13 +91,13 @@ class BatchProcessor
 
                 _currentStyleType = mesh.style.type;
                 _currentBatch = _batchPool.get(_currentStyleType);
-                _currentBatch.blendMode = state ? state.blendMode : mesh.blendMode;
+                _currentBatch.blendMode = state != null ? state.blendMode : mesh.blendMode;
                 _cacheToken.setTo(_batches.length);
                 _batches[_batches.length] = _currentBatch;
             }
 
-            var matrix:Matrix = state ? state._modelviewMatrix : null;
-            var alpha:Float  = state ? state._alpha : 1.0;
+            var matrix:Matrix = state != null ? state._modelviewMatrix : null;
+            var alpha:Float  = state != null ? state._alpha : 1.0;
 
             _currentBatch.addMesh(mesh, matrix, alpha, subset, ignoreTransformations);
             _cacheToken.vertexID += subset.numVertices;
@@ -172,16 +171,16 @@ class BatchProcessor
 
 class BatchPool
 {
-	private var _batchLists:Dictionary<Class<Dynamic>, MeshBatch>;
+	private var _batchLists:Map<Class<Dynamic>, Vector<MeshBatch>>;
 
 	public function new()
 	{
-		_batchLists = new Dictionary();
+		_batchLists = new Map();
 	}
 
 	public function purge():Void
 	{
-		for (batchList in _batchLists.keys())
+		for (batchList in _batchLists)
 		{
 			for (i in 0...batchList.length)
 				batchList[i].dispose();

@@ -53,13 +53,13 @@ class MeshEffect extends FilterEffect
         // this is actually the "MeshEffect" class.
 
         _alpha = 1.0;
-        _optimizeIfNotTinted = getQualifiedClassName(this) == "starling.rendering::MeshEffect";
+        _optimizeIfNotTinted = (Type.getClass(this) == MeshEffect);
     }
 
     /** @private */
     override private function get_programVariantName():UInt
     {
-        var noTinting:UInt = Std.int(_optimizeIfNotTinted && !_tinted && _alpha == 1.0);
+        var noTinting:UInt = (_optimizeIfNotTinted && !_tinted && _alpha == 1.0) ? 1 : 0;
         return super.programVariantName | (noTinting << 3);
     }
 
@@ -79,7 +79,7 @@ class MeshEffect extends FilterEffect
                 "mul v1, va2, vc4 \n";  // multiply alpha (vc4) with color (va2), pass to fp
 
             fragmentShader =
-                tex("ft0", "v0", 0, texture) +
+                FilterEffect.tex("ft0", "v0", 0, texture) +
                 "mul oc, ft0, v1  \n";  // multiply color with texel color
         }
         else

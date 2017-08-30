@@ -10,15 +10,12 @@
 
 package starling.utils;
 
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
-
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
 import openfl.Vector;
-
-import starling.errors.AbstractClassError;
 
 /** A simple object pool supporting the most basic utility objects.
  *
@@ -57,7 +54,7 @@ class Pool
      *  Don't keep any references to the object after moving it to the pool! */
     public static function putPoint(point:Point):Void
     {
-        if (point) sPoints[sPoints.length] = point;
+        if (point != null) sPoints[sPoints.length] = point;
     }
 
     /** Retrieves a Vector3D instance from the pool. */
@@ -76,7 +73,7 @@ class Pool
      *  Don't keep any references to the object after moving it to the pool! */
     public static function putPoint3D(point:Vector3D):Void
     {
-        if (point) sPoints3D[sPoints3D.length] = point;
+        if (point != null) sPoints3D[sPoints3D.length] = point;
     }
 
     /** Retrieves a Matrix instance from the pool. */
@@ -96,7 +93,7 @@ class Pool
      *  Don't keep any references to the object after moving it to the pool! */
     public static function putMatrix(matrix:Matrix):Void
     {
-        if (matrix) sMatrices[sMatrices.length] = matrix;
+        if (matrix != null) sMatrices[sMatrices.length] = matrix;
     }
 
     /** Retrieves a Matrix3D instance from the pool.
@@ -119,7 +116,7 @@ class Pool
      *  Don't keep any references to the object after moving it to the pool! */
     public static function putMatrix3D(matrix:Matrix3D):Void
     {
-        if (matrix) sMatrices3D[sMatrices3D.length] = matrix;
+        if (matrix != null) sMatrices3D[sMatrices3D.length] = matrix;
     }
 
     /** Retrieves a Rectangle instance from the pool. */

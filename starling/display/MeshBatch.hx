@@ -68,7 +68,7 @@ class MeshBatch extends Mesh
     /** @inheritDoc */
     override public function dispose():Void
     {
-        if (__effect != null) _effect.dispose();
+        if (__effect != null) __effect.dispose();
         super.dispose();
     }
 
@@ -298,7 +298,7 @@ class MeshBatch extends Mesh
      *  @default false
      */
     public var batchable(get, set):Bool;
-    private function get_batchable():Bool { return _batchable; }
+    private function get_batchable():Bool { return __batchable; }
     private function set_batchable(value:Bool):Bool
     {
         if (__batchable != value)

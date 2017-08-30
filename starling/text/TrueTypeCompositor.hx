@@ -8,11 +8,12 @@
 //
 // =================================================================================================
 
-package starling.text
-{
-import flash.geom.Matrix;
-import flash.text.AntiAliasType;
-import flash.text.TextField;
+package starling.text;
+
+import openfl.display.BitmapData;
+import openfl.geom.Matrix;
+import openfl.text.AntiAliasType;
+import openfl.text.TextField;
 
 import starling.display.MeshBatch;
 import starling.display.Quad;
@@ -26,25 +27,25 @@ import starling.utils.SystemUtil;
  *  <p>You typically don't have to instantiate this class. It will be used internally by
  *  Starling's text fields.</p>
  */
-public class TrueTypeCompositor implements ITextCompositor
+class TrueTypeCompositor implements ITextCompositor
 {
     // helpers
     private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperQuad:Quad = new Quad(100, 100);
-    private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
-    private static var sNativeFormat:flash.text.TextFormat = new flash.text.TextFormat();
+    private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
+    private static var sNativeFormat:openfl.text.TextFormat = new openfl.text.TextFormat();
 
     /** Creates a new TrueTypeCompositor instance. */
-    public function TrueTypeCompositor()
+    public function new()
     { }
 
     /** @inheritDoc */
-    public function dispose():void
+    public function dispose():Void
     {}
 
     /** @inheritDoc */
-    public function fillMeshBatch(meshBatch:MeshBatch, width:Number, height:Number, text:String,
-                                  format:TextFormat, options:TextOptions=null):void
+    public function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
+                                  format:TextFormat, options:TextOptions=null):Void
     {
         if (text == null || text == "") return;
 
@@ -53,7 +54,7 @@ public class TrueTypeCompositor implements ITextCompositor
         var bitmapData:BitmapDataEx = renderText(width, height, text, format, options);
 
         texture = Texture.fromBitmapData(bitmapData, false, false, bitmapData.scale, textureFormat);
-        texture.root.onRestore = function():void
+        texture.root.onRestore = function():Void
         {
             bitmapData = renderText(width, height, text, format, options);
             texture.root.uploadBitmapData(bitmapData);
@@ -68,11 +69,11 @@ public class TrueTypeCompositor implements ITextCompositor
         sHelperQuad.readjustSize();
 
         if (format.horizontalAlign == Align.LEFT) sHelperQuad.x = 0;
-        else if (format.horizontalAlign == Align.CENTER) sHelperQuad.x = int((width - texture.width) / 2);
+        else if (format.horizontalAlign == Align.CENTER) sHelperQuad.x = Std.int((width - texture.width) / 2);
         else sHelperQuad.x = width - texture.width;
 
         if (format.verticalAlign == Align.TOP) sHelperQuad.y = 0;
-        else if (format.verticalAlign == Align.CENTER) sHelperQuad.y = int((height - texture.height) / 2);
+        else if (format.verticalAlign == Align.CENTER) sHelperQuad.y = Std.int((height - texture.height) / 2);
         else sHelperQuad.y = height - texture.height;
 
         meshBatch.addMesh(sHelperQuad);
@@ -81,26 +82,30 @@ public class TrueTypeCompositor implements ITextCompositor
     }
 
     /** @inheritDoc */
-    public function clearMeshBatch(meshBatch:MeshBatch):void
+    public function clearMeshBatch(meshBatch:MeshBatch):Void
     {
         meshBatch.clear();
-        if (meshBatch.texture) meshBatch.texture.dispose();
+        if (meshBatch.texture != null) meshBatch.texture.dispose();
     }
 
-    private function renderText(width:Number, height:Number, text:String,
+    private function renderText(width:Float, height:Float, text:String,
                                 format:TextFormat, options:TextOptions):BitmapDataEx
     {
-        var scaledWidth:Number  = width  * options.textureScale;
-        var scaledHeight:Number = height * options.textureScale;
+        var scaledWidth:Float  = width  * options.textureScale;
+        var scaledHeight:Float = height * options.textureScale;
         var hAlign:String = format.horizontalAlign;
 
         format.toNativeFormat(sNativeFormat);
 
-        sNativeFormat.size = Number(sNativeFormat.size) * options.textureScale;
+        sNativeFormat.size = Std.int((sNativeFormat.size == null ? 0 : sNativeFormat.size) * options.textureScale);
         sNativeTextField.embedFonts = SystemUtil.isEmbeddedFont(format.font, format.bold, format.italic);
+        #if flash
         sNativeTextField.styleSheet = null; // only to make sure 'defaultTextFormat' is assignable
+        #end
         sNativeTextField.defaultTextFormat = sNativeFormat;
+        #if flash
         sNativeTextField.styleSheet = options.styleSheet;
+        #end
         sNativeTextField.width  = scaledWidth;
         sNativeTextField.height = scaledHeight;
         sNativeTextField.antiAliasType = AntiAliasType.ADVANCED;
@@ -114,16 +119,16 @@ public class TrueTypeCompositor implements ITextCompositor
         if (options.autoScale)
             autoScaleNativeTextField(sNativeTextField, text, options.isHtmlText);
 
-        var textWidth:Number  = sNativeTextField.textWidth;
-        var textHeight:Number = sNativeTextField.textHeight;
-        var bitmapWidth:int   = Math.ceil(textWidth)  + 4;
-        var bitmapHeight:int  = Math.ceil(textHeight) + 4;
-        var maxTextureSize:int = Texture.maxSize;
-        var minTextureSize:int = 1;
-        var offsetX:Number = 0.0;
+        var textWidth:Float  = sNativeTextField.textWidth;
+        var textHeight:Float = sNativeTextField.textHeight;
+        var bitmapWidth:Int   = Math.ceil(textWidth)  + 4;
+        var bitmapHeight:Int  = Math.ceil(textHeight) + 4;
+        var maxTextureSize:Int = Texture.maxSize;
+        var minTextureSize:Int = 1;
+        var offsetX:Float = 0.0;
 
         // HTML text may have its own alignment -> use the complete width
-        if (options.isHtmlText) textWidth = bitmapWidth = scaledWidth;
+        if (options.isHtmlText) textWidth = bitmapWidth = Math.ceil(scaledWidth);
 
         // check for invalid texture sizes
         if (bitmapWidth  < minTextureSize) bitmapWidth  = 1;
@@ -151,19 +156,19 @@ public class TrueTypeCompositor implements ITextCompositor
         }
     }
 
-    private function autoScaleNativeTextField(textField:flash.text.TextField,
-                                              text:String, isHtmlText:Bool):void
+    private function autoScaleNativeTextField(textField:openfl.text.TextField,
+                                              text:String, isHtmlText:Bool):Void
     {
-        var textFormat:flash.text.TextFormat = textField.defaultTextFormat;
-        var maxTextWidth:int  = textField.width  - 4;
-        var maxTextHeight:int = textField.height - 4;
-        var size:Number = Number(textFormat.size);
+        var textFormat:openfl.text.TextFormat = textField.defaultTextFormat;
+        var maxTextWidth:Int  = Std.int(textField.width)  - 4;
+        var maxTextHeight:Int = Std.int(textField.height) - 4;
+        var size:Float = textFormat.size == null ? 0 : textFormat.size;
 
         while (textField.textWidth > maxTextWidth || textField.textHeight > maxTextHeight)
         {
             if (size <= 4) break;
 
-            textFormat.size = size--;
+            textFormat.size = Std.int(size--);
             textField.defaultTextFormat = textFormat;
 
             if (isHtmlText) textField.htmlText = text;
@@ -171,19 +176,19 @@ public class TrueTypeCompositor implements ITextCompositor
         }
     }
 }
-}
 
-import flash.display.BitmapData;
+
 
 class BitmapDataEx extends BitmapData
 {
-private var _scale:Number = 1.0;
+    private var _scale:Float = 1.0;
 
-function BitmapDataEx(width:int, height:int, transparent:Bool=true, fillColor:uint=0x0)
-{
-    super(width, height, transparent, fillColor);
-}
+    @:allow(starling) function new(width:Int, height:Int, transparent:Bool=true, fillColor:UInt=0x0)
+    {
+        super(width, height, transparent, fillColor);
+    }
 
-public function get scale():Number { return _scale; }
-public function set scale(value:Number):void { _scale = value; }
+    public var scale(get, set):Float;
+    private function get_scale():Float { return _scale; }
+    private function set_scale(value:Float):Float { return _scale = value; }
 }

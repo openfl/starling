@@ -12,6 +12,7 @@ package starling.rendering;
 
 import openfl.display3D.Context3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.errors.ArgumentError;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
@@ -27,6 +28,7 @@ import starling.errors.MissingContextError;
 import starling.styles.MeshStyle;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
+import starling.utils.Max;
 import starling.utils.StringUtil;
 
 /** The VertexData class manages a raw list of vertex information, allowing direct upload
@@ -220,7 +222,7 @@ class VertexData
             targetRawData.position = targetVertexID * _vertexSize;
             targetRawData.writeBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
 
-            if (matrix)
+            if (matrix != null)
             {
                 var x:Float, y:Float;
                 var pos:Int = targetVertexID * _vertexSize + _posOffset;
@@ -285,7 +287,7 @@ class VertexData
             throw new ArgumentError("Attribute '" + attrName + "' not found in target data");
 
         if (sourceAttribute.isColor)
-            target._tinted ||= _tinted;
+            target._tinted = target._tinted || _tinted;
 
         copyAttributeTo_internal(target, targetVertexID, matrix,
                 sourceAttribute, targetAttribute, vertexID, numVertices);
@@ -310,7 +312,7 @@ class VertexData
         var targetData:ByteArray = target._rawData;
         var sourceDelta:Int = _vertexSize - sourceAttribute.size;
         var targetDelta:Int = target._vertexSize - targetAttribute.size;
-        var attributeSizeIn32Bits:Int = sourceAttribute.size / 4;
+        var attributeSizeIn32Bits:Int = Std.int(sourceAttribute.size / 4);
 
         sourceData.position = vertexID * _vertexSize + sourceAttribute.offset;
         targetData.position = targetVertexID * target._vertexSize + targetAttribute.offset;
@@ -365,7 +367,7 @@ class VertexData
     public function toString():String
     {
         return StringUtil.format("[VertexData format=\"{0}\" numVertices={1}]",
-                _format.formatString, _numVertices);
+                [_format.formatString, _numVertices]);
     }
 
     // read / write attributes
@@ -549,8 +551,8 @@ class VertexData
         }
         else
         {
-            var minX:Float = Number.MAX_VALUE, maxX:Float = -Number.MAX_VALUE;
-            var minY:Float = Number.MAX_VALUE, maxY:Float = -Number.MAX_VALUE;
+            var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
+            var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
             var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
             var position:Int = vertexID * _vertexSize + offset;
             var x:Float, y:Float, i:Int;
@@ -623,8 +625,8 @@ class VertexData
         }
         else
         {
-            var minX:Float = Number.MAX_VALUE, maxX:Float = -Number.MAX_VALUE;
-            var minY:Float = Number.MAX_VALUE, maxY:Float = -Number.MAX_VALUE;
+            var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
+            var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
             var offset:Int = attrName == "position" ? _posOffset : getAttribute(attrName).offset;
             var position:Int = vertexID * _vertexSize + offset;
             var x:Float, y:Float, i:Int;
@@ -805,13 +807,13 @@ class VertexData
 
             if (alpha == 1.0 || !_premultipliedAlpha)
             {
-                _rawData[alphaPos] = int(alpha * 255.0);
+                _rawData[alphaPos] = Std.int(alpha * 255.0);
             }
             else
             {
                 _rawData.position = colorPos;
                 rgba = unmultiplyAlpha(switchEndian(_rawData.readUnsignedInt()));
-                rgba = (rgba & 0xffffff00) | (int(alpha * 255.0) & 0xff);
+                rgba = (rgba & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
                 rgba = premultiplyAlpha(rgba);
 
                 _rawData.position = colorPos;
@@ -836,7 +838,7 @@ class VertexData
         if (alpha > 1.0)      alpha = 1.0;
         else if (alpha < 0.0) alpha = 0.0;
 
-        var rgba:UInt = ((color << 8) & 0xffffff00) | (int(alpha * 255.0) & 0xff);
+        var rgba:UInt = ((color << 8) & 0xffffff00) | (Std.int(alpha * 255.0) & 0xff);
 
         if (rgba == 0xffffffff && numVertices == _numVertices) _tinted = false;
         else if (rgba != 0xffffffff) _tinted = true;
@@ -872,7 +874,7 @@ class VertexData
     /** Returns the size of a certain vertex attribute in 32 bit units. */
     public function getSizeIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).size / 4;
+        return Std.int(getAttribute(attrName).size / 4);
     }
 
     /** Returns the offset (in bytes) of an attribute within a vertex. */
@@ -884,7 +886,7 @@ class VertexData
     /** Returns the offset (in 32 bit units) of an attribute within a vertex. */
     public function getOffsetIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).offset / 4;
+        return Std.int(getAttribute(attrName).offset / 4);
     }
 
     /** Indicates if the VertexData instances contains an attribute with the specified name. */
@@ -900,12 +902,12 @@ class VertexData
     public function createVertexBuffer(upload:Bool=false,
                                        bufferUsage:String="staticDraw"):VertexBuffer3D
     {
-        var context:Context3D = Starling.context;
+        var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
         if (_numVertices == 0) return null;
 
         var buffer:VertexBuffer3D = context.createVertexBuffer(
-            _numVertices, _vertexSize / 4, bufferUsage);
+            _numVertices, Std.int(_vertexSize / 4), bufferUsage);
 
         if (upload) uploadToVertexBuffer(buffer);
         return buffer;
@@ -921,7 +923,7 @@ class VertexData
             buffer.uploadFromByteArray(_rawData, 0, vertexID, numVertices);
     }
 
-    @:final private inline function getAttribute(attrName:String):VertexDataAttribute
+    @:final private /*inline*/ function getAttribute(attrName:String):VertexDataAttribute
     {
         var i:Int, attribute:VertexDataAttribute;
 
@@ -950,9 +952,9 @@ class VertexData
         else
         {
             var factor:Float = alpha / 255.0;
-            var r:UInt = ((rgba >> 24) & 0xff) * factor;
-            var g:UInt = ((rgba >> 16) & 0xff) * factor;
-            var b:UInt = ((rgba >>  8) & 0xff) * factor;
+            var r:UInt = Std.int(((rgba >> 24) & 0xff) * factor);
+            var g:UInt = Std.int(((rgba >> 16) & 0xff) * factor);
+            var b:UInt = Std.int(((rgba >>  8) & 0xff) * factor);
 
             return (r & 0xff) << 24 |
                    (g & 0xff) << 16 |
@@ -968,9 +970,9 @@ class VertexData
         else
         {
             var factor:Float = alpha / 255.0;
-            var r:UInt = ((rgba >> 24) & 0xff) / factor;
-            var g:UInt = ((rgba >> 16) & 0xff) / factor;
-            var b:UInt = ((rgba >>  8) & 0xff) / factor;
+            var r:UInt = Std.int(((rgba >> 24) & 0xff) / factor);
+            var g:UInt = Std.int(((rgba >> 16) & 0xff) / factor);
+            var b:UInt = Std.int(((rgba >>  8) & 0xff) / factor);
 
             return (r & 0xff) << 24 |
                    (g & 0xff) << 16 |
@@ -984,7 +986,7 @@ class VertexData
      *  <code>1.0</code> for all alpha values and zero for everything else. */
     public var numVertices(get, set):Int;
     private function get_numVertices():Int { return _numVertices; }
-    private function set_numVertices(value:Int):Void
+    private function set_numVertices(value:Int):Int
     {
         if (value > _numVertices)
         {
@@ -994,7 +996,7 @@ class VertexData
             if (_rawData.length > oldLength)
             {
                 _rawData.position = oldLength;
-                while (_rawData.bytesAvailable) _rawData.writeUnsignedInt(0);
+                while (_rawData.bytesAvailable != 0) _rawData.writeUnsignedInt(0);
             }
 
             if (_rawData.length < newLength)
@@ -1018,6 +1020,7 @@ class VertexData
 
         if (value == 0) _tinted = false;
         _numVertices = value;
+        return value;
     }
 
     /** The raw vertex data; not a copy! */
@@ -1121,20 +1124,20 @@ class VertexData
     public var vertexSizeIn32Bits(get, never):Int;
     private function get_vertexSizeIn32Bits():Int
     {
-        return _vertexSize / 4;
+        return Std.int(_vertexSize / 4);
     }
 
     /** The size (in bytes) of the raw vertex data. */
     public var size(get, never):Int;
     private function get_size():Int
     {
-        return _numVertices * _vertexSize;
+        return Std.int(_numVertices * _vertexSize);
     }
 
     /** The size (in 32 bit units) of the raw vertex data. */
     public var sizeIn32Bits(get, never):Int;
     private function get_sizeIn32Bits():Int
     {
-        return _numVertices * _vertexSize / 4;
+        return Std.int(_numVertices * _vertexSize / 4);
     }
 }

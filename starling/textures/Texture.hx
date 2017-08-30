@@ -10,26 +10,25 @@
 
 package starling.textures;
 
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProfile;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.RectangleTexture;
-import flash.display3D.textures.TextureBase;
-import flash.errors.ArgumentError;
-import flash.display3D.textures.VideoTexture;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import haxe.Constraints.Function;
+
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.ArgumentError;
+import openfl.display3D.textures.VideoTexture;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 #if flash
 import flash.media.Camera;
 #end
-import flash.net.NetStream;
-import flash.system.Capabilities;
-
-import haxe.Constraints.Function;
-
+import openfl.net.NetStream;
+import openfl.system.Capabilities;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -38,6 +37,7 @@ import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
+
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -201,9 +201,9 @@ class Texture
     {
         if (options == null) options = sDefaultOptions;
 
-        if (Std.is(base, flash.display3D.textures.Texture))
+        if (Std.is(base, openfl.display3D.textures.Texture))
         {
-            return new ConcretePotTexture(cast(base, flash.display3D.textures.Texture),
+            return new ConcretePotTexture(cast(base, openfl.display3D.textures.Texture),
                     options.format, width, height, options.mipMapping,
                     options.premultipliedAlpha, options.optimizeForRenderToTexture,
                     options.scale);
@@ -219,7 +219,7 @@ class Texture
             return new ConcreteVideoTexture(cast(base, VideoTexture), options.scale);
         }
         else
-            throw new ArgumentError("Unsupported 'base' type: " + getQualifiedClassName(base));
+            throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(Type.getClass(base)));
     }
 
     /** Creates a texture object from an embedded asset class. Textures created with this
@@ -611,7 +611,33 @@ class Texture
                                          attrName:String="position",
                                          bounds:Rectangle=null):Void
     {
-        // override in subclass
+        var frame:Rectangle = this.frame;
+        var width:Float    = this.width;
+        var height:Float   = this.height;
+
+        if (frame != null)
+            sRectangle.setTo(-frame.x, -frame.y, width, height);
+        else
+            sRectangle.setTo(0, 0, width, height);
+
+        vertexData.setPoint(vertexID,     attrName, sRectangle.left,  sRectangle.top);
+        vertexData.setPoint(vertexID + 1, attrName, sRectangle.right, sRectangle.top);
+        vertexData.setPoint(vertexID + 2, attrName, sRectangle.left,  sRectangle.bottom);
+        vertexData.setPoint(vertexID + 3, attrName, sRectangle.right, sRectangle.bottom);
+
+        if (bounds != null)
+        {
+            var scaleX:Float = bounds.width  / frameWidth;
+            var scaleY:Float = bounds.height / frameHeight;
+
+            if (scaleX != 1.0 || scaleY != 1.0 || bounds.x != 0 || bounds.y != 0)
+            {
+                sMatrix.identity();
+                sMatrix.scale(scaleX, scaleY);
+                sMatrix.translate(bounds.x, bounds.y);
+                vertexData.transformPoints(attrName, sMatrix, vertexID, 4);
+            }
+        }
     }
 
     /** Sets up a VertexData instance with the correct texture coordinates for
@@ -687,12 +713,12 @@ class Texture
     /** The height of the texture in points, taking into account the frame rectangle
      *  (if there is one). */
     public var frameWidth(get, never):Float;
-    private function get_frameWidth():Float { return frame ? frame.width : width; }
+    private function get_frameWidth():Float { return frame != null ? frame.width : width; }
 
     /** The width of the texture in points, taking into account the frame rectangle
      *  (if there is one). */
     public var frameHeight(get, never):Float;
-    private function get_frameHeight():Float { return frame ? frame.height : height; }
+    private function get_frameHeight():Float { return frame != null ? frame.height : height; }
 
     /** The width of the texture in points. */
     public var width(get, never):Float;

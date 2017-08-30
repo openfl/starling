@@ -53,7 +53,7 @@ class FilterHelper implements IFilterHelper
     public function new(textureFormat:String="bgra")
     {
         _usePotTextures = Starling.current.profile == Context3DProfile.BASELINE_CONSTRAINED;
-        _preferredScale = Starling.contentScaleFactor;
+        _preferredScale = Starling.current.contentScaleFactor;
         _textureFormat = textureFormat;
         _sizeStep = 64; // must be POT!
         _pool = new Vector<Texture>();
@@ -150,8 +150,8 @@ class FilterHelper implements IFilterHelper
         if (newNativeWidth > maxNativeSize || newNativeHeight > maxNativeSize)
         {
             factor = maxNativeSize / Math.max(newNativeWidth, newNativeHeight);
-            newNativeWidth  *= factor;
-            newNativeHeight *= factor;
+            newNativeWidth  = Std.int(newNativeWidth * factor);
+            newNativeHeight = Std.int(newNativeWidth * factor);
             newScale *= factor;
         }
 
@@ -231,7 +231,7 @@ class FilterHelper implements IFilterHelper
     private function get_textureScale():Float { return _preferredScale; }
     private function set_textureScale(value:Float):Float
     {
-        return _preferredScale = value > 0 ? value : Starling.contentScaleFactor;
+        return _preferredScale = value > 0 ? value : Starling.current.contentScaleFactor;
     }
 
     /** The texture format of the returned textures. @default BGRA */

@@ -73,7 +73,7 @@ class Program
     {
         if (context == null)
         {
-            context = Starling.context;
+            context = Starling.current.context;
             if (context == null) throw new MissingContextError();
         }
 
@@ -93,7 +93,7 @@ class Program
 
     private function disposeProgram():Void
     {
-        if (_program3D)
+        if (_program3D != null)
         {
             _program3D.dispose();
             _program3D = null;

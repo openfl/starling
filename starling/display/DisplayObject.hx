@@ -140,6 +140,7 @@ class DisplayObject extends EventDispatcher
     private var __orientationChanged:Bool;
     private var __is3D:Bool;
     private var __isMask:Bool;
+    private var __maskee:DisplayObject;
     
     // internal members (for fast access on rendering)
 
@@ -393,8 +394,8 @@ class DisplayObject extends EventDispatcher
         var stage:Stage = Starling.current.stage;
         var stageWidth:Float = stage.stageWidth;
         var stageHeight:Float = stage.stageHeight;
-        var scale:Float = Starling.contentScaleFactor;
-        var painter:Painter = Starling.painter;
+        var scale:Float = Starling.current.contentScaleFactor;
+        var painter:Painter = Starling.current.painter;
         var bounds:Rectangle = Std.is(this, Stage) ?
             stage.getStageBounds(this, sHelperRect) : getBounds(__parent, sHelperRect);
 
@@ -574,7 +575,7 @@ class DisplayObject extends EventDispatcher
     public function setRequiresRedraw():Void
     {
         var parent:DisplayObject = __parent != null ? __parent : __maskee;
-        var frameID:Int = Starling.frameID;
+        var frameID:Int = Starling.current.frameID;
 
         __lastParentOrSelfChangeFrameID = frameID;
         __hasVisibleArea = __alpha  != 0.0 && __visible && __maskee == null &&
@@ -593,7 +594,7 @@ class DisplayObject extends EventDispatcher
     public var requiresRedraw(get, never):Bool;
     private function get_requiresRedraw():Bool
     {
-        var frameID:UInt = Starling.frameID;
+        var frameID:UInt = Starling.current.frameID;
 
         return __lastParentOrSelfChangeFrameID == frameID ||
                __lastChildChangeFrameID == frameID;
@@ -1161,7 +1162,7 @@ class DisplayObject extends EventDispatcher
                 sMaskWarningShown = true;
             }
 
-            if (__mask != null) _mask._maskee = null;
+            if (__mask != null) __mask.__maskee = null;
             if (value != null)
             {
                 value.__maskee = this;

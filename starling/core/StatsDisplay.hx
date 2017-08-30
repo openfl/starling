@@ -49,10 +49,10 @@ class StatsDisplay extends Sprite
         super();
         
         var fontName:String = BitmapFont.MINI;
-        var fontSize:Number = BitmapFont.NATIVE_SIZE;
+        var fontSize:Float = BitmapFont.NATIVE_SIZE;
         var fontColor:UInt  = 0xffffff;
-        var width:Number    = 90;
-        var height:Number   = supportsGpuMem ? 35 : 27;
+        var width:Int    = 90;
+        var height:Int   = supportsGpuMem ? 35 : 27;
         var gpuLabel:String = supportsGpuMem ? "\ngpu memory:" : "";
         var labels:String   = "frames/sec:\nstd memory:" + gpuLabel + "\ndraw calls:";
 
@@ -101,7 +101,8 @@ class StatsDisplay extends Sprite
         if (__totalTime > UPDATE_INTERVAL)
         {
             update();
-            __frameCount = __skipCount = __totalTime = 0;
+            __frameCount = __skipCount = 0;
+            __totalTime = 0;
         }
     }
     
@@ -111,12 +112,12 @@ class StatsDisplay extends Sprite
         __background.color = __skipCount > __frameCount / 2 ? 0x003F00 : 0x0;
         __fps = __totalTime > 0 ? __frameCount / __totalTime : 0;
         __memory = System.totalMemory * B_TO_MB;
-        __gpuMemory = supportsGpuMem ? Reflect.field(Starling.context, totalGPUMemory) * B_TO_MB : -1;
+        __gpuMemory = supportsGpuMem ? Reflect.field(Starling.current.context, "totalGPUMemory") * B_TO_MB : -1;
 
-        var fpsText:String = __fps < 100 ? Math.round(__fps * 10) / 10 : Math.round(__fps);
-        var memText:String = __memory < 100 ? Math.round(__memory * 10) / 10 : Math.round(__memory);
-        var gpuMemText:String = __gpuMemory < 100 ? Math.round(__gpuMemory * 10) / 10 : Math.round(__gpuMemory);
-        var drwText:String = (__totalTime > 0 ? __drawCount - 2 : __drawCount); // ignore self
+        var fpsText:String = __fps < 100 ? Std.string(Math.round(__fps * 10) / 10) : Std.string(Math.round(__fps));
+        var memText:String = __memory < 100 ? Std.string(Math.round(__memory * 10) / 10) : Std.string(Math.round(__memory));
+        var gpuMemText:String = __gpuMemory < 100 ? Std.string(Math.round(__gpuMemory * 10) / 10) : Std.string(Math.round(__gpuMemory));
+        var drwText:String = Std.string(__totalTime > 0 ? __drawCount - 2 : __drawCount); // ignore self
 
         __values.text = fpsText + "\n" + memText + "\n" +
             (__gpuMemory >= 0 ? gpuMemText + "\n" : "") + drwText;
@@ -144,7 +145,7 @@ class StatsDisplay extends Sprite
     private function get_supportsGpuMem():Bool
     {
         #if flash
-        return Reflect.hasField(Starling.context, "totalGPUMemory");
+        return Reflect.hasField(Starling.current.context, "totalGPUMemory");
         #else
         return Starling.context.totalGPUMemory != 0;
         #end

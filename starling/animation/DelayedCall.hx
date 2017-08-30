@@ -31,7 +31,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
 {
     private var __currentTime:Float;
     private var __totalTime:Float;
-    private var __callback:Function;
+    @:allow(starling) private var __callback:Function;
     private var __args:Array<Dynamic>;
     private var __repeatCount:Int;
     

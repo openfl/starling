@@ -22,6 +22,7 @@ import starling.display.Sprite;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.Align;
+import starling.utils.ArrayUtil;
 import starling.utils.StringUtil;
 import starling.text.BitmapChar;
 
@@ -158,7 +159,7 @@ class BitmapFont implements ITextCompositor
             region.width  = Std.parseFloat(charElement.get("width")) / scale;
             region.height = Std.parseFloat(charElement.get("height")) / scale;
             
-            var texture:Texture = Texture.fro__texture(__texture, region);
+            var texture:Texture = Texture.fromTexture(__texture, region);
             var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
             addChar(id, bitmapChar);
         }
@@ -252,17 +253,17 @@ class BitmapFont implements ITextCompositor
         var charLocations:Vector<CharLocation> = arrangeChars(
                 width, height, text, format, options);
         var numChars:Int = charLocations.length;
-        __helperImage.color = color;
+        __helperImage.color = format.color;
         
         for (i in 0...numChars)
         {
             var charLocation:CharLocation = charLocations[i];
-            _helperImage.texture = charLocation.char.texture;
-            _helperImage.readjustSize();
-            _helperImage.x = charLocation.x;
-            _helperImage.y = charLocation.y;
-            _helperImage.scale = charLocation.scale;
-            meshBatch.addMesh(_helperImage);
+            __helperImage.texture = charLocation.char.texture;
+            __helperImage.readjustSize();
+            __helperImage.x = charLocation.x;
+            __helperImage.y = charLocation.y;
+            __helperImage.scale = charLocation.scale;
+            meshBatch.addMesh(__helperImage);
         }
 
         CharLocation.rechargePool();
@@ -298,22 +299,26 @@ class BitmapFont implements ITextCompositor
         var scale:Float;
         var i:Int, j:Int;
 
-        if (fontSize < 0) fontSize *= -_size;
+        if (fontSize < 0) fontSize *= -__size;
+        
+        var currentY:Float = 0;
         
         while (!finished)
         {
-            sLines.length = 0;
-            scale = fontSize / _size;
-            containerWidth  = (width  - 2 * _padding) / scale;
-            containerHeight = (height - 2 * _padding) / scale;
+            ArrayUtil.clear(sLines);
+            scale = fontSize / __size;
+            containerWidth  = (width  - 2 * __padding) / scale;
+            containerHeight = (height - 2 * __padding) / scale;
+            
+            
             
             if (__lineHeight <= containerHeight)
             {
                 var lastWhiteSpace:Int = -1;
                 var lastCharID:Int = -1;
-                var currentX:Float = 0;
-                var currentY:Float = 0;
                 var currentLine:Vector<CharLocation> = CharLocation.vectorFromPool();
+                var currentX:Float = 0;
+                currentY = 0;
                 
                 numChars = text.length;
                 var i:Int = 0;
@@ -420,8 +425,8 @@ class BitmapFont implements ITextCompositor
         var bottom:Float = currentY + __lineHeight;
         var yOffset:Int = 0;
         
-        if (vAlign == VAlign.BOTTOM)      yOffset = Std.int(containerHeight - bottom);
-        else if (vAlign == VAlign.CENTER) yOffset = Std.int((containerHeight - bottom) / 2);
+        if (vAlign == Align.BOTTOM)      yOffset = Std.int(containerHeight - bottom);
+        else if (vAlign == Align.CENTER) yOffset = Std.int((containerHeight - bottom) / 2);
         
         for (lineID in 0...numLines)
         {
@@ -435,14 +440,14 @@ class BitmapFont implements ITextCompositor
             var right:Float = lastLocation.x - lastLocation.char.xOffset 
                                               + lastLocation.char.xAdvance;
             
-            if (hAlign == HAlign.RIGHT)       xOffset = Std.int(containerWidth - right);
-            else if (hAlign == HAlign.CENTER) xOffset = Std.int((containerWidth - right) / 2);
+            if (hAlign == Align.RIGHT)       xOffset = Std.int(containerWidth - right);
+            else if (hAlign == Align.CENTER) xOffset = Std.int((containerWidth - right) / 2);
             
             for (c in 0...numChars)
             {
                 charLocation = line[c];
-                charLocation.x = scale * (charLocation.x + xOffset + __offsetX);
-                charLocation.y = scale * (charLocation.y + yOffset + __offsetY);
+                charLocation.x = scale * (charLocation.x + xOffset + __padding);
+                charLocation.y = scale * (charLocation.y + yOffset + __padding);
                 charLocation.scale = scale;
                 
                 if (charLocation.char.width > 0 && charLocation.char.height > 0)
@@ -468,8 +473,8 @@ class BitmapFont implements ITextCompositor
     
     /** The smoothing filter that is used for the texture. */ 
     public var smoothing(get, set):String;
-    private function get_smoothing():String { return __helperImage.smoothing; }
-    private function set_smoothing(value:String):String { return __helperImage.smoothing = value; } 
+    private function get_smoothing():String { return __helperImage.textureSmoothing; }
+    private function set_smoothing(value:String):String { return __helperImage.textureSmoothing = value; } 
     
     /** The baseline of the font. This property does not affect text rendering;
      * it's just an information that may be useful for exact text placement. */
@@ -487,6 +492,13 @@ class BitmapFont implements ITextCompositor
      * Useful to make up for incorrect font data. @default 0. */
     private function get_offsetY():Float { return __offsetY; }
     private function set_offsetY(value:Float):Float { return __offsetY = value; }
+
+    /** The width of a "gutter" around the composed text area, in points.
+     *  This can be used to bring the output more in line with standard TrueType rendering:
+     *  Flash always draws them with 2 pixels of padding. @default 0.0 */
+    public var padding(get, set):Float;
+    private function get_padding():Float { return __padding; }
+    private function set_padding(value:Float):Float { return __padding = value; }
 
     /** The underlying texture that contains all the chars. */
     private function get_texture():Texture { return __texture; }

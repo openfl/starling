@@ -130,7 +130,7 @@ class FilterEffect extends Effect
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2, texCoords:float2"</code> */
-    override public function get_vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
+    override private function get_vertexFormat():VertexDataFormat { return VERTEX_FORMAT; }
 
     /** The texture to be mapped onto the vertices. */
     public var texture(get, set):Texture;

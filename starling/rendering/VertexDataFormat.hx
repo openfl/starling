@@ -10,9 +10,9 @@
 
 package starling.rendering;
 
-import flash.display3D.VertexBuffer3D;
-import flash.utils.Dictionary;
-
+import openfl.display3D.VertexBuffer3D;
+import openfl.errors.ArgumentError;
+import openfl.utils.Dictionary;
 import openfl.Vector;
 
 import starling.core.Starling;
@@ -50,9 +50,8 @@ class VertexDataFormat
     private var _attributes:Vector<VertexDataAttribute>;
 
     // format cache
-    private static var sFormats:Dictionary = new Dictionary();
-	
-	var attributes(get, null):Vector<VertexDataAttribute>;
+    private static var sFormats:Map<String, VertexDataFormat> = new Map();
+
     public var formatString(get, null):String;
     public var vertexSize(get, null):Int;
     public var vertexSizeIn32Bits(get, null):Int;
@@ -94,7 +93,7 @@ class VertexDataFormat
      */
     public static function fromString(format:String):VertexDataFormat
     {
-        if (format in sFormats) return sFormats[format];
+        if (sFormats.exists(format)) return sFormats[format];
         else
         {
             var instance:VertexDataFormat = new VertexDataFormat();
@@ -102,7 +101,7 @@ class VertexDataFormat
 
             var normalizedFormat:String = instance._format;
 
-            if (normalizedFormat in sFormats)
+            if (sFormats.exists(normalizedFormat))
                 instance = sFormats[normalizedFormat];
 
             sFormats[format] = instance;
@@ -130,7 +129,7 @@ class VertexDataFormat
     /** Returns the size of a certain vertex attribute in 32 bit units. */
     public function getSizeIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).size / 4;
+        return Std.int(getAttribute(attrName).size / 4);
     }
 
     /** Returns the offset (in bytes) of an attribute within a vertex. */
@@ -142,7 +141,7 @@ class VertexDataFormat
     /** Returns the offset (in 32 bit units) of an attribute within a vertex. */
     public function getOffsetIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).offset / 4;
+        return Std.int(getAttribute(attrName).offset / 4);
     }
 
     /** Returns the format of a certain vertex attribute, identified by its name.
@@ -178,7 +177,7 @@ class VertexDataFormat
     public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, attrName:String):Void
     {
         var attribute:VertexDataAttribute = getAttribute(attrName);
-        Starling.context.setVertexBufferAt(index, buffer, attribute.offset / 4, attribute.format);
+        Starling.current.context.setVertexBufferAt(index, buffer, Std.int(attribute.offset / 4), attribute.format);
     }
 
     // parsing
@@ -190,14 +189,14 @@ class VertexDataFormat
             _attributes.length = 0;
             _format = "";
 
-            var parts:Array = format.split(",");
+            var parts = format.split(",");
             var numParts:Int = parts.length;
             var offset:Int = 0;
 
             for (i in 0...numParts)
             {
                 var attrDesc:String = parts[i];
-                var attrParts:Array = attrDesc.split(":");
+                var attrParts = attrDesc.split(":");
 
                 if (attrParts.length != 2)
                     throw new ArgumentError("Missing colon: " + attrDesc);
@@ -249,7 +248,8 @@ class VertexDataFormat
     }
 
     /** @private */
-    /*internal*/ function get_attributes():Vector<VertexDataAttribute>
+    @:allow(starling) private var attributes(get, null):Vector<VertexDataAttribute>;
+    private function get_attributes():Vector<VertexDataAttribute>
     {
         return _attributes;
     }
@@ -271,7 +271,7 @@ class VertexDataFormat
     /** The size (in 32 bit units) of each vertex. */
     function get_vertexSizeIn32Bits():Int
     {
-        return _vertexSize / 4;
+        return Std.int(_vertexSize / 4);
     }
 
     /** The number of attributes per vertex. */

@@ -12,6 +12,7 @@ package starling.core;
 
 import haxe.Timer;
 
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.Stage3D;
@@ -232,8 +233,8 @@ class Starling extends EventDispatcher
     private var __clippedViewPort:Rectangle;
 
     private var __nativeStage:OpenFLStage;
+    private var __nativeStageEmpty:Bool;
     private var __nativeOverlay:Sprite;
-    private var __nativeStageContentScaleFactor:Float;
 
     private static var sCurrent:Starling;
     private static var sAll:Vector<Starling> = new Vector<Starling>();
@@ -313,14 +314,14 @@ class Starling extends EventDispatcher
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
         stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 10, true);
         
-        if (_painter.shareContext)
+        if (__painter.shareContext)
         {
             Timer.delay(initialize, 1); // we don't call it right away, because Starling should
                                         // behave the same way with or without a shared context
         }
         else
         {
-            _painter.requestContext3D(renderMode, profile);
+            __painter.requestContext3D(renderMode, profile);
         }
     }
     
@@ -363,7 +364,7 @@ class Starling extends EventDispatcher
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
 
         initializeRoot();
-        _frameTimestamp = Lib.getTimer() / 1000.0;
+        __frameTimestamp = Lib.getTimer() / 1000.0;
     }
     
     private function initializeRoot():Void
@@ -434,9 +435,9 @@ class Starling extends EventDispatcher
             var scaleX:Float = __viewPort.width  / __stage.stageWidth;
             var scaleY:Float = __viewPort.height / __stage.stageHeight;
 
-            _painter.nextFrame();
-            _painter.pixelSize = 1.0 / contentScaleFactor;
-            _painter.state.setProjectionMatrix(
+            __painter.nextFrame();
+            __painter.pixelSize = 1.0 / contentScaleFactor;
+            __painter.state.setProjectionMatrix(
                 __viewPort.x < 0 ? -__viewPort.x / scaleX : 0.0,
                 __viewPort.y < 0 ? -__viewPort.y / scaleY : 0.0,
                 __clippedViewPort.width  / scaleX,
@@ -448,7 +449,7 @@ class Starling extends EventDispatcher
 
             __stage.render(__painter);
             __painter.finishFrame();
-            __painter.frameID = ++_frameID;
+            __painter.frameID = ++__frameID;
 
             if (!shareContext)
                 __painter.present();
@@ -610,7 +611,7 @@ class Starling extends EventDispatcher
         // On mobile, the native display list is only updated on stage3D draw calls.
         // Thus, we render even when Starling is paused.
         
-        if (!__shareContext)
+        if (!__painter.shareContext)
         {
             if (__started) nextFrame();
             else if (__rendering) render();
@@ -759,7 +760,7 @@ class Starling extends EventDispatcher
         // standard display list is only rendered after calling "context.present()".
         // In such a case, we cannot omit frames if there is any content on the stage.
 
-        if (!_skipUnchangedFrames || __painter.shareContext)
+        if (!__skipUnchangedFrames || __painter.shareContext)
             return true;
         else if (SystemUtil.isDesktop && profile != Context3DProfile.BASELINE_CONSTRAINED)
             return false;
@@ -787,7 +788,7 @@ class Starling extends EventDispatcher
     /** The painter, which is used for all rendering. The same instance is passed to all
      *  <code>render</code>methods each frame. */
     public var painter(get, never):Painter;
-    private function get_painter():Painter { return _painter; }
+    private function get_painter():Painter { return __painter; }
     
     /** The render context of this instance. */
     public var context(get, never):Context3D;
@@ -831,7 +832,7 @@ class Starling extends EventDispatcher
     /** The viewport into which Starling contents will be rendered. */
     public var viewPort(get, set):Rectangle;
     private function get_viewPort():Rectangle { return __viewPort; }
-    private function set_viewPort(value:Rectangle):Rectangle { return __viewPort.copyFrom(value); }
+    private function set_viewPort(value:Rectangle):Rectangle { __viewPort.copyFrom(value); return value; }
     
     /** The ratio between viewPort width and stage width. Useful for choosing a different
      * set of textures depending on the display resolution. */
@@ -885,7 +886,7 @@ class Starling extends EventDispatcher
         
         __showStats = true;
         
-        if (__context == null)
+        if (context == null)
         {
             // Starling is not yet ready - we postpone this until it's initialized.
             addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
@@ -952,7 +953,7 @@ class Starling extends EventDispatcher
         else if (__rootClass == null)
         {
             __rootClass = value;
-            if (__context != null) initializeRoot();
+            if (context != null) initializeRoot();
         }
         return value;
     }
@@ -1080,7 +1081,7 @@ class Starling extends EventDispatcher
     //     return sCurrent != null ? sCurrent.__frameID : 0;
     // }
     
-    private function isNativeDisplayObjectEmpty(object:DisplayObject):Bool
+    private function isNativeDisplayObjectEmpty(object:openfl.display.DisplayObject):Bool
     {
         if (object == null) return true;
         else if (Std.is(object, DisplayObjectContainer))

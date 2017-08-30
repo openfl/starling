@@ -20,20 +20,20 @@ import starling.display.Stage;
 import starling.events.Event;
 import starling.text.BitmapFont;
 import starling.text.TextField;
-import starling.textures.RenderTexture;
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 import starling.utils.AssetManager;
 import starling.utils.Max;
 import starling.utils.RectangleUtil;
+import starling.utils.StringUtil;
 
 import utils.ProgressBar;
 
 class Demo extends Sprite
 {
-    private var mStarling:Starling;
-    private var mBackground:Bitmap;
-    private var mProgressBar:ProgressBar;
+    private var _starling:Starling;
+    private var _background:Bitmap;
+    private var _progressBar:ProgressBar;
 
     public function new()
     {
@@ -58,22 +58,21 @@ class Demo extends Sprite
         // viewPort to the optimal size for any display and load the optimal textures.
 
         Starling.multitouchEnabled = true; // for Multitouch Scene
-        Starling.handleLostContext = true; // recommended everywhere when using AssetManager
-        RenderTexture.optimizePersistentBuffers = true; // should be safe on Desktop
 
-        mStarling = new Starling(Game, stage, null, null, Context3DRenderMode.AUTO, "auto");
-        mStarling.stage.stageWidth = Constants.GameWidth;
-        mStarling.stage.stageHeight = Constants.GameHeight;
-        mStarling.simulateMultitouch = true;
-        mStarling.enableErrorChecking = Capabilities.isDebugger;
-        mStarling.addEventListener(Event.ROOT_CREATED, function():Void
+        _starling = new Starling(Game, stage, null, null, Context3DRenderMode.AUTO, "auto");
+        _starling.stage.stageWidth = Constants.GameWidth;
+        _starling.stage.stageHeight = Constants.GameHeight;
+        _starling.enableErrorChecking = Capabilities.isDebugger;
+        _starling.skipUnchangedFrames = true;
+        _starling.simulateMultitouch = true;
+        _starling.addEventListener(Event.ROOT_CREATED, function():Void
         {
             loadAssets(startGame);
         });
         
         this.stage.addEventListener(Event.RESIZE, onResize, false, Max.INT_MAX_VALUE, true);
 
-        mStarling.start();
+        _starling.start();
         initElements();
     }
 
@@ -108,7 +107,7 @@ class Demo extends Sprite
 
     private function startGame(assets:AssetManager):Void
     {
-        var game:Game = cast(mStarling.root, Game);
+        var game:Game = cast(_starling.root, Game);
         game.start(assets);
         Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
@@ -117,30 +116,30 @@ class Demo extends Sprite
     {
         // Add background image.
 
-        mBackground = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
-        mBackground.smoothing = true;
-        addChild(mBackground);
+        _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
+        _background.smoothing = true;
+        addChild(_background);
 
         // While the assets are loaded, we will display a progress bar.
 
-        //mProgressBar = new ProgressBar(175, 20);
-        //mProgressBar.x = (mBackground.width - mProgressBar.width) / 2;
-        //mProgressBar.y =  mBackground.height * 0.7;
-        //addChild(mProgressBar);
+        //_progressBar = new ProgressBar(175, 20);
+        //_progressBar.x = (_background.width - _progressBar.width) / 2;
+        //_progressBar.y =  _background.height * 0.7;
+        //addChild(_progressBar);
     }
 
     private function removeElements():Void
     {
-        if (mBackground != null)
+        if (_background != null)
         {
-            removeChild(mBackground);
-            mBackground = null;
+            removeChild(_background);
+            _background = null;
         }
 
-        if (mProgressBar != null)
+        if (_progressBar != null)
         {
-            removeChild(mProgressBar);
-            mProgressBar = null;
+            removeChild(_progressBar);
+            _progressBar = null;
         }
     }
     
@@ -149,7 +148,7 @@ class Demo extends Sprite
         var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, stage.stageWidth, stage.stageHeight));
         try
         {
-            this.mStarling.viewPort = viewPort;
+            this._starling.viewPort = viewPort;
         }
         catch(error:Error) {}
     }

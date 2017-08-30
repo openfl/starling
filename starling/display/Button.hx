@@ -127,7 +127,7 @@ class Button extends DisplayObjectContainer
         __textBounds.width *= scaleX;
         __textBounds.height *= scaleY;
 
-        if (__textField != null) createTextField();
+        if (__textField != null) __createTextField();
     }
 
     private function __createTextField():Void
@@ -209,20 +209,20 @@ class Button extends DisplayObjectContainer
         switch (__state)
         {
             case ButtonState.DOWN:
-                setStateTexture(__downState);
+                __setStateTexture(__downState);
                 __contents.alpha = __alphaWhenDown;
                 __contents.scaleX = __contents.scaleY = __scaleWhenDown;
                 __contents.x = (1.0 - __scaleWhenDown) / 2.0 * __body.width;
                 __contents.y = (1.0 - __scaleWhenDown) / 2.0 * __body.height;
             case ButtonState.UP:
-                setStateTexture(_upState);
+                __setStateTexture(__upState);
             case ButtonState.OVER:
-                setStateTexture(__overState);
+                __setStateTexture(__overState);
                 __contents.scaleX = __contents.scaleY = __scaleWhenOver;
                 __contents.x = (1.0 - __scaleWhenOver) / 2.0 * __body.width;
                 __contents.y = (1.0 - __scaleWhenOver) / 2.0 * __body.height;
             case ButtonState.DISABLED:
-                setStateTexture(__disabledState);
+                __setStateTexture(__disabledState);
                 __contents.alpha = __alphaWhenDisabled;
             default:
                 throw new ArgumentError("Invalid button state: " + __state);
@@ -299,13 +299,13 @@ class Button extends DisplayObjectContainer
     public var textFormat(get, set):TextFormat;
     private function get_textFormat():TextFormat
     {
-        if (__textField == null) createTextField();
+        if (__textField == null) __createTextField();
         return __textField.format;
     }
 
     private function set_textFormat(value:TextFormat):TextFormat
     {
-        if (__textField == null) createTextField();
+        if (__textField == null) __createTextField();
         return __textField.format = value;
     }
 
@@ -313,13 +313,13 @@ class Button extends DisplayObjectContainer
     public var textStyle(get, set):MeshStyle;
     private function get_textStyle():MeshStyle
     {
-        if (__textField == null) createTextField();
+        if (__textField == null) __createTextField();
         return __textField.style;
     }
 
     private function set_textStyle(value:MeshStyle):MeshStyle
     {
-        if (__textField == null) createTextField();
+        if (__textField == null) __createTextField();
         return __textField.style = value;
     }
 
@@ -408,8 +408,8 @@ class Button extends DisplayObjectContainer
 
     /** The smoothing type used for the button's state image. */
     public var textureSmoothing(get, set):String;
-    private function get_textureSmoothing():String { return __body.smoothing; }
-    private function set_textureSmoothing(value:String):String { return __body.smoothing = value; }
+    private function get_textureSmoothing():String { return __body.textureSmoothing; }
+    private function set_textureSmoothing(value:String):String { return __body.textureSmoothing = value; }
 
     /** The overlay sprite is displayed on top of the button contents. It scales with the
      * button when pressed. Use it to add additional objects to the button (e.g. an icon). */

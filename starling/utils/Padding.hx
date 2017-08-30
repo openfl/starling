@@ -26,8 +26,9 @@ class Padding extends EventDispatcher
     private var _bottom:Float;
 	
     /** Creates a new instance with the given properties. */
-    public function Padding(left:Float=0, right:Float=0, top:Float=0, bottom:Float=0)
+    public function new(left:Float=0, right:Float=0, top:Float=0, bottom:Float=0)
     {
+        super();
         setTo(left, right, top, bottom);
     }
 
