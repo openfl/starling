@@ -96,3 +96,9 @@ import starling.utils.RectangleUtil;
 import starling.utils.ScaleMode;
 import starling.utils.StringUtil;
 import starling.utils.SystemUtil;
+
+import starling.extensions.ColorArgb;
+import starling.extensions.Particle;
+import starling.extensions.ParticleSystem;
+import starling.extensions.PDParticle;
+import starling.extensions.PDParticleSystem;

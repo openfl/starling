@@ -163,7 +163,7 @@ class EventDispatcher
                 var listener:Function = listeners[i];
                 if (listener == null) continue;
 
-                #if (flash || js)
+                #if flash
                 var numArgs:Int = untyped listener.length;
                 #elseif neko
                 var numArgs:Int = untyped ($nargs)(listener);

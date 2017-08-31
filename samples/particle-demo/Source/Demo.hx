@@ -27,6 +27,13 @@ class Demo extends Sprite
 	{
 		super();
 		
+		addEventListener(Event.ADDED_TO_STAGE, init);
+	}
+	
+	private function init():Void
+	{
+		stage.color = 0xff000000;
+		
 		var drugsConfig = Assets.getText("assets/drugs.pex");
 		var drugsTexture = Texture.fromBitmapData(Assets.getBitmapData("assets/drugs_particle.png"));
 		
@@ -48,8 +55,10 @@ class Demo extends Sprite
 		
 		// add event handlers for touch and keyboard
 		
-		addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-		addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
+		stage.addEventListener(TouchEvent.TOUCH, onTouch);
+		
+		startNextParticleSystem();
 	}
 	
 	private function startNextParticleSystem():Void
@@ -70,20 +79,6 @@ class Demo extends Sprite
 		
 		addChild(_particleSystem);
 		Starling.current.juggler.add(_particleSystem);
-	}
-	
-	private function onAddedToStage(event:Event):Void
-	{
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
-		stage.addEventListener(TouchEvent.TOUCH, onTouch);
-		
-		startNextParticleSystem();
-	}
-	
-	private function onRemovedFromStage(event:Event):Void
-	{
-		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKey);
-		stage.removeEventListener(TouchEvent.TOUCH, onTouch);
 	}
 	
 	private function onKey(event:Event, keyCode:Int):Void

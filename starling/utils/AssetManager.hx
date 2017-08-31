@@ -752,7 +752,7 @@ class AssetManager extends EventDispatcher
                 if (texture != null)
                 {
                     log("Adding bitmap font '" + name + "'");
-                    TextField.registerBitmapFont(new BitmapFont(texture, xml), name);
+                    TextField.registerCompositor(new BitmapFont(texture, xml), name);
                     removeTexture(name, false);
 
                     if (__keepFontXmls) addXml(name, xml);

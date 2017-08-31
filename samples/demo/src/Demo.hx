@@ -84,12 +84,12 @@ class Demo extends Sprite
 
         Timer.delay(function()
         {
-            
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
             var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
             var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-            TextField.registerBitmapFont(new BitmapFont(desyrelTexture, desyrelXml));
+            var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
+            TextField.registerCompositor(bitmapFont, bitmapFont.name);
             assets.addTexture("atlas", atlasTexture);
             assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));

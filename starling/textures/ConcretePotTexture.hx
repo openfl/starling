@@ -124,6 +124,7 @@ import starling.utils.Execute.execute;
     /** @inheritDoc */
     override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
     {
+        data.endian = BIG_ENDIAN;
         var isAsync:Bool = Std.is(async, Function) || async == true;
 
         if (Std.is(async, Function))

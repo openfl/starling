@@ -10,137 +10,108 @@
 
 package starling.extensions;
 
-import openfl.errors.ArgumentError;
-import openfl.display3D.Context3D;
 import openfl.display3D.Context3DBlendFactor;
-import openfl.display3D.Context3DProgramType;
-import openfl.display3D.Context3DVertexBufferFormat;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.Program3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-import openfl.utils.AGALMiniAssembler;
 import openfl.Vector;
 
 import starling.animation.IAnimatable;
-import starling.core.RenderSupport;
-import starling.core.Starling;
+import starling.display.BlendMode;
 import starling.display.DisplayObject;
-import starling.errors.MissingContextError;
+import starling.display.Mesh;
 import starling.events.Event;
+import starling.rendering.IndexData;
+import starling.rendering.MeshEffect;
+import starling.rendering.Painter;
+import starling.rendering.VertexData;
+import starling.styles.MeshStyle;
 import starling.textures.Texture;
-import starling.textures.TextureSmoothing;
 import starling.utils.MatrixUtil;
-import starling.utils.VertexData;
+import starling.utils.Max;
+import starling.utils.MeshSubset;
 
 /** Dispatched when emission of particles is finished. */
-@:meta(Event(name="complete",type="starling.events.Event"))
+@:meta(Event(name="complete", type="starling.events.Event"))
 
-class ParticleSystem extends DisplayObject implements IAnimatable
+class ParticleSystem extends Mesh implements IAnimatable
 {
-    public var isEmitting(get, never):Bool;
-    public var capacity(get, never):Int;
-    public var numParticles(get, never):Int;
-    public var maxCapacity(get, set):Int;
-    public var emissionRate(get, set):Float;
-    public var emitterX(get, set):Float;
-    public var emitterY(get, set):Float;
-    public var blendFactorSource(get, set):String;
-    public var blendFactorDestination(get, set):String;
-    public var texture(get, set):Texture;
-    public var smoothing(get, set):String;
-
     public static inline var MAX_NUM_PARTICLES:Int = 16383;
     
-    private var __texture:Texture;
-    private var mParticles:Vector<Particle>;
-    private var __frameTime:Float;
-    
-    private var __program:Program3D;
-    private var mVertexData:VertexData;
-    private var mVertexBuffer:VertexBuffer3D;
-    private var mIndices:Vector<UInt>;
-    private var mIndexBuffer:IndexBuffer3D;
-    
-    private var mNumParticles:Int = 0;
-    private var mMaxCapacity:Int;
-    private var mEmissionRate:Float; // emitted particles per second
-    private var mEmissionTime:Float;
-    
-    /** Helper objects. */
+    private var _effect:MeshEffect;
+    private var _vertexData:VertexData;
+    private var _indexData:IndexData;
+    private var _requiresSync:Bool;
+    private var _batchable:Bool;
+
+    private var _particles:Vector<Particle>;
+    private var _frameTime:Float;
+    private var _numParticles:Int = 0;
+    private var _emissionRate:Float; // emitted particles per second
+    private var _emissionTime:Float;
+    private var _emitterX:Float;
+    private var _emitterY:Float;
+    private var _blendFactorSource:Context3DBlendFactor;
+    private var _blendFactorDestination:Context3DBlendFactor;
+
+    // helper objects
     private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperPoint:Point = new Point();
-    private static var sRenderAlpha:Vector<Float> = Vector.ofArray([1.0, 1.0, 1.0, 1.0]);
-    
-    private var mEmitterX:Float;
-    private var mEmitterY:Float;
-    private var __blendFactorSource:String;
-    private var __blendFactorDestination:String;
-    private var mSmoothing:String;
-    
-    public function new(texture:Texture, emissionRate:Float,
-                        initialCapacity:Int = 128, maxCapacity:Int = 16383,
-                        blendFactorSource:String = null, blendFactorDest:String = null)
+    private static var sSubset:MeshSubset = new MeshSubset();
+
+    public function new(texture:Texture=null)
     {
-        super();
-        if (texture == null) throw new ArgumentError("texture must not be null");
-        
-        __texture = texture;
-        mParticles = new Vector<Particle>(0, false);
-        mVertexData = new VertexData(0);
-        mIndices = new Vector<UInt>();
-        mEmissionRate = emissionRate;
-        mEmissionTime = 0.0;
-        __frameTime = 0.0;
-        mEmitterX = mEmitterY = 0;
-        mMaxCapacity = Std.int(Math.min(MAX_NUM_PARTICLES, maxCapacity));
-        mSmoothing = TextureSmoothing.BILINEAR;
-        __blendFactorSource =      (blendFactorSource != null) ? blendFactorSource : Context3DBlendFactor.ONE;
-        __blendFactorDestination = (blendFactorDest != null) ? blendFactorDest : Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+        _vertexData = new VertexData();
+        _indexData = new IndexData();
 
-        createProgram();
-        updatePremultipliedAlpha();
-        raiseCapacity(initialCapacity);
+        super(_vertexData, _indexData);
 
-        // handle a lost device context
-        Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE, 
-            onContextCreated, false, 0, true);
+        _particles = new Vector<Particle>(0, false);
+        _frameTime = 0.0;
+        _emitterX = _emitterY = 0.0;
+        _emissionTime = 0.0;
+        _emissionRate = 10;
+        _blendFactorSource = Context3DBlendFactor.ONE;
+        _blendFactorDestination = Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA;
+        _batchable = false;
+
+        this.capacity = 128;
+        this.texture = texture;
+
+        updateBlendMode();
     }
 
-    public override function dispose():Void
+    /** @inheritDoc */
+    override public function dispose():Void
     {
-        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
-        
-        if (mVertexBuffer != null) mVertexBuffer.dispose();
-        if (mIndexBuffer != null) mIndexBuffer.dispose();
-        
+        _effect.dispose();
         super.dispose();
     }
-    
-    private function onContextCreated(event:Dynamic):Void
+
+    /** Always returns <code>null</code>. An actual test would be too expensive. */
+    override public function hitTest(localPoint:Point):DisplayObject
     {
-        createProgram();
-        raiseCapacity(0);
+        return null;
     }
 
-    private function updatePremultipliedAlpha():Void
+    private function updateBlendMode():Void
     {
-        var pma:Bool = __texture.premultipliedAlpha;
+        var pma:Bool = texture != null ? texture.premultipliedAlpha : true;
 
         // Particle Designer uses special logic for a certain blend factor combination
-        if (__blendFactorSource == Context3DBlendFactor.ONE &&
-                __blendFactorDestination == Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA)
+        if (_blendFactorSource == Context3DBlendFactor.ONE &&
+            _blendFactorDestination == Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA)
         {
-            mVertexData.premultipliedAlpha = __texture.premultipliedAlpha;
-            if (!pma) __blendFactorSource = Context3DBlendFactor.SOURCE_ALPHA;
+            _vertexData.premultipliedAlpha = pma;
+            if (!pma) _blendFactorSource = Context3DBlendFactor.SOURCE_ALPHA;
         }
         else
         {
-            mVertexData.premultipliedAlpha = false;
+            _vertexData.premultipliedAlpha = false;
         }
+
+        blendMode = _blendFactorSource + ", " + _blendFactorDestination;
+        BlendMode.register(blendMode, _blendFactorSource, _blendFactorDestination);
     }
     
     private function createParticle():Particle
@@ -150,8 +121,8 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     
     private function initParticle(particle:Particle):Void
     {
-        particle.x = mEmitterX;
-        particle.y = mEmitterY;
+        particle.x = _emitterX;
+        particle.y = _emitterY;
         particle.currentTime = 0;
         particle.totalTime = 1;
         particle.color = Std.int(Math.random() * 0xffffff);
@@ -161,94 +132,46 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     {
         particle.y += passedTime * 250;
         particle.alpha = 1.0 - particle.currentTime / particle.totalTime;
-        particle.scale = 1.0 - particle.alpha; 
         particle.currentTime += passedTime;
     }
-    
-    private function raiseCapacity(byAmount:Int):Void
+
+    private function setRequiresSync():Void
     {
-        var oldCapacity:Int = capacity;
-        var newCapacity:Int = Std.int(Math.min(mMaxCapacity, oldCapacity + byAmount));
-        var context:Context3D = Starling.current.context;
-        
-        if (context == null) throw new MissingContextError();
-
-        var baseVertexData:VertexData = new VertexData(4);
-        baseVertexData.setTexCoords(0, 0.0, 0.0);
-        baseVertexData.setTexCoords(1, 1.0, 0.0);
-        baseVertexData.setTexCoords(2, 0.0, 1.0);
-        baseVertexData.setTexCoords(3, 1.0, 1.0);
-        __texture.adjustVertexData(baseVertexData, 0, 4);
-        
-        mParticles.fixed = false;
-        mIndices.fixed = false;
-        
-        for (i in oldCapacity...newCapacity)
-        {
-            var numVertices:Int = Std.int(i * 4);
-            var numIndices:Int = Std.int(i * 6);
-            
-            mParticles[i] = createParticle();
-            mVertexData.append(baseVertexData);
-            
-            mIndices[        numIndices   ] = numVertices;
-            mIndices[Std.int(numIndices+1)] = numVertices + 1;
-            mIndices[Std.int(numIndices+2)] = numVertices + 2;
-            mIndices[Std.int(numIndices+3)] = numVertices + 1;
-            mIndices[Std.int(numIndices+4)] = numVertices + 3;
-            mIndices[Std.int(numIndices+5)] = numVertices + 2;
-        }
-
-        if (newCapacity < oldCapacity)
-        {
-            mParticles.length = newCapacity;
-            mIndices.length = newCapacity * 6;
-        }
-        
-        mParticles.fixed = true;
-        mIndices.fixed = true;
-        
-        // upload data to vertex and index buffers
-        
-        if (mVertexBuffer != null) mVertexBuffer.dispose();
-        if (mIndexBuffer != null) mIndexBuffer.dispose();
-
-        if (newCapacity > 0)
-        {
-            mVertexBuffer = context.createVertexBuffer(newCapacity * 4, VertexData.ELEMENTS_PER_VERTEX);
-            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, newCapacity * 4);
-
-            mIndexBuffer  = context.createIndexBuffer(newCapacity * 6);
-            mIndexBuffer.uploadFromVector(mIndices, 0, newCapacity * 6);
-        }
+        _requiresSync = true;
     }
-    
-    /** Starts the emitter for a certain time. @default infinite time */
-    public function start(duration:Float=-1):Void
+
+    private function syncBuffers():Void
     {
-        if (duration == -1) duration = Math.POSITIVE_INFINITY;
-        if (mEmissionRate != 0)                
-            mEmissionTime = duration;
+        _effect.uploadVertexData(_vertexData);
+        _effect.uploadIndexData(_indexData);
+        _requiresSync = false;
+    }
+
+    /** Starts the emitter for a certain time. @default infinite time */
+    public function start(duration:Float=Max.MAX_VALUE):Void
+    {
+        if (_emissionRate != 0)
+            _emissionTime = duration;
     }
     
     /** Stops emitting new particles. Depending on 'clearParticles', the existing particles
-     *  will either keep animating until they die or will be removed right away. */
+        *  will either keep animating until they die or will be removed right away. */
     public function stop(clearParticles:Bool=false):Void
     {
-        mEmissionTime = 0.0;
+        _emissionTime = 0.0;
         if (clearParticles) clear();
     }
     
     /** Removes all currently active particles. */
     public function clear():Void
     {
-        mNumParticles = 0;
+        _numParticles = 0;
     }
     
     /** Returns an empty rectangle at the particle system's position. Calculating the
-     *  actual bounds would be too expensive. */
+        *  actual bounds would be too expensive. */
     public override function getBounds(targetSpace:DisplayObject, 
-                                       resultRect:Rectangle=null):Rectangle
+                                        resultRect:Rectangle=null):Rectangle
     {
         if (resultRect == null) resultRect = new Rectangle();
         
@@ -264,14 +187,18 @@ class ParticleSystem extends DisplayObject implements IAnimatable
     
     public function advanceTime(passedTime:Float):Void
     {
+        setRequiresRedraw();
+        setRequiresSync();
+
         var particleIndex:Int = 0;
         var particle:Particle;
+        var maxNumParticles:Int = capacity;
         
         // advance existing particles
-        
-        while (particleIndex < mNumParticles)
+
+        while (particleIndex < _numParticles)
         {
-            particle = mParticles[particleIndex];
+            particle = _particles[particleIndex];
             
             if (particle.currentTime < particle.totalTime)
             {
@@ -280,262 +207,267 @@ class ParticleSystem extends DisplayObject implements IAnimatable
             }
             else
             {
-                if (particleIndex != mNumParticles - 1)
+                if (particleIndex != _numParticles - 1)
                 {
-                    var nextParticle:Particle = mParticles[Std.int(mNumParticles-1)];
-                    mParticles[Std.int(mNumParticles-1)] = particle;
-                    mParticles[particleIndex] = nextParticle;
+                    var nextParticle:Particle = _particles[Std.int(_numParticles-1)];
+                    _particles[Std.int(_numParticles-1)] = particle;
+                    _particles[particleIndex] = nextParticle;
                 }
-                
-                --mNumParticles;
 
-                if (mNumParticles == 0 && mEmissionTime == 0)
+                --_numParticles;
+
+                if (_numParticles == 0 && _emissionTime == 0)
                     dispatchEventWith(Event.COMPLETE);
             }
         }
         
         // create and advance new particles
         
-        if (mEmissionTime > 0)
+        if (_emissionTime > 0)
         {
-            var timeBetweenParticles:Float = 1.0 / mEmissionRate;
-            __frameTime += passedTime;
+            var timeBetweenParticles:Float = 1.0 / _emissionRate;
+            _frameTime += passedTime;
             
-            while (__frameTime > 0)
+            while (_frameTime > 0)
             {
-                if (mNumParticles < mMaxCapacity)
+                if (_numParticles < maxNumParticles)
                 {
-                    if (mNumParticles == capacity)
-                        raiseCapacity(capacity);
-                
-                    particle = mParticles[mNumParticles];
+                    particle = _particles[_numParticles];
                     initParticle(particle);
                     
                     // particle might be dead at birth
                     if (particle.totalTime > 0.0)
                     {
-                        advanceParticle(particle, __frameTime);
-                        ++mNumParticles;
+                        advanceParticle(particle, _frameTime);
+                        ++_numParticles;
                     }
                 }
                 
-                __frameTime -= timeBetweenParticles;
+                _frameTime -= timeBetweenParticles;
             }
             
-            if (mEmissionTime != Math.POSITIVE_INFINITY)
-                mEmissionTime = Math.max(0.0, mEmissionTime - passedTime);
+            if (_emissionTime != Max.MAX_VALUE)
+                _emissionTime = _emissionTime > passedTime ? _emissionTime - passedTime : 0.0;
 
-            if (mNumParticles == 0 && mEmissionTime == 0)
+            if (_numParticles == 0 && _emissionTime == 0)
                 dispatchEventWith(Event.COMPLETE);
         }
 
         // update vertex data
         
         var vertexID:Int = 0;
-        var color:Int;
-        var alpha:Float;
         var rotation:Float;
         var x:Float, y:Float;
-        var xOffset:Float, yOffset:Float;
-        var textureWidth:Float = __texture.width;
-        var textureHeight:Float = __texture.height;
+        var offsetX:Float, offsetY:Float;
+        var pivotX:Float = texture != null ? texture.width  / 2 : 5;
+        var pivotY:Float = texture != null ? texture.height / 2 : 5;
         
-        for (i in 0...mNumParticles)
+        for (i in 0..._numParticles)
         {
-            vertexID = i << 2;
-            particle = mParticles[i];
-            color = particle.color;
-            alpha = particle.alpha;
+            vertexID = i * 4;
+            particle = _particles[i];
             rotation = particle.rotation;
+            offsetX = pivotX * particle.scale;
+            offsetY = pivotY * particle.scale;
             x = particle.x;
             y = particle.y;
-            xOffset = Std.int(textureWidth * particle.scale) >> 1;
-            yOffset = Std.int(textureHeight * particle.scale) >> 1;
-            
-            for (j in 0...4)
-                mVertexData.setColorAndAlpha(vertexID+j, color, alpha);
-            
+
+            _vertexData.colorize("color", particle.color, particle.alpha, vertexID, 4);
+
             if (rotation != 0)
             {
                 var cos:Float  = Math.cos(rotation);
                 var sin:Float  = Math.sin(rotation);
-                var cosX:Float = cos * xOffset;
-                var cosY:Float = cos * yOffset;
-                var sinX:Float = sin * xOffset;
-                var sinY:Float = sin * yOffset;
+                var cosX:Float = cos * offsetX;
+                var cosY:Float = cos * offsetY;
+                var sinX:Float = sin * offsetX;
+                var sinY:Float = sin * offsetY;
                 
-                mVertexData.setPosition(vertexID,   x - cosX + sinY, y - sinX - cosY);
-                mVertexData.setPosition(vertexID+1, x + cosX + sinY, y + sinX - cosY);
-                mVertexData.setPosition(vertexID+2, x - cosX - sinY, y - sinX + cosY);
-                mVertexData.setPosition(vertexID+3, x + cosX - sinY, y + sinX + cosY);
+                _vertexData.setPoint(vertexID,   "position", x - cosX + sinY, y - sinX - cosY);
+                _vertexData.setPoint(vertexID+1, "position", x + cosX + sinY, y + sinX - cosY);
+                _vertexData.setPoint(vertexID+2, "position", x - cosX - sinY, y - sinX + cosY);
+                _vertexData.setPoint(vertexID+3, "position", x + cosX - sinY, y + sinX + cosY);
             }
             else 
             {
                 // optimization for rotation == 0
-                mVertexData.setPosition(vertexID,   x - xOffset, y - yOffset);
-                mVertexData.setPosition(vertexID+1, x + xOffset, y - yOffset);
-                mVertexData.setPosition(vertexID+2, x - xOffset, y + yOffset);
-                mVertexData.setPosition(vertexID+3, x + xOffset, y + yOffset);
+                _vertexData.setPoint(vertexID,   "position", x - offsetX, y - offsetY);
+                _vertexData.setPoint(vertexID+1, "position", x + offsetX, y - offsetY);
+                _vertexData.setPoint(vertexID+2, "position", x - offsetX, y + offsetY);
+                _vertexData.setPoint(vertexID+3, "position", x + offsetX, y + offsetY);
             }
         }
     }
-    
-    public override function render(support:RenderSupport, alpha:Float):Void
+
+    override public function render(painter:Painter):Void
     {
-        if (mNumParticles == 0) return;
-        
-        // always call this method when you write custom rendering code!
-        // it causes all previously batched quads/images to render.
-        support.finishQuadBatch();
-        
-        // make this call to keep the statistics display in sync.
-        // to play it safe, it's done in a backwards-compatible way here.
-        support.raiseDrawCount();
-        
-        alpha *= this.alpha;
-        
-        var context:Context3D = Starling.current.context;
-        var pma:Bool = texture.premultipliedAlpha;
-        
-        sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = pma ? alpha : 1.0;
-        sRenderAlpha[3] = alpha;
-        
-        if (context == null) throw new MissingContextError();
-        
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mNumParticles * 4);
-        mIndexBuffer.uploadFromVector(mIndices, 0, mNumParticles * 6);
-        
-        context.setBlendFactors(__blendFactorSource, __blendFactorDestination);
-        context.setTextureAt(0, __texture.base);
-        
-        context.setProgram(__program);
-        context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, support.mvpMatrix3D, true);
-        context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, sRenderAlpha, 1);
-        context.setVertexBufferAt(0, mVertexBuffer, VertexData.POSITION_OFFSET, Context3DVertexBufferFormat.FLOAT_2); 
-        context.setVertexBufferAt(1, mVertexBuffer, VertexData.COLOR_OFFSET,    Context3DVertexBufferFormat.FLOAT_4);
-        context.setVertexBufferAt(2, mVertexBuffer, VertexData.TEXCOORD_OFFSET, Context3DVertexBufferFormat.FLOAT_2);
-        
-        context.drawTriangles(mIndexBuffer, 0, mNumParticles * 2);
-        
-        context.setTextureAt(0, null);
-        context.setVertexBufferAt(0, null);
-        context.setVertexBufferAt(1, null);
-        context.setVertexBufferAt(2, null);
+        if (_numParticles == 0)
+        {
+            // nothing to do =)
+        }
+        else if (_batchable)
+        {
+            sSubset.setTo(0, _numParticles * 4, 0, _numParticles * 6);
+            painter.batchMesh(this, sSubset);
+        }
+        else
+        {
+            painter.finishMeshBatch();
+            painter.drawCount += 1;
+            painter.prepareToDraw();
+            painter.excludeFromCache(this);
+
+            if (_requiresSync) syncBuffers();
+
+            style.updateEffect(_effect, painter.state);
+            _effect.render(0, _numParticles * 2);
+        }
     }
-    
-    /** Initialize the <tt>ParticleSystem</tt> with particles distributed randomly throughout
-     *  their lifespans. */
+
+    /** Initialize the <code>ParticleSystem</code> with particles distributed randomly
+        *  throughout their lifespans. */
     public function populate(count:Int):Void
     {
-        count = Std.int(Math.min(count, mMaxCapacity - mNumParticles));
-        
-        if (mNumParticles + count > capacity)
-            raiseCapacity(mNumParticles + count - capacity);
+        var maxNumParticles:Int = capacity;
+        count = Std.int(Math.min(count, maxNumParticles - _numParticles));
         
         var p:Particle;
         for (i in 0...count)
         {
-            p = mParticles[mNumParticles+i];
+            p = _particles[_numParticles+i];
             initParticle(p);
             advanceParticle(p, Math.random() * p.totalTime);
         }
         
-        mNumParticles += count;
+        _numParticles += count;
     }
-    
-    // program management
-    
-    private function createProgram():Void
-    {
-        var mipmap:Bool = __texture.mipMapping;
-        var textureFormat:String = __texture.format;
-        var progra__name:String = "ext.ParticleSystem." + textureFormat + "/" +
-                                 mSmoothing.charAt(0) + (mipmap ? "+mm" : "");
-        
-        __program = Starling.current.getProgram(progra__name);
-        
-        if (__program == null)
-        {
-            var textureOptions:String =
-                RenderSupport.getTextureLookupFlags(textureFormat, mipmap, false, mSmoothing);
-            
-            var vertexProgramCode:String =
-                "m44 op, va0, vc0 \n" + // 4x4 matrix transform to output clipspace
-                "mul v0, va1, vc4 \n" + // multiply color with alpha and pass to fragment program
-                "mov v1, va2      \n";  // pass texture coordinates to fragment program
-            
-            var fragmentProgramCode:String =
-                "tex ft1, v1, fs0 " + textureOptions + "\n" + // sample texture 0
-                "mul oc, ft1, v0";                            // multiply color with texel color
-            
-            var assembler:AGALMiniAssembler = new AGALMiniAssembler();
-            
-            Starling.current.registerProgram(progra__name,
-                assembler.assemble(Context3DProgramType.VERTEX, vertexProgramCode),
-                assembler.assemble(Context3DProgramType.FRAGMENT, fragmentProgramCode));
-            
-            __program = Starling.current.getProgram(progra__name);
-        }
-    }
-    
-    private function get_isEmitting():Bool { return mEmissionTime > 0 && mEmissionRate > 0; }
-    private function get_capacity():Int { return Std.int(mVertexData.numVertices / 4); }
-    private function get_numParticles():Int { return mNumParticles; }
-    
-    private function get_maxCapacity():Int { return mMaxCapacity; }
-    private function set_maxCapacity(value:Int):Int
-    {
-        mMaxCapacity = Std.int(Math.min(MAX_NUM_PARTICLES, value));
-        return value;
-    }
-    
-    private function get_emissionRate():Float { return mEmissionRate; }
-    private function set_emissionRate(value:Float):Float { return mEmissionRate = value; }
-    
-    private function get_emitterX():Float { return mEmitterX; }
-    private function set_emitterX(value:Float):Float { return mEmitterX = value; }
-    
-    private function get_emitterY():Float { return mEmitterY; }
-    private function set_emitterY(value:Float):Float { return mEmitterY = value; }
-    
-    private function get_blendFactorSource():String { return __blendFactorSource; }
-    private function set_blendFactorSource(value:String):String
-    {
-        __blendFactorSource = value;
-        updatePremultipliedAlpha();
-        return value;
-    }
-    
-    private function get_blendFactorDestination():String { return __blendFactorDestination; }
-    private function set_blendFactorDestination(value:String):String
-    {
-        __blendFactorDestination = value;
-        updatePremultipliedAlpha();
-        return value;
-    }
-    
-    private function get_texture():Texture { return __texture; }
-    private function set_texture(value:Texture):Texture
-    {
-        if (value == null) throw new ArgumentError("Texture cannot be null");
 
-        __texture = value;
-        createProgram();
-        updatePremultipliedAlpha();
+    public var capacity(get, set):Int;
+    private function get_capacity():Int { return Std.int(_vertexData.numVertices / 4); }
+    private function set_capacity(value:Int):Int
+    {
+        var i:Int;
+        var oldCapacity:Int = capacity;
+        var newCapacity:Int = value > MAX_NUM_PARTICLES ? MAX_NUM_PARTICLES : value;
+        var baseVertexData:VertexData = new VertexData(style.vertexFormat, 4);
+        var texture:Texture = this.texture;
 
-        var i:Int = Std.int(mVertexData.numVertices - 4);
-        while (i >= 0)
+        if (texture != null)
         {
-            mVertexData.setTexCoords(i + 0, 0.0, 0.0);
-            mVertexData.setTexCoords(i + 1, 1.0, 0.0);
-            mVertexData.setTexCoords(i + 2, 0.0, 1.0);
-            mVertexData.setTexCoords(i + 3, 1.0, 1.0);
-            __texture.adjustVertexData(mVertexData, i, 4);
-            i -= 4;
+            texture.setupVertexPositions(baseVertexData);
+            texture.setupTextureCoordinates(baseVertexData);
         }
+        else
+        {
+            baseVertexData.setPoint(0, "position",  0,  0);
+            baseVertexData.setPoint(1, "position", 10,  0);
+            baseVertexData.setPoint(2, "position",  0, 10);
+            baseVertexData.setPoint(3, "position", 10, 10);
+        }
+
+        for (i in oldCapacity...newCapacity)
+        {
+            var numVertices:Int = i * 4;
+            baseVertexData.copyTo(_vertexData, numVertices);
+            _indexData.addQuad(numVertices, numVertices + 1, numVertices + 2, numVertices + 3);
+            _particles[i] = createParticle();
+        }
+
+        if (newCapacity < oldCapacity)
+        {
+            _particles.length = newCapacity;
+            _indexData.numIndices = newCapacity * 6;
+            _vertexData.numVertices = newCapacity * 4;
+
+            if (_numParticles > newCapacity)
+                _numParticles = newCapacity;
+        }
+
+        _indexData.trim();
+        _vertexData.trim();
+
+        setRequiresSync();
         return value;
     }
     
-    private function get_smoothing():String { return mSmoothing; }
-    private function set_smoothing(value:String):String { return mSmoothing = value; }
+    // properties
+
+    public var isEmitting(get, never):Bool;
+    private function get_isEmitting():Bool { return _emissionTime > 0 && _emissionRate > 0; }
+   
+    public var numParticles(get, never):Int;
+    private function get_numParticles():Int { return _numParticles; }
+    
+    public var emissionRate(get, set):Float;
+    private function get_emissionRate():Float { return _emissionRate; }
+    private function set_emissionRate(value:Float):Float { return _emissionRate = value; }
+    
+    public var emitterX(get, set):Float;
+    private function get_emitterX():Float { return _emitterX; }
+    private function set_emitterX(value:Float):Float { return _emitterX = value; }
+    
+    public var emitterY(get, set):Float;
+    private function get_emitterY():Float { return _emitterY; }
+    private function set_emitterY(value:Float):Float { return _emitterY = value; }
+    
+    public var blendFactorSource(get, set):Context3DBlendFactor;
+    private function get_blendFactorSource():Context3DBlendFactor { return _blendFactorSource; }
+    private function set_blendFactorSource(value:Context3DBlendFactor):Context3DBlendFactor
+    {
+        _blendFactorSource = value;
+        updateBlendMode();
+        return value;
+    }
+    
+    public var blendFactorDestination(get, set):Context3DBlendFactor;
+    private function get_blendFactorDestination():Context3DBlendFactor { return _blendFactorDestination; }
+    private function set_blendFactorDestination(value:Context3DBlendFactor):Context3DBlendFactor
+    {
+        _blendFactorDestination = value;
+        updateBlendMode();
+        return value;
+    }
+    
+    override private function set_texture(value:Texture):Texture
+    {
+        super.texture = value;
+
+        if (value != null)
+        {
+            var i:Int = _vertexData.numVertices - 4;
+            while (i >= 0)
+            {
+                value.setupVertexPositions(_vertexData, i);
+                value.setupTextureCoordinates(_vertexData, i);
+                i -= 4;
+            }
+        }
+
+        updateBlendMode();
+        return value;
+    }
+
+    override public function setStyle(meshStyle:MeshStyle=null,
+                                        mergeWithPredecessor:Bool=true):Void
+    {
+        super.setStyle(meshStyle, mergeWithPredecessor);
+
+        if (_effect != null)
+            _effect.dispose();
+
+        _effect = style.createEffect();
+        _effect.onRestore = setRequiresSync;
+    }
+
+    /** Indicates if this object will be added to the painter's batch on rendering,
+        *  or if it will draw itself right away. Note that this should only be enabled if the
+        *  number of particles is reasonably small. */
+    public var batchable(get, set):Bool;
+    private function get_batchable():Bool { return _batchable; }
+    private function set_batchable(value:Bool):Bool
+    {
+        _batchable = value;
+        setRequiresRedraw();
+        return value;
+    }
 }

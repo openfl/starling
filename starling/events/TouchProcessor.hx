@@ -450,8 +450,8 @@ class TouchProcessor
     private function get_stage():Stage { return __stage; }
     
     /** Returns the number of fingers / touch points that are currently on the stage. */
-    public var nu__currentTouches(get, never):Int;
-    private function get_nu__currentTouches():Int { return __currentTouches.length; }
+    public var numCurrentTouches(get, never):Int;
+    private function get_numCurrentTouches():Int { return __currentTouches.length; }
 
     // keyboard handling
     
