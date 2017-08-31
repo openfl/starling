@@ -416,6 +416,8 @@ class MiniBitmapFont
         var bmpBytes:ByteArray = new ByteArray();
         var length:Int = BITMAP_DATA.length;
 
+        bmpBytes.endian = BIG_ENDIAN;
+
         for (i in 0...length)
             bmpBytes.writeUnsignedInt(BITMAP_DATA[i]);
 
