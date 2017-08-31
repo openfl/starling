@@ -51,7 +51,7 @@ class Image extends Quad
     private var __scale9Grid:Rectangle;
     private var __tileGrid:Rectangle;
 
-    private static var sSetupFunctions = new Map<Texture, Dynamic>();
+    private static var sSetupFunctions = new Map<Texture, Array<Image->Void>>();
 
     // helper objects
     private static var sPadding:Padding = new Padding();
@@ -187,11 +187,15 @@ class Image extends Quad
     {
         if (value != texture)
         {
-            if (texture != null && sSetupFunctions[texture])
+            if (texture != null && sSetupFunctions.exists(texture))
                 execute(sSetupFunctions[texture][1], [this]);
 
             super.texture = value;
-            if (__scale9Grid != null && value != null) readjustSize();
+            
+            if (value != null && sSetupFunctions.exists(value))
+                execute(sSetupFunctions[value][0], [this]);
+            else if (__scale9Grid != null && value != null)
+                readjustSize();
         }
         return value;
     }
@@ -507,5 +511,47 @@ class Image extends Quad
         }
 
         setRequiresRedraw();
+    }
+    
+    // bindings
+
+    /** Injects code that is called by all instances whenever the given texture is assigned or replaced.
+        *
+        *  @param texture    Assignment of this texture instance will lead to the following callback(s) being executed.
+        *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
+        *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
+        */
+    public static function automateSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
+    {
+        if (texture == null)
+            return;
+        else if (onAssign == null && onRelease == null)
+            sSetupFunctions.remove(texture);
+        else
+            sSetupFunctions[texture] = [onAssign, onRelease];
+    }
+
+    /** Removes any custom setup functions for the given texture. */
+    public static function resetSetupForTexture(texture:Texture):Void
+    {
+        automateSetupForTexture(texture, null, null);
+    }
+
+    /** Binds the given scaling grid to the given texture so that any image which displays the texture will
+        *  automatically use the grid. */
+    public static function bindScale9GridToTexture(texture:Texture, scale9Grid:Rectangle):Void
+    {
+        automateSetupForTexture(texture,
+            function(image:Image):Void { image.scale9Grid = scale9Grid; },
+            function(image:Image):Void { image.scale9Grid = null; });
+    }
+
+    /** Binds the given pivot point to the given texture so that any image which displays the texture will
+        *  automatically use the pivot point. */
+    public static function bindPivotPointToTexture(texture:Texture, pivotX:Float, pivotY:Float):Void
+    {
+        automateSetupForTexture(texture,
+            function(image:Image):Void { image.pivotX = pivotX; image.pivotY = pivotY; },
+            function(image:Image):Void { image.pivotX = image.pivotY = 0; });
     }
 }

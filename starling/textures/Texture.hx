@@ -11,7 +11,6 @@
 package starling.textures;
 
 import haxe.Constraints.Function;
-
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
@@ -19,8 +18,8 @@ import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
-import openfl.errors.ArgumentError;
 import openfl.display3D.textures.VideoTexture;
+import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -37,6 +36,7 @@ import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
+import starling.utils.Execute.execute;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -337,12 +337,10 @@ class Texture
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, forcePotTexture);
 
-        texture.root.uploadBitmapData(data, async);
-        texture.root.onRestore = function():Void
-        {
-            texture.root.uploadBitmapData(data);
-        };
-
+        texture.root.uploadBitmapData(data,
+            async != null ? function():Void { execute(async, [texture]); } : null);
+        texture.root.onRestore = function():Void { texture.root.uploadBitmapData(data); };
+        
         return texture;
     }
 

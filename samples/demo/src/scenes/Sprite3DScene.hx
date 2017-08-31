@@ -87,7 +87,7 @@ import starling.textures.Texture;
         
         var sprite:Sprite3D = new Sprite3D();
         sprite.addChild(image);
-        
+
         return sprite;
     }
     
@@ -96,7 +96,7 @@ import starling.textures.Texture;
         // Starling does not make any depth-tests, so we use a trick in order to only show
         // the front quads: we're activating backface culling, i.e. we hide triangles at which
         // we look from behind. 
-        
+
         painter.pushState();
         painter.state.culling = Context3DTriangleFace.BACK;
         super.render(painter);

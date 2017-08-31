@@ -193,7 +193,7 @@ class TextField extends DisplayObjectContainer
 
         _meshBatch.x = _meshBatch.y = 0;
         _options.textureScale = Starling.current.contentScaleFactor;
-        _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
+        _compositor.fillMeshBatch(_meshBatch, width, height, _text, _format, _options);
 
         if (_style != null) _meshBatch.style = _style;
         if (_options.autoSize != TextFieldAutoSize.NONE)

@@ -140,7 +140,6 @@ class DisplayObject extends EventDispatcher
     private var __transformationMatrix3D:Matrix3D;
     private var __transformationChanged:Bool;
     private var __is3D:Bool;
-    private var __isMask:Bool;
     private var __maskee:DisplayObject;
     private var __maskInverted:Bool = false;
 
@@ -188,7 +187,7 @@ class DisplayObject extends EventDispatcher
         if (__filter != null) __filter.dispose();
         if (__mask != null) __mask.dispose();
         removeEventListeners();
-        mask = null; // clear 'mask.__maskee' property, just to be sure.
+        mask = null; // clear 'mask.__maskee', just to be sure.
     }
     
     /** Removes the object from its parent, if it has one, and optionally disposes it. */
@@ -199,7 +198,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Creates a matrix that represents the transformation from the local coordinate system 
-     * to another. If you pass a 'resultMatrix', the result will be stored in this matrix
+     * to another. If you pass an <code>out</code>-matrix, the result will be stored in this matrix
      * instead of creating a new object. */ 
     public function getTransformationMatrix(targetSpace:DisplayObject, 
                                             out:Matrix=null):Matrix
@@ -276,16 +275,15 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Returns a rectangle that completely encloses the object as it appears in another 
-     * coordinate system. If you pass a 'resultRectangle', the result will be stored in this 
+     * coordinate system. If you pass an <code>out</code>-rectangle, the result will be stored in this 
      * rectangle instead of creating a new object. */ 
-    public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle=null):Rectangle
+    public function getBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
     {
         throw new AbstractMethodError();
     }
     
-    /** Returns the object that is found topmost beneath a point in local coordinates, or nil if 
-     * the test fails. If "forTouch" is true, untouchable and invisible objects will cause
-     * the test to fail. */
+    /** Returns the object that is found topmost beneath a point in local coordinates, or nil
+     *  if the test fails. Untouchable and invisible objects will cause the test to fail. */
     public function hitTest(localPoint:Point):DisplayObject
     {
         // on a touch test, invisible or untouchable objects cause the test to fail
@@ -315,7 +313,8 @@ class DisplayObject extends EventDispatcher
 
             var helperPoint:Point = localPoint == sHelperPoint ? new Point() : sHelperPoint;
             MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, helperPoint);
-            return __mask.hitTest(helperPoint) != null;
+            var isMaskHit:Bool = __mask.hitTest(helperPoint) != null;
+            return __maskInverted ? !isMaskHit : isMaskHit;
         }
         else return true;
     }

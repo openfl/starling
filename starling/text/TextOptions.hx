@@ -48,7 +48,7 @@ class TextOptions extends EventDispatcher
         __autoScale = autoScale;
         __autoSize = TextFieldAutoSize.NONE;
         __textureScale = Starling.current != null ? Starling.current.contentScaleFactor : 1;
-        __textureFormat = Context3DTextureFormat.BGR_PACKED;
+        __textureFormat = TextField.defaultTextureFormat;
         __isHtmlText = false;
         __padding = 0.0;
     }

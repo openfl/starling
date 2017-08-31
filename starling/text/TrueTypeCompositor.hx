@@ -86,7 +86,11 @@ class TrueTypeCompositor implements ITextCompositor
     public function clearMeshBatch(meshBatch:MeshBatch):Void
     {
         meshBatch.clear();
-        if (meshBatch.texture != null) meshBatch.texture.dispose();
+        if (meshBatch.texture != null)
+        {
+            meshBatch.texture.dispose();
+            meshBatch.texture = null;
+        }
     }
 
     private function renderText(width:Float, height:Float, text:String,
@@ -99,7 +103,7 @@ class TrueTypeCompositor implements ITextCompositor
 
         format.toNativeFormat(sNativeFormat);
 
-        sNativeFormat.size = Std.int((sNativeFormat.size == null ? 0 : sNativeFormat.size) * options.textureScale);
+        sNativeFormat.size = Std.int((sNativeFormat.size == null ? 0 : sNativeFormat.size) * scale);
         sNativeTextField.embedFonts = SystemUtil.isEmbeddedFont(format.font, format.bold, format.italic);
         #if flash
         sNativeTextField.styleSheet = null; // only to make sure 'defaultTextFormat' is assignable
@@ -143,7 +147,7 @@ class TrueTypeCompositor implements ITextCompositor
         }
 
         // HTML text may have its own alignment -> use the complete width
-        if (options.isHtmlText) textWidth = scaledWidth = bitmapWidth;
+        if (options.isHtmlText) textWidth = bitmapWidth = Std.int(scaledWidth);
 
         // check for invalid texture sizes
         if (bitmapWidth  < minTextureSize) bitmapWidth  = 1;

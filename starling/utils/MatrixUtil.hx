@@ -23,8 +23,7 @@ class MatrixUtil
     /** Helper object. */
     private static var sRawData:Vector<Float> = Vector.ofArray(
         [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
-    private static var sRawData2:Vector<Float> = Vector.ofArray(
-        [0.0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0]);
+    private static var sRawData2:Vector<Float> = new Vector<Float>(16, true);
     private static var sPoint3D:Vector3D = new Vector3D();
     private static var sMatrixData:Vector<Float> = Vector.ofArray(
         [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -89,6 +88,7 @@ class MatrixUtil
         return transformCoords(matrix, point.x, point.y, out);
     }
 
+    /** Transforms a 3D point with the given matrix. */
     public static function transformPoint3D(matrix:Matrix3D, point:Vector3D,
                                             out:Vector3D=null):Vector3D
     {
