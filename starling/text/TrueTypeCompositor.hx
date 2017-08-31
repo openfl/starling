@@ -105,11 +105,11 @@ class TrueTypeCompositor implements ITextCompositor
 
         sNativeFormat.size = Std.int((sNativeFormat.size == null ? 0 : sNativeFormat.size) * scale);
         sNativeTextField.embedFonts = SystemUtil.isEmbeddedFont(format.font, format.bold, format.italic);
-        #if flash
+        #if (flash && !display)
         sNativeTextField.styleSheet = null; // only to make sure 'defaultTextFormat' is assignable
         #end
         sNativeTextField.defaultTextFormat = sNativeFormat;
-        #if flash
+        #if (flash && !display)
         sNativeTextField.styleSheet = options.styleSheet;
         #end
         sNativeTextField.width  = scaledWidth;

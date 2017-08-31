@@ -13,8 +13,10 @@ package starling.styles;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.geom.Matrix;
+import openfl.Vector;
 
 import starling.display.Mesh;
+import starling.rendering.FilterEffect;
 import starling.rendering.MeshEffect;
 import starling.rendering.Program;
 import starling.rendering.RenderState;
@@ -43,6 +45,19 @@ import starling.utils.StringUtil;
  *  <p>Here are some tools that support creation of such distance field textures:</p>
  *
  *  <ul>
+ *    <li>Field Agent - a Ruby script that uses ImageMagick to create single-channel distance
+ *        field textures. Part of the Starling download ('util' directory).</li>
+ *    <li><a href="https://github.com/Chlumsky/msdfgen">msdfgen</a> - an excellent and fast
+ *        open source command line tool that creates multi- and single-channel distance field
+ *        textures.</li>
+ *  </ul>
+ *
+ *  <p>The former tools convert arbitrary SVG or PNG images to distance field textures.
+ *  To create distance field <em>fonts</em>, have a look at the following alternatives:</p>
+ *
+ *  <ul>
+ *    <li><a href="https://github.com/soimy/msdf-bmfont-xml/">msdf-bmfont-xml</a> - a command
+ *        line tool powered by msdf and thus producing excellent multi-channel output.</li>
  *    <li><a href="http://kvazars.com/littera/">Littera</a> - a free online bitmap font
  *        generator.</li>
  *    <li><a href="http://github.com/libgdx/libgdx/wiki/Hiero">Hiero</a> - a cross platform
@@ -50,6 +65,16 @@ import starling.utils.StringUtil;
  *    <li><a href="http://www.angelcode.com/products/bmfont/">BMFont</a> - Windows-only, from
  *        AngelCode.</li>
  *  </ul>
+ *
+ *  <strong>Single-Channel vs. Multi-Channel</strong>
+ *
+ *  <p>The original approach for distance field textures uses just a single channel (encoding
+ *  the distance of each pixel to the shape that's being represented). By utilizing
+ *  all three color channels, however, the results can be greatly enhanced - a technique
+ *  developed by Viktor Chlumský.</p>
+ *
+ *  <p>Starling supports such multi-channel DF textures, as well. When using an appropriate
+ *  texture, don't forget to enable the style's <code>multiChannel</code> property.</p>
  *
  *  <strong>Special effects</strong>
  *
@@ -61,7 +86,7 @@ import starling.utils.StringUtil;
  *  <p>The type of effect currently used is called the 'mode'.
  *  Meshes with the same mode will be batched together on rendering.</p>
  */
-public class DistanceFieldStyle extends MeshStyle
+class DistanceFieldStyle extends MeshStyle
 {
     /** The vertex format expected by this style. */
     public static var VERTEX_FORMAT:VertexDataFormat =
@@ -81,6 +106,7 @@ public class DistanceFieldStyle extends MeshStyle
     public static inline var MODE_SHADOW:String = "shadow";
 
     private var _mode:String;
+    private var _multiChannel:Bool;
 
     // basic
     private var _threshold:Float;
@@ -107,6 +133,8 @@ public class DistanceFieldStyle extends MeshStyle
      */
     public function new(softness:Float=0.125, threshold:Float=0.5)
     {
+        super();
+        
         _mode = MODE_BASIC;
         _threshold = threshold;
         _softness = softness;
@@ -126,6 +154,7 @@ public class DistanceFieldStyle extends MeshStyle
         if (otherStyle != null)
         {
             _mode = otherStyle._mode;
+            _multiChannel = otherStyle._multiChannel;
             _threshold = otherStyle._threshold;
             _softness = otherStyle._softness;
             _alpha = otherStyle._alpha;
@@ -187,7 +216,7 @@ public class DistanceFieldStyle extends MeshStyle
         var outerColor:Int = (Color.getRed(_outerColor)         ) |
                               (Color.getGreen(_outerColor)  <<  8) |
                               (Color.getBlue(_outerColor)   << 16) |
-                              (uint(_outerAlphaStart * 255) << 24);
+                              (Std.int(_outerAlphaStart * 255) << 24);
 
         for (i in 0...numVertices)
         {
@@ -202,7 +231,7 @@ public class DistanceFieldStyle extends MeshStyle
     /** @private */
     override public function batchVertexData(targetStyle:MeshStyle, targetVertexID:Int = 0,
                                              matrix:Matrix = null, vertexID:Int = 0,
-                                             numVertices:Int = -1):void
+                                             numVertices:Int = -1):Void
     {
         super.batchVertexData(targetStyle, targetVertexID, matrix, vertexID, numVertices);
 
@@ -212,7 +241,7 @@ public class DistanceFieldStyle extends MeshStyle
 
             if (!MathUtil.isEquivalent(scale, 1.0, 0.01))
             {
-                var targetVertexData:VertexData = (targetStyle as DistanceFieldStyle).vertexData;
+                var targetVertexData:VertexData = cast(targetStyle, DistanceFieldStyle).vertexData;
                 var maxScale:Float = DistanceFieldEffect.MAX_SCALE;
                 var minScale:Float = maxScale / 255;
 
@@ -235,6 +264,7 @@ public class DistanceFieldStyle extends MeshStyle
     {
         var dfEffect:DistanceFieldEffect = cast effect;
         dfEffect.mode = _mode;
+        dfEffect.multiChannel = _multiChannel;
 
         if (state.is3D) dfEffect.scale = 1.0;
         else
@@ -254,14 +284,16 @@ public class DistanceFieldStyle extends MeshStyle
     override public function canBatchWith(meshStyle:MeshStyle):Bool
     {
         var dfStyle:DistanceFieldStyle = Std.is(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
-        if (dfStyle != null && super.canBatchWith(meshStyle)) return dfStyle.mode == _mode;
-        else return false;
+        if (dfStyle != null && super.canBatchWith(meshStyle))
+            return dfStyle._mode == _mode && dfStyle._multiChannel == _multiChannel;
+        else
+            return false;
     }
 
     // simplified setup
 
     /** Restores basic render mode, i.e. smooth rendering of the shape. */
-    public function setupBasic():void
+    public function setupBasic():Void
     {
         _mode = MODE_BASIC;
 
@@ -308,7 +340,7 @@ public class DistanceFieldStyle extends MeshStyle
     public function setupDropShadow(blur:Float=0.2, offsetX:Float=2, offsetY:Float=2,
                                     color:UInt=0x0, alpha:Float=0.5):Void
     {
-        const maxOffset:Float = DistanceFieldEffect.MAX_OUTER_OFFSET;
+        var maxOffset:Float = DistanceFieldEffect.MAX_OUTER_OFFSET;
 
         _mode = MODE_SHADOW;
         _outerThreshold = MathUtil.clamp(_threshold - blur, 0, _threshold);
@@ -330,6 +362,17 @@ public class DistanceFieldStyle extends MeshStyle
     private function set_mode(value:String):String
     {
         _mode = value;
+        setRequiresRedraw();
+        return value;
+    }
+
+    /** Indicates if the distance field texture utilizes multiple channels. This improves
+        *  render quality, but requires specially created DF textures. @default false */
+    public var multiChannel(get, set):Bool;
+    private function get_multiChannel():Bool { return _multiChannel; }
+    private function set_multiChannel(value:Bool):Bool
+    {
+        _multiChannel = value;
         setRequiresRedraw();
         return value;
     }
@@ -437,7 +480,7 @@ public class DistanceFieldStyle extends MeshStyle
      *  Ignored in 'basic' mode. */
     public var outerColor(get, set):UInt;
     private function get_outerColor():UInt { return _outerColor; }
-    private function set_outerColor(value:UInt):vUIntoid
+    private function set_outerColor(value:UInt):UInt
     {
         if (_outerColor != value)
         {
@@ -454,7 +497,7 @@ public class DistanceFieldStyle extends MeshStyle
     private function get_shadowOffsetX():Float { return _shadowOffsetX; }
     private function set_shadowOffsetX(value:Float):Float
     {
-        const max:Number = DistanceFieldEffect.MAX_OUTER_OFFSET;
+        var max:Float = DistanceFieldEffect.MAX_OUTER_OFFSET;
         value = MathUtil.clamp(value, -max, max);
 
         if (_shadowOffsetX != value)
@@ -472,7 +515,7 @@ public class DistanceFieldStyle extends MeshStyle
     private function get_shadowOffsetY():Float { return _shadowOffsetY; }
     private function set_shadowOffsetY(value:Float):Float
     {
-        const max:Number = DistanceFieldEffect.MAX_OUTER_OFFSET;
+        var max:Float = DistanceFieldEffect.MAX_OUTER_OFFSET;
         value = MathUtil.clamp(value, -max, max);
 
         if (_shadowOffsetY != value)
@@ -492,6 +535,7 @@ class DistanceFieldEffect extends MeshEffect
 
     private var _mode:String;
     private var _scale:Float;
+    private var _multiChannel:Bool;
 
     private static var sVector:Vector<Float> = new Vector<Float>(4, true);
 
@@ -565,6 +609,7 @@ class DistanceFieldEffect extends MeshEffect
             var fragmentShader:Vector<String> = Vector.ofArray([
                 // create basic inner area
                 FilterEffect.tex("ft0", "v0", 0, texture),     // ft0 = texture color
+                _multiChannel ? median("ft0") : "mov ft0, ft0.xxxx",
                 "mov ft1, ft0",                   // ft1 = texture color
                 step("ft1.w", "v6.x", "v6.y"),    // make soft inner mask
                 "mov ft3, ft1",                   // store copy of inner mask in ft3 (for outline)
@@ -574,6 +619,7 @@ class DistanceFieldEffect extends MeshEffect
             if (isShadowMode)
             {
                 fragmentShader.push(FilterEffect.tex("ft0", "v7", 0, texture)); // sample at shadow tex coords
+                fragmentShader.push(_multiChannel ? median("ft0") : "mov ft0, ft0.xxxx");
                 fragmentShader.push("mov ft5.x, v7.z"); // ft5.x = inner threshold of shadow
             }
             else if (!isBasicMode)
@@ -614,18 +660,27 @@ class DistanceFieldEffect extends MeshEffect
     private static function step(inOutReg:String, minReg:String, maxReg:String,
                                 tmpReg:String="ft6"):String
     {
-        var ops:Vector.<String> = new <String>[
-            StringUtil.format("sub {0}, {1}, {2}", tmpReg, maxReg, minReg), // tmpReg = range
-            StringUtil.format("rcp {0}, {0}", tmpReg),                      // tmpReg = scale
-            StringUtil.format("sub {0}, {0}, {1}", inOutReg, minReg),       // inOut -= minimum
-            StringUtil.format("mul {0}, {0}, {1}", inOutReg, tmpReg),       // inOut *= scale
-            StringUtil.format("sat {0}, {0}", inOutReg)                     // clamp to 0-1
-        ];
+        var ops:Vector<String> = Vector.ofArray([
+            StringUtil.format("sub {0}, {1}, {2}", [tmpReg, maxReg, minReg]), // tmpReg = range
+            StringUtil.format("rcp {0}, {0}", [tmpReg]),                      // tmpReg = scale
+            StringUtil.format("sub {0}, {0}, {1}", [inOutReg, minReg]),       // inOut -= minimum
+            StringUtil.format("mul {0}, {0}, {1}", [inOutReg, tmpReg]),       // inOut *= scale
+            StringUtil.format("sat {0}, {0}", [inOutReg])                     // clamp to 0-1
+        ]);
 
         return ops.join("\n");
     }
 
-    override protected function beforeDraw(context:Context3D):Void
+    private static function median(inOutReg:String):String
+    {
+        return [
+            StringUtil.format("max {0}.xyz, {0}.xxy, {0}.yzz", [inOutReg]),
+            StringUtil.format("min {0}.x, {0}.x, {0}.y", [inOutReg]),
+            StringUtil.format("min {0}, {0}.xxxx, {0}.zzzz", [inOutReg])
+        ].join("\n");
+    }
+
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
 
@@ -669,15 +724,15 @@ class DistanceFieldEffect extends MeshEffect
         return VERTEX_FORMAT;
     }
 
-    override private function get_programVariantName():uint
+    override private function get_programVariantName():UInt
     {
         var modeBits:UInt;
 
         switch (_mode)
         {
-            case DistanceFieldStyle.MODE_SHADOW:  modeBits = 3; break;
-            case DistanceFieldStyle.MODE_GLOW:    modeBits = 2; break;
-            case DistanceFieldStyle.MODE_OUTLINE: modeBits = 1; break;
+            case DistanceFieldStyle.MODE_SHADOW:  modeBits = 3;
+            case DistanceFieldStyle.MODE_GLOW:    modeBits = 2;
+            case DistanceFieldStyle.MODE_OUTLINE: modeBits = 1;
             default:                              modeBits = 0;
         }
 
@@ -693,4 +748,9 @@ class DistanceFieldEffect extends MeshEffect
     public var mode(get, set):String;
     private function get_mode():String { return _mode; }
     private function set_mode(value:String):String { return _mode = value; }
+
+    public var multiChannel(get, set):Bool;
+    private function get_multiChannel():Bool { return _multiChannel; }
+    private function set_multiChannel(value:Bool):Bool { return _multiChannel = value; }
+
 }

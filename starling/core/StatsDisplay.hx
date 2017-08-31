@@ -143,10 +143,14 @@ class StatsDisplay extends Sprite
     private var supportsGpuMem(get, never):Bool;
     private function get_supportsGpuMem():Bool
     {
+        #if !display
         #if flash
         return Reflect.hasField(Starling.current.context, "totalGPUMemory");
         #else
         return Starling.current.context.totalGPUMemory != 0;
+        #end
+        #else
+        return false;
         #end
     }
     
