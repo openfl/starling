@@ -46,8 +46,6 @@ class Event
     public static inline var REMOVED_FROM_STAGE:String = "removedFromStage";
     /** Event type for a triggered button. */
     public static inline var TRIGGERED:String = "triggered";
-    /** Event type for a display object that is being flattened. */
-    public static inline var FLATTEN:String = "flatten";
     /** Event type for a resized Flash Player. */
     public static inline var RESIZE:String = "resize";
     /** Event type that may be used whenever something finishes. */
@@ -87,7 +85,9 @@ class Event
     public static inline var SELECT:String = "select";
     /** An event type to be utilized in custom events. Not used by Starling right now. */
     public static inline var READY:String = "ready";
-	
+    /** An event type to be utilized in custom events. Not used by Starling right now. */
+    public static inline var UPDATE:String = "update";
+
     private static var sEventPool:Vector<Event> = new Vector<Event>();
     
     /** Creates an event object that can be passed to listeners. */
@@ -101,7 +101,7 @@ class Event
     /** Prevents listeners at the next bubble stage from receiving the event. */
     public function stopPropagation():Void
     {
-        this.stopsPropagation = true;            
+        this.stopsPropagation = true;
     }
     
     /** Prevents any other listeners from receiving the event. */

@@ -1,10 +1,10 @@
 // =================================================================================================
 //
-//  Starling Framework
-//  Copyright Gamua GmbH. All Rights Reserved.
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
-//  This program is free software. You can redistribute and/or modify it
-//  in accordance with the terms of the accompanying license agreement.
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
 //
 // =================================================================================================
 
@@ -115,7 +115,7 @@ class DisplayObjectContainer extends DisplayObject
         if (index >= 0 && index <= numChildren)
         {
             setRequiresRedraw();
-            
+
             if (child.parent == this)
             {
                 setChildIndex(child, index); // avoids dispatching events
@@ -123,7 +123,7 @@ class DisplayObjectContainer extends DisplayObject
             else
             {
                 __children.insertAt(index, child);
-                
+
                 child.removeFromParent();
                 child.__setParent(this);
                 child.dispatchEventWith(Event.ADDED, true);
@@ -160,7 +160,7 @@ class DisplayObjectContainer extends DisplayObject
         if (index >= 0 && index < __children.length)
         {
             setRequiresRedraw();
-            
+
             var child:DisplayObject = __children[index];
             child.dispatchEventWith(Event.REMOVED, true);
             
@@ -236,7 +236,7 @@ class DisplayObjectContainer extends DisplayObject
         var oldIndex:Int = getChildIndex(child);
         if (oldIndex == index) return;
         if (oldIndex == -1) throw new ArgumentError("Not a child of this container");
-        
+
         __children.removeAt(oldIndex);
         __children.insertAt(index, child);
         setRequiresRedraw();
@@ -316,7 +316,7 @@ class DisplayObjectContainer extends DisplayObject
                 if (minY > out.y)      minY = out.y;
                 if (maxY < out.bottom) maxY = out.bottom;
             }
-            
+
             out.setTo(minX, minY, maxX - minX, maxY - minY);
         }
         
@@ -332,7 +332,7 @@ class DisplayObjectContainer extends DisplayObject
         var localX:Float = localPoint.x;
         var localY:Float = localPoint.y;
         var numChildren:Int = __children.length;
-        
+
         var child:DisplayObject;
         var i:Int = numChildren - 1;
         while (i >= 0) // front to back!
@@ -342,17 +342,17 @@ class DisplayObjectContainer extends DisplayObject
                 --i;
                 continue;
             }
-            
+
             sHelperMatrix.copyFrom(child.transformationMatrix);
             sHelperMatrix.invert();
-            
+
             MatrixUtil.transformCoords(sHelperMatrix, localX, localY, sHelperPoint);
             target = child.hitTest(sHelperPoint);
-            
+
             if (target != null) return __touchGroup ? this : target;
             --i;
         }
-        
+
         return null;
     }
     
@@ -363,24 +363,24 @@ class DisplayObjectContainer extends DisplayObject
         var frameID:UInt = painter.frameID;
         var cacheEnabled:Bool = frameID != 0;
         var selfOrParentChanged:Bool = __lastParentOrSelfChangeFrameID == frameID;
-        
+
         painter.pushState();
-        
+
         var child:DisplayObject, filter:FragmentFilter, mask:DisplayObject;
         var pushToken:BatchToken, popToken:BatchToken;
-        
+
         for (i in 0...numChildren)
         {
             child = __children[i];
-            
+
             if (child.__hasVisibleArea)
             {
                 if (i != 0)
                     painter.restoreState();
-                
+
                 if (selfOrParentChanged)
                     child.__lastParentOrSelfChangeFrameID = frameID;
-                
+
                 if (child.__lastParentOrSelfChangeFrameID != frameID &&
                     child.__lastChildChangeFrameID != frameID &&
                     child.__tokenFrameID == frameID - 1 && cacheEnabled)
@@ -415,10 +415,10 @@ class DisplayObjectContainer extends DisplayObject
                     child.__tokenFrameID = frameID;
             }
         }
-        
+
         painter.popState();
     }
-    
+
     /** Dispatches an event on all children (recursively). The event must not bubble. */
     public function broadcastEvent(event:Event):Void
     {

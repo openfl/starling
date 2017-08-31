@@ -54,7 +54,7 @@ class Juggler implements IAnimatable
     private var __objectIDs:Map<IAnimatable, UInt>;
     private var __elapsedTime:Float;
     private var __timeScale:Float;
-    
+
     private static var sCurrentObjectID:UInt = 0;
     
     /** Create an empty juggler. */
@@ -75,17 +75,17 @@ class Juggler implements IAnimatable
     {
         return addWithID(object, getNextID());
     }
-    
+
     public function addWithID(object:IAnimatable, objectID:UInt):UInt
     {
         if (object != null && !__objectIDs.exists(object)) 
         {
             var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
             if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            
+
             __objects[__objects.length] = object;
             __objectIDs[object] = objectID;
-            
+
             return objectID;
         }
         else return 0;
@@ -105,22 +105,22 @@ class Juggler implements IAnimatable
     public function remove(object:IAnimatable):UInt
     {
         var objectID:UInt = 0;
-        
+
         if (object != null && __objectIDs.exists(object))
         {
             var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
             if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            
+
             var index:Int = __objects.indexOf(object);
             __objects[index] = null;
-            
+
             objectID = __objectIDs[object];
             __objectIDs.remove(object);
         }
-        
+
         return objectID;
     }
-    
+
     /** Removes an object from the juggler, identified by the unique numeric identifier you
      *  received when adding it.
      *
@@ -139,16 +139,16 @@ class Juggler implements IAnimatable
         while (i >= 0)
         {
             object = __objects[i];
-            
+
             if (__objectIDs[object] == objectID)
             {
                 remove(object);
                 return objectID;
             }
-            
+
             --i;
         }
-        
+
         return 0;
     }
     
@@ -170,7 +170,7 @@ class Juggler implements IAnimatable
             --i;
         }
     }
-    
+
     /** Removes all delayed and repeated calls with a certain callback. */
     public function removeDelayedCalls(callback:Function):Void
     {
@@ -205,10 +205,10 @@ class Juggler implements IAnimatable
                 --i;
             }
         }
-        
+
         return false;
     }
-    
+
     /** Figures out if the juggler contains one or more delayed calls with a certain callback. */
     public function containsDelayedCalls(callback:Function):Bool
     {
@@ -226,7 +226,7 @@ class Juggler implements IAnimatable
 
         return false;
     }
-    
+
     /** Removes all objects at once. */
     public function purge():Void
     {
@@ -273,7 +273,7 @@ class Juggler implements IAnimatable
      */
     public function repeatCall(call:Function, interval:Float, repeatCount:Int=0, args:Array<Dynamic> = null):UInt
     {
-        if (call == null) return 0;
+        if (call == null) throw new ArgumentError("call must not be null");
         if (args == null) args = [];
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
@@ -349,11 +349,11 @@ class Juggler implements IAnimatable
     
     /** Advances all objects by a certain time (in seconds). */
     public function advanceTime(time:Float):Void
-    {   
+    {
         var numObjects:Int = __objects.length;
         var currentIndex:Int = 0;
         var i:Int = 0;
-        
+
         time *= __timeScale;
         if (numObjects == 0 || time == 0) return;
         __elapsedTime += time;
@@ -395,7 +395,7 @@ class Juggler implements IAnimatable
     private function onRemove(event:Event):Void
     {
         var objectID:UInt = remove(cast(event.target, IAnimatable));
-        
+
         if (objectID != 0)
         {
             var tween:Tween = Std.is(event.target, Tween) ? cast event.target : null;
@@ -403,7 +403,7 @@ class Juggler implements IAnimatable
                 addWithID(tween.nextTween, objectID);
         }
     }
-    
+
     private static function getNextID():UInt { return ++sCurrentObjectID; }
     
     /** The total life time of the juggler (in seconds). */

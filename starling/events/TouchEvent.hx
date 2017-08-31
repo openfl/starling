@@ -56,7 +56,7 @@ class TouchEvent extends Event
 {
     /** Event type for touch or mouse input. */
     public static inline var TOUCH:String = "touch";
-    
+
     private var __shiftKey:Bool;
     private var __ctrlKey:Bool;
     private var __timestamp:Float;
@@ -67,7 +67,7 @@ class TouchEvent extends Event
     
     /** Creates a new TouchEvent instance. */
     public function new(type:String, touches:Vector<Touch>=null, shiftKey:Bool=false,
-                        ctrlKey:Bool=false, bubbles:Bool=true)
+                         ctrlKey:Bool=false, bubbles:Bool=true)
     {
         super(type, bubbles, touches);
 
@@ -78,38 +78,37 @@ class TouchEvent extends Event
         updateTimestamp(touches);
     }
 	
-	 /** @private */
-	@:allow(starling.events.TouchProcessor)
-	private function resetTo(type:String, touches:Vector<Touch>=null, shiftKey:Bool=false,
-							  ctrlKey:Bool=false, bubbles:Bool=true):TouchEvent
-	{
-		super.reset(type, bubbles, touches);
+    /** @private */
+    @:allow(starling.events.TouchProcessor) private function resetTo(type:String, touches:Vector<Touch>=null, shiftKey:Bool=false,
+						  ctrlKey:Bool=false, bubbles:Bool=true):TouchEvent
+    {
+        super.reset(type, bubbles, touches);
 
-		__shiftKey = shiftKey;
-		__ctrlKey = ctrlKey;
-		__visitedObjects.length = 0;
-		updateTimestamp(touches);
+        __shiftKey = shiftKey;
+        __ctrlKey = ctrlKey;
+        __visitedObjects.length = 0;
+        updateTimestamp(touches);
 
-		return this;
+	return this;
+    }
+
+    private function updateTimestamp(touches:Vector<Touch>):Void
+    {
+        __timestamp = -1.0;
+        var numTouches:Int = touches != null ? touches.length : 0;
+
+        for (i in 0...numTouches)
+        {
+            if (touches[i].timestamp > __timestamp)
+                __timestamp = touches[i].timestamp;
 	}
+    }
 
-	private function updateTimestamp(touches:Vector<Touch>):Void
-	{
-		__timestamp = -1.0;
-		var numTouches:Int = touches != null ? touches.length : 0;
-
-		for (i in 0...numTouches)
-		{
-			if (touches[i].timestamp > __timestamp)
-				__timestamp = touches[i].timestamp;
-		}
-	}
-    
     /** Returns a list of touches that originated over a certain target. If you pass an
-     * <code>out</code> vector, the touches will be added to this vector instead of creating
+     * <code>out</code>-vector, the touches will be added to this vector instead of creating
      * a new object. */
     public function getTouches(target:DisplayObject, phase:String=null,
-                               out:Vector<Touch>=null):Vector<Touch>
+                                out:Vector<Touch>=null):Vector<Touch>
     {
         if (out == null) out = new Vector<Touch>();
         var allTouches:Vector<Touch> = cast data;

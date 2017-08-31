@@ -39,7 +39,7 @@ import starling.utils.Execute.execute;
     private static var sMatrix:Matrix = new Matrix();
     private static var sRectangle:Rectangle = new Rectangle();
     private static var sOrigin:Point = new Point();
-    private static var sAsyncSupported:Bool = true;
+    private static var sAsyncUploadEnabled:Bool = false;
 
     /** Creates a new instance with the given parameters. */
     private function new(base:openfl.display3D.textures.Texture, format:String,
@@ -152,20 +152,20 @@ import starling.utils.Execute.execute;
 
     private function uploadAsync(source:BitmapData, mipLevel:UInt):Void
     {
-        if (sAsyncSupported)
+        if (sAsyncUploadEnabled)
         {
             var method = Reflect.field(base, "uploadFromBitmapDataAsync");
             try { Reflect.callMethod(method, method, [source, mipLevel]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)
-                    sAsyncSupported = false;
+                    sAsyncUploadEnabled = false;
                 else
                     throw error;
             }
         }
 
-        if (!sAsyncSupported)
+        if (!sAsyncUploadEnabled)
         {
             Timer.delay(function () {
                 base.dispatchEvent(new Event(Event.TEXTURE_READY));
@@ -188,4 +188,9 @@ import starling.utils.Execute.execute;
     {
         return cast base;
     }
+
+    /** @private */
+    @:allow(starling) private static var asyncUploadEnabled(get, set):Bool;
+    private static function get_asyncUploadEnabled():Bool { return sAsyncUploadEnabled; }
+    private static function set_asyncUploadEnabled(value:Bool):Bool { return sAsyncUploadEnabled = value; }
 }

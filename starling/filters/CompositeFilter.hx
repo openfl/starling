@@ -134,7 +134,7 @@ class CompositeEffect extends FilterEffect
     public function new(numLayers:Int=4)
     {
         super();
-        
+
         if (numLayers < 1 || numLayers > 4)
             throw new ArgumentError("number of layers must be between 1 and 4");
 
@@ -177,7 +177,7 @@ class CompositeEffect extends FilterEffect
                 );
 
             var fragmentShader:Array<String> = [
-                "seq ft5, v0, v0" // ft5 -> 1, 1, 1, 1
+                "sge ft5, v0, v0" // ft5 -> 1, 1, 1, 1
             ];
 
             for (i in 0...numLayers)
@@ -229,12 +229,11 @@ class CompositeEffect extends FilterEffect
         var layer:CompositeLayer;
         var layers = getUsedLayers(sLayers);
         var numLayers:Int = layers.length;
-        var variantBits:UInt;
 
         for (i in 0...numLayers)
         {
             layer = layers[i];
-            variantBits = RenderUtil.getTextureVariantBits(layer.texture);
+            var variantBits = RenderUtil.getTextureVariantBits(layer.texture);
             bits = variantBits != 0 ? variantBits : ((layer.replaceColor ? 1 : 0) << 3);
             totalBits |= bits << (i * 4);
         }
@@ -314,7 +313,6 @@ class CompositeEffect extends FilterEffect
         return value;
     }
 }
-
 
 class CompositeLayer
 {

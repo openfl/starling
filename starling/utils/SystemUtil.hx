@@ -31,14 +31,13 @@ class SystemUtil
     private static var sApplicationActive:Bool = true;
     private static var sWaitingCalls:Array<Array<Dynamic>> = [];
     private static var sPlatform:String;
-    private static var sDesktop:Bool;
     private static var sVersion:String;
     private static var sAIR:Bool;
     private static var sEmbeddedFonts:Array<Font> = null;
     private static var sSupportsDepthAndStencil:Bool = true;
-    
+
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
-     * application. This method is automatically called by the Starling constructor. */
+        * application. This method is automatically called by the Starling constructor. */
     public static function initialize():Void
     {
         if (sInitialized) return;
@@ -46,10 +45,11 @@ class SystemUtil
         sInitialized = true;
         sPlatform = Capabilities.version.substr(0, 3);
         sVersion = Capabilities.version.substr(4);
-        sDesktop = ~/(WIN|MAC|LNX)/.match(sPlatform);
-        
+
         try
         {
+            //var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
+            //var nativeApp:EventDispatcher = nativeAppClass["nativeApplication"] as EventDispatcher;
             var nativeApp = Lib.current;
 
             nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
@@ -66,14 +66,17 @@ class SystemUtil
             var windowConfig:WindowConfig = Application.current.window.config;
             sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
             #end
+
+            #if air
             sAIR = true;
+            #end
         }
         catch (e:Error)
         {
             sAIR = false;
         }
     }
-    
+
     private static function onActivate(event:Dynamic):Void
     {
         sApplicationActive = true;
@@ -89,14 +92,14 @@ class SystemUtil
 
         sWaitingCalls = [];
     }
-    
+
     private static function onDeactivate(event:Dynamic):Void
     {
         sApplicationActive = false;
     }
-    
+
     /** Executes the given function with its arguments the next time the application is active.
-     * (If it <em>is</em> active already, the call will be executed right away.) */
+        * (If it <em>is</em> active already, the call will be executed right away.) */
     public static function executeWhenApplicationIsActive(call:Function, args:Array<Dynamic>):Void
     {
         initialize();
@@ -107,8 +110,8 @@ class SystemUtil
     }
 
     /** Indicates if the application is currently active. On Desktop, this means that it has
-     * the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
-     * returns true. */
+        * the focus; on mobile, that it is in the foreground. In the Flash Plugin, always
+        * returns true. */
     public static var isApplicationActive(get, never):Bool;
     private static function get_isApplicationActive():Bool
     {
@@ -117,7 +120,7 @@ class SystemUtil
     }
 
     /** Indicates if the code is executed in an Adobe AIR runtime (true)
-     * or Flash plugin/projector (false). */
+        * or Flash plugin/projector (false). */
     public static var isAIR(get, never):Bool;
     private static function get_isAIR():Bool
     {
@@ -125,36 +128,34 @@ class SystemUtil
         return sAIR;
     }
     
-    /** Indicates if the code is executed on a Desktop computer with Windows, OS X or Linux
-     * operating system. If the method returns 'false', it's probably a mobile device
-     * or a Smart TV. */
-    public static var isDesktop(get, never):Bool;
-    private static function get_isDesktop():Bool
-    {
-        initialize();
-        return sDesktop;
-    }
-    
-    /** Returns the three-letter platform string of the current system. These are
-     * the most common platforms: <code>WIN, MAC, LNX, IOS, AND, QNX</code>. Except for the
-     * last one, which indicates "Blackberry", all should be self-explanatory. */
-    public static var platform(get, never):String;
-    private static function get_platform():String
-    {
-        initialize();
-        return sPlatform;
-    }
-
     /** Returns the Flash Player/AIR version string. The format of the version number is:
-     * <em>majorVersion,minorVersion,buildNumber,internalBuildNumber</em>. */
+        *  <em>majorVersion,minorVersion,buildNumber,internalBuildNumber</em>. */
+    public static var version(get, never):String;
     private static function get_version():String
     {
         initialize();
         return sVersion;
     }
 
+    /** Returns the three-letter platform string of the current system. These are
+        * the most common platforms: <code>WIN, MAC, LNX, IOS, AND, QNX</code>. Except for the
+        * last one, which indicates "Blackberry", all should be self-explanatory. */
+    public static var platform(get, set):String;
+    private static function get_platform():String
+    {
+        initialize();
+        return sPlatform;
+    }
+
+    private static function set_platform(value:String):String
+    {
+        initialize();
+        sPlatform = value;
+        return value;
+    }
+
     /** Returns the value of the 'initialWindow.depthAndStencil' node of the application
-     * descriptor, if this in an AIR app; otherwise always <code>true</code>. */
+        * descriptor, if this in an AIR app; otherwise always <code>true</code>. */
     public static var supportsDepthAndStencil(get, never):Bool;
     private static function get_supportsDepthAndStencil():Bool
     {
@@ -162,15 +163,15 @@ class SystemUtil
     }
 
     /** Indicates if Context3D supports video textures. At the time of this writing,
-     * video textures are only supported on Windows, OS X and iOS, and only in AIR
-     * applications (not the Flash Player). */
+        * video textures are only supported on Windows, OS X and iOS, and only in AIR
+        * applications (not the Flash Player). */
     public static var supportsVideoTexture(get, never):Bool;
     private static function get_supportsVideoTexture():Bool
     {
         #if flash
         if (Reflect.hasField(Context3D, "supportsVideoTexture"))
         {
-			return cast Reflect.getProperty(Context3D, "supportsVideoTexture");
+            return cast Reflect.getProperty(Context3D, "supportsVideoTexture");
         }
         else
         {
@@ -181,7 +182,9 @@ class SystemUtil
         return Context3D.supportsVideoTexture;
         #end
     }
-    
+
+    // embedded fonts
+
     /** Updates the list of embedded fonts. To be called when a font is loaded at runtime. */
     public static function updateEmbeddedFonts():Void
     {
@@ -189,16 +192,16 @@ class SystemUtil
     }
 
     /** Figures out if an embedded font with the specified style is available.
-     *  The fonts are enumerated only once; if you load a font at runtime, be sure to call
-     *  'updateEmbeddedFonts' before calling this method.
-     *
-     *  @param fontName  the name of the font
-     *  @param bold      indicates if the font has a bold style
-     *  @param italic    indicates if the font has an italic style
-     *  @param fontType  the type of the font (one of the constants defined in the FontType class)
-     */
+        *  The fonts are enumerated only once; if you load a font at runtime, be sure to call
+        *  'updateEmbeddedFonts' before calling this method.
+        *
+        *  @param fontName  the name of the font
+        *  @param bold      indicates if the font has a bold style
+        *  @param italic    indicates if the font has an italic style
+        *  @param fontType  the type of the font (one of the constants defined in the FontType class)
+        */
     public static function isEmbeddedFont(fontName:String, bold:Bool=false, italic:Bool=false,
-                                          fontType:String="embedded"):Bool
+                                            fontType:String="embedded"):Bool
     {
         if (sEmbeddedFonts == null)
             sEmbeddedFonts = Font.enumerateFonts(false);
@@ -217,5 +220,48 @@ class SystemUtil
         }
 
         return false;
+    }
+
+    // convenience methods
+
+    /** Indicates if the code is executed on an iOS device, based on the <code>platform</code>
+        *  string. */
+    public static var isIOS(get, never):Bool;
+    private static function get_isIOS():Bool
+    {
+        return platform == "IOS";
+    }
+
+    /** Indicates if the code is executed on an Android device, based on the
+        *  <code>platform</code> string. */
+    public static var isAndroid(get, never):Bool;
+    private static function get_isAndroid():Bool
+    {
+        return platform == "AND";
+    }
+
+    /** Indicates if the code is executed on a Macintosh, based on the <code>platform</code>
+        *  string. */
+    public static var isMac(get, never):Bool;
+    private static function get_isMac():Bool
+    {
+        return platform == "MAC";
+    }
+
+    /** Indicates if the code is executed on Windows, based on the <code>platform</code>
+        *  string. */
+    public static var isWindows(get, never):Bool;
+    private static function get_isWindows():Bool
+    {
+        return platform == "WIN";
+    }
+
+    /** Indicates if the code is executed on a Desktop computer with Windows, macOS or Linux
+        *  operating system. If the method returns 'false', it's probably a mobile device
+        *  or a Smart TV. */
+    public static var isDesktop(get, never):Bool;
+    private static function get_isDesktop():Bool
+    {
+        return platform == "WIN" || platform == "MAC" || platform == "LNX";
     }
 }

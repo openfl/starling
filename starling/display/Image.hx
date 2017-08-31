@@ -17,6 +17,7 @@ import openfl.Vector;
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;
 import starling.textures.Texture;
+import starling.utils.Execute.execute;
 import starling.utils.MathUtil;
 import starling.utils.Padding;
 import starling.utils.Pool;
@@ -49,6 +50,8 @@ class Image extends Quad
 {
     private var __scale9Grid:Rectangle;
     private var __tileGrid:Rectangle;
+
+    private static var sSetupFunctions = new Map<Texture, Dynamic>();
 
     // helper objects
     private static var sPadding:Padding = new Padding();
@@ -184,6 +187,9 @@ class Image extends Quad
     {
         if (value != texture)
         {
+            if (texture != null && sSetupFunctions[texture])
+                execute(sSetupFunctions[texture][1], [this]);
+
             super.texture = value;
             if (__scale9Grid != null && value != null) readjustSize();
         }
@@ -198,6 +204,8 @@ class Image extends Quad
         var frame:Rectangle = texture.frame;
         var absScaleX:Float = scaleX > 0 ? scaleX : -scaleX;
         var absScaleY:Float = scaleY > 0 ? scaleY : -scaleY;
+
+        if (absScaleX == 0.0 || absScaleY == 0) return;
 
         // If top and bottom row / left and right column are empty, this is actually
         // a scale3 grid. In that case, we want the 'caps' to maintain their aspect ratio.

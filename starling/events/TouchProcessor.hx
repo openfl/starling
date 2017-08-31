@@ -109,6 +109,7 @@ class TouchProcessor
     {
         var i:Int;
         var touch:Touch;
+        var numIterations:Int = 0;
         
         __elapsedTime += passedTime;
         sUpdatedTouches.length = 0;
@@ -120,13 +121,15 @@ class TouchProcessor
             while (i >= 0)
             {
                 if (__elapsedTime - __lastTaps[i].timestamp > __multitapTime)
-                    __lastTaps.splice(i, 1);
+                    __lastTaps.removeAt(i);
                 --i;
             }
         }
         
-        while (__queue.length > 0)
+        while (__queue.length > 0 || numIterations == 0)
         {
+            ++numIterations; // we need to enter this loop at least once (for HOVER updates)
+
             // Set touches that were new or moving to phase 'stationary'.
             for (touch in __currentTouches)
                 if (touch.phase == TouchPhase.BEGAN || touch.phase == TouchPhase.MOVED)
@@ -144,12 +147,27 @@ class TouchProcessor
                 sUpdatedTouches[sUpdatedTouches.length] = touch; // avoiding 'push'
             }
 
+            // Find any hovering touches that did not move.
+            // If the target of such a touch changed, add it to the list of updated touches.
+            i = __currentTouches.length-1;
+            while (i>=0)
+            {
+                touch = __currentTouches[i];
+                if (touch.phase == TouchPhase.HOVER && !containsTouchWithID(sUpdatedTouches, touch.id))
+                {
+                    sHelperPoint.setTo(touch.globalX, touch.globalY);
+                    if (touch.target != __root.hitTest(sHelperPoint))
+                        sUpdatedTouches[sUpdatedTouches.length] = touch;
+                }
+                --i;
+            }
+
             // process the current set of touches (i.e. dispatch touch events)
             processTouches(sUpdatedTouches, __shiftDown, __ctrlDown);
 
             // remove ended touches
-            var i:Int = __currentTouches.length - 1;
-            while (i >= 0)
+            i = __currentTouches.length-1;
+            while (i>=0)
             {
                 if (__currentTouches[i].phase == TouchPhase.ENDED)
                     __currentTouches.removeAt(i);
@@ -283,9 +301,9 @@ class TouchProcessor
     }
     
     private function createOrUpdateTouch(touchID:Int, phase:String,
-                                         globalX:Float, globalY:Float,
-                                         pressure:Float=1.0,
-                                         width:Float=1.0, height:Float=1.0):Touch
+                                            globalX:Float, globalY:Float,
+                                            pressure:Float=1.0,
+                                            width:Float=1.0, height:Float=1.0):Touch
     {
         var touch:Touch = getCurrentTouch(touchID);
         
@@ -347,7 +365,7 @@ class TouchProcessor
                 __currentTouches.removeAt(i);
             --i;
         }
-        
+
         __currentTouches[__currentTouches.length] = touch; // avoiding 'push'
     }
     
@@ -485,6 +503,9 @@ class TouchProcessor
         
         try
         {
+            //var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
+            //var nativeApp:Object = nativeAppClass["nativeApplication"];
+            
             if (enable)
                 Lib.current.stage.addEventListener("deactivate", onInterruption, false, 0, true);
             else

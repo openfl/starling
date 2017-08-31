@@ -287,15 +287,15 @@ class Polygon
     // factory methods
 
     /** Creates an ellipse with optimized implementations of triangulation, hitTest, etc. */
-    public static function createEllipse(x:Float, y:Float, radiusX:Float, radiusY:Float):Polygon
+    public static function createEllipse(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1):Polygon
     {
-        return new Ellipse(x, y, radiusX, radiusY);
+        return new Ellipse(x, y, radiusX, radiusY, numSides);
     }
 
     /** Creates a circle with optimized implementations of triangulation, hitTest, etc. */
-    public static function createCircle(x:Float, y:Float, radius:Float):Polygon
+    public static function createCircle(x:Float, y:Float, radius:Float, numSides:Int = -1):Polygon
     {
-        return new Ellipse(x, y, radius, radius);
+        return new Ellipse(x, y, radius, radius, numSides);
     }
 
     /** Creates a rectangle with optimized implementations of triangulation, hitTest, etc. */

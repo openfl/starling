@@ -73,11 +73,6 @@ class Sprite3D extends DisplayObjectContainer
     private var __pivotZ:Float;
     private var __z:Float;
 
-    //private var __transformationMatrix:Matrix;
-    //private var __transformationMatrix3D:Matrix3D;
-    private var __transformationChanged:Bool;
-    private var __is2D:Bool;
-
     /** Helper objects. */
     private static var sHelperPoint:Vector3D    = new Vector3D();
     private static var sHelperPointAlt:Vector3D = new Vector3D();
@@ -90,10 +85,7 @@ class Sprite3D extends DisplayObjectContainer
 
         __scaleZ = 1.0;
         __rotationX = __rotationY = __pivotZ = __z = 0.0;
-        __transformationMatrix = new Matrix();
-        __transformationMatrix3D = new Matrix3D();
-        __is2D = true;   // meaning: this 3D object contains only 2D content
-        __setIs3D(true); // meaning: this display object supports 3D transformations
+        __setIs3D(true);
 
         addEventListener(Event.ADDED, __onAddedChild);
         addEventListener(Event.REMOVED, __onRemovedChild);
@@ -102,7 +94,7 @@ class Sprite3D extends DisplayObjectContainer
     /** @inheritDoc */
     override public function render(painter:Painter):Void
     {
-        if (__is2D) super.render(painter);
+        if (isFlat) super.render(painter);
         else
         {
             painter.finishMeshBatch();
@@ -120,7 +112,7 @@ class Sprite3D extends DisplayObjectContainer
     /** @inheritDoc */
     override public function hitTest(localPoint:Point):DisplayObject
     {
-        if (__is2D) return super.hitTest(localPoint);
+        if (isFlat) return super.hitTest(localPoint);
         else
         {
             if (!visible || !touchable) return null;
@@ -137,17 +129,6 @@ class Sprite3D extends DisplayObjectContainer
 
             return super.hitTest(localPoint);
         }
-    }
-
-    /** @private */
-    override public function setRequiresRedraw():Void
-    {
-        __is2D = __z > -E && __z < E &&
-                 __rotationX > -E && __rotationX < E &&
-                 __rotationY > -E && __rotationY < E &&
-                 __pivotZ > -E && __pivotZ < E;
-
-        super.setRequiresRedraw();
     }
 
     // helpers
@@ -179,85 +160,48 @@ class Sprite3D extends DisplayObjectContainer
         object.__setIs3D(value);
     }
 
-    private function __updateMatrices():Void
+    override private function __updateTransformationMatrices(
+        x:Float, y:Float, pivotX:Float, pivotY:Float, scaleX:Float, scaleY:Float,
+        skewX:Float, skewY:Float, rotation:Float, out:Matrix, out3D:Matrix3D):Void
     {
-        var x:Float = this.x;
-        var y:Float = this.y;
-        var scaleX:Float = this.scaleX;
-        var scaleY:Float = this.scaleY;
-        var pivotX:Float = this.pivotX;
-        var pivotY:Float = this.pivotY;
-        var rotationZ:Float = this.rotation;
+        if (isFlat) super.__updateTransformationMatrices(
+            x, y, pivotX, pivotY, scaleX, scaleY, skewX, skewY, rotation, out, out3D);
+        else __updateTransformationMatrices3D(
+            x, y, __z, pivotX, pivotY, __pivotZ, scaleX, scaleY, __scaleZ,
+            __rotationX, __rotationY, rotation, out, out3D);
+    }
 
-        __transformationMatrix3D.identity();
+    @:allow(starling) private function __updateTransformationMatrices3D(
+        x:Float, y:Float, z:Float,
+        pivotX:Float, pivotY:Float, pivotZ:Float,
+        scaleX:Float, scaleY:Float, scaleZ:Float,
+        rotationX:Float, rotationY:Float, rotationZ:Float,
+        out:Matrix, out3D:Matrix3D):Void
+    {
+        out.identity();
+        out3D.identity();
 
-        if (scaleX != 1.0 || scaleY != 1.0 || __scaleZ != 1.0)
-            __transformationMatrix3D.appendScale(scaleX != 0 ? scaleX : E, scaleY != 0 ? scaleY : E, __scaleZ != 0 ? __scaleZ : E);
-        if (__rotationX != 0.0)
-            __transformationMatrix3D.appendRotation(rad2deg(__rotationX), Vector3D.X_AXIS);
-        if (__rotationY != 0.0)
-            __transformationMatrix3D.appendRotation(rad2deg(__rotationY), Vector3D.Y_AXIS);
+        if (scaleX != 1.0 || scaleY != 1.0 || scaleZ != 1.0)
+            out3D.appendScale(scaleX != 0 ? scaleX : E , scaleY != 0 ? scaleY : E, scaleZ != 0 ? scaleZ : E);
+        if (rotationX != 0.0)
+            out3D.appendRotation(rad2deg(rotationX), Vector3D.X_AXIS);
+        if (rotationY != 0.0)
+            out3D.appendRotation(rad2deg(rotationY), Vector3D.Y_AXIS);
         if (rotationZ != 0.0)
-            __transformationMatrix3D.appendRotation(rad2deg( rotationZ), Vector3D.Z_AXIS);
-        if (x != 0.0 || y != 0.0 || __z != 0.0)
-            __transformationMatrix3D.appendTranslation(x, y, __z);
-        if (pivotX != 0.0 || pivotY != 0.0 || __pivotZ != 0.0)
-            __transformationMatrix3D.prependTranslation(-pivotX, -pivotY, -__pivotZ);
-
-        if (__is2D) MatrixUtil.convertTo2D(__transformationMatrix3D, __transformationMatrix);
-        else      __transformationMatrix.identity();
+            out3D.appendRotation(rad2deg(rotationZ), Vector3D.Z_AXIS);
+        if (x != 0.0 || y != 0.0 || z != 0.0)
+            out3D.appendTranslation(x, y, z);
+        if (pivotX != 0.0 || pivotY != 0.0 || pivotZ != 0.0)
+            out3D.prependTranslation(-pivotX, -pivotY, -pivotZ);
     }
 
     // properties
-
-    /** The 2D transformation matrix of the object relative to its parent — if it can be
-     * represented in such a matrix (the values of 'z', 'rotationX/Y', and 'pivotZ' are
-     * zero). Otherwise, the identity matrix. CAUTION: not a copy, but the actual object! */
-    private override function get_transformationMatrix():Matrix
-    {
-        if (__transformationChanged)
-        {
-            __updateMatrices();
-            __transformationChanged = false;
-        }
-
-        return __transformationMatrix;
-    }
 
     private override function set_transformationMatrix(value:Matrix):Matrix
     {
         super.transformationMatrix = value;
         __rotationX = __rotationY = __pivotZ = __z = 0;
-        __transformationChanged = true;
-        return value;
-    }
-
-    /**  The 3D transformation matrix of the object relative to its parent.
-     * CAUTION: not a copy, but the actual object! */
-    private override function get_transformationMatrix3D():Matrix3D
-    {
-        if (__transformationChanged)
-        {
-            __updateMatrices();
-            __transformationChanged = false;
-        }
-
-        return __transformationMatrix3D;
-    }
-
-    /** @inheritDoc */
-    private override function set_x(value:Float):Float
-    {
-        super.x = value;
-        __transformationChanged = true;
-        return value;
-    }
-
-    /** @inheritDoc */
-    private override function set_y(value:Float):Float
-    {
-        super.y = value;
-        __transformationChanged = true;
+        __setTransformationChanged();
         return value;
     }
 
@@ -269,25 +213,8 @@ class Sprite3D extends DisplayObjectContainer
     @:keep private function set_z(value:Float):Float
     {
         __z = value;
-        __transformationChanged = true;
-        setRequiresRedraw();
+        __setTransformationChanged();
         return value;
-    }
-
-    /** @inheritDoc */
-    private override function set_pivotX(value:Float):Float
-    {
-         super.pivotX = value;
-         __transformationChanged = true;
-         return value;
-    }
-
-    /** @inheritDoc */
-    private override function set_pivotY(value:Float):Float
-    {
-         super.pivotY = value;
-         __transformationChanged = true;
-         return value;
     }
 
     /** The z coordinate of the object's origin in its own coordinate space (default: 0). */
@@ -296,24 +223,7 @@ class Sprite3D extends DisplayObjectContainer
     @:keep private function set_pivotZ(value:Float):Float
     {
         __pivotZ = value;
-        __transformationChanged = true;
-        setRequiresRedraw();
-        return value;
-    }
-
-    /** @inheritDoc */
-    private override function set_scaleX(value:Float):Float
-    {
-        super.scaleX = value;
-        __transformationChanged = true;
-        return value;
-    }
-
-    /** @inheritDoc */
-    private override function set_scaleY(value:Float):Float
-    {
-        super.scaleY = value;
-        __transformationChanged = true;
+        __setTransformationChanged();
         return value;
     }
 
@@ -323,8 +233,7 @@ class Sprite3D extends DisplayObjectContainer
     @:keep private function set_scaleZ(value:Float):Float
     {
         __scaleZ = value;
-        __transformationChanged = true;
-        setRequiresRedraw();
+        __setTransformationChanged();
         return value;
     }
 
@@ -354,15 +263,6 @@ class Sprite3D extends DisplayObjectContainer
         return value;
     }
 
-    /** The rotation of the object about the z axis, in radians.
-     * (In Starling, all angles are measured in radians.) */
-    private override function set_rotation(value:Float):Float
-    {
-        super.rotation = value;
-        __transformationChanged = true;
-        return value;
-    }
-
     /** The rotation of the object about the x axis, in radians.
      * (In Starling, all angles are measured in radians.) */
     @:keep public var rotationX(get, set):Float;
@@ -370,8 +270,7 @@ class Sprite3D extends DisplayObjectContainer
     @:keep private function set_rotationX(value:Float):Float
     {
         __rotationX = MathUtil.normalizeAngle(value);
-        __transformationChanged = true;
-        setRequiresRedraw();
+        __setTransformationChanged();
         return value;
     }
 
@@ -382,8 +281,7 @@ class Sprite3D extends DisplayObjectContainer
     @:keep private function set_rotationY(value:Float):Float
     {
         __rotationY = MathUtil.normalizeAngle(value);
-        __transformationChanged = true;
-        setRequiresRedraw();
+        __setTransformationChanged();
         return value;
     }
 
@@ -392,4 +290,15 @@ class Sprite3D extends DisplayObjectContainer
     @:keep public var rotationZ(get, set):Float;
     @:keep private function get_rotationZ():Float { return rotation; }
     @:keep private function set_rotationZ(value:Float):Float { return rotation = value; }
+
+    /** If <code>true</code>, this 3D object contains only 2D content.
+     *  This means that rendering will be just as efficient as for a standard 2D object. */
+    public var isFlat(get, never):Bool;
+    private function get_isFlat():Bool
+    {
+        return __z > -E && __z < E &&
+                __rotationX > -E && __rotationX < E &&
+                __rotationY > -E && __rotationY < E &&
+                __pivotZ > -E && __pivotZ < E;
+    }
 }

@@ -11,7 +11,6 @@
 package starling.events;
 
 import haxe.Constraints.Function;
-
 import openfl.errors.ArgumentError;
 import openfl.Vector;
 
@@ -89,12 +88,19 @@ class EventDispatcher
 
                 if (index != -1)
                 {
-                    var restListeners:Vector<Function> = listeners.slice(0, index);
+                    if(__eventStack.indexOf(type) == -1)
+                    {
+                        listeners.removeAt(index);
+                    }
+                    else
+                    {
+                        var restListeners:Vector<Function> = listeners.slice(0, index);
 
-                    for (i in index + 1...numListeners)
-                        restListeners[i-1] = listeners[i];
+                        for (i in index+1...numListeners)
+                            restListeners[i-1] = listeners[i];
 
-                    __eventListeners[type] = restListeners;
+                        __eventListeners[type] = restListeners;
+                    }
                 }
             }
         }
@@ -156,11 +162,13 @@ class EventDispatcher
             {
                 var listener:Function = listeners[i];
                 if (listener == null) continue;
-                
-                #if flash
+
+                #if (flash || js)
                 var numArgs:Int = untyped listener.length;
                 #elseif neko
                 var numArgs:Int = untyped ($nargs)(listener);
+                #elseif cpp
+                var numArgs:Int = untyped listener.__ArgCount();
                 #else
                 var numArgs:Int = 2;
                 #end

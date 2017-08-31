@@ -130,7 +130,7 @@ class Quad extends Mesh
             var scaleY:Float = this.scaleY;
 
             out.setTo(   x - pivotX * scaleX,     y - pivotY * scaleY,
-                      __bounds.width * scaleX, __bounds.height * scaleY);
+                        __bounds.width * scaleX, __bounds.height * scaleY);
 
             if (scaleX < 0) { out.width  *= -1; out.x -= out.width;  }
             if (scaleY < 0) { out.height *= -1; out.y -= out.height; }

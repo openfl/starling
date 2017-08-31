@@ -56,6 +56,7 @@ import starling.events.TouchPhase;
 import starling.events.TouchProcessor;
 import starling.rendering.Painter;
 import starling.utils.Align;
+import starling.utils.Color;
 import starling.utils.RectangleUtil;
 import starling.utils.SystemUtil;
 
@@ -313,8 +314,16 @@ class Starling extends EventDispatcher
         
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
         stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 10, true);
-        
-        if (__painter.shareContext)
+
+        var runtimeVersion:Int = #if flash Std.parseInt(SystemUtil.version.split(",").shift()) #else 26 #end;
+        if (runtimeVersion < 19)
+        {
+            var runtime:String = SystemUtil.isAIR ? "Adobe AIR" : "Flash Player";
+            stopWithFatalError(
+                "Your " + runtime + " installation is outdated. " +
+                "This software requires at least version 19.");
+        }
+        else if (__painter.shareContext)
         {
             Timer.delay(initialize, 1); // we don't call it right away, because Starling should
                                         // behave the same way with or without a shared context
@@ -339,11 +348,12 @@ class Starling extends EventDispatcher
         __nativeStage.removeChild(__nativeOverlay);
         
         stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false);
+        stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextRestored, false);
         stage3D.removeEventListener(ErrorEvent.ERROR, onStage3DError, false);
         
         for (touchEventType in touchEventTypes)
             __nativeStage.removeEventListener(touchEventType, onTouch, false);
-        
+
         if (__touchProcessor != null) __touchProcessor.dispose();
         if (__painter != null) __painter.dispose();
         if (__stage != null) __stage.dispose();
@@ -359,7 +369,7 @@ class Starling extends EventDispatcher
     {
         makeCurrent();
         updateViewPort(true);
-        
+
         // ideal time: after viewPort setup, before root creation
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
 
@@ -378,7 +388,7 @@ class Starling extends EventDispatcher
             dispatchEventWith(starling.events.Event.ROOT_CREATED, false, __root);
         }
     }
-    
+
     /** Calls <code>advanceTime()</code> (with the time that has passed since the last frame)
      * and <code>render()</code>. */
     public function nextFrame():Void
@@ -386,7 +396,7 @@ class Starling extends EventDispatcher
         var now:Float = Lib.getTimer() / 1000.0;
         var passedTime:Float = now - __frameTimestamp;
         __frameTimestamp = now;
-        
+
         // to avoid overloading time-based animations, the maximum delta is truncated.
         if (passedTime > 1.0) passedTime = 1.0;
 
@@ -410,7 +420,7 @@ class Starling extends EventDispatcher
         __stage.advanceTime(passedTime);
         __juggler.advanceTime(passedTime);
     }
-    
+
     /** Renders the complete display list. Before rendering, the context is cleared; afterwards,
      * it is presented (to avoid this, enable <code>shareContext</code>).
      *
@@ -424,7 +434,6 @@ class Starling extends EventDispatcher
         
         makeCurrent();
         updateViewPort();
-        dispatchEventWith(starling.events.Event.RENDER);
 
         var doRedraw:Bool = __stage.requiresRedraw || mustAlwaysRender;
         if (doRedraw)
@@ -434,6 +443,7 @@ class Starling extends EventDispatcher
             var shareContext:Bool = __painter.shareContext;
             var scaleX:Float = __viewPort.width  / __stage.stageWidth;
             var scaleY:Float = __viewPort.height / __stage.stageHeight;
+            var stageColor:UInt = __stage.color;
 
             __painter.nextFrame();
             __painter.pixelSize = 1.0 / contentScaleFactor;
@@ -445,7 +455,7 @@ class Starling extends EventDispatcher
                 __stage.stageWidth, __stage.stageHeight, __stage.cameraPosition);
 
             if (!shareContext)
-                __painter.clear(__stage.color, 0.0);
+                __painter.clear(stageColor, Color.getAlpha(stageColor));
 
             __stage.render(__painter);
             __painter.finishFrame();
@@ -454,7 +464,7 @@ class Starling extends EventDispatcher
             if (!shareContext)
                 __painter.present();
         }
-        
+
         if (__statsDisplay != null)
         {
             __statsDisplay.drawCount = __painter.drawCount;
@@ -470,23 +480,23 @@ class Starling extends EventDispatcher
         if (forceUpdate || !RectangleUtil.compare(__viewPort, __previousViewPort))
         {
             __previousViewPort.setTo(__viewPort.x, __viewPort.y, __viewPort.width, __viewPort.height);
-            
+
             // Constrained mode requires that the viewport is within the native stage bounds;
             // thus, we use a clipped viewport when configuring the back buffer. (In baseline
             // mode, that's not necessary, but it does not hurt either.)
-            
+
             __clippedViewPort = __viewPort.intersection(
                 new Rectangle(0, 0, __nativeStage.stageWidth, __nativeStage.stageHeight));
-            
+
             if (__clippedViewPort.width  < 32) __clippedViewPort.width  = 32;
             if (__clippedViewPort.height < 32) __clippedViewPort.height = 32;
-            
+
             var contentScaleFactor:Float = 
                     __supportHighResolutions ? __nativeStage.contentsScaleFactor : 1.0;
-            
+
             __painter.configureBackBuffer(__clippedViewPort, contentScaleFactor,
                  __antiAliasing, true);
-            
+
             setRequiresRedraw();
         }
     }
@@ -544,7 +554,7 @@ class Starling extends EventDispatcher
     { 
         __started = __rendering = true;
         __frameTimestamp = Lib.getTimer() / 1000.0;
-        
+
         // mainly for Android: force redraw when app moves into foreground
         Timer.delay(setRequiresRedraw, 100);
     }
@@ -563,7 +573,7 @@ class Starling extends EventDispatcher
         __started = false;
         __rendering = !suspendRendering;
     }
-    
+
     /** Makes sure that the next frame is actually rendered.
      *
      *  <p>When <code>skipUnchangedFrames</code> is enabled, some situations require that you
@@ -575,7 +585,7 @@ class Starling extends EventDispatcher
     {
         __stage.setRequiresRedraw();
     }
-    
+
     // event handlers
     
     private function onStage3DError(event:ErrorEvent):Void
@@ -584,7 +594,7 @@ class Starling extends EventDispatcher
         {
             var mode:String = Capabilities.playerType == "Desktop" ? "renderMode" : "wmode";
             stopWithFatalError("Context3D not available! Possible reasons: wrong " + mode +
-                               " or missing device support.");
+                                " or missing device support.");
         }
         else
             stopWithFatalError("Stage3D error: " + event.text);
@@ -598,7 +608,7 @@ class Starling extends EventDispatcher
         trace("[Starling] Context ready. Display Driver: " + context.driverInfo);
         initialize();
     }
-    
+
     private function onContextRestored(event:Event):Void
     {
         trace("[Starling] Context restored.");
@@ -660,11 +670,11 @@ class Starling extends EventDispatcher
     {
         __touchProcessor.enqueueMouseLeftStage();
     }
-    
+
     private function onTouch(event:Event):Void
     {
         if (!__started) return;
-        
+
         var globalX:Float;
         var globalY:Float;
         var touchID:Int;
@@ -672,7 +682,7 @@ class Starling extends EventDispatcher
         var pressure:Float = 1.0;
         var width:Float = 1.0;
         var height:Float = 1.0;
-        
+
         // figure out general touch properties
         if (Std.is(event, MouseEvent))
         {
@@ -680,7 +690,7 @@ class Starling extends EventDispatcher
             globalX = mouseEvent.stageX;
             globalY = mouseEvent.stageY;
             touchID = 0;
-            
+
             // MouseEvent.buttonDown returns true for both left and right button (AIR supports
             // the right mouse button). We only want to react on the left button for now,
             // so we have to save the state for the left button manually.
@@ -690,11 +700,11 @@ class Starling extends EventDispatcher
         else
         {
             var touchEvent:TouchEvent = cast(event, TouchEvent);
-        
+
             // On a system that supports both mouse and touch input, the primary touch point
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
-            
+
             if (Mouse.supportsCursor && touchEvent.isPrimaryTouchPoint) return;
             else
             {
@@ -706,7 +716,7 @@ class Starling extends EventDispatcher
                 height   = touchEvent.sizeY;
             }
         }
-        
+
         // figure out touch phase
         switch (event.type)
         {
@@ -715,14 +725,14 @@ class Starling extends EventDispatcher
             case TouchEvent.TOUCH_END:   phase = TouchPhase.ENDED;
             case MouseEvent.MOUSE_DOWN:  phase = TouchPhase.BEGAN;
             case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED;
-            case MouseEvent.MOUSE_MOVE: 
+            case MouseEvent.MOUSE_MOVE:
                 phase = (__leftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
         }
-        
+
         // move position into viewport bounds
         globalX = __stage.stageWidth  * (globalX - __viewPort.x) / __viewPort.width;
         globalY = __stage.stageHeight * (globalY - __viewPort.y) / __viewPort.height;
-        
+
         // enqueue touch in touch processor
         __touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
         
@@ -730,12 +740,12 @@ class Starling extends EventDispatcher
         if (event.type == MouseEvent.MOUSE_UP && Mouse.supportsCursor)
             __touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
-    
+
     private var touchEventTypes(get, never):Array<String>;
     private function get_touchEventTypes():Array<String>
     {
         var types = new Array<String>();
-        
+
         if (multitouchEnabled)
         {
             types.push(TouchEvent.TOUCH_BEGIN);
@@ -752,7 +762,7 @@ class Starling extends EventDispatcher
         
         return types;
     }
-    
+
     private var mustAlwaysRender(get, never):Bool;
     private function get_mustAlwaysRender():Bool
     {
@@ -774,7 +784,7 @@ class Starling extends EventDispatcher
             return mustAlwaysRender;
         }
     }
-    
+
     // properties
     
     /** Indicates if this Starling instance is started. */
@@ -793,7 +803,7 @@ class Starling extends EventDispatcher
     /** The render context of this instance. */
     public var context(get, never):Context3D;
     private function get_context():Context3D { return __painter.context; }
-    
+
     /** Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd"-keys is enabled.
      *  @default false */
     public var simulateMultitouch(get, set):Bool;
@@ -802,7 +812,7 @@ class Starling extends EventDispatcher
     {
         return __touchProcessor.simulateMultitouch = value;
     }
-
+    
     /** Indicates if Stage3D render methods will report errors. It's recommended to activate
      * this when writing custom rendering code (shaders, etc.), since you'll get more detailed
      * error messages. However, it has a very negative impact on performance, and it prevents
@@ -815,7 +825,7 @@ class Starling extends EventDispatcher
     { 
         return __painter.enableErrorChecking = value;
     }
-    
+
     /** The antialiasing level. 0 - no antialasing, 16 - maximum antialiasing. @default 0 */
     public var antiAliasing(get, set):Int;
     private function get_antiAliasing():Int { return __antiAliasing; }
@@ -963,14 +973,18 @@ class Starling extends EventDispatcher
      * context operations (e.g. not call 'configureBackBuffer', 'clear', 'present', etc.
      * This has to be done manually, then. @default false */
     public var shareContext(get, set):Bool;
-    private function get_shareContext() : Bool { return __painter.shareContext; }
-    private function set_shareContext(value : Bool) : Bool { return __painter.shareContext = value; }
-    
+    private function get_shareContext():Bool { return __painter.shareContext; }
+    private function set_shareContext(value:Bool):Bool
+    {
+        if (!value) __previousViewPort.setEmpty(); // forces back buffer update
+        return __painter.shareContext = value;
+    }
+
     /** The Context3D profile of the current render context, or <code>null</code>
      * if the context has not been created yet. */
     public var profile(get, never):Context3DProfile;
     private function get_profile():Context3DProfile { return __painter.profile; }
-    
+
     /** Indicates that if the device supports HiDPI screens Starling will attempt to allocate
      * a larger back buffer than indicated via the viewPort size. Note that this is used
      * on Desktop only; mobile AIR apps still use the "requestedDisplayResolution" parameter
@@ -986,7 +1000,7 @@ class Starling extends EventDispatcher
         }
         return value;
     }
-    
+
     /** When enabled, Starling will skip rendering the stage if it hasn't changed since the
      *  last frame. This is great for apps that remain static from time to time, since it will
      *  greatly reduce power consumption. You should activate this whenever possible!
@@ -1022,7 +1036,7 @@ class Starling extends EventDispatcher
         }
         return value;
     }
-    
+
     /** The number of frames that have been rendered since this instance was created. */
     public var frameID(get, never):UInt;
     private function get_frameID():UInt { return __frameID; }
@@ -1070,10 +1084,10 @@ class Starling extends EventDispatcher
             "'multitouchEnabled' must be set before Starling instance is created");
         else 
             Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
-                                           MultitouchInputMode.NONE;
+                                            MultitouchInputMode.NONE;
         return value;
     }
-    
+
     /** The number of frames that have been rendered since the current instance was created. */
     // public static var frameID(get, never):UInt;
     // public static function get_frameID():UInt

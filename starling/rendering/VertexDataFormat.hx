@@ -52,11 +52,6 @@ class VertexDataFormat
     // format cache
     private static var sFormats:Map<String, VertexDataFormat> = new Map();
 
-    public var formatString(get, null):String;
-    public var vertexSize(get, null):Int;
-    public var vertexSizeIn32Bits(get, null):Int;
-    public var numAttributes(get, null):Int;
-    
     /** Don't use the constructor, but call <code>VertexDataFormat.fromString</code> instead.
      *  This allows for efficient format caching. */
     public function new()
@@ -257,25 +252,29 @@ class VertexDataFormat
     // properties
 
     /** Returns the normalized format string. */
-    function get_formatString():String
+    public var formatString(get, null):String;
+    private function get_formatString():String
     {
         return _format;
     }
 
     /** The size (in bytes) of each vertex. */
-    function get_vertexSize():Int
+    public var vertexSize(get, null):Int;
+    private function get_vertexSize():Int
     {
         return _vertexSize;
     }
 
     /** The size (in 32 bit units) of each vertex. */
-    function get_vertexSizeIn32Bits():Int
+    public var vertexSizeIn32Bits(get, null):Int;
+    private function get_vertexSizeIn32Bits():Int
     {
         return Std.int(_vertexSize / 4);
     }
 
     /** The number of attributes per vertex. */
-    function get_numAttributes():Int
+    public var numAttributes(get, null):Int;
+    private function get_numAttributes():Int
     {
         return _attributes.length;
     }

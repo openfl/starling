@@ -77,6 +77,10 @@ class Painter
     // the key for the programs stored in 'sharedData'
     private static inline var PROGRAM_DATA_NAME:String = "starling.rendering.Painter.Programs";
 
+    /** The value with which the stencil buffer will be cleared,
+        *  and the default reference value used for stencil tests. */
+    public static inline var DEFAULT_STENCIL_VALUE:UInt = 127;
+
     // members
 
     private var _stage3D:Stage3D;
@@ -99,6 +103,8 @@ class Painter
     private var _actualRenderTargetOptions:UInt;
     private var _actualCulling:String;
     private var _actualBlendMode:String;
+    private var _actualDepthMask:Bool;
+    private var _actualDepthTest:String;
 
     private var _backBufferWidth:Int;
     private var _backBufferHeight:Int;
@@ -190,10 +196,6 @@ class Painter
     {
         _context = _stage3D.context3D;
         _context.enableErrorChecking = _enableErrorChecking;
-        _context.setDepthTest(false, Context3DCompareMode.ALWAYS);
-
-        _actualBlendMode = null;
-        _actualCulling = null;
     }
 
     /** Sets the viewport dimensions and other attributes of the rendering buffer.
@@ -383,14 +385,30 @@ class Painter
         }
         else
         {
-            _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                Context3DCompareMode.EQUAL, Context3DStencilAction.INCREMENT_SATURATE);
+            // In 'renderMask', we'll make sure the depth test always fails. Thus, the 3rd
+            // parameter of 'setStencilActions' will always be ignored; the 4th is the one
+            // that counts!
 
-            renderMask(mask);
-            stencilReferenceValue++;
+            if (maskee != null && maskee.maskInverted)
+            {
+                _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                    Context3DCompareMode.ALWAYS, Context3DStencilAction.KEEP,
+                    Context3DStencilAction.DECREMENT_SATURATE);
 
-            _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+                renderMask(mask);
+            }
+            else
+            {
+                _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                    Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP,
+                    Context3DStencilAction.INCREMENT_SATURATE);
+
+                renderMask(mask);
+                stencilReferenceValue++;
+            }
+
+            _context.setStencilActions(
+                Context3DTriangleFace.FRONT_AND_BACK, Context3DCompareMode.EQUAL);
         }
 
         excludeFromCache(maskee);
@@ -416,28 +434,45 @@ class Painter
         }
         else
         {
-            _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                Context3DCompareMode.EQUAL, Context3DStencilAction.DECREMENT_SATURATE);
+            // In 'renderMask', we'll make sure the depth test always fails. Thus, the 3rd
+            // parameter of 'setStencilActions' will always be ignored; the 4th is the one
+            // that counts!
 
-            renderMask(mask);
-            stencilReferenceValue--;
+            if (maskee != null && maskee.maskInverted)
+            {
+                _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                    Context3DCompareMode.ALWAYS, Context3DStencilAction.KEEP,
+                    Context3DStencilAction.INCREMENT_SATURATE);
 
-            _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-                Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+                renderMask(mask);
+            }
+            else
+            {
+                _context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
+                    Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP,
+                    Context3DStencilAction.DECREMENT_SATURATE);
+
+                renderMask(mask);
+                stencilReferenceValue--;
+            }
+
+            // restore default stencil action ("keep")
+
+            _context.setStencilActions(
+                Context3DTriangleFace.FRONT_AND_BACK, Context3DCompareMode.EQUAL);
         }
     }
 
     private function renderMask(mask:DisplayObject):Void
     {
+        var matrix:Matrix = null;
+        var matrix3D:Matrix3D = null;
         var wasCacheEnabled:Bool = cacheEnabled;
 
         pushState();
         cacheEnabled = false;
-        _state.alpha = 0.0;
-
-        var matrix:Matrix = null;
-        var matrix3D:Matrix3D = null;
-
+        _state.depthTest = Context3DCompareMode.NEVER; // depth test always fails ->
+                                                        // color buffer won't be modified
         if (mask.stage != null)
         {
             _state.setModelviewMatricesToIdentity();
@@ -552,6 +587,16 @@ class Painter
         _batchCacheExclusions.length = 0;
     }
 
+    /** Makes sure that the default context settings Starling relies on will be refreshed
+        *  before the next 'draw' operation. This includes blend mode, culling, and depth test. */
+    public function setupContextDefaults():Void
+    {
+        _actualBlendMode = null;
+        _actualCulling = null;
+        _actualDepthMask = false;
+        _actualDepthTest = null;
+    }
+
     /** Resets the current state, state stack, batch processor, stencil reference value,
      *  clipping rectangle, and draw count. Furthermore, depth testing is disabled. */
     public function nextFrame():Void
@@ -561,13 +606,10 @@ class Painter
         _batchProcessor.clear();
         _batchProcessorSpec.clear();
 
-        // enforce reset of basic context settings
-        _actualBlendMode = null;
-        _actualCulling = null;
-        _context.setDepthTest(false, Context3DCompareMode.ALWAYS);
+        setupContextDefaults();
 
         // reset everything else
-        stencilReferenceValue = 0;
+        stencilReferenceValue = DEFAULT_STENCIL_VALUE;
         _clipRectStack.length = 0;
         _drawCount = 0;
         _stateStackPos = -1;
@@ -662,6 +704,7 @@ class Painter
         applyRenderTarget();
         applyClipRect();
         applyCulling();
+        applyDepthTest();
     }
 
     /** Clears the render context with a certain color and alpha value. Since this also
@@ -669,8 +712,8 @@ class Painter
     public function clear(rgb:UInt=0, alpha:Float=0.0):Void
     {
         applyRenderTarget();
-        stencilReferenceValue = 0;
-        RenderUtil.clear(rgb, alpha);
+        stencilReferenceValue = DEFAULT_STENCIL_VALUE;
+        RenderUtil.clear(rgb, alpha, 1.0, DEFAULT_STENCIL_VALUE);
     }
 
     /** Resets the render target to the back buffer and displays its contents. */
@@ -700,6 +743,19 @@ class Painter
         {
             _context.setCulling(culling);
             _actualCulling = culling;
+        }
+    }
+
+    private function applyDepthTest():Void
+    {
+        var depthMask:Bool = _state.depthMask;
+        var depthTest:String = _state.depthTest;
+
+        if (depthMask != _actualDepthMask || depthTest != _actualDepthTest)
+        {
+            _context.setDepthTest(depthMask, depthTest);
+            _actualDepthMask = depthMask;
+            _actualDepthTest = depthTest;
         }
     }
 
@@ -789,7 +845,7 @@ class Painter
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
         if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
-        else return 0;
+        else return DEFAULT_STENCIL_VALUE;
     }
 
     private function set_stencilReferenceValue(value:UInt):UInt

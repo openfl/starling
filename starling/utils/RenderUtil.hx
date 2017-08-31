@@ -39,20 +39,22 @@ class RenderUtil
     }
 
     /** Clears the render context with a certain color and alpha value. */
-    public static function clear(rgb:UInt=0, alpha:Float=0.0):Void
+    public static function clear(rgb:UInt=0, alpha:Float=0.0,
+                                    depth:Float=1.0, stencil:UInt=0):Void
     {
         Starling.current.context.clear(
                 Color.getRed(rgb)   / 255.0,
                 Color.getGreen(rgb) / 255.0,
                 Color.getBlue(rgb)  / 255.0,
-                alpha);
+                alpha, depth, stencil
+            );
     }
 
     /** Returns the flags that are required for AGAL texture lookup,
      *  including the '&lt;' and '&gt;' delimiters. */
     public static function getTextureLookupFlags(format:String, mipMapping:Bool,
-                                                 repeat:Bool=false,
-                                                 smoothing:String="bilinear"):String
+                                                    repeat:Bool=false,
+                                                    smoothing:String="bilinear"):String
     {
         // TODO this method can probably be removed
 
@@ -116,8 +118,8 @@ class RenderUtil
     /** Calls <code>setSamplerStateAt</code> at the current context,
      *  converting the given parameters to their low level counterparts. */
     public static function setSamplerStateAt(sampler:Int, mipMapping:Bool,
-                                             smoothing:String="bilinear",
-                                             repeat:Bool=false):Void
+                                                smoothing:String="bilinear",
+                                                repeat:Bool=false):Void
     {
         var wrap:String = repeat ? Context3DWrapMode.REPEAT : Context3DWrapMode.CLAMP;
         var filter:String;
@@ -203,22 +205,22 @@ class RenderUtil
     }
 
     /** Requests a context3D object from the given Stage3D object.
-     *
-     * @param stage3D    The stage3D object the context needs to be requested from.
-     * @param renderMode The 'Context3DRenderMode' to use when requesting the context.
-     * @param profile    If you know exactly which 'Context3DProfile' you want to use, simply
-     *                   pass a String with that profile.
-     *
-     *                   <p>If you are unsure which profiles are supported on the current
-     *                   device, you can also pass an Array of profiles; they will be
-     *                   tried one after the other (starting at index 0), until a working
-     *                   profile is found. If none of the given profiles is supported,
-     *                   the Stage3D object will dispatch an ERROR event.</p>
-     *
-     *                   <p>You can also pass the String 'auto' to use the best available
-     *                   profile automatically. This will try all known Stage3D profiles,
-     *                   beginning with the most powerful.</p>
-     */
+        *
+        * @param stage3D    The stage3D object the context needs to be requested from.
+        * @param renderMode The 'Context3DRenderMode' to use when requesting the context.
+        * @param profile    If you know exactly which 'Context3DProfile' you want to use, simply
+        *                   pass a String with that profile.
+        *
+        *                   <p>If you are unsure which profiles are supported on the current
+        *                   device, you can also pass an Array of profiles; they will be
+        *                   tried one after the other (starting at index 0), until a working
+        *                   profile is found. If none of the given profiles is supported,
+        *                   the Stage3D object will dispatch an ERROR event.</p>
+        *
+        *                   <p>You can also pass the String 'auto' to use the best available
+        *                   profile automatically. This will try all known Stage3D profiles,
+        *                   beginning with the most powerful.</p>
+        */
     public static function requestContext3D(stage3D:Stage3D, renderMode:String, profile:Dynamic):Void
     {
         var profiles:Array<Dynamic>;

@@ -18,6 +18,7 @@ import starling.display.Mesh;
 import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.rendering.*;
+import starling.textures.ConcreteTexture;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 
@@ -99,7 +100,7 @@ class MeshStyle extends EventDispatcher
     private var _texture:Texture;
     private var _textureSmoothing:String;
     private var _textureRepeat:Bool;
-    private var _textureBase:TextureBase; // just a reference to _texture.base
+    private var _textureRoot:ConcreteTexture; // just a reference to _texture.root
     private var _vertexData:VertexData;   // just a reference to the target's vertex data
     private var _indexData:IndexData;     // just a reference to the target's index data
 
@@ -121,7 +122,7 @@ class MeshStyle extends EventDispatcher
     public function copyFrom(meshStyle:MeshStyle):Void
     {
         _texture = meshStyle._texture;
-        _textureBase = _texture != null ? _texture.base : null; // fixes outdated base, too
+        _textureRoot = meshStyle._textureRoot;
         _textureRepeat = meshStyle._textureRepeat;
         _textureSmoothing = meshStyle._textureSmoothing;
     }
@@ -166,15 +167,18 @@ class MeshStyle extends EventDispatcher
      */
     public function canBatchWith(meshStyle:MeshStyle):Bool
     {
+        // I'm comparing the 'root' texture, not the 'base' texture, because the former
+        // reference stays the same even when 'base' is recreated after a context loss.
+
         if (_type == meshStyle._type)
         {
             var newTexture:Texture = meshStyle._texture;
 
             if (_texture == null && newTexture == null) return true;
             else if (_texture != null && newTexture != null)
-                return _textureBase == meshStyle._textureBase &&
-                       _textureSmoothing == meshStyle._textureSmoothing &&
-                       _textureRepeat == meshStyle._textureRepeat;
+                return _textureRoot == meshStyle._textureRoot &&
+                        _textureSmoothing == meshStyle._textureSmoothing &&
+                        _textureRepeat == meshStyle._textureRepeat;
             else return false;
         }
         else return false;
@@ -417,7 +421,7 @@ class MeshStyle extends EventDispatcher
             else setRequiresRedraw();
 
             _texture = value;
-            _textureBase = value != null ? value.base : null;
+            _textureRoot = value != null ? value.root : null;
         }
         return value;
     }

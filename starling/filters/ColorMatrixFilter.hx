@@ -185,7 +185,7 @@ class ColorMatrixFilter extends FragmentFilter
         sMatrix[8] = m8; sMatrix[9] = m9; sMatrix[10] = m10; sMatrix[11] = m11;
         sMatrix[12] = m12; sMatrix[13] = m13; sMatrix[14] = m14; sMatrix[15] = m15;
         sMatrix[16] = m16; sMatrix[17] = m17; sMatrix[18] = m18; sMatrix[19] = m19;
-        
+
         concat(sMatrix);
     }
 
@@ -221,7 +221,7 @@ class ColorMatrixEffect extends FilterEffect
     public function new():Void
     {
         super();
-        
+
         _userMatrix   = new Vector<Float>();
         _shaderMatrix = new Vector<Float>();
 
@@ -263,7 +263,7 @@ class ColorMatrixEffect extends FilterEffect
     public function concat(matrix:Vector<Float>):Void
     {
         var i:Int = 0;
-        
+
         for (y in 0...4)
         {
             for (x in 0...5)
@@ -274,7 +274,7 @@ class ColorMatrixEffect extends FilterEffect
                                matrix[i + 3] * _userMatrix[x + 15] +
                                (x == 4 ? matrix[i + 4] : 0);
             }
-            
+
             i += 5;
         }
 

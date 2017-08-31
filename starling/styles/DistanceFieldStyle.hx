@@ -8,17 +8,22 @@
 //
 // =================================================================================================
 
-package starling.styles
-{
+package starling.styles;
+
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 import openfl.geom.Matrix;
 
 import starling.display.Mesh;
 import starling.rendering.MeshEffect;
+import starling.rendering.Program;
 import starling.rendering.RenderState;
 import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
+import starling.styles.DistanceFieldStyle;
 import starling.utils.Color;
 import starling.utils.MathUtil;
+import starling.utils.StringUtil;
 
 /** Provides support for signed distance fields to Starling meshes.
  *
@@ -59,38 +64,38 @@ import starling.utils.MathUtil;
 public class DistanceFieldStyle extends MeshStyle
 {
     /** The vertex format expected by this style. */
-    public static const VERTEX_FORMAT:VertexDataFormat =
+    public static var VERTEX_FORMAT:VertexDataFormat =
         MeshStyle.VERTEX_FORMAT.extend(
             "basic:bytes4, extended:bytes4, outerColor:bytes4");
 
     /** Basic distance field rendering, without additional effects. */
-    public static const MODE_BASIC:String = "basic";
+    public static inline var MODE_BASIC:String = "basic";
 
     /** Adds an outline around the edge of the shape. */
-    public static const MODE_OUTLINE:String = "outline";
+    public static inline var MODE_OUTLINE:String = "outline";
 
     /** Adds a smooth glow effect around the shape. */
-    public static const MODE_GLOW:String = "glow";
+    public static inline var MODE_GLOW:String = "glow";
 
     /** Adds a drop shadow behind the shape. */
-    public static const MODE_SHADOW:String = "shadow";
+    public static inline var MODE_SHADOW:String = "shadow";
 
     private var _mode:String;
 
     // basic
-    private var _threshold:Number;
-    private var _alpha:Number;
-    private var _softness:Number;
+    private var _threshold:Float;
+    private var _alpha:Float;
+    private var _softness:Float;
 
     // extended
-    private var _outerThreshold:Number;
-    private var _outerAlphaEnd:Number;
-    private var _shadowOffsetX:Number;
-    private var _shadowOffsetY:Number;
+    private var _outerThreshold:Float;
+    private var _outerAlphaEnd:Float;
+    private var _shadowOffsetX:Float;
+    private var _shadowOffsetY:Float;
     
     // outerColor
-    private var _outerColor:uint;
-    private var _outerAlphaStart:Number;
+    private var _outerColor:UInt;
+    private var _outerAlphaStart:Float;
 
     /** Creates a new distance field style.
      *
@@ -100,7 +105,7 @@ public class DistanceFieldStyle extends MeshStyle
      *  @param threshold  the value separating the inside from the outside of the shape.
      *                    Range: 0 - 1.
      */
-    public function DistanceFieldStyle(softness:Number=0.125, threshold:Number=0.5)
+    public function new(softness:Float=0.125, threshold:Float=0.5)
     {
         _mode = MODE_BASIC;
         _threshold = threshold;
@@ -115,10 +120,10 @@ public class DistanceFieldStyle extends MeshStyle
     }
 
     /** @private */
-    override public function copyFrom(meshStyle:MeshStyle):void
+    override public function copyFrom(meshStyle:MeshStyle):Void
     {
-        var otherStyle:DistanceFieldStyle = meshStyle as DistanceFieldStyle;
-        if (otherStyle)
+        var otherStyle:DistanceFieldStyle = Std.is(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
+        if (otherStyle != null)
         {
             _mode = otherStyle._mode;
             _threshold = otherStyle._threshold;
@@ -144,18 +149,18 @@ public class DistanceFieldStyle extends MeshStyle
     }
 
     /** @private */
-    override public function get vertexFormat():VertexDataFormat
+    override private function get_vertexFormat():VertexDataFormat
     {
         return VERTEX_FORMAT;
     }
 
     /** @private */
-    override protected function onTargetAssigned(target:Mesh):void
+    override private function onTargetAssigned(target:Mesh):Void
     {
         updateVertices();
     }
 
-    private function updateVertices():void
+    private function updateVertices():Void
     {
         if (vertexData == null) return;
 
@@ -165,26 +170,26 @@ public class DistanceFieldStyle extends MeshStyle
         // they are encoded with a scale factor and/or offset. The color is stored manually
         // (not via 'setColor') to avoid PMA processing.
 
-        var numVertices:int = vertexData.numVertices;
-        var maxScale:int = DistanceFieldEffect.MAX_SCALE;
-        var maxOuterOffset:int = DistanceFieldEffect.MAX_OUTER_OFFSET;
-        var encodedOuterOffsetX:Number = (_shadowOffsetX + maxOuterOffset) / (2 * maxOuterOffset);
-        var encodedOuterOffsetY:Number = (_shadowOffsetY + maxOuterOffset) / (2 * maxOuterOffset);
+        var numVertices:Int = vertexData.numVertices;
+        var maxScale:Int = DistanceFieldEffect.MAX_SCALE;
+        var maxOuterOffset:Int = DistanceFieldEffect.MAX_OUTER_OFFSET;
+        var encodedOuterOffsetX:Float = (_shadowOffsetX + maxOuterOffset) / (2 * maxOuterOffset);
+        var encodedOuterOffsetY:Float = (_shadowOffsetY + maxOuterOffset) / (2 * maxOuterOffset);
 
-        var basic:uint = (uint(_threshold      * 255)      ) |
-                         (uint(_alpha          * 255) <<  8) |
-                         (uint(_softness / 2.0 * 255) << 16) |
-                         (uint(1.0 / maxScale  * 255) << 24);
-        var extended:uint = (uint(_outerThreshold     * 255)      ) |
-                            (uint(_outerAlphaEnd      * 255) <<  8) |
-                            (uint(encodedOuterOffsetX * 255) << 16) |
-                            (uint(encodedOuterOffsetY * 255) << 24);
-        var outerColor:uint = (Color.getRed(_outerColor)         ) |
+        var basic:Int = (Std.int(_threshold      * 255)      ) |
+                         (Std.int(_alpha          * 255) <<  8) |
+                         (Std.int(_softness / 2.0 * 255) << 16) |
+                         (Std.int(1.0 / maxScale  * 255) << 24);
+        var extended:Int = (Std.int(_outerThreshold     * 255)      ) |
+                            (Std.int(_outerAlphaEnd      * 255) <<  8) |
+                            (Std.int(encodedOuterOffsetX * 255) << 16) |
+                            (Std.int(encodedOuterOffsetY * 255) << 24);
+        var outerColor:Int = (Color.getRed(_outerColor)         ) |
                               (Color.getGreen(_outerColor)  <<  8) |
                               (Color.getBlue(_outerColor)   << 16) |
                               (uint(_outerAlphaStart * 255) << 24);
 
-        for (var i:int=0; i<numVertices; ++i)
+        for (i in 0...numVertices)
         {
             vertexData.setUnsignedInt(i, "basic", basic);
             vertexData.setUnsignedInt(i, "extended", extended);
@@ -195,29 +200,29 @@ public class DistanceFieldStyle extends MeshStyle
     }
 
     /** @private */
-    override public function batchVertexData(targetStyle:MeshStyle, targetVertexID:int = 0,
-                                             matrix:Matrix = null, vertexID:int = 0,
-                                             numVertices:int = -1):void
+    override public function batchVertexData(targetStyle:MeshStyle, targetVertexID:Int = 0,
+                                             matrix:Matrix = null, vertexID:Int = 0,
+                                             numVertices:Int = -1):void
     {
         super.batchVertexData(targetStyle, targetVertexID, matrix, vertexID, numVertices);
 
-        if (matrix)
+        if (matrix != null)
         {
-            var scale:Number = Math.sqrt(matrix.a * matrix.a + matrix.c * matrix.c);
+            var scale:Float = Math.sqrt(matrix.a * matrix.a + matrix.c * matrix.c);
 
             if (!MathUtil.isEquivalent(scale, 1.0, 0.01))
             {
                 var targetVertexData:VertexData = (targetStyle as DistanceFieldStyle).vertexData;
-                var maxScale:Number = DistanceFieldEffect.MAX_SCALE;
-                var minScale:Number = maxScale / 255;
+                var maxScale:Float = DistanceFieldEffect.MAX_SCALE;
+                var minScale:Float = maxScale / 255;
 
-                for (var i:int=0; i<numVertices; ++i)
+                for (i in 0...numVertices)
                 {
-                    var srcAttr:uint = vertexData.getUnsignedInt(vertexID + i, "basic");
-                    var srcScale:Number = ((srcAttr >> 24) & 0xff) / 255.0 * maxScale;
-                    var tgtScale:Number = MathUtil.clamp(srcScale * scale, minScale, maxScale);
-                    var tgtAttr:uint =
-                        (srcAttr & 0x00ffffff) | (uint(tgtScale / maxScale * 255) << 24);
+                    var srcAttr:UInt = vertexData.getUnsignedInt(vertexID + i, "basic");
+                    var srcScale:Float = ((srcAttr >> 24) & 0xff) / 255.0 * maxScale;
+                    var tgtScale:Float = MathUtil.clamp(srcScale * scale, minScale, maxScale);
+                    var tgtAttr:UInt =
+                        (srcAttr & 0x00ffffff) | (Std.int(tgtScale / maxScale * 255) << 24);
 
                     targetVertexData.setUnsignedInt(targetVertexID + i, "basic", tgtAttr);
                 }
@@ -226,9 +231,9 @@ public class DistanceFieldStyle extends MeshStyle
     }
 
     /** @private */
-    override public function updateEffect(effect:MeshEffect, state:RenderState):void
+    override public function updateEffect(effect:MeshEffect, state:RenderState):Void
     {
-        var dfEffect:DistanceFieldEffect = effect as DistanceFieldEffect;
+        var dfEffect:DistanceFieldEffect = cast effect;
         dfEffect.mode = _mode;
 
         if (state.is3D) dfEffect.scale = 1.0;
@@ -238,7 +243,7 @@ public class DistanceFieldStyle extends MeshStyle
             // However, this only works for 2D objects.
 
             var matrix:Matrix = state.modelviewMatrix;
-            var scale:Number = Math.sqrt(matrix.a * matrix.a + matrix.c * matrix.c);
+            var scale:Float = Math.sqrt(matrix.a * matrix.a + matrix.c * matrix.c);
             dfEffect.scale = scale;
         }
 
@@ -248,8 +253,8 @@ public class DistanceFieldStyle extends MeshStyle
     /** @private */
     override public function canBatchWith(meshStyle:MeshStyle):Bool
     {
-        var dfStyle:DistanceFieldStyle = meshStyle as DistanceFieldStyle;
-        if (dfStyle && super.canBatchWith(meshStyle)) return dfStyle.mode == _mode;
+        var dfStyle:DistanceFieldStyle = Std.is(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
+        if (dfStyle != null && super.canBatchWith(meshStyle)) return dfStyle.mode == _mode;
         else return false;
     }
 
@@ -266,7 +271,7 @@ public class DistanceFieldStyle extends MeshStyle
     /** Sets up outline rendering mode. The 'width' determines the threshold where the
      *  outline ends; 'width + threshold' must not exceed '1.0'.
      */
-    public function setupOutline(width:Number=0.25, color:uint=0x0, alpha:Number=1.0):void
+    public function setupOutline(width:Float=0.25, color:UInt=0x0, alpha:Float=1.0):Void
     {
         _mode = MODE_OUTLINE;
         _outerThreshold = MathUtil.clamp(_threshold - width, 0, _threshold);
@@ -280,7 +285,7 @@ public class DistanceFieldStyle extends MeshStyle
     /** Sets up glow rendering mode. The 'blur' determines the threshold where the
      *  blur ends; 'blur + threshold' must not exceed '1.0'.
      */
-    public function setupGlow(blur:Number=0.2, color:uint=0xffff00, alpha:Number=0.5):void
+    public function setupGlow(blur:Float=0.2, color:UInt=0xffff00, alpha:Float=0.5):Void
     {
         _mode = MODE_GLOW;
         _outerThreshold = MathUtil.clamp(_threshold - blur, 0, _threshold);
@@ -300,10 +305,10 @@ public class DistanceFieldStyle extends MeshStyle
      *  will cause the shadow to be cut off on the sides. Reduce either blur or offset to
      *  compensate.</p>
      */
-    public function setupDropShadow(blur:Number=0.2, offsetX:Number=2, offsetY:Number=2,
-                                    color:uint=0x0, alpha:Number=0.5):void
+    public function setupDropShadow(blur:Float=0.2, offsetX:Float=2, offsetY:Float=2,
+                                    color:UInt=0x0, alpha:Float=0.5):Void
     {
-        const maxOffset:Number = DistanceFieldEffect.MAX_OUTER_OFFSET;
+        const maxOffset:Float = DistanceFieldEffect.MAX_OUTER_OFFSET;
 
         _mode = MODE_SHADOW;
         _outerThreshold = MathUtil.clamp(_threshold - blur, 0, _threshold);
@@ -320,18 +325,21 @@ public class DistanceFieldStyle extends MeshStyle
 
     /** The current render mode. It's recommended to use one of the 'setup...'-methods to
      *  change the mode, as those provide useful standard settings, as well. @default basic */
-    public function get mode():String { return _mode; }
-    public function set mode(value:String):void
+    public var mode(get, set):String;
+    private function get_mode():String { return _mode; }
+    private function set_mode(value:String):String
     {
         _mode = value;
         setRequiresRedraw();
+        return value;
     }
 
     /** The threshold that will separate the inside from the outside of the shape. On the
      *  distance field texture, '0' means completely outside, '1' completely inside; the
      *  actual edge runs along '0.5'. @default 0.5 */
-    public function get threshold():Number { return _threshold; }
-    public function set threshold(value:Number):void
+    public var threshold(get, set):Float;
+    private function get_threshold():Float { return _threshold; }
+    private function set_threshold(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -340,14 +348,16 @@ public class DistanceFieldStyle extends MeshStyle
             _threshold = value;
             updateVertices();
         }
+        return value;
     }
 
     /** Indicates how soft the transition between inside and outside should be rendered.
      *  A value of '0' will lead to a hard, jagged edge; '1' will be just as blurry as the
      *  actual distance field texture. The recommend value should be <code>1.0 / spread</code>
      *  (you determine the spread when creating the distance field texture). @default 0.125 */
-    public function get softness():Number { return _softness; }
-    public function set softness(value:Number):void
+    public var softness(get, set):Float;
+    private function get_softness():Float { return _softness; }
+    private function set_softness(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -356,12 +366,14 @@ public class DistanceFieldStyle extends MeshStyle
             _softness = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The alpha value with which the inner area (what's rendered in 'basic' mode) is drawn.
      *  @default 1.0 */
-    public function get alpha():Number { return _alpha; }
-    public function set alpha(value:Number):void
+    public var alpha(get, set):Float;
+    private function get_alpha():Float { return _alpha; }
+    private function set_alpha(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -370,12 +382,14 @@ public class DistanceFieldStyle extends MeshStyle
             _alpha = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The threshold that determines where the outer area (outline, glow, or drop shadow)
      *  ends. Ignored in 'basic' mode. */
-    public function get outerThreshold():Number { return _outerThreshold; }
-    public function set outerThreshold(value:Number):void
+    public var outerThreshold(get, set):Float;
+    private function get_outerThreshold():Float { return _outerThreshold; }
+    private function set_outerThreshold(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -384,12 +398,14 @@ public class DistanceFieldStyle extends MeshStyle
             _outerThreshold = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The alpha value on the inner side of the outer area's gradient.
      *  Used for outline, glow, and drop shadow modes. */
-    public function get outerAlphaStart():Number { return _outerAlphaStart; }
-    public function set outerAlphaStart(value:Number):void
+    public var outerAlphaStart(get, set):Float;
+    private function get_outerAlphaStart():Float { return _outerAlphaStart; }
+    private function set_outerAlphaStart(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -398,12 +414,14 @@ public class DistanceFieldStyle extends MeshStyle
             _outerAlphaStart = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The alpha value on the outer side of the outer area's gradient.
      *  Used for outline, glow, and drop shadow modes. */
-    public function get outerAlphaEnd():Number { return _outerAlphaEnd; }
-    public function set outerAlphaEnd(value:Number):void
+    public var outerAlphaEnd(get, set):Float;
+    private function get_outerAlphaEnd():Float { return _outerAlphaEnd; }
+    private function set_outerAlphaEnd(value:Float):Float
     {
         value = MathUtil.clamp(value, 0, 1);
 
@@ -412,25 +430,29 @@ public class DistanceFieldStyle extends MeshStyle
             _outerAlphaEnd = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The color with which the outer area (outline, glow, or drop shadow) will be filled.
      *  Ignored in 'basic' mode. */
-    public function get outerColor():uint { return _outerColor; }
-    public function set outerColor(value:uint):void
+    public var outerColor(get, set):UInt;
+    private function get_outerColor():UInt { return _outerColor; }
+    private function set_outerColor(value:UInt):vUIntoid
     {
         if (_outerColor != value)
         {
             _outerColor = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The x-offset of the shadow in points. Note that certain combinations of offset and
      *  blur value can lead the shadow to be cut off at the edges. Reduce blur or offset to
      *  counteract. */
-    public function get shadowOffsetX():Number { return _shadowOffsetX; }
-    public function set shadowOffsetX(value:Number):void
+    public var shadowOffsetX(get, set):Float;
+    private function get_shadowOffsetX():Float { return _shadowOffsetX; }
+    private function set_shadowOffsetX(value:Float):Float
     {
         const max:Number = DistanceFieldEffect.MAX_OUTER_OFFSET;
         value = MathUtil.clamp(value, -max, max);
@@ -440,13 +462,15 @@ public class DistanceFieldStyle extends MeshStyle
             _shadowOffsetX = value;
             updateVertices();
         }
+        return value;
     }
 
     /** The y-offset of the shadow in points. Note that certain combinations of offset and
      *  blur value can lead the shadow to be cut off at the edges. Reduce blur or offset to
      *  counteract. */
-    public function get shadowOffsetY():Number { return _shadowOffsetY; }
-    public function set shadowOffsetY(value:Number):void
+    public var shadowOffsetY(get, set):Float;
+    private function get_shadowOffsetY():Float { return _shadowOffsetY; }
+    private function set_shadowOffsetY(value:Float):Float
     {
         const max:Number = DistanceFieldEffect.MAX_OUTER_OFFSET;
         value = MathUtil.clamp(value, -max, max);
@@ -456,229 +480,217 @@ public class DistanceFieldStyle extends MeshStyle
             _shadowOffsetY = value;
             updateVertices();
         }
+        return value;
     }
 }
-}
-
-import openfl.display3D.Context3D;
-import openfl.display3D.Context3DProgramType;
-
-import starling.rendering.MeshEffect;
-import starling.rendering.Program;
-import starling.rendering.VertexDataFormat;
-import starling.styles.DistanceFieldStyle;
-import starling.utils.StringUtil;
 
 class DistanceFieldEffect extends MeshEffect
 {
-public static const VERTEX_FORMAT:VertexDataFormat = DistanceFieldStyle.VERTEX_FORMAT;
-public static const MAX_OUTER_OFFSET:int = 8;
-public static const MAX_SCALE:int = 8;
+    public static var VERTEX_FORMAT:VertexDataFormat = DistanceFieldStyle.VERTEX_FORMAT;
+    public static inline var MAX_OUTER_OFFSET:Int = 8;
+    public static inline var MAX_SCALE:Int = 8;
 
-private var _mode:String;
-private var _scale:Number;
+    private var _mode:String;
+    private var _scale:Float;
 
-private static const sVector:Vector.<Number> = new Vector.<Number>(4, true);
+    private static var sVector:Vector<Float> = new Vector<Float>(4, true);
 
-public function DistanceFieldEffect()
-{
-    _scale = 1.0;
-    _mode = DistanceFieldStyle.MODE_BASIC;
-}
-
-override protected function createProgram():Program
-{
-    if (texture)
+    public function new()
     {
-        // va0 - position
-        // va1 - tex coords
-        // va2 - color
-        // va3 - basic settings (threshold, alpha, softness, local scale [encoded])
-        // va4 - outer settings (outerThreshold, outerAlphaEnd, outerOffsetX/Y)
-        // va5 - outer color (rgb, outerAlphaStart)
-        // vc5 - shadow offset multiplier (x, y), max local scale (z), global scale (w)
+        super();
+        _scale = 1.0;
+        _mode = DistanceFieldStyle.MODE_BASIC;
+    }
 
-        var isBasicMode:Bool  = _mode == DistanceFieldStyle.MODE_BASIC;
-        var isShadowMode:Bool = _mode == DistanceFieldStyle.MODE_SHADOW;
-
-        /// *** VERTEX SHADER ***
-
-        var vertexShader:Vector.<String> = new <String>[
-            "m44 op, va0, vc0", // 4x4 matrix transform to output clip-space
-            "mov v0, va1     ", // pass texture coordinates to fragment program
-            "mul v1, va2, vc4", // multiply alpha (vc4) with color (va2), pass to fp
-            "mov v3, va3     ",
-            "mov v4, va4     ",
-            "mov v5, va5     ",
-
-            // update softness to take current scale into account
-            "mul vt0.x, va3.w, vc5.z", // vt0.x = local scale [decoded]
-            "mul vt0.x, vt0.x, vc5.w", // vt0.x *= global scale
-            "div vt0.x, va3.z, vt0.x", // vt0.x = softness / total scale
-
-            // calculate min-max of threshold
-            "mov vt1, vc4",             // initialize vt1 with something (anything)
-            "sub vt1.x, va3.x, vt0.x",  // vt1.x = thresholdMin
-            "add vt1.y, va3.x, vt0.x"   // vt1.y = thresholdMax
-        ];
-
-        if (!isBasicMode)
+    override private function createProgram():Program
+    {
+        if (texture != null)
         {
-            vertexShader.push(
+            // va0 - position
+            // va1 - tex coords
+            // va2 - color
+            // va3 - basic settings (threshold, alpha, softness, local scale [encoded])
+            // va4 - outer settings (outerThreshold, outerAlphaEnd, outerOffsetX/Y)
+            // va5 - outer color (rgb, outerAlphaStart)
+            // vc5 - shadow offset multiplier (x, y), max local scale (z), global scale (w)
+
+            var isBasicMode:Bool  = _mode == DistanceFieldStyle.MODE_BASIC;
+            var isShadowMode:Bool = _mode == DistanceFieldStyle.MODE_SHADOW;
+
+            /// *** VERTEX SHADER ***
+
+            var vertexShader:Vector<String> = Vector.ofArray([
+                "m44 op, va0, vc0", // 4x4 matrix transform to output clip-space
+                "mov v0, va1     ", // pass texture coordinates to fragment program
+                "mul v1, va2, vc4", // multiply alpha (vc4) with color (va2), pass to fp
+                "mov v3, va3     ",
+                "mov v4, va4     ",
+                "mov v5, va5     ",
+
+                // update softness to take current scale into account
+                "mul vt0.x, va3.w, vc5.z", // vt0.x = local scale [decoded]
+                "mul vt0.x, vt0.x, vc5.w", // vt0.x *= global scale
+                "div vt0.x, va3.z, vt0.x", // vt0.x = softness / total scale
+
+                // calculate min-max of threshold
+                "mov vt1, vc4",             // initialize vt1 with something (anything)
+                "sub vt1.x, va3.x, vt0.x",  // vt1.x = thresholdMin
+                "add vt1.y, va3.x, vt0.x"   // vt1.y = thresholdMax
+            ]);
+
+            if (!isBasicMode)
+            {
                 // calculate min-max of outer threshold
-                "sub vt1.z, va4.x, vt0.x",     // vt1.z = outerThresholdMin
-                "add vt1.w, va4.x, vt0.x"      // vt1.w = outerThresholdMax
-            );
-        }
+                vertexShader.push("sub vt1.z, va4.x, vt0.x");     // vt1.z = outerThresholdMin
+                vertexShader.push("add vt1.w, va4.x, vt0.x");     // vt1.w = outerThresholdMax
+            }
 
-        vertexShader.push("sat v6, vt1"); // v6.xyzw = thresholdMin/Max, outerThresholdMin/Max
+            vertexShader.push("sat v6, vt1"); // v6.xyzw = thresholdMin/Max, outerThresholdMin/Max
 
-        if (isShadowMode)
-        {
-            vertexShader.push(
+            if (isShadowMode)
+            {
                 // calculate shadow offset
-                "mul vt0.xy, va4.zw, vc6.zz", // vt0.x/y = outerOffsetX/Y * 2
-                "sub vt0.xy, vt0.xy, vc6.yy", // vt0.x/y -= 1   -> range -1, 1
-                "mul vt0.xy, vt0.xy, vc5.xy", // vt0.x/y = outerOffsetX/Y in point size
-                "sub v7, va1, vt0.xyxy",      // v7.xy = shadow tex coords
+                vertexShader.push("mul vt0.xy, va4.zw, vc6.zz"); // vt0.x/y = outerOffsetX/Y * 2
+                vertexShader.push("sub vt0.xy, vt0.xy, vc6.yy"); // vt0.x/y -= 1   -> range -1, 1
+                vertexShader.push("mul vt0.xy, vt0.xy, vc5.xy"); // vt0.x/y = outerOffsetX/Y in point size
+                vertexShader.push("sub v7, va1, vt0.xyxy");      // v7.xy = shadow tex coords
 
                 // on shadows, the inner threshold is further inside than on glow & outline
-                "sub vt0.z, va3.x, va4.x",    // get delta between threshold and outer threshold
-                "add v7.z, va3.x, vt0.z"      // v7.z = inner threshold of shadow
-            );
-        }
+                vertexShader.push("sub vt0.z, va3.x, va4.x");    // get delta between threshold and outer threshold
+                vertexShader.push("add v7.z, va3.x, vt0.z");     // v7.z = inner threshold of shadow
+            }
 
-        /// *** FRAGMENT SHADER ***
+            /// *** FRAGMENT SHADER ***
 
-        var fragmentShader:Vector.<String> = new <String>[
-            // create basic inner area
-            tex("ft0", "v0", 0, texture),     // ft0 = texture color
-            "mov ft1, ft0",                   // ft1 = texture color
-            step("ft1.w", "v6.x", "v6.y"),    // make soft inner mask
-            "mov ft3, ft1",                   // store copy of inner mask in ft3 (for outline)
-            "mul ft1, v1, ft1.wwww"           // multiply with color
-        ];
+            var fragmentShader:Vector<String> = Vector.ofArray([
+                // create basic inner area
+                FilterEffect.tex("ft0", "v0", 0, texture),     // ft0 = texture color
+                "mov ft1, ft0",                   // ft1 = texture color
+                step("ft1.w", "v6.x", "v6.y"),    // make soft inner mask
+                "mov ft3, ft1",                   // store copy of inner mask in ft3 (for outline)
+                "mul ft1, v1, ft1.wwww"           // multiply with color
+            ]);
 
-        if (isShadowMode)
-        {
-            fragmentShader.push(
-                tex("ft0", "v7", 0, texture), // sample at shadow tex coords
-                "mov ft5.x, v7.z"             // ft5.x = inner threshold of shadow
-            );
-        }
-        else if (!isBasicMode)
-        {
-            fragmentShader.push(
-                "mov ft5.x, v6.x"             // ft5.x = inner threshold of outer area
-            );
-        }
+            if (isShadowMode)
+            {
+                fragmentShader.push(FilterEffect.tex("ft0", "v7", 0, texture)); // sample at shadow tex coords
+                fragmentShader.push("mov ft5.x, v7.z"); // ft5.x = inner threshold of shadow
+            }
+            else if (!isBasicMode)
+            {
+                fragmentShader.push(
+                    "mov ft5.x, v6.x"             // ft5.x = inner threshold of outer area
+                );
+            }
 
-        if (!isBasicMode)
-        {
-            fragmentShader.push(
+            if (!isBasicMode)
+            {
                 // outer area
-                "mov ft2, ft0",                 // ft2 = texture color
-                step("ft2.w", "v6.z", "v6.w"),  // make soft outer mask
-                "sub ft2.w, ft2.w, ft3.w",      // subtract inner area
-                "sat ft2.w, ft2.w",             // but stay within 0-1
+                fragmentShader.push("mov ft2, ft0");                 // ft2 = texture color
+                fragmentShader.push(step("ft2.w", "v6.z", "v6.w"));  // make soft outer mask
+                fragmentShader.push("sub ft2.w, ft2.w, ft3.w");      // subtract inner area
+                fragmentShader.push("sat ft2.w, ft2.w");             // but stay within 0-1
 
                 // add alpha gradient to outer area
-                "mov ft4, ft0",                 // ft4 = texture color
-                step("ft4.w", "v6.z", "ft5.x"), // make soft mask ranging between thresholds
-                "sub ft6.w, v5.w, v4.y",        // ft6.w  = alpha range (outerAlphaStart - End)
-                "mul ft4.w, ft4.w, ft6.w",      // ft4.w *= alpha range
-                "add ft4.w, ft4.w, v4.y",       // ft4.w += alpha end
+                fragmentShader.push("mov ft4, ft0");                 // ft4 = texture color
+                fragmentShader.push(step("ft4.w", "v6.z", "ft5.x")); // make soft mask ranging between thresholds
+                fragmentShader.push("sub ft6.w, v5.w, v4.y");        // ft6.w  = alpha range (outerAlphaStart - End)
+                fragmentShader.push("mul ft4.w, ft4.w, ft6.w");      // ft4.w *= alpha range
+                fragmentShader.push("add ft4.w, ft4.w, v4.y");       // ft4.w += alpha end
 
                 // colorize outer area
-                "mul ft2.w, ft2.w, ft4.w",      // get final outline alpha at this position
-                "mul ft2.xyz, v5.xyz, ft2.www"  // multiply with outerColor
-            );
+                fragmentShader.push("mul ft2.w, ft2.w, ft4.w");      // get final outline alpha at this position
+                fragmentShader.push("mul ft2.xyz, v5.xyz, ft2.www"); // multiply with outerColor
+            }
+
+            if (isBasicMode) fragmentShader.push("mov oc, ft1");
+            else             fragmentShader.push("add oc, ft1, ft2");
+
+            return Program.fromSource(vertexShader.join("\n"), fragmentShader.join("\n"));
+        }
+        else return super.createProgram();
+    }
+
+    private static function step(inOutReg:String, minReg:String, maxReg:String,
+                                tmpReg:String="ft6"):String
+    {
+        var ops:Vector.<String> = new <String>[
+            StringUtil.format("sub {0}, {1}, {2}", tmpReg, maxReg, minReg), // tmpReg = range
+            StringUtil.format("rcp {0}, {0}", tmpReg),                      // tmpReg = scale
+            StringUtil.format("sub {0}, {0}, {1}", inOutReg, minReg),       // inOut -= minimum
+            StringUtil.format("mul {0}, {0}, {1}", inOutReg, tmpReg),       // inOut *= scale
+            StringUtil.format("sat {0}, {0}", inOutReg)                     // clamp to 0-1
+        ];
+
+        return ops.join("\n");
+    }
+
+    override protected function beforeDraw(context:Context3D):Void
+    {
+        super.beforeDraw(context);
+
+        if (texture != null)
+        {
+            vertexFormat.setVertexBufferAt(3, vertexBuffer, "basic");
+            vertexFormat.setVertexBufferAt(4, vertexBuffer, "extended");
+            vertexFormat.setVertexBufferAt(5, vertexBuffer, "outerColor");
+
+            var pixelWidth:Float  = 1.0 / (texture.root.nativeWidth  / texture.scale);
+            var pixelHeight:Float = 1.0 / (texture.root.nativeHeight / texture.scale);
+
+            sVector[0] = MAX_OUTER_OFFSET * pixelWidth;
+            sVector[1] = MAX_OUTER_OFFSET * pixelHeight;
+            sVector[2] = MAX_SCALE;
+            sVector[3] = _scale;
+
+            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 5, sVector);
+
+            sVector[0] = 0.0;
+            sVector[1] = 1.0;
+            sVector[2] = 2.0;
+
+            context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 6, sVector);
+        }
+    }
+
+    override private function afterDraw(context:Context3D):Void
+    {
+        if (texture != null)
+        {
+            context.setVertexBufferAt(3, null);
+            context.setVertexBufferAt(4, null);
+            context.setVertexBufferAt(5, null);
+        }
+        super.afterDraw(context);
+    }
+
+    override private function get_vertexFormat():VertexDataFormat
+    {
+        return VERTEX_FORMAT;
+    }
+
+    override private function get_programVariantName():uint
+    {
+        var modeBits:UInt;
+
+        switch (_mode)
+        {
+            case DistanceFieldStyle.MODE_SHADOW:  modeBits = 3; break;
+            case DistanceFieldStyle.MODE_GLOW:    modeBits = 2; break;
+            case DistanceFieldStyle.MODE_OUTLINE: modeBits = 1; break;
+            default:                              modeBits = 0;
         }
 
-        if (isBasicMode) fragmentShader.push("mov oc, ft1");
-        else             fragmentShader.push("add oc, ft1, ft2");
+        if (_multiChannel) modeBits |= (1 << 2);
 
-        return Program.fromSource(vertexShader.join("\n"), fragmentShader.join("\n"));
-    }
-    else return super.createProgram();
-}
-
-private static function step(inOutReg:String, minReg:String, maxReg:String,
-                             tmpReg:String="ft6"):String
-{
-    var ops:Vector.<String> = new <String>[
-        StringUtil.format("sub {0}, {1}, {2}", tmpReg, maxReg, minReg), // tmpReg = range
-        StringUtil.format("rcp {0}, {0}", tmpReg),                      // tmpReg = scale
-        StringUtil.format("sub {0}, {0}, {1}", inOutReg, minReg),       // inOut -= minimum
-        StringUtil.format("mul {0}, {0}, {1}", inOutReg, tmpReg),       // inOut *= scale
-        StringUtil.format("sat {0}, {0}", inOutReg)                     // clamp to 0-1
-    ];
-
-    return ops.join("\n");
-}
-
-override protected function beforeDraw(context:Context3D):void
-{
-    super.beforeDraw(context);
-
-    if (texture)
-    {
-        vertexFormat.setVertexBufferAt(3, vertexBuffer, "basic");
-        vertexFormat.setVertexBufferAt(4, vertexBuffer, "extended");
-        vertexFormat.setVertexBufferAt(5, vertexBuffer, "outerColor");
-
-        var pixelWidth:Number  = 1.0 / (texture.root.nativeWidth  / texture.scale);
-        var pixelHeight:Number = 1.0 / (texture.root.nativeHeight / texture.scale);
-
-        sVector[0] = MAX_OUTER_OFFSET * pixelWidth;
-        sVector[1] = MAX_OUTER_OFFSET * pixelHeight;
-        sVector[2] = MAX_SCALE;
-        sVector[3] = _scale;
-
-        context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 5, sVector);
-
-        sVector[0] = 0.0;
-        sVector[1] = 1.0;
-        sVector[2] = 2.0;
-
-        context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 6, sVector);
-    }
-}
-
-override protected function afterDraw(context:Context3D):void
-{
-    if (texture)
-    {
-        context.setVertexBufferAt(3, null);
-        context.setVertexBufferAt(4, null);
-        context.setVertexBufferAt(5, null);
-    }
-    super.afterDraw(context);
-}
-
-override public function get vertexFormat():VertexDataFormat
-{
-    return VERTEX_FORMAT;
-}
-
-override protected function get programVariantName():uint
-{
-    var modeBits:uint;
-
-    switch (_mode)
-    {
-        case DistanceFieldStyle.MODE_SHADOW:  modeBits = 3; break;
-        case DistanceFieldStyle.MODE_GLOW:    modeBits = 2; break;
-        case DistanceFieldStyle.MODE_OUTLINE: modeBits = 1; break;
-        default:                              modeBits = 0;
+        return super.programVariantName | (modeBits << 8);
     }
 
-    return super.programVariantName | (modeBits << 8);
-}
+    public var scale(get, set):Float;
+    private function get_scale():Float { return _scale; }
+    private function set_scale(value:Float):Float { return _scale = value; }
 
-public function get scale():Number { return _scale; }
-public function set scale(value:Number):void { _scale = value; }
-
-public function get mode():String { return _mode; }
-public function set mode(value:String):void { _mode = value; }
+    public var mode(get, set):String;
+    private function get_mode():String { return _mode; }
+    private function set_mode(value:String):String { return _mode = value; }
 }

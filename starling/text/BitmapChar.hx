@@ -20,38 +20,38 @@ import starling.textures.Texture;
 class BitmapChar
 {
     private var __texture:Texture;
-    private var mCharID:Int;
+    private var __charID:Int;
     private var __xOffset:Float;
     private var __yOffset:Float;
     private var __xAdvance:Float;
-    private var mKernings:Map<Int, Float>;
+    private var __kernings:Map<Int, Float>;
     
     /** Creates a char with a texture and its properties. */
     public function new(id:Int, texture:Texture, 
                                xOffset:Float, yOffset:Float, xAdvance:Float)
     {
-        mCharID = id;
+        __charID = id;
         __texture = texture;
         __xOffset = xOffset;
         __yOffset = yOffset;
         __xAdvance = xAdvance;
-        mKernings = null;
+        __kernings = null;
     }
     
     /** Adds kerning information relative to a specific other character ID. */
     public function addKerning(charID:Int, amount:Float):Void
     {
-        if (mKernings == null)
-            mKernings = new Map<Int, Float>();
+        if (__kernings == null)
+            __kernings = new Map<Int, Float>();
         
-        mKernings[charID] = amount;
+        __kernings[charID] = amount;
     }
     
     /** Retrieve kerning information relative to the given character ID. */
     public function getKerning(charID:Int):Float
     {
-        if (mKernings == null || mKernings[charID] == null) return 0.0;
-        else return mKernings[charID];
+        if (__kernings == null || __kernings[charID] == null) return 0.0;
+        else return __kernings[charID];
     }
     
     /** Creates an image of the char. */
@@ -62,7 +62,7 @@ class BitmapChar
     
     /** The unicode ID of the char. */
     public var charID(get, never):Int;
-    private function get_charID():Int { return mCharID; }
+    private function get_charID():Int { return __charID; }
     
     /** The number of points to move the char in x direction on character arrangement. */
     public var xOffset(get, never):Float;

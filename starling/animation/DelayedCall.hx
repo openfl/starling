@@ -116,13 +116,22 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private function get_repeatCount():Int { return __repeatCount; }
     private function set_repeatCount(value:Int):Int { return __repeatCount = value; }
     
+    /** The callback that will be executed when the time is up. */
+    public var callback(get, never):Function;
+    private function get_callback():Function { return __callback; }
+
+    /** The arguments that the callback will be executed with.
+        *  Beware: not a copy, but the actual object! */
+    public var arguments(get, never):Array<Dynamic>;
+    private function get_arguments():Array<Dynamic> { return __args; }
+    
     // delayed call pooling
     
     private static var sPool:Vector<DelayedCall> = new Vector<DelayedCall>();
     
     /** @private */
     @:allow(starling) private static function fromPool(call:Function, delay:Float, 
-                                               args:Array<Dynamic>=null):DelayedCall
+                                                       args:Array<Dynamic>=null):DelayedCall
     {
         if (sPool.length != 0) return sPool.pop().reset(call, delay, args);
         else return new DelayedCall(call, delay, args);

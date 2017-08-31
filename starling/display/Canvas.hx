@@ -1,10 +1,10 @@
 // =================================================================================================
 //
-//  Starling Framework
-//  Copyright Gamua GmbH. All Rights Reserved.
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
-//  This program is free software. You can redistribute and/or modify it
-//  in accordance with the terms of the accompanying license agreement.
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
 //
 // =================================================================================================
 
@@ -25,12 +25,12 @@ class Canvas extends DisplayObjectContainer
     private var __polygons:Vector<Polygon>;
     private var __fillColor:UInt;
     private var __fillAlpha:Float;
-    
+
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function new()
     {
         super();
-        
+
         __polygons  = new Vector<Polygon>();
         __fillColor = 0xffffff;
         __fillAlpha = 1.0;
@@ -43,7 +43,7 @@ class Canvas extends DisplayObjectContainer
         __polygons.length = 0;
         super.dispose();
     }
-    
+
     /** @inheritDoc */
     public override function hitTest(localPoint:Point):DisplayObject
     {
@@ -112,12 +112,12 @@ class Canvas extends DisplayObjectContainer
     {
         var vertexData:VertexData = new VertexData();
         var indexData:IndexData = new IndexData(polygon.numTriangles * 3);
-        
+
         polygon.triangulate(indexData);
         polygon.copyToVertexData(vertexData);
 
         vertexData.colorize("color", __fillColor, __fillAlpha);
-        
+
         addChild(new Mesh(vertexData, indexData));
         __polygons[__polygons.length] = polygon;
     }

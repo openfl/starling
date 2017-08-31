@@ -12,7 +12,6 @@ package starling.core;
 
 import openfl.system.System;
 
-import starling.display.BlendMode;
 import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.EnterFrameEvent;
@@ -28,7 +27,7 @@ import starling.utils.Align;
 class StatsDisplay extends Sprite
 {
     private static inline var UPDATE_INTERVAL:Float = 0.5;
-    private static inline var B_TO_MB:Float = 1.0 / (1024 * 1024);
+    private static inline var B_TO_MB:Float = 1.0 / (1024 * 1024); // convert from bytes to MB
     
     private var __background:Quad;
     private var __labels:TextField;
@@ -36,7 +35,7 @@ class StatsDisplay extends Sprite
     
     private var __frameCount:Int = 0;
     private var __totalTime:Float = 0;
-    
+
     private var __fps:Float = 0;
     private var __memory:Float = 0;
     private var __gpuMemory:Float = 0;
@@ -47,7 +46,7 @@ class StatsDisplay extends Sprite
     public function new()
     {
         super();
-        
+
         var fontName:String = BitmapFont.MINI;
         var fontSize:Float = BitmapFont.NATIVE_SIZE;
         var fontColor:UInt  = 0xffffff;
@@ -122,7 +121,7 @@ class StatsDisplay extends Sprite
         __values.text = fpsText + "\n" + memText + "\n" +
             (__gpuMemory >= 0 ? gpuMemText + "\n" : "") + drwText;
     }
-    
+
     /** Call this once in every frame that can skip rendering because nothing changed. */
     public function markFrameAsSkipped():Void
     {
@@ -139,7 +138,7 @@ class StatsDisplay extends Sprite
         painter.finishMeshBatch();
         super.render(painter);
     }
-    
+
     /** Indicates if the current runtime supports the 'totalGPUMemory' API. */
     private var supportsGpuMem(get, never):Bool;
     private function get_supportsGpuMem():Bool

@@ -68,7 +68,7 @@ class Stage extends DisplayObjectContainer
     private var __cameraPosition:Vector3D;
     private var __enterFrameEvent:EnterFrameEvent;
     private var __enterFrameListeners:Vector<DisplayObject>;
-    
+
     /** Helper objects. */
     private static var sMatrix:Matrix = new Matrix();
     private static var sMatrix3D:Matrix3D = new Matrix3D();
@@ -291,7 +291,9 @@ class Stage extends DisplayObjectContainer
 
     private function set_focalLength(value:Float):Float
     {
-        return __fieldOfView = 2 * Math.atan(stageWidth / (2*value));
+        __fieldOfView = 2 * Math.atan(stageWidth / (2*value));
+        setRequiresRedraw();
+        return value;
     }
 
     /** Specifies an angle (radian, between zero and PI) for the field of view. This value
@@ -306,7 +308,12 @@ class Stage extends DisplayObjectContainer
      */
     public var fieldOfView(get, set):Float;
     private function get_fieldOfView():Float { return __fieldOfView; }
-    private function set_fieldOfView(value:Float):Float { return __fieldOfView = value; }
+    private function set_fieldOfView(value:Float):Float
+    {
+        __fieldOfView = value;
+        setRequiresRedraw();
+        return value;
+    }
 
     /** A vector that moves the camera away from its default position in the center of the
      * stage. Use this property to change the center of projection, i.e. the vanishing
@@ -317,6 +324,7 @@ class Stage extends DisplayObjectContainer
     private function set_projectionOffset(value:Point):Point
     {
         __projectionOffset.setTo(value.x, value.y);
+        setRequiresRedraw();
         return value;
     }
 

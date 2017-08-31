@@ -603,63 +603,63 @@ class FragmentFilter extends EventDispatcher
 
 class FilterQuad extends Mesh
 {
-	private static var sMatrix:Matrix = new Matrix();
+    private static var sMatrix:Matrix = new Matrix();
 
-	public function new(smoothing:String)
-	{
-		var vertexData:VertexData = new VertexData(null, 4);
-		vertexData.numVertices = 4;
+    public function new(smoothing:String)
+    {
+        var vertexData:VertexData = new VertexData(null, 4);
+        vertexData.numVertices = 4;
 
-		var indexData:IndexData = new IndexData(6);
-		indexData.addQuad(0, 1, 2, 3);
+        var indexData:IndexData = new IndexData(6);
+        indexData.addQuad(0, 1, 2, 3);
 
-		super(vertexData, indexData);
+        super(vertexData, indexData);
 
-		textureSmoothing = smoothing;
-		pixelSnapping = false;
-	}
+        textureSmoothing = smoothing;
+        pixelSnapping = false;
+    }
 
-	override public function dispose():Void
-	{
-		disposeTexture();
-		super.dispose();
-	}
+    override public function dispose():Void
+    {
+        disposeTexture();
+        super.dispose();
+    }
 
-	public function disposeTexture():Void
-	{
-		if (texture != null)
-		{
-			texture.dispose();
-			texture = null;
-		}
-	}
+    public function disposeTexture():Void
+    {
+        if (texture != null)
+        {
+            texture.dispose();
+            texture = null;
+        }
+    }
 
-	public function moveVertices(sourceSpace:DisplayObject, targetSpace:DisplayObject):Void
-	{
-		if (targetSpace.is3D)
-			throw new Error("cannot move vertices into 3D space");
-		else if (sourceSpace != targetSpace)
-		{
-			targetSpace.getTransformationMatrix(sourceSpace, sMatrix).invert(); // ss could be null!
-			vertexData.transformPoints("position", sMatrix);
-		}
-	}
+    public function moveVertices(sourceSpace:DisplayObject, targetSpace:DisplayObject):Void
+    {
+        if (targetSpace.is3D)
+            throw new Error("cannot move vertices into 3D space");
+        else if (sourceSpace != targetSpace)
+        {
+            targetSpace.getTransformationMatrix(sourceSpace, sMatrix).invert(); // ss could be null!
+            vertexData.transformPoints("position", sMatrix);
+        }
+    }
 
-	public function setBounds(bounds:Rectangle):Void
-	{
-		var vertexData:VertexData = this.vertexData;
-		var attrName:String = "position";
+    public function setBounds(bounds:Rectangle):Void
+    {
+        var vertexData:VertexData = this.vertexData;
+        var attrName:String = "position";
 
-		vertexData.setPoint(0, attrName, bounds.x, bounds.y);
-		vertexData.setPoint(1, attrName, bounds.right, bounds.y);
-		vertexData.setPoint(2, attrName, bounds.x, bounds.bottom);
-		vertexData.setPoint(3, attrName, bounds.right, bounds.bottom);
-	}
+        vertexData.setPoint(0, attrName, bounds.x, bounds.y);
+        vertexData.setPoint(1, attrName, bounds.right, bounds.y);
+        vertexData.setPoint(2, attrName, bounds.x, bounds.bottom);
+        vertexData.setPoint(3, attrName, bounds.right, bounds.bottom);
+    }
 
-	override private function set_texture(value:Texture):Texture
-	{
-		super.texture = value;
-		if (value != null) value.setupTextureCoordinates(vertexData);
-		return value;
-	}
+    override private function set_texture(value:Texture):Texture
+    {
+        super.texture = value;
+        if (value != null) value.setupTextureCoordinates(vertexData);
+        return value;
+    }
 }

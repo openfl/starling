@@ -354,6 +354,12 @@ import starling.utils.Color;
         if (index == -1) throw new ArgumentError("The property '" + property + "' is not animated");
         else return __endValues[index];
     }
+
+    /** Indicates if a property with the given name is being animated by this tween. */
+    public function animatesProperty(property:String):Bool
+    {
+        return __properties.indexOf(property) != -1;
+    }
     
     /** Indicates if the tween is finished. */
     public var isComplete(get, never):Bool;

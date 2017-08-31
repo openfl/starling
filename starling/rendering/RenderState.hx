@@ -11,7 +11,7 @@
 package starling.rendering;
 
 import haxe.Constraints.Function;
-
+import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.ArgumentError;
@@ -78,6 +78,12 @@ class RenderState
         [Context3DTriangleFace.NONE, Context3DTriangleFace.FRONT,
          Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK]);
 
+   private static var COMPARE_VALUES:Vector<Context3DCompareMode> = Vector.ofArray(
+        [Context3DCompareMode.ALWAYS,  Context3DCompareMode.NEVER,
+            Context3DCompareMode.LESS,    Context3DCompareMode.LESS_EQUAL,
+            Context3DCompareMode.EQUAL,   Context3DCompareMode.GREATER_EQUAL,
+            Context3DCompareMode.GREATER, Context3DCompareMode.NOT_EQUAL]);
+
     private var _miscOptions:UInt = 0;
     private var _clipRect:Rectangle;
     private var _renderTarget:Texture;
@@ -141,6 +147,8 @@ class RenderState
         this.alpha = 1.0;
         this.blendMode = BlendMode.NORMAL;
         this.culling = Context3DTriangleFace.NONE;
+        this.depthMask = false;
+        this.depthTest = Context3DCompareMode.ALWAYS;
         this.modelviewMatrix3D = null;
         this.renderTarget = null;
         this.clipRect = null;
@@ -366,6 +374,49 @@ class RenderState
             if (index == -1) throw new ArgumentError("Invalid culling mode");
 
             _miscOptions = (_miscOptions & 0xfffff0ff) | (index << 8);
+        }
+        return value;
+    }
+
+    /** Enables or disables depth buffer writes.
+        *  @default false
+        */
+    public var depthMask(get, set):Bool;
+    private function get_depthMask():Bool
+    {
+        return (_miscOptions & 0x0000f000) != 0;
+    }
+
+    private function set_depthMask(value:Bool):Bool
+    {
+        if (depthMask != value)
+        {
+            if (_onDrawRequired != null) _onDrawRequired();
+            _miscOptions = (_miscOptions & 0xffff0fff) | ((value ? 1 : 0) << 12);
+        }
+        return value;
+    }
+
+    /** Sets type of comparison used for depth testing.
+        *  @default Context3DCompareMode.ALWAYS
+        */
+    public var depthTest(get, set):String;
+    private function get_depthTest():String
+    {
+        var index:Int = (_miscOptions & 0x000f0000) >> 16;
+        return COMPARE_VALUES[index];
+    }
+
+    private function set_depthTest(value:String):String
+    {
+        if (depthTest != value)
+        {
+            if (_onDrawRequired != null) _onDrawRequired();
+
+            var index:Int = COMPARE_VALUES.indexOf(value);
+            if (index == -1) throw new ArgumentError("Invalid compare mode");
+
+            _miscOptions = (_miscOptions & 0xfff0ffff) | (index << 16);
         }
         return value;
     }

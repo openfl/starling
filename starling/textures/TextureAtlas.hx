@@ -70,9 +70,9 @@ import openfl.Vector;
  */
 class TextureAtlas
 {
-    private var mAtlasTexture:Texture;
-    private var mSubTextures:Map<String, SubTexture>;
-    private var mSubTextureNames:Vector<String>;
+    private var __atlasTexture:Texture;
+    private var __subTextures:Map<String, SubTexture>;
+    private var __subTextureNames:Vector<String>;
     
     /** helper objects */
     private static var sNames:Vector<String> = new Vector<String>();
@@ -80,8 +80,8 @@ class TextureAtlas
     /** Create a texture atlas from a texture by parsing the regions from an XML file. */
     public function new(texture:Texture, atlasXml:Xml=null)
     {
-        mSubTextures = new Map();
-        mAtlasTexture = texture;
+        __subTextures = new Map();
+        __atlasTexture = texture;
         
         if (atlasXml != null)
             parseAtlasXml(atlasXml);
@@ -90,7 +90,7 @@ class TextureAtlas
     /** Disposes the atlas texture. */
     public function dispose():Void
     {
-        mAtlasTexture.dispose();
+        __atlasTexture.dispose();
     }
     
     private function getXmlFloat(xml:Xml, attributeName:String):Float
@@ -107,7 +107,7 @@ class TextureAtlas
      * (e.g. to support a different file format). */
     private function parseAtlasXml(atlasXml:Xml):Void
     {
-        var scale:Float = mAtlasTexture.scale;
+        var scale:Float = __atlasTexture.scale;
         var region:Rectangle = new Rectangle();
         var frame:Rectangle  = new Rectangle();
         
@@ -141,7 +141,7 @@ class TextureAtlas
     /** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */
     public function getTexture(name:String):Texture
     {
-        return mSubTextures[name];
+        return __subTextures[name];
     }
     
     /** Returns all textures that start with a certain string, sorted alphabetically
@@ -163,15 +163,15 @@ class TextureAtlas
         var name:String;
         if (result == null) result = new Vector<String>();
         
-        if (mSubTextureNames == null)
+        if (__subTextureNames == null)
         {
             // optimization: store sorted list of texture names
-            mSubTextureNames = new Vector<String>();
-            for (name in mSubTextures.keys()) mSubTextureNames[mSubTextureNames.length] = name;
-            mSubTextureNames.sort(compare);
+            __subTextureNames = new Vector<String>();
+            for (name in __subTextures.keys()) __subTextureNames[__subTextureNames.length] = name;
+            __subTextureNames.sort(compare);
         }
 
-        for (name in mSubTextureNames)
+        for (name in __subTextureNames)
             if (name.indexOf(prefix) == 0)
                 result[result.length] = name;
         
@@ -182,7 +182,7 @@ class TextureAtlas
      * if no region with that name has been registered. */
     public function getRegion(name:String):Rectangle
     {
-        var subTexture:SubTexture = mSubTextures[name];
+        var subTexture:SubTexture = __subTextures[name];
         return subTexture != null ? subTexture.region : null;
     }
     
@@ -190,7 +190,7 @@ class TextureAtlas
      * has no frame. */
     public function getFrame(name:String):Rectangle
     {
-        var subTexture:SubTexture = mSubTextures[name];
+        var subTexture:SubTexture = __subTextures[name];
         return subTexture != null ? subTexture.frame : null;
     }
     
@@ -198,7 +198,7 @@ class TextureAtlas
      * SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
     public function getRotation(name:String):Bool
     {
-        var subTexture:SubTexture = mSubTextures[name];
+        var subTexture:SubTexture = __subTextures[name];
         return subTexture != null ? subTexture.rotated : false;
     }
 
@@ -207,22 +207,22 @@ class TextureAtlas
     public function addRegion(name:String, region:Rectangle, frame:Rectangle=null,
                               rotated:Bool=false):Void
     {
-        mSubTextures[name] = new SubTexture(mAtlasTexture, region, false, frame, rotated);
-        mSubTextureNames = null;
+        __subTextures[name] = new SubTexture(__atlasTexture, region, false, frame, rotated);
+        __subTextureNames = null;
     }
     
     /** Removes a region with a certain name. */
     public function removeRegion(name:String):Void
     {
-        var subTexture:SubTexture = mSubTextures[name];
+        var subTexture:SubTexture = __subTextures[name];
         if (subTexture != null) subTexture.dispose();
-        mSubTextures.remove(name);
-        mSubTextureNames = null;
+        __subTextures.remove(name);
+        __subTextureNames = null;
     }
     
     /** The base texture that makes up the atlas. */
     public var texture(get, never):Texture;
-    private function get_texture():Texture { return mAtlasTexture; }
+    private function get_texture():Texture { return __atlasTexture; }
     
     // utility methods
 

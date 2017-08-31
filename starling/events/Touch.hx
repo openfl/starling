@@ -106,7 +106,8 @@ class Touch
     /** Returns a description of the object. */
     public function toString():String
     {
-	return 'Touch $__id: globalX=$__globalX, globalY=$__globalY, phase=$__phase';
+        return StringUtil.format("[Touch {0}: globalX={1}, globalY={2}, phase={3}]",
+                                    [__id, __globalX, __globalY, __phase]);
     }
     
     /** Creates a clone of the Touch object. */

@@ -81,6 +81,7 @@ class Button extends DisplayObjectContainer
 
         __state = ButtonState.UP;
         __body = new Image(upState);
+        __body.pixelSnapping = true;
         __scaleWhenDown = downState != null? 1.0 : 0.9;
         __scaleWhenOver = __alphaWhenDown = 1.0;
         __alphaWhenDisabled = disabledState != null ? 1.0: 0.5;
@@ -294,7 +295,7 @@ class Button extends DisplayObjectContainer
         }
         return value;
     }
-    
+
     /** The format of the button's TextField. */
     public var textFormat(get, set):TextFormat;
     private function get_textFormat():TextFormat

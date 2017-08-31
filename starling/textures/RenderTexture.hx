@@ -12,6 +12,8 @@ package starling.textures;
 
 import haxe.Constraints.Function;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DTriangleFace;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -247,8 +249,11 @@ class RenderTexture extends SubTexture
 
         state.clipRect = sClipRect;
         state.setRenderTarget(_activeTexture, true, antiAliasing);
+
         painter.prepareToDraw();
-        
+        painter.context.setStencilActions( // should not be necessary, but fixes mask issues
+            Context3DTriangleFace.FRONT_AND_BACK, Context3DCompareMode.ALWAYS);
+
         if (isDoubleBuffered || !isPersistent || !_bufferReady)
             painter.clear();
 

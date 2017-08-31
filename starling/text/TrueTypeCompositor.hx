@@ -19,6 +19,7 @@ import starling.display.MeshBatch;
 import starling.display.Quad;
 import starling.textures.Texture;
 import starling.utils.Align;
+import starling.utils.MathUtil;
 import starling.utils.SystemUtil;
 
 /** This text compositor uses a Flash TextField to render system- or embedded fonts into
@@ -91,8 +92,9 @@ class TrueTypeCompositor implements ITextCompositor
     private function renderText(width:Float, height:Float, text:String,
                                 format:TextFormat, options:TextOptions):BitmapDataEx
     {
-        var scaledWidth:Float  = width  * options.textureScale;
-        var scaledHeight:Float = height * options.textureScale;
+        var scale:Float = options.textureScale;
+        var scaledWidth:Float  = width  * scale;
+        var scaledHeight:Float = height * scale;
         var hAlign:String = format.horizontalAlign;
 
         format.toNativeFormat(sNativeFormat);
@@ -119,16 +121,29 @@ class TrueTypeCompositor implements ITextCompositor
         if (options.autoScale)
             autoScaleNativeTextField(sNativeTextField, text, options.isHtmlText);
 
-        var textWidth:Float  = sNativeTextField.textWidth;
-        var textHeight:Float = sNativeTextField.textHeight;
-        var bitmapWidth:Int   = Math.ceil(textWidth)  + 4;
-        var bitmapHeight:Int  = Math.ceil(textHeight) + 4;
-        var maxTextureSize:Int = Texture.maxSize;
         var minTextureSize:Int = 1;
-        var offsetX:Float = 0.0;
+        var maxTextureSize:Int = Texture.maxSize;
+        var paddingX:Float = options.padding * scale;
+        var paddingY:Float = options.padding * scale;
+        var textWidth:Float  = sNativeTextField.textWidth  + 4;
+        var textHeight:Float = sNativeTextField.textHeight + 4;
+        var bitmapWidth:Int   = Std.int(Math.ceil(textWidth)  + 2 * paddingX);
+        var bitmapHeight:Int  = Std.int(Math.ceil(textHeight) + 2 * paddingY);
+
+        // if text + padding doesn't fit into the bitmap, reduce padding & cap bitmap size.
+        if (bitmapWidth > scaledWidth)
+        {
+            paddingX = MathUtil.max(0, (scaledWidth - textWidth) / 2);
+            bitmapWidth = Math.ceil(scaledWidth);
+        }
+        if (bitmapHeight > scaledHeight)
+        {
+            paddingY = MathUtil.max(0, (scaledHeight - textHeight) / 2);
+            bitmapHeight = Math.ceil(scaledHeight);
+        }
 
         // HTML text may have its own alignment -> use the complete width
-        if (options.isHtmlText) textWidth = bitmapWidth = Math.ceil(scaledWidth);
+        if (options.isHtmlText) textWidth = scaledWidth = bitmapWidth;
 
         // check for invalid texture sizes
         if (bitmapWidth  < minTextureSize) bitmapWidth  = 1;
@@ -140,17 +155,20 @@ class TrueTypeCompositor implements ITextCompositor
         }
         else
         {
+            var offsetX:Float = -paddingX;
+            var offsetY:Float = -paddingY;
+
             if (!options.isHtmlText)
             {
-                if      (hAlign == Align.RIGHT)  offsetX =  scaledWidth - textWidth - 4;
-                else if (hAlign == Align.CENTER) offsetX = (scaledWidth - textWidth - 4) / 2.0;
+                if      (hAlign == Align.RIGHT)  offsetX =  scaledWidth - textWidth - paddingX;
+                else if (hAlign == Align.CENTER) offsetX = (scaledWidth - textWidth) / 2.0 - paddingX;
             }
 
             // finally: draw TextField to bitmap data
             var bitmapData:BitmapDataEx = new BitmapDataEx(bitmapWidth, bitmapHeight);
-            sHelperMatrix.setTo(1, 0, 0, 1, -offsetX, 0);
+            sHelperMatrix.setTo(1, 0, 0, 1, -offsetX, -offsetY);
             bitmapData.draw(sNativeTextField, sHelperMatrix);
-            bitmapData.scale = options.textureScale;
+            bitmapData.scale = scale;
             sNativeTextField.text = "";
             return bitmapData;
         }
@@ -176,8 +194,6 @@ class TrueTypeCompositor implements ITextCompositor
         }
     }
 }
-
-
 
 class BitmapDataEx extends BitmapData
 {

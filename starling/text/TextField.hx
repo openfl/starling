@@ -104,26 +104,28 @@ class TextField extends DisplayObjectContainer
     private var _border:DisplayObjectContainer;
     private var _meshBatch:MeshBatch;
     private var _style:MeshStyle;
+    private var _recomposing:Bool;
 
     // helper objects
     private static var sMatrix:Matrix = new Matrix();
     private static var sDefaultCompositor:ITextCompositor = new TrueTypeCompositor();
     private static var sDefaultTextureFormat:String = Context3DTextureFormat.BGRA_PACKED;
-    private var _helperFormat:TextFormat = new TextFormat();
 
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String="", format:TextFormat=null)
     {
         super();
-        
+
         _text = text != null ? text : "";
         _hitArea = new Rectangle(0, 0, width, height);
         _requiresRecomposition = true;
         _compositor = sDefaultCompositor;
-        _options = new TextOptions();
 
         _format = format != null ? format.clone() : new TextFormat();
         _format.addEventListener(Event.CHANGE, setRequiresRecomposition);
+
+        _options = options != null ? options.clone() : new TextOptions();
+        _options.addEventListener(Event.CHANGE, setRequiresRecomposition);
 
         _meshBatch = new MeshBatch();
         _meshBatch.touchable = false;
@@ -135,6 +137,7 @@ class TextField extends DisplayObjectContainer
     public override function dispose():Void
     {
         _format.removeEventListener(Event.CHANGE, setRequiresRecomposition);
+        _options.removeEventListener(Event.CHANGE, setRequiresRecomposition);
         _compositor.clearMeshBatch(_meshBatch);
 
         super.dispose();
@@ -153,6 +156,7 @@ class TextField extends DisplayObjectContainer
     {
         if (_requiresRecomposition)
         {
+            _recomposing = true;
             _compositor.clearMeshBatch(_meshBatch);
 
             var fontName:String = _format.font;
@@ -170,6 +174,7 @@ class TextField extends DisplayObjectContainer
             updateBorder();
 
             _requiresRecomposition = false;
+            _recomposing = false;
         }
     }
 
@@ -179,15 +184,6 @@ class TextField extends DisplayObjectContainer
     {
         var width:Float  = _hitArea.width;
         var height:Float = _hitArea.height;
-        var format:TextFormat = _helperFormat;
-
-        // By working on a copy of the TextFormat, we make sure that modifications done
-        // within the 'fillMeshBatch' method do not cause any side effects.
-        //
-        // (We cannot use a static variable, because that might lead to problems when
-        //  recreating textures after a context loss.)
-
-        format.copyFrom(_format);
 
         // Horizontal autoSize does not work for HTML text, since it supports custom alignment.
         // What should we do if one line is aligned to the left, another to the right?
@@ -197,7 +193,6 @@ class TextField extends DisplayObjectContainer
 
         _meshBatch.x = _meshBatch.y = 0;
         _options.textureScale = Starling.current.contentScaleFactor;
-        _options.textureFormat = sDefaultTextureFormat;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
 
         if (_style != null) _meshBatch.style = _style;
@@ -247,11 +242,18 @@ class TextField extends DisplayObjectContainer
         topLine.color = rightLine.color = bottomLine.color = leftLine.color = _format.color;
     }
 
-    /** Forces the text to be recomposed before rendering it in the upcoming frame. */
-    private function setRequiresRecomposition():Void
+    /** Forces the text to be recomposed before rendering it in the upcoming frame. Any changes
+     *  of the TextField itself will automatically trigger recomposition; changes in its
+     *  parents or the viewport, however, need to be processed manually. For example, you
+     *  might want to force recomposition to fix blurring caused by a scale factor change.
+     */
+    public function setRequiresRecomposition():Void
     {
-        _requiresRecomposition = true;
-        setRequiresRedraw();
+        if (!_recomposing)
+        {
+            _requiresRecomposition = true;
+            setRequiresRedraw();
+        }
     }
 
     // properties
@@ -351,6 +353,13 @@ class TextField extends DisplayObjectContainer
         return value;
     }
 
+    /** The options that describe how the letters of a text should be assembled.
+     *  This class basically collects all the TextField's properties that are needed
+     *  during text composition. Since an instance of 'TextOptions' is passed to the
+     *  constructor, you can pass custom options to the compositor. */
+    private var options(get, never):TextOptions;
+    private function get_options():TextOptions { return _options; }
+
     /** Draws a border around the edges of the text field. Useful for visual debugging.
      *  @default false */
     public var border(get, set):Bool;
@@ -379,44 +388,20 @@ class TextField extends DisplayObjectContainer
      *  not fit into the TextField. @default false */
     public var autoScale(get, set):Bool;
     private function get_autoScale():Bool { return _options.autoScale; }
-    private function set_autoScale(value:Bool):Bool
-    {
-        if (_options.autoScale != value)
-        {
-            _options.autoScale = value;
-            setRequiresRecomposition();
-        }
-        return value;
-    }
-    
+    private function set_autoScale(value:Bool):Bool { return _options.autoScale = value; }
+
     /** Specifies the type of auto-sizing the TextField will do.
      *  Note that any auto-sizing will implicitly deactivate all auto-scaling.
      *  @default none */
     public var autoSize(get, set):String;
     private function get_autoSize():String { return _options.autoSize; }
-    private function set_autoSize(value:String):String
-    {
-        if (_options.autoSize != value)
-        {
-            _options.autoSize = value;
-            setRequiresRecomposition();
-        }
-        return value;
-    }
+    private function set_autoSize(value:String):String { return _options.autoSize = value; }
 
     /** Indicates if the text should be wrapped at word boundaries if it does not fit into
      *  the TextField otherwise. @default true */
     public var wordWrap(get, set):Bool;
     private function get_wordWrap():Bool { return _options.wordWrap; }
-    private function set_wordWrap(value:Bool):Bool
-    {
-        if (value != _options.wordWrap)
-        {
-            _options.wordWrap = value;
-            setRequiresRecomposition();
-        }
-        return value;
-    }
+    private function set_wordWrap(value:Bool):Bool { return _options.wordWrap = value; }
 
     /** Indicates if TextField should be batched on rendering.
      *
@@ -439,15 +424,7 @@ class TextField extends DisplayObjectContainer
      *  TrueType fonts! @default false */
     public var isHtmlText(get, set):Bool;
     private function get_isHtmlText():Bool { return _options.isHtmlText; }
-    private function set_isHtmlText(value:Bool):Bool
-    {
-        if (_options.isHtmlText != value)
-        {
-            _options.isHtmlText = value;
-            setRequiresRecomposition();
-        }
-        return value;
-    }
+    private function set_isHtmlText(value:Bool):Bool { return _options.isHtmlText = value; }
 
     #if flash
     /** An optional style sheet to be used for HTML text. For more information on style
@@ -455,12 +432,7 @@ class TextField extends DisplayObjectContainer
      *  @default null */
     public var styleSheet(get, set):StyleSheet;
     private function get_styleSheet():StyleSheet { return _options.styleSheet; }
-    private function set_styleSheet(value:StyleSheet):StyleSheet
-    {
-        _options.styleSheet = value;
-        setRequiresRecomposition();
-        return value;
-    }
+    private function set_styleSheet(value:StyleSheet):StyleSheet { return _options.styleSheet = value; }
     #end
 
     /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the

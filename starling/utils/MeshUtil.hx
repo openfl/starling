@@ -34,9 +34,9 @@ class MeshUtil
     public function MeshUtil() { throw new AbstractClassError(); }
 
     /** Determines if a point is inside a mesh that is spawned up by the given
-     *  vertex- and index-data. */
+        *  vertex- and index-data. */
     public static function containsPoint(vertexData:VertexData, indexData:IndexData,
-                                         point:Point):Bool
+                                            point:Point):Bool
     {
         var i:Int;
         var result:Bool = false;
@@ -44,22 +44,22 @@ class MeshUtil
         var p0:Point = Pool.getPoint();
         var p1:Point = Pool.getPoint();
         var p2:Point = Pool.getPoint();
-		
-		var i:Int = 0;
+
+        var i:Int = 0;
         while (i < numIndices)
         {
             vertexData.getPoint(indexData.getIndex(i  ), "position", p0);
             vertexData.getPoint(indexData.getIndex(i+1), "position", p1);
             vertexData.getPoint(indexData.getIndex(i + 2), "position", p2);
-			
+
             if (MathUtil.isPointInTriangle(point, p0, p1, p2))
             {
                 result = true;
-				i = numIndices;
+                i = numIndices;
                 break;
             }
-			
-			i += 3;
+            
+            i += 3;
         }
         Pool.putPoint(p0);
         Pool.putPoint(p1);
@@ -70,9 +70,9 @@ class MeshUtil
 
     /** Calculates the bounds of the given vertices in the target coordinate system. */
     public static function calculateBounds(vertexData:VertexData,
-                                           sourceSpace:DisplayObject,
-                                           targetSpace:DisplayObject,
-                                           out:Rectangle=null):Rectangle
+                                            sourceSpace:DisplayObject,
+                                            targetSpace:DisplayObject,
+                                            out:Rectangle=null):Rectangle
     {
         if (out == null) out = new Rectangle();
 

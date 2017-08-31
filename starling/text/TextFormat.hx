@@ -118,7 +118,7 @@ class TextFormat extends EventDispatcher
      *  Beware: If you loaded an embedded font at runtime, you must call
      *  <code>TextField.updateEmbeddedFonts()</code> for Starling to recognize it.
      */
-	public var font(get, set):String;
+    public var font(get, set):String;
     private function get_font():String { return __font; }
     private function set_font(value:String):String
     {
@@ -132,7 +132,7 @@ class TextFormat extends EventDispatcher
 
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for
      *  the original size. */
-	public var size(get, set):Float;
+    public var size(get, set):Float;
     private function get_size():Float { return __size; }
     private function set_size(value:Float):Float
     {
@@ -147,7 +147,7 @@ class TextFormat extends EventDispatcher
     /** The color of the text. Note that bitmap fonts should be exported in plain white so
      *  that tinting works correctly. If your bitmap font contains colors, set this property
      *  to <code>Color.WHITE</code> to get the desired result. @default black */
-	public var color(get, set):UInt;
+    public var color(get, set):UInt;
     private function get_color():UInt { return __color; }
     private function set_color(value:UInt):UInt
     {
@@ -160,7 +160,7 @@ class TextFormat extends EventDispatcher
     }
 
     /** Indicates whether the text is bold. @default false */
-	public var bold(get, set):Bool;
+    public var bold(get, set):Bool;
     private function get_bold():Bool { return __bold; }
     private function set_bold(value:Bool):Bool
     {
@@ -173,7 +173,7 @@ class TextFormat extends EventDispatcher
     }
 
     /** Indicates whether the text is italicized. @default false */
-	public var italic(get, set):Bool;
+    public var italic(get, set):Bool;
     private function get_italic():Bool { return __italic; }
     private function set_italic(value:Bool):Bool
     {
@@ -184,9 +184,9 @@ class TextFormat extends EventDispatcher
         }
         return value;
     }
-	
+
     /** Indicates whether the text is underlined. @default false */
-	public var underline(get, set):Bool;
+    public var underline(get, set):Bool;
     private function get_underline():Bool { return __underline; }
     private function set_underline(value:Bool):Bool
     {
@@ -200,7 +200,7 @@ class TextFormat extends EventDispatcher
 
     /** The horizontal alignment of the text. @default center
      *  @see starling.utils.Align */
-	public var horizontalAlign(get, set):String;
+    public var horizontalAlign(get, set):String;
     private function get_horizontalAlign():String { return __horizontalAlign; }
     private function set_horizontalAlign(value:String):String
     {
@@ -217,7 +217,7 @@ class TextFormat extends EventDispatcher
 
     /** The vertical alignment of the text. @default center
      *  @see starling.utils.Align */
-	public var verticalAlign(get, set):String;
+    public var verticalAlign(get, set):String;
     private function get_verticalAlign():String { return __verticalAlign; }
     private function set_verticalAlign(value:String):String
     {
@@ -234,7 +234,7 @@ class TextFormat extends EventDispatcher
 
     /** Indicates whether kerning is enabled. Kerning adjusts the pixels between certain
      *  character pairs to improve readability. @default true */
-	public var kerning(get, set):Bool;
+    public var kerning(get, set):Bool;
     private function get_kerning():Bool { return __kerning; }
     private function set_kerning(value:Bool):Bool
     {
@@ -247,7 +247,7 @@ class TextFormat extends EventDispatcher
     }
 
     /** The amount of vertical space (called 'leading') between lines. @default 0 */
-	public var leading(get, set):Float;
+    public var leading(get, set):Float;
     private function get_leading():Float { return __leading; }
     private function set_leading(value:Float):Float
     {
@@ -258,9 +258,9 @@ class TextFormat extends EventDispatcher
         }
         return value;
     }
-	
+    
     /** A number representing the amount of space that is uniformly distributed between all characters. @default 0 */
-	public var letterSpacing(get, set):Float;
+    public var letterSpacing(get, set):Float;
     private function get_letterSpacing():Float { return __letterSpacing; }
     private function set_letterSpacing(value:Float):Float
     {

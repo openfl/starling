@@ -37,7 +37,6 @@ import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
-
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -786,5 +785,25 @@ class Texture
             return 2048;
         else
             return 4096;
+    }
+
+    /** Indicates if it should be attempted to upload bitmaps asynchronously when the <code>async</code> parameter
+        *  is supplied to supported methods. Since this feature is still not 100% reliable in AIR 26 (especially on
+        *  Android), it defaults to 'false' for now.
+        *
+        *  <p>If the feature is disabled or not available in the current AIR/Flash runtime, the async callback will
+        *  still be executed; however, the upload itself will be made synchronously.</p>
+        */
+    public static var asyncBitmapUploadEnabled(get, set):Bool;
+    private static function get_asyncBitmapUploadEnabled():Bool
+    {
+        return ConcreteRectangleTexture.asyncUploadEnabled;
+    }
+
+    private static function set_asyncBitmapUploadEnabled(value:Bool):Bool
+    {
+        ConcreteRectangleTexture.asyncUploadEnabled = value;
+        ConcretePotTexture.asyncUploadEnabled = value;
+        return value;
     }
 }

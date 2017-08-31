@@ -28,7 +28,7 @@ class TouchMarker extends Sprite
     public function new()
     {
         super();
-	
+
         __center = new Point();
         __texture = createTexture();
         

@@ -276,7 +276,7 @@ class Effect
     {
         var vertexShader:String = [
             "m44 op, va0, vc0", // 4x4 matrix transform to output clipspace
-            "seq v0, va0, va0"  // this is a hack that always produces "1"
+            "sge v0, va0, va0"  // this is a hack that always produces "1"
         ].join("\n");
 
         var fragmentShader:String =

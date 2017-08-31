@@ -31,7 +31,7 @@ import starling.utils.Execute.execute;
 {
     private var _textureReadyCallback:Function;
 
-    private static var sAsyncSupported:Bool = true;
+    private static var sAsyncUploadEnabled:Bool = false;
 
     /** Creates a new instance with the given parameters. */
     private function new(base:RectangleTexture, format:String,
@@ -84,20 +84,20 @@ import starling.utils.Execute.execute;
 
     private function uploadAsync(source:BitmapData):Void
     {
-        if (sAsyncSupported)
+        if (sAsyncUploadEnabled)
         {
             var method = Reflect.field(base, "uploadFromBitmapDataAsync");
             try { Reflect.callMethod(method, method, [source]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)
-                    sAsyncSupported = false; // feature or method not available
+                    sAsyncUploadEnabled = false; // feature or method not available
                 else
                     throw error;
             }
         }
 
-        if (!sAsyncSupported)
+        if (!sAsyncUploadEnabled)
         {
             Timer.delay(function() {
                 base.dispatchEvent(new Event(Event.TEXTURE_READY));
@@ -114,4 +114,9 @@ import starling.utils.Execute.execute;
         execute(_textureReadyCallback, [this, event]);
         _textureReadyCallback = null;
     }
+
+    /** @private */
+    @:allow(starling) private static var asyncUploadEnabled(get, set):Bool;
+    private static function get_asyncUploadEnabled():Bool { return sAsyncUploadEnabled; }
+    private static function set_asyncUploadEnabled(value:Bool):Bool { return sAsyncUploadEnabled = value; }
 }

@@ -245,9 +245,9 @@ class RectangleUtil
         else
         {
             return r1.x > r2.x - e && r1.x < r2.x + e &&
-                   r1.y > r2.y - e && r1.y < r2.y + e &&
-                   r1.width  > r2.width  - e && r1.width  < r2.width  + e &&
-                   r1.height > r2.height - e && r1.height < r2.height + e;
+                    r1.y > r2.y - e && r1.y < r2.y + e &&
+                    r1.width  > r2.width  - e && r1.width  < r2.width  + e &&
+                    r1.height > r2.height - e && r1.height < r2.height + e;
         }
     }
 }

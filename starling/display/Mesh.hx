@@ -21,6 +21,7 @@ import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
 import starling.styles.MeshStyle;
 import starling.textures.Texture;
+import starling.utils.Execute.execute;
 import starling.utils.MatrixUtil;
 import starling.utils.MeshUtil;
 
@@ -49,7 +50,7 @@ class Mesh extends DisplayObject
     @:allow(starling) private var __pixelSnapping:Bool;
 
     private static var sDefaultStyle:Class<Dynamic> = MeshStyle;
-    private static var sDefaultStyleFactory:Mesh->MeshStyle = null;
+    private static var sDefaultStyleFactory:?Mesh->MeshStyle = null;
 
     /** Creates a new mesh with the given vertices and indices.
      *  If you don't pass a style, an instance of <code>MeshStyle</code> will be created
@@ -57,7 +58,8 @@ class Mesh extends DisplayObject
      *  given style right away. */
     public function new(vertexData:VertexData, indexData:IndexData, style:MeshStyle=null)
     {
-		super();
+        super();
+
         if (vertexData == null) throw new ArgumentError("VertexData must not be null");
         if (indexData == null)  throw new ArgumentError("IndexData must not be null");
 
@@ -137,9 +139,17 @@ class Mesh extends DisplayObject
 
         if (sDefaultStyleFactory != null)
         {
-            //if (sDefaultStyleFactory.length == 0) meshStyle = sDefaultStyleFactory();
-            //else meshStyle = sDefaultStyleFactory(this);
-            meshStyle = sDefaultStyleFactory(this);
+            #if (flash || js)
+            var numArgs:Int = untyped sDefaultStyleFactory.length;
+            #elseif neko
+            var numArgs:Int = untyped ($nargs)(sDefaultStyleFactory);
+            #elseif cpp
+            var numArgs:Int = untyped sDefaultStyleFactory.__ArgCount();
+            #else
+            var numArgs:Int = 1;
+            #end
+            if (numArgs == 0) meshStyle = sDefaultStyleFactory();
+            else meshStyle = sDefaultStyleFactory(this);
         }
 
         if (meshStyle == null)
@@ -321,9 +331,9 @@ class Mesh extends DisplayObject
      *      return new ColorizeMeshStyle(Math.random() * 0xffffff);
      *  }</listing>
      */
-    public static var defaultStyleFactory(get, set):Mesh->MeshStyle;
-    private static function get_defaultStyleFactory():Mesh->MeshStyle { return sDefaultStyleFactory; }
-    private static function set_defaultStyleFactory(value:Mesh->MeshStyle):Mesh->MeshStyle
+    public static var defaultStyleFactory(get, set):?Mesh->MeshStyle;
+    private static function get_defaultStyleFactory():?Mesh->MeshStyle { return sDefaultStyleFactory; }
+    private static function set_defaultStyleFactory(value:?Mesh->MeshStyle):?Mesh->MeshStyle
     {
         return sDefaultStyleFactory = value;
     }

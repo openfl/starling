@@ -1,10 +1,10 @@
 // =================================================================================================
 //
-//  Starling Framework
-//  Copyright Gamua GmbH. All Rights Reserved.
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
 //
-//  This program is free software. You can redistribute and/or modify it
-//  in accordance with the terms of the accompanying license agreement.
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
 //
 // =================================================================================================
 
@@ -34,6 +34,7 @@ import starling.filters.FragmentFilter;
 import starling.rendering.BatchToken;
 import starling.rendering.Painter;
 import starling.utils.Align;
+import starling.utils.Color;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -137,11 +138,12 @@ class DisplayObject extends EventDispatcher
     private var __useHandCursor:Bool;
     private var __transformationMatrix:Matrix;
     private var __transformationMatrix3D:Matrix3D;
-    private var __orientationChanged:Bool;
+    private var __transformationChanged:Bool;
     private var __is3D:Bool;
     private var __isMask:Bool;
     private var __maskee:DisplayObject;
-    
+    private var __maskInverted:Bool = false;
+
     // internal members (for fast access on rendering)
 
     @:allow(starling) private var __parent:DisplayObjectContainer;
@@ -153,9 +155,9 @@ class DisplayObject extends EventDispatcher
     @:allow(starling) private var __hasVisibleArea:Bool;
     @:allow(starling) private var __filter:FragmentFilter;
     @:allow(starling) private var __mask:DisplayObject;
-    
+
     // helper objects
-    
+
     private static var sAncestors:Vector<DisplayObject> = new Vector<DisplayObject>();
     private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
@@ -173,11 +175,10 @@ class DisplayObject extends EventDispatcher
         super();
         
         __x = __y = __pivotX = __pivotY = __rotation = __skewX = __skewY = 0.0;
-        __scaleX = __scaleY = __alpha = 1.0;            
+        __scaleX = __scaleY = __alpha = 1.0;
         __visible = __touchable = __hasVisibleArea = true;
         __blendMode = BlendMode.AUTO;
         __transformationMatrix = new Matrix();
-        __orientationChanged = __useHandCursor = false;
     }
     
     /** Disposes all resources of the display object. 
@@ -320,7 +321,7 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a point from the local coordinate system to global (stage) coordinates.
-     * If you pass a 'resultPoint', the result will be stored in this point instead of 
+     * If you pass an <code>out</code>-point, the result will be stored in this point instead of 
      * creating a new object. */
     public function localToGlobal(localPoint:Point, out:Point=null):Point
     {
@@ -337,7 +338,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Transforms a point from global (stage) coordinates to the local coordinate system.
-     * If you pass a 'resultPoint', the result will be stored in this point instead of 
+     * If you pass an <code>out</code>-point, the result will be stored in this point instead of 
      * creating a new object. */
     public function globalToLocal(globalPoint:Point, out:Point=null):Point
     {
@@ -355,10 +356,12 @@ class DisplayObject extends EventDispatcher
         }
     }
     
-    /** Renders the display object with the help of a support object. Never call this method
-     * directly, except from within another render method.
-     * @param support Provides utility functions for rendering.
-     * @param parentAlpha The accumulated alpha value from the object's parent up to the stage. */
+    /** Renders the display object with the help of a painter object. Never call this method
+     *  directly, except from within another render method.
+     *
+     *  @param painter Captures the current render state and provides utility functions
+     *                 for rendering.
+     */
     public function render(painter:Painter):Void
     {
         throw new AbstractMethodError();
@@ -370,45 +373,68 @@ class DisplayObject extends EventDispatcher
                                verticalAlign:String="center"):Void
     {
         var bounds:Rectangle = getBounds(this, sHelperRect);
-        __setOrientationChanged();
-        
+
         if (horizontalAlign == Align.LEFT)        __pivotX = bounds.x;
         else if (horizontalAlign == Align.CENTER) __pivotX = bounds.x + bounds.width / 2.0;
-        else if (horizontalAlign == Align.RIGHT)  __pivotX = bounds.x + bounds.width; 
+        else if (horizontalAlign == Align.RIGHT)  __pivotX = bounds.x + bounds.width;
         else throw new ArgumentError("Invalid horizontal alignment: " + horizontalAlign);
         
-        if (verticalAlign == Align.TOP)         __pivotY = bounds.y;
-        else if (verticalAlign == Align.CENTER) __pivotY = bounds.y + bounds.height / 2.0;
-        else if (verticalAlign == Align.BOTTOM) __pivotY = bounds.y + bounds.height;
+        if (verticalAlign == Align.TOP)           __pivotY = bounds.y;
+        else if (verticalAlign == Align.CENTER)   __pivotY = bounds.y + bounds.height / 2.0;
+        else if (verticalAlign == Align.BOTTOM)   __pivotY = bounds.y + bounds.height;
         else throw new ArgumentError("Invalid vertical alignment: " + verticalAlign);
     }
-    
+
     /** Draws the object into a BitmapData object.
      *
-     *  @param out  If you pass null, the object will be created for you.
-     *              If you pass a BitmapData object, it should have the size of the
-     *              object bounds, multiplied by the current contentScaleFactor.
+     *  @param out   If you pass null, the object will be created for you.
+     *               If you pass a BitmapData object, it should have the size of the
+     *               object bounds, multiplied by the current contentScaleFactor.
+     *  @param color The RGB color value with which the bitmap will be initialized.
+     *  @param alpha The alpha value with which the bitmap will be initialized.
      */
-    public function drawToBitmapData(out:BitmapData=null):BitmapData
+    public function drawToBitmapData(out:BitmapData=null,
+                                       color:UInt=0x0, alpha:Float=0.0):BitmapData
     {
+        var painter:Painter = Starling.current.painter;
         var stage:Stage = Starling.current.stage;
+        var viewPort:Rectangle = Starling.current.viewPort;
         var stageWidth:Float = stage.stageWidth;
         var stageHeight:Float = stage.stageHeight;
-        var scale:Float = Starling.current.contentScaleFactor;
-        var painter:Painter = Starling.current.painter;
-        var bounds:Rectangle = Std.is(this, Stage) ?
-            stage.getStageBounds(this, sHelperRect) : getBounds(__parent, sHelperRect);
+        var scaleX:Float = viewPort.width  / stageWidth;
+        var scaleY:Float = viewPort.height / stageHeight;
+        var backBufferScale:Float = painter.backBufferScaleFactor;
+        var projectionX:Float, projectionY:Float;
+        var bounds:Rectangle;
 
-        if (out == null)
-            out = new BitmapData(Math.ceil(bounds.width  * scale),
-                                 Math.ceil(bounds.height * scale));
+        if (Std.is(this, Stage))
+        {
+            projectionX = viewPort.x < 0 ? -viewPort.x / scaleX : 0.0;
+            projectionY = viewPort.y < 0 ? -viewPort.y / scaleY : 0.0;
 
-        painter.clear();
+            if (out == null) out = new BitmapData(Std.int(painter.backBufferWidth  * backBufferScale),
+                                    Std.int(painter.backBufferHeight * backBufferScale));
+        }
+        else
+        {
+            bounds = getBounds(__parent, sHelperRect);
+            projectionX = bounds.x;
+            projectionY = bounds.y;
+
+            if (out == null) out = new BitmapData(Math.ceil(bounds.width  * scaleX * backBufferScale),
+                                    Math.ceil(bounds.height * scaleY * backBufferScale));
+        }
+
+        color = Color.multiply(color, alpha); // premultiply alpha
+
+        painter.clear(color, alpha);
         painter.pushState();
+        painter.setupContextDefaults();
         painter.state.renderTarget = null;
         painter.state.setModelviewMatricesToIdentity();
         painter.setStateTo(transformationMatrix);
-        painter.state.setProjectionMatrix(bounds.x, bounds.y, stageWidth, stageHeight,
+        painter.state.setProjectionMatrix(projectionX, projectionY,
+            painter.backBufferWidth / scaleX, painter.backBufferHeight / scaleY,
             stageWidth, stageHeight, stage.cameraPosition);
 
         render(painter);
@@ -419,15 +445,15 @@ class DisplayObject extends EventDispatcher
 
         return out;
     }
-    
+
     // 3D transformation
 
     /** Creates a matrix that represents the transformation from the local coordinate system
      * to another. This method supports three dimensional objects created via 'Sprite3D'.
-     * If you pass a 'resultMatrix', the result will be stored in this matrix
+     * If you pass an <code>out</code>-matrix, the result will be stored in this matrix
      * instead of creating a new object. */
     public function getTransformationMatrix3D(targetSpace:DisplayObject,
-                                              out:Matrix3D=null):Matrix3D
+                                                out:Matrix3D=null):Matrix3D
     {
         var commonParent:DisplayObject;
         var currentObject:DisplayObject;
@@ -503,7 +529,7 @@ class DisplayObject extends EventDispatcher
     /** Transforms a 3D point from the local coordinate system to global (stage) coordinates.
      * This is achieved by projecting the 3D point onto the (2D) view plane.
      *
-     * <p>If you pass a 'resultPoint', the result will be stored in this point instead of
+     * <p>If you pass an <code>out</code>-point, the result will be stored in this point instead of
      * creating a new object.</p> */
     public function local3DToGlobal(localPoint:Vector3D, out:Point=null):Point
     {
@@ -516,7 +542,7 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a point from global (stage) coordinates to the 3D local coordinate system.
-     * If you pass a 'resultPoint', the result will be stored in this point instead of
+     * If you pass an <code>out</code>-vector, the result will be stored in this point instead of
      * creating a new object. */
     public function globalToLocal3D(globalPoint:Point, out:Vector3D=null):Vector3D
     {
@@ -545,7 +571,7 @@ class DisplayObject extends EventDispatcher
         else
             __parent = value; 
     }
-    
+
     /** @private */
     private function __setIs3D(value:Bool):Void
     {
@@ -579,7 +605,7 @@ class DisplayObject extends EventDispatcher
 
         __lastParentOrSelfChangeFrameID = frameID;
         __hasVisibleArea = __alpha  != 0.0 && __visible && __maskee == null &&
-                          __scaleX != 0.0 && __scaleY != 0.0;
+                            __scaleX != 0.0 && __scaleY != 0.0;
 
         while (parent != null && parent.__lastChildChangeFrameID != frameID)
         {
@@ -597,7 +623,7 @@ class DisplayObject extends EventDispatcher
         var frameID:UInt = Starling.current.frameID;
 
         return __lastParentOrSelfChangeFrameID == frameID ||
-               __lastChildChangeFrameID == frameID;
+                __lastChildChangeFrameID == frameID;
     }
 
     /** @private Makes sure the object is not drawn from cache in the next frame.
@@ -617,14 +643,62 @@ class DisplayObject extends EventDispatcher
 
     // helpers
 
-    private function __setOrientationChanged():Void
+    /** @private */
+    @:allow(starling) private function __setTransformationChanged():Void
     {
-        __orientationChanged = true;
+        __transformationChanged = true;
         setRequiresRedraw();
     }
-    
+
+    /** @private */
+    @:allow(starling) private function __updateTransformationMatrices(
+        x:Float, y:Float, pivotX:Float, pivotY:Float, scaleX:Float, scaleY:Float,
+        skewX:Float, skewY:Float, rotation:Float, out:Matrix, out3D:Matrix3D):Void
+    {
+        if (skewX == 0.0 && skewY == 0.0)
+        {
+            // optimization: no skewing / rotation simplifies the matrix math
+
+            if (rotation == 0.0)
+            {
+                out.setTo(scaleX, 0.0, 0.0, scaleY,
+                    x - pivotX * scaleX, y - pivotY * scaleY);
+            }
+            else
+            {
+                var cos:Float = Math.cos(rotation);
+                var sin:Float = Math.sin(rotation);
+                var a:Float   = scaleX *  cos;
+                var b:Float   = scaleX *  sin;
+                var c:Float   = scaleY * -sin;
+                var d:Float   = scaleY *  cos;
+                var tx:Float  = x - pivotX * a - pivotY * c;
+                var ty:Float  = y - pivotX * b - pivotY * d;
+
+                out.setTo(a, b, c, d, tx, ty);
+            }
+        }
+        else
+        {
+            out.identity();
+            out.scale(scaleX, scaleY);
+            MatrixUtil.skew(out, skewX, skewY);
+            out.rotate(rotation);
+            out.translate(x, y);
+
+            if (pivotX != 0.0 || pivotY != 0.0)
+            {
+                // prepend pivot transformation
+                out.tx = x - out.a * pivotX - out.c * pivotY;
+                out.ty = y - out.b * pivotX - out.d * pivotY;
+            }
+        }
+
+        if (out3D != null) MatrixUtil.convertTo3D(out, out3D);
+    }
+
     private static function __findCommonParent(object1:DisplayObject,
-                                               object2:DisplayObject):DisplayObject
+                                                object2:DisplayObject):DisplayObject
     {
         var currentObject:DisplayObject = object1;
 
@@ -645,7 +719,8 @@ class DisplayObject extends EventDispatcher
     }
 
     // stage event handling
-    
+
+    /** @private */
     public override function dispatchEvent(event:Event):Void
     {
         if (event.type == Event.REMOVED_FROM_STAGE && stage == null)
@@ -725,53 +800,19 @@ class DisplayObject extends EventDispatcher
     public var transformationMatrix(get, set):Matrix;
     @:keep private function get_transformationMatrix():Matrix
     {
-        if (__orientationChanged)
+        if (__transformationChanged)
         {
-            __orientationChanged = false;
-            
-            if (__skewX == 0.0 && __skewY == 0.0)
-            {
-                // optimization: no skewing / rotation simplifies the matrix math
-                
-                if (__rotation == 0.0)
-                {
-                    __transformationMatrix.setTo(__scaleX, 0.0, 0.0, __scaleY, 
-                        __x - __pivotX * __scaleX, __y - __pivotY * __scaleY);
-                }
-                else
-                {
-                    var cos:Float = Math.cos(__rotation);
-                    var sin:Float = Math.sin(__rotation);
-                    var a:Float   = __scaleX *  cos;
-                    var b:Float   = __scaleX *  sin;
-                    var c:Float   = __scaleY * -sin;
-                    var d:Float   = __scaleY *  cos;
-                    var tx:Float  = __x - __pivotX * a - __pivotY * c;
-                    var ty:Float  = __y - __pivotX * b - __pivotY * d;
-                    
-                    __transformationMatrix.setTo(a, b, c, d, tx, ty);
-                }
-            }
-            else
-            {
-                __transformationMatrix.identity();
-                __transformationMatrix.scale(__scaleX, __scaleY);
-                MatrixUtil.skew(__transformationMatrix, __skewX, __skewY);
-                __transformationMatrix.rotate(__rotation);
-                __transformationMatrix.translate(__x, __y);
-                
-                if (__pivotX != 0.0 || __pivotY != 0.0)
-                {
-                    // prepend pivot transformation
-                    __transformationMatrix.tx = __x - __transformationMatrix.a * __pivotX
-                                                  - __transformationMatrix.c * __pivotY;
-                    __transformationMatrix.ty = __y - __transformationMatrix.b * __pivotX 
-                                                  - __transformationMatrix.d * __pivotY;
-                }
-            }
+            __transformationChanged = false;
+
+            if (__transformationMatrix3D == null && __is3D)
+                __transformationMatrix3D = new Matrix3D();
+
+            __updateTransformationMatrices(
+                __x, __y, __pivotX, __pivotY, __scaleX, __scaleY, __skewX, __skewY, __rotation,
+                __transformationMatrix, __transformationMatrix3D);
         }
         
-        return __transformationMatrix; 
+        return __transformationMatrix;
     }
 
     private function set_transformationMatrix(matrix:Matrix):Matrix
@@ -779,7 +820,7 @@ class DisplayObject extends EventDispatcher
         var PI_Q:Float = Math.PI / 4.0;
 
         setRequiresRedraw();
-        __orientationChanged = false;
+        __transformationChanged = false;
         __transformationMatrix.copyFrom(matrix);
         __pivotX = __pivotY = 0;
         
@@ -820,12 +861,18 @@ class DisplayObject extends EventDispatcher
     public var transformationMatrix3D(get, never):Matrix3D;
     private function get_transformationMatrix3D():Matrix3D
     {
-        // this method needs to be overriden in 3D-supporting subclasses (like Sprite3D).
-
         if (__transformationMatrix3D == null)
-            __transformationMatrix3D = new Matrix3D();
+            __transformationMatrix3D = MatrixUtil.convertTo3D(__transformationMatrix);
 
-        return MatrixUtil.convertTo3D(transformationMatrix, __transformationMatrix3D);
+        if (__transformationChanged)
+        {
+            __transformationChanged = false;
+            __updateTransformationMatrices(
+                __x, __y, __pivotX, __pivotY, __scaleX, __scaleY, __skewX, __skewY, __rotation,
+                __transformationMatrix, __transformationMatrix3D);
+        }
+
+        return __transformationMatrix3D;
     }
 
     /** Indicates if this object or any of its parents is a 'Sprite3D' object. */
@@ -908,7 +955,7 @@ class DisplayObject extends EventDispatcher
         if (__x != value)
         {
             __x = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -921,7 +968,7 @@ class DisplayObject extends EventDispatcher
         if (__y != value)
         {
             __y = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -934,7 +981,7 @@ class DisplayObject extends EventDispatcher
         if (__pivotX != value)
         {
             __pivotX = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -947,7 +994,7 @@ class DisplayObject extends EventDispatcher
         if (__pivotY != value)
         {
             __pivotY = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -961,7 +1008,7 @@ class DisplayObject extends EventDispatcher
         if (__scaleX != value)
         {
             __scaleX = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -975,7 +1022,7 @@ class DisplayObject extends EventDispatcher
         if (__scaleY != value)
         {
             __scaleY = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -996,7 +1043,7 @@ class DisplayObject extends EventDispatcher
         if (__skewX != value)
         {
             __skewX = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -1011,7 +1058,7 @@ class DisplayObject extends EventDispatcher
         if (__skewY != value)
         {
             __skewY = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
@@ -1027,11 +1074,11 @@ class DisplayObject extends EventDispatcher
         if (__rotation != value)
         {            
             __rotation = value;
-            __setOrientationChanged();
+            __setTransformationChanged();
         }
         return value;
     }
-    
+
     /** @private Indicates if the object is rotated or skewed in any way. */
     @:allow(starling) private var isRotated(get, never):Bool;
     private function get_isRotated():Bool
@@ -1157,7 +1204,7 @@ class DisplayObject extends EventDispatcher
             {
                 if (!SystemUtil.supportsDepthAndStencil)
                     trace("[Starling] Full mask support requires 'depthAndStencil'" +
-                          " to be enabled in the application descriptor.");
+                            " to be enabled in the application descriptor.");
 
                 sMaskWarningShown = true;
             }
@@ -1175,6 +1222,11 @@ class DisplayObject extends EventDispatcher
         
         return __mask;
     }
+    
+    /** Indicates if the masked region of this object is set to be inverted.*/
+    public var maskInverted(get, set):Bool;
+    private function get_maskInverted():Bool { return __maskInverted; }
+    private function set_maskInverted(value:Bool):Bool { return __maskInverted = value; }
 
     /** The display object container that contains this display object. */
     public var parent(get, never):DisplayObjectContainer;
