@@ -69,7 +69,7 @@ class DisplayObjectContainer extends DisplayObject
     private var __children:Vector<DisplayObject>;
     private var __touchGroup:Bool;
     
-    /** Helper objects. */
+    // helper objects
     private static var sHelperMatrix:Matrix = new Matrix();
     private static var sHelperPoint:Point = new Point();
     private static var sBroadcastListeners:Vector<DisplayObject> = new Vector<DisplayObject>();
