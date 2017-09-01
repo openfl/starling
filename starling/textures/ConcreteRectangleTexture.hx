@@ -46,7 +46,7 @@ import starling.utils.Execute.execute;
     /** @inheritDoc */
     override public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
     {
-        if (Std.is(async, Function))
+        if (async != null && Std.is(async, Function))
             _textureReadyCallback = cast async;
 
         upload(data, async != null);
