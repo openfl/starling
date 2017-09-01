@@ -263,12 +263,9 @@ class PDParticleSystem extends ParticleSystem
         _gravityX = Std.parseFloat(config.gravity.att.x);
         _gravityY = Std.parseFloat(config.gravity.att.y);
         _emitterType = getIntValue(config.emitterType);
-        //_lifespan = Math.max(0.01, getFloatValue(config.particleLifeSpan));
-        //_lifespanVariance = getFloatValue(config.particleLifespanVariance);
         _startSize = getFloatValue(config.startParticleSize);
         _startSizeVariance = getFloatValue(config.startParticleSizeVariance);
         _endSize = getFloatValue(config.finishParticleSize);
-        //_endSizeVariance = getFloatValue(config.FinishParticleSizeVariance);
         _emitAngle = MathUtil.deg2rad(getFloatValue(config.angle));
         _emitAngleVariance = MathUtil.deg2rad(getFloatValue(config.angleVariance));
         _startRotation = MathUtil.deg2rad(getFloatValue(config.rotationStart));
@@ -284,7 +281,6 @@ class PDParticleSystem extends ParticleSystem
         _maxRadius = getFloatValue(config.maxRadius);
         _maxRadiusVariance = getFloatValue(config.maxRadiusVariance);
         _minRadius = getFloatValue(config.minRadius);
-        //_minRadiusVariance = getFloatValue(config.minRadiusVariance);
         _rotatePerSecond = MathUtil.deg2rad(getFloatValue(config.rotatePerSecond));
         _rotatePerSecondVariance = MathUtil.deg2rad(getFloatValue(config.rotatePerSecondVariance));
         _startColor = getColor(config.startColor);
@@ -320,6 +316,7 @@ class PDParticleSystem extends ParticleSystem
             _minRadiusVariance = 0.0;
         
         updateEmissionRate();
+        updateBlendMode();
     }
     
     private function getIntValue(element:Fast):Int
