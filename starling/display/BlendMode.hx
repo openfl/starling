@@ -91,6 +91,21 @@ class BlendMode
         if (sBlendModes.exists(modeName)) return sBlendModes[modeName];
         else throw new ArgumentError("Blend mode not found: " + modeName);
     }
+
+    /** Returns allready registered blend mode by
+    * given blend mode factors. Returns null if not exist.*/
+    public static function getByFactors(srcFactor:Context3DBlendFactor, dstFactor:Context3DBlendFactor):Null<BlendMode>
+    {
+        if (sBlendModes == null) registerDefaults();
+
+        for (registeredBlendMode in sBlendModes)
+        {
+            if (registeredBlendMode.sourceFactor == srcFactor && registeredBlendMode.destinationFactor == dstFactor)
+                return registeredBlendMode;
+        }
+        
+        return null;
+    }
     
     /** Registers a blending mode under a certain name. */
     public static function register(name:String, srcFactor:Context3DBlendFactor, dstFactor:Context3DBlendFactor):BlendMode

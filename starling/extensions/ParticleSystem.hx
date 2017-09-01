@@ -109,9 +109,17 @@ class ParticleSystem extends Mesh implements IAnimatable
         {
             _vertexData.premultipliedAlpha = false;
         }
-
-        blendMode = _blendFactorSource + ", " + _blendFactorDestination;
-        BlendMode.register(blendMode, _blendFactorSource, _blendFactorDestination);
+        
+        var registeredBlendMode:BlendMode = BlendMode.getByFactors(_blendFactorSource, _blendFactorDestination);
+        if (registeredBlendMode != null)
+        {
+            blendMode = registeredBlendMode.name;
+        }
+        else
+        {
+            blendMode = _blendFactorSource + ", " + _blendFactorDestination;
+            BlendMode.register(blendMode, _blendFactorSource, _blendFactorDestination);
+        }
     }
     
     private function createParticle():Particle
