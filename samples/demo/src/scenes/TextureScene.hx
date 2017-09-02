@@ -34,7 +34,8 @@ import starling.textures.Texture;
         {
             // display a compressed texture
 
-            var compressedTexture:Texture = Game.assets.getTexture("compressed_texture");
+            var compressedBA:ByteArray = Game.assets.getByteArray("compressed_texture");
+            var compressedTexture:Texture = Texture.fromAtfData(compressedBA);
             var image4:Image = new Image(compressedTexture);
             image4.x = Constants.CenterX - image4.width / 2;
             image4.y = 280;
@@ -46,7 +47,7 @@ import starling.textures.Texture;
             #if flash
                 var textValue = "Flash Player and AIR must be at least 11.4 and 3.4 respectively (swf-version=17) to see a compressed ATF texture";
             #else
-                var textValue = "ATF textures are not support in non Flash/Air targets.";
+                var textValue = "ATF textures are not fully supported in non Flash/Air targets.";
             #end
             var textField:TextField = new TextField(220, 128, textValue);
             textField.format.font = "DejaVu Sans";
