@@ -104,7 +104,7 @@ class ConcreteTexture extends Texture
     /** Uploads bitmap data to the texture. The existing contents will be replaced.
      * If the size of the bitmap does not match the size of the texture, the bitmap will be
      * cropped or filled up with transparent pixels */
-    public function uploadBitmapData(data:BitmapData):Void
+    public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
     {
         if (!Starling.current.isRendering && !SystemUtil.isDesktop)
         {
@@ -112,6 +112,16 @@ class ConcreteTexture extends Texture
                   "may cause a crash on some platforms. Ignoring request.");
             return;
         }
+		
+		var doAsync:Bool = false;
+        if (Reflect.isFunction(async))
+        {
+            mTextureReadyCallback = async;
+            mBase.addEventListener(TEXTURE_READY, onTextureReady);
+			doAsync = true;
+        }else if (async == true){
+			doAsync = true;
+		}
 
         var potData:BitmapData = null;
         
@@ -127,7 +137,15 @@ class ConcreteTexture extends Texture
             var potTexture:flash.display3D.textures.Texture = 
                 cast mBase;
             
-            potTexture.uploadFromBitmapData(data);
+			#if AIR27
+			if (doAsync){
+				untyped potTexture.uploadFromBitmapDataAsync(data);
+			}else{
+				potTexture.uploadFromBitmapData(data);
+			}
+			#else
+			potTexture.uploadFromBitmapData(data);
+			#end
             
             if (mMipMapping && data.width > 1 && data.height > 1)
             {
@@ -155,7 +173,16 @@ class ConcreteTexture extends Texture
         else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
         {
             var baseTexture:flash.display3D.textures.RectangleTexture = cast mBase;
-            baseTexture.uploadFromBitmapData(data);
+            
+			#if AIR27
+			if (doAsync){
+				untyped baseTexture.uploadFromBitmapDataAsync(data);
+			}else{
+				baseTexture.uploadFromBitmapData(data);
+			}
+			#else
+			baseTexture.uploadFromBitmapData(data);
+			#end
         }
         
         if (potData != null) potData.dispose();
@@ -243,7 +270,6 @@ class ConcreteTexture extends Texture
     private function createBase():Void
     {
         var context:Context3D = Starling.current.context;
-        var classType = Type.getClass(mBase);
         
         if (Std.is(mBase, flash.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
@@ -256,7 +282,7 @@ class ConcreteTexture extends Texture
             mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
         #end
         else
-            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(classType));
+            throw new NotSupportedError("Texture type not supported: " + Type.getClassName(Type.getClass(mBase)));
 
         mDataUploaded = false;
     }

@@ -259,16 +259,17 @@ class Texture
     public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool=true,
                                           optimizeForRenderToTexture:Bool=false,
                                           scale:Float=1, format:Context3DTextureFormat=BGRA,
-                                          repeat:Bool=false):Texture
+                                          repeat:Bool = false,
+										  async:Dynamic = null):Texture
     {
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, repeat);
 
-        texture.root.uploadBitmapData(data);
+        texture.root.uploadBitmapData(data, async);
         texture.root.onRestore = function():Void
         {
-            texture.root.uploadBitmapData(data);
+            texture.root.uploadBitmapData(data, async);
         };
 
         return texture;
@@ -387,7 +388,7 @@ class Texture
         Reflect.callMethod(base, Reflect.getProperty(base, "attach" + type), [attachment]);
         base.addEventListener(TEXTURE_READY, function onTextureReady(event:Dynamic):Void
         {
-            //base.removeEventListener(TEXTURE_READY, onTextureReady);
+            base.removeEventListener(TEXTURE_READY, onTextureReady);
             if (onComplete != null) onComplete(texture);
         });
 

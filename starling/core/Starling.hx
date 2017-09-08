@@ -55,6 +55,7 @@ import starling.events.ResizeEvent;
 import starling.events.TouchPhase;
 import starling.events.TouchProcessor;
 import starling.text.BitmapFont;
+import starling.utils.Execute;
 import starling.utils.HAlign;
 import starling.utils.SystemUtil;
 import starling.utils.VAlign;
@@ -395,7 +396,7 @@ class Starling extends EventDispatcher
         {
             currentProfile = profiles.shift();
 
-            try { mStage3D.requestContext3D(renderMode, currentProfile); }
+            try { Execute.execute(mStage3D.requestContext3D, [renderMode, currentProfile]); }
             catch (error:Error)
             {
                 if (profiles.length != 0) Timer.delay(requestNextProfile, 1);
