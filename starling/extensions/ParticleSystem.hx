@@ -143,7 +143,7 @@ class ParticleSystem extends Mesh implements IAnimatable
         particle.currentTime += passedTime;
     }
 
-    private function setRequiresSync():Void
+    private function setRequiresSync(?_):Void
     {
         _requiresSync = true;
     }
