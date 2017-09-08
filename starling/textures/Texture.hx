@@ -10,7 +10,6 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
@@ -36,7 +35,7 @@ import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
-import starling.utils.Execute.execute;
+import starling.textures.ConcreteTexture.TextureUploadedCallback;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -249,17 +248,17 @@ class Texture
         {
             texture = Texture.fromBitmap(cast asset, mipMapping,
                                 optimizeForRenderToTexture, scale, format, forcePotTexture);
-            texture.root.onRestore = function():Void
+            texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
             {
-                texture.root.uploadBitmap(Type.createInstance(assetClass, []));
+                textureRoot.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
         else if (Std.is(asset, ByteArrayData))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null);
-            texture.root.onRestore = function():Void
+            texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
             {
-                texture.root.uploadAtfData(Type.createInstance(assetClass, []));
+                textureRoot.uploadAtfData(Type.createInstance(assetClass, []));
             };
         }
         else
@@ -298,7 +297,7 @@ class Texture
                                       optimizeForRenderToTexture:Bool=false,
                                       scale:Float=1, format:Context3DTextureFormat=BGRA,
                                       forcePotTexture:Bool=false,
-                                      async:Function=null):Texture
+                                      async:TextureUploadedCallback=null):Texture
     {
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture,
                               scale, format, forcePotTexture, async);
@@ -331,15 +330,14 @@ class Texture
                                           optimizeForRenderToTexture:Bool=false,
                                           scale:Float=1, format:Context3DTextureFormat=BGRA,
                                           forcePotTexture:Bool=false,
-                                          async:Function=null):Texture
+                                          async:TextureUploadedCallback=null):Texture
     {
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
                                             format, forcePotTexture);
 
-        texture.root.uploadBitmapData(data,
-            async != null ? function():Void { execute(async, [texture]); } : null);
-        texture.root.onRestore = function():Void { texture.root.uploadBitmapData(data); };
+        texture.root.uploadBitmapData(data, async);
+        texture.root.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.uploadBitmapData(data);};
         
         return texture;
     }
@@ -363,7 +361,7 @@ class Texture
      *                    tools.
      */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
-                                       async:Function=null, premultipliedAlpha:Bool=false):Texture
+                                       async:TextureUploadedCallback=null, premultipliedAlpha:Bool=false):Texture
     {
         var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
@@ -376,9 +374,9 @@ class Texture
             premultipliedAlpha, false, scale);
 
         concreteTexture.uploadAtfData(data, 0, async);
-        concreteTexture.onRestore = function():Void
+        concreteTexture.onRestore = function(textureRoot:ConcreteTexture):Void
         {
-            concreteTexture.uploadAtfData(data, 0);
+            textureRoot.uploadAtfData(data, 0);
         };
 
         return concreteTexture;
@@ -413,7 +411,7 @@ class Texture
      *                 of type 'Texture'.
      */
     public static function fromNetStream(stream:NetStream, scale:Float=1,
-                                         onComplete:Function=null):Texture
+                                         onComplete:TextureUploadedCallback=null):Texture
     {
         // workaround for bug in NetStream class:
         if (stream.client == stream && !(Reflect.hasField(stream, "onMetaData")))
@@ -443,14 +441,14 @@ class Texture
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
-                                      onComplete:Function=null):Texture
+                                      onComplete:TextureUploadedCallback=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }
     #end
 
     private static function fromVideoAttachment(type:String, attachment:Dynamic,
-                                                scale:Float, onComplete:Function):Texture
+                                                scale:Float, onComplete:TextureUploadedCallback):Texture
     {
         if (!SystemUtil.supportsVideoTexture)
             throw new NotSupportedError("Video Textures are not supported on this platform");
@@ -461,9 +459,9 @@ class Texture
         var base:VideoTexture = context.createVideoTexture();
         var texture:ConcreteTexture = new ConcreteVideoTexture(base, scale);
         texture.attachVideo(type, attachment, onComplete);
-        texture.onRestore = function():Void
+        texture.onRestore = function(textureRoot:ConcreteTexture):Void
         {
-            texture.root.attachVideo(type, attachment);
+            textureRoot.attachVideo(type, attachment);
         };
 
         return texture;
@@ -492,9 +490,9 @@ class Texture
         var texture:Texture = Texture.empty(width, height, true, false,
                                     optimizeForRenderToTexture, scale, format, forcePotTexture);
         texture.root.clear(color, alpha);
-        texture.root.onRestore = function():Void
+        texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
         {
-            texture.root.clear(color, alpha);
+            textureRoot.clear(color, alpha);
         };
 
         return texture;
@@ -565,7 +563,7 @@ class Texture
                     optimizeForRenderToTexture, scale);
         }
 
-        concreteTexture.onRestore = concreteTexture.clear;
+        concreteTexture.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.clear();};
 
         if (actualWidth - origWidth < 0.001 && actualHeight - origHeight < 0.001)
             return concreteTexture;

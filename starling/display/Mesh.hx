@@ -21,7 +21,6 @@ import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
 import starling.styles.MeshStyle;
 import starling.textures.Texture;
-import starling.utils.Execute.execute;
 import starling.utils.MatrixUtil;
 import starling.utils.MeshUtil;
 

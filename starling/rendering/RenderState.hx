@@ -10,7 +10,6 @@
 
 package starling.rendering;
 
-import haxe.Constraints.Function;
 import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.textures.TextureBase;
@@ -27,6 +26,8 @@ import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
+
+typedef DrawRequiredHandler = Void->Void;
 
 /** The RenderState stores a combination of settings that are currently used for rendering.
  *  This includes modelview and transformation matrices as well as context3D related settings.
@@ -87,7 +88,7 @@ class RenderState
     private var _miscOptions:UInt = 0;
     private var _clipRect:Rectangle;
     private var _renderTarget:Texture;
-    private var _onDrawRequired:Function;
+    private var _onDrawRequired:DrawRequiredHandler;
     private var _modelviewMatrix3D:Matrix3D;
     private var _projectionMatrix3D:Matrix3D;
     private var _projectionMatrix3DRev:UInt;
@@ -474,7 +475,7 @@ class RenderState
      *  This callback is executed whenever a state change requires a draw operation.
      *  This is the case if blend mode, render target, culling or clipping rectangle
      *  are changing. */
-    @:allow(starling) private var onDrawRequired(get, set):Function;
-    private function get_onDrawRequired():Function { return _onDrawRequired; }
-    private function set_onDrawRequired(value:Function):Function { return _onDrawRequired = value; }
+    @:allow(starling) private var onDrawRequired(get, set):DrawRequiredHandler;
+    private function get_onDrawRequired():DrawRequiredHandler { return _onDrawRequired; }
+    private function set_onDrawRequired(value:DrawRequiredHandler):DrawRequiredHandler { return _onDrawRequired = value; }
 }

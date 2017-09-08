@@ -10,7 +10,6 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
 import haxe.Timer;
 
 import openfl.display.BitmapData;
@@ -21,7 +20,7 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 
 import starling.core.Starling;
-import starling.utils.Execute.execute;
+import starling.textures.ConcreteTexture.TextureUploadedCallback;
 
 /** @private
  *
@@ -29,7 +28,7 @@ import starling.utils.Execute.execute;
  *  For internal use only. */
 @:allow(starling) class ConcreteRectangleTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:Function;
+    private var _textureReadyCallback:TextureUploadedCallback;
 
     private static var sAsyncUploadEnabled:Bool = false;
 
@@ -44,10 +43,10 @@ import starling.utils.Execute.execute;
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
+    override public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
     {
-        if (async != null && Std.is(async, Function))
-            _textureReadyCallback = cast async;
+        if (async != null)
+            _textureReadyCallback = async;
 
         upload(data, async != null);
         setDataUploaded();
@@ -111,7 +110,8 @@ import starling.utils.Execute.execute;
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         base.removeEventListener(ErrorEvent.ERROR, onTextureReady);
 
-        execute(_textureReadyCallback, [this, event]);
+        if (_textureReadyCallback != null)
+            _textureReadyCallback(this);
         _textureReadyCallback = null;
     }
 

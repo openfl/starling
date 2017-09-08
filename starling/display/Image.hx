@@ -17,11 +17,12 @@ import openfl.Vector;
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;
 import starling.textures.Texture;
-import starling.utils.Execute.execute;
 import starling.utils.MathUtil;
 import starling.utils.Padding;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
+
+typedef TextureSetupHandler = Image->Void;
 
 /** An Image is a quad with a texture mapped onto it.
  *
@@ -51,7 +52,7 @@ class Image extends Quad
     private var __scale9Grid:Rectangle;
     private var __tileGrid:Rectangle;
 
-    private static var sSetupFunctions = new Map<Texture, Array<Image->Void>>();
+    private static var sSetupFunctions = new Map<Texture, TextureSetupSettings>();
 
     // helper objects
     private static var sPadding:Padding = new Padding();
@@ -187,13 +188,19 @@ class Image extends Quad
     {
         if (value != texture)
         {
+            var textureSetupSettings:TextureSetupSettings = null;
+            
             if (texture != null && sSetupFunctions.exists(texture))
-                execute(sSetupFunctions[texture][1], [this]);
+            {
+                textureSetupSettings = sSetupFunctions[texture];
+                if (textureSetupSettings.onRelease != null)
+                    textureSetupSettings.onRelease(this);
+            }
 
             super.texture = value;
             
-            if (value != null && sSetupFunctions.exists(value))
-                execute(sSetupFunctions[value][0], [this]);
+            if (value != null && textureSetupSettings != null)
+                textureSetupSettings.onAssign(this);
             else if (__scale9Grid != null && value != null)
                 readjustSize();
         }
@@ -521,14 +528,14 @@ class Image extends Quad
         *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
         *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
         */
-    public static function automateSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
+    public static function automateSetupForTexture(texture:Texture, onAssign:TextureSetupHandler, onRelease:TextureSetupHandler=null):Void
     {
         if (texture == null)
             return;
         else if (onAssign == null && onRelease == null)
             sSetupFunctions.remove(texture);
         else
-            sSetupFunctions[texture] = [onAssign, onRelease];
+            sSetupFunctions[texture] = new TextureSetupSettings(onAssign, onRelease);
     }
 
     /** Removes any custom setup functions for the given texture. */
@@ -554,4 +561,17 @@ class Image extends Quad
             function(image:Image):Void { image.pivotX = pivotX; image.pivotY = pivotY; },
             function(image:Image):Void { image.pivotX = image.pivotY = 0; });
     }
+}
+
+class TextureSetupSettings
+{
+    public var onAssign:TextureSetupHandler;
+    public var onRelease:Null<TextureSetupHandler>;
+    
+    public function new(onAssign:TextureSetupHandler, onRelease:TextureSetupHandler = null):Void
+    {
+        this.onAssign = onAssign;
+        this.onRelease = onRelease;
+    }
+    
 }

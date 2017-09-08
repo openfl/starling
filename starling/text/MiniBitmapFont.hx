@@ -22,6 +22,7 @@ import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
 
 import starling.textures.Texture;
+import starling.textures.ConcreteTexture;
 
 /** @private
  *  This class contains constants for the 'MINI' bitmap font. It's done that way to avoid
@@ -399,10 +400,10 @@ class MiniBitmapFont
         bitmapData.dispose();
         bitmapData = null;
 
-        texture.root.onRestore = function():Void
+        texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
         {
             bitmapData = getBitmapData();
-            texture.root.uploadBitmapData(bitmapData);
+            textureRoot.uploadBitmapData(bitmapData);
             bitmapData.dispose();
             bitmapData = null;
         };

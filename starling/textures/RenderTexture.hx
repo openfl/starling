@@ -10,7 +10,6 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DTriangleFace;
@@ -25,8 +24,8 @@ import starling.display.Image;
 import starling.filters.FragmentFilter;
 import starling.rendering.Painter;
 import starling.rendering.RenderState;
-import starling.utils.Execute.execute;
 
+typedef RenderBlock = DisplayObject->Matrix->Float->Void;
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
  * 
  *  <p>After creating a render texture, just call the <code>drawObject</code> method to render 
@@ -126,14 +125,14 @@ class RenderTexture extends SubTexture
     {
         _isPersistent = persistent;
         _activeTexture = Texture.empty(width, height, true, false, true, scale, format);
-        _activeTexture.root.onRestore = _activeTexture.root.clear;
+        _activeTexture.root.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.clear();};
 
         super(_activeTexture, new Rectangle(0, 0, width, height), true, null, false);
 
         if (persistent && useDoubleBuffering)
         {
             _bufferTexture = Texture.empty(width, height, true, false, true, scale, format);
-            _bufferTexture.root.onRestore = _bufferTexture.root.clear;
+            _bufferTexture.root.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.clear();};
             _helperImage = new Image(_bufferTexture);
             _helperImage.textureSmoothing = TextureSmoothing.NONE; // solves some aliasing-issues
         }
@@ -186,9 +185,10 @@ class RenderTexture extends SubTexture
      *                       Beginning with AIR 22, this feature is supported on all platforms
      *                       (except for software rendering mode).
      */
-    public function drawBundled(drawingBlock:Function, antiAliasing:Int=0):Void
+    public function drawBundled(drawingBlock:Void->Void, antiAliasing:Int=0):Void
     {
-        __renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
+        var renderBlockFunc:RenderBlock = function(object:DisplayObject, matrix:Matrix, alpha:Float):Void {drawingBlock();};
+        __renderBundled(renderBlockFunc, null, null, 1.0, antiAliasing);
     }
     
     private function __render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
@@ -221,7 +221,7 @@ class RenderTexture extends SubTexture
         painter.cacheEnabled = wasCacheEnabled;
     }
     
-    private function __renderBundled(renderBlock:Function, object:DisplayObject=null,
+    private function __renderBundled(renderBlock:RenderBlock, object:DisplayObject=null,
                                      matrix:Matrix=null, alpha:Float=1.0,
                                      antiAliasing:Int=0):Void
     {
@@ -266,7 +266,7 @@ class RenderTexture extends SubTexture
         try
         {
             _drawing = true;
-            execute(renderBlock, [object, matrix, alpha]);
+            renderBlock(object, matrix, alpha);
         }
         catch (e:Dynamic) {}
         

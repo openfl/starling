@@ -10,8 +10,6 @@
 
 package starling.rendering;
 
-import haxe.Constraints.Function;
-
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.display3D.IndexBuffer3D;
@@ -23,7 +21,8 @@ import openfl.utils.Dictionary;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
-import starling.utils.Execute.execute;
+
+typedef EffectRestoredCallback = Effect->Void;
 
 /** An effect encapsulates all steps of a Stage3D draw operation. It configures the
  *  render context and sets up shader programs as well as index- and vertex-buffers, thus
@@ -111,7 +110,7 @@ class Effect
     private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
-    private var _onRestore:Function;
+    private var _onRestore:EffectRestoredCallback;
     private var _programBaseName:String;
 
     // helper objects
@@ -138,7 +137,8 @@ class Effect
     private function onContextCreated(event:Event):Void
     {
         purgeBuffers();
-        execute(_onRestore, [this]);
+        if(_onRestore != null)
+            _onRestore(this);
     }
 
     /** Purges one or both of the vertex- and index-buffers. */
@@ -361,9 +361,9 @@ class Effect
     /** The function that you provide here will be called after a context loss.
      *  Call both "upload..." methods from within the callback to restore any vertex or
      *  index buffers. The callback will be executed with the effect as its sole parameter. */
-    public var onRestore(get, set):Function;
-    private function get_onRestore():Function { return _onRestore; }
-    private function set_onRestore(value:Function):Function { return _onRestore = value; }
+    public var onRestore(get, set):EffectRestoredCallback;
+    private function get_onRestore():EffectRestoredCallback { return _onRestore; }
+    private function set_onRestore(value:EffectRestoredCallback):EffectRestoredCallback { return _onRestore = value; }
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2"</code> */
