@@ -10,9 +10,8 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
-
 import starling.core.Starling;
+import starling.textures.ConcreteTexture.TextureUploadedCallback;
 
 /** The TextureOptions class specifies options for loading textures with the
  *  <code>Texture.fromData</code> and <code>Texture.fromTextureBase</code> methods. */
@@ -24,7 +23,7 @@ class TextureOptions
     private var _optimizeForRenderToTexture:Bool = false;
     private var _premultipliedAlpha:Bool;
     private var _forcePotTexture:Bool;
-    private var _onReady:Function = null;
+    private var _onReady:TextureUploadedCallback = null;
 
     /** Creates a new instance with the given options. */
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
@@ -91,9 +90,9 @@ class TextureOptions
      *
      *  @default null
      */
-    public var onReady(get, set):Function;
-    private function get_onReady():Function { return _onReady; }
-    private function set_onReady(value:Function):Function { return _onReady = value; }
+    public var onReady(get, set):TextureUploadedCallback;
+    private function get_onReady():TextureUploadedCallback { return _onReady; }
+    private function set_onReady(value:TextureUploadedCallback):TextureUploadedCallback { return _onReady = value; }
 
     /** Indicates if the alpha values are premultiplied into the RGB values. This is typically
      *  true for textures created from BitmapData and false for textures created from ATF data.

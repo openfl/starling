@@ -10,8 +10,6 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
-
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
@@ -31,7 +29,9 @@ import starling.errors.NotSupportedError;
 import starling.events.Event;
 import starling.rendering.Painter;
 import starling.utils.Color;
-import starling.utils.Execute.execute;
+
+typedef TextureUploadedCallback = ConcreteTexture->Void;
+typedef TextureRestoredCallback = ConcreteTexture->Void;
 
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture
 *  and providing utility methods for data upload, etc.
@@ -54,7 +54,7 @@ class ConcreteTexture extends Texture
     private var _premultipliedAlpha:Bool;
     private var _optimizedForRenderTexture:Bool;
     private var _scale:Float;
-    private var _onRestore:Function;
+    private var _onRestore:TextureRestoredCallback;
     private var _dataUploaded:Bool;
 
     /** @private
@@ -98,15 +98,14 @@ class ConcreteTexture extends Texture
     *  If the size of the bitmap does not match the size of the texture, the bitmap will be
     *  cropped or filled up with transparent pixels.
     *
-    *  <p>Pass a callback function or <code>true</code> to attempt asynchronous texture upload.
+    *  <p>Pass a callback function to attempt asynchronous texture upload.
     *  If the current platform or runtime version does not support asynchronous texture loading,
     *  the callback will still be executed.</p>
     *
     *  <p>This is the expected function definition:
-    *  <code>function(texture:Texture, error:ErrorEvent):void;</code>
-    *  The second parameter is optional and typically <code>null</code>.</p>
+    *  <code>function(texture:ConcreteTexture):Void;</code>
     */
-    public function uploadBitmap(bitmap:Bitmap, async:Dynamic=null):Void
+    public function uploadBitmap(bitmap:Bitmap, async:TextureUploadedCallback=null):Void
     {
         uploadBitmapData(bitmap.bitmapData, async);
     }
@@ -115,15 +114,14 @@ class ConcreteTexture extends Texture
     *  If the size of the bitmap does not match the size of the texture, the bitmap will be
     *  cropped or filled up with transparent pixels.
     *
-    *  <p>Pass a callback function or <code>true</code> to attempt asynchronous texture upload.
+    *  <p>Pass a callback function to attempt asynchronous texture upload.
     *  If the current platform or runtime version does not support asynchronous texture loading,
     *  the callback will still be executed.</p>
     *
     *  <p>This is the expected function definition:
-    *  <code>function(texture:Texture, error:ErrorEvent):void;</code>
-    *  The second parameter is optional and typically <code>null</code>.</p>
+    *  <code>function(texture:ConcreteTexture):Void;</code>
     */
-    public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
+    public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
     {
         throw new NotSupportedError();
     }
@@ -131,34 +129,33 @@ class ConcreteTexture extends Texture
     /** Uploads ATF data from a ByteArray to the texture. Note that the size of the
     *  ATF-encoded data must be exactly the same as the original texture size.
     *  
-    *  <p>The 'async' parameter may be either a boolean value or a callback function.
-    *  If it's <code>false</code> or <code>null</code>, the texture will be decoded
-    *  synchronously and will be visible right away. If it's <code>true</code> or a function,
-    *  the data will be decoded asynchronously. The texture will remain unchanged until the
+    *  <p>The 'async' parameter is a callback function.
+    *  If it's <code>null</code>, the texture will be decoded synchronously and will be visible right away.
+    *  If it's a function, the data will be decoded asynchronously. The texture will remain unchanged until the
     *  upload is complete, at which time the callback function will be executed. This is the
-    *  expected function definition: <code>function(texture:Texture):void;</code></p>
+    *  expected function definition: <code>function(texture:ConcreteTexture):Void;</code></p>
     */
-    public function uploadAtfData(data:ByteArray, offset:Int=0, async:Dynamic=null):Void
+    public function uploadAtfData(data:ByteArray, offset:Int=0, async:TextureUploadedCallback=null):Void
     {
         throw new NotSupportedError();
     }
 
     /** Specifies a video stream to be rendered within the texture. */
-    public function attachNetStream(netStream:NetStream, onComplete:Function=null):Void
+    public function attachNetStream(netStream:NetStream, onComplete:TextureUploadedCallback=null):Void
     {
         attachVideo("NetStream", netStream, onComplete);
     }
 
     #if flash
     /** Specifies a video stream from a camera to be rendered within the texture. */
-    public function attachCamera(camera:Camera, onComplete:Function=null):Void
+    public function attachCamera(camera:Camera, onComplete:TextureUploadedCallback=null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }
     #end
 
     /** @private */
-    @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:Function=null):Void
+    @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:TextureUploadedCallback=null):Void
     {
         throw new NotSupportedError();
     }
@@ -169,7 +166,7 @@ class ConcreteTexture extends Texture
     {
         _dataUploaded = false;
         _base = createBase();      // recreate the underlying texture
-        execute(_onRestore, [this]); // restore contents
+        _onRestore(this);
 
         // if no texture has been uploaded above, we init the texture with transparent pixels.
         if (!_dataUploaded) clear();
@@ -244,9 +241,9 @@ class ConcreteTexture extends Texture
     *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
     *  };</listing>
     */
-    public var onRestore(get, set):Function;
-    private function get_onRestore():Function { return _onRestore; }
-    private function set_onRestore(value:Function):Function
+    public var onRestore(get, set):TextureRestoredCallback;
+    private function get_onRestore():TextureRestoredCallback { return _onRestore; }
+    private function set_onRestore(value:TextureRestoredCallback):TextureRestoredCallback
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         

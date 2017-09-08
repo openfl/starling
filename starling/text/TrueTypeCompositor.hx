@@ -15,6 +15,7 @@ import openfl.geom.Matrix;
 import openfl.text.AntiAliasType;
 import openfl.text.TextField;
 
+import starling.textures.ConcreteTexture;
 import starling.display.MeshBatch;
 import starling.display.Quad;
 import starling.textures.Texture;
@@ -55,10 +56,10 @@ class TrueTypeCompositor implements ITextCompositor
         var bitmapData:BitmapDataEx = renderText(width, height, text, format, options);
 
         texture = Texture.fromBitmapData(bitmapData, false, false, bitmapData.scale, textureFormat);
-        texture.root.onRestore = function():Void
+        texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
         {
             bitmapData = renderText(width, height, text, format, options);
-            texture.root.uploadBitmapData(bitmapData);
+            textureRoot.uploadBitmapData(bitmapData);
             bitmapData.dispose();
             bitmapData = null;
         };

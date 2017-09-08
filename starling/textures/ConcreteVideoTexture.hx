@@ -10,7 +10,7 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
+import starling.textures.ConcreteTexture.TextureUploadedCallback;
 
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.textures.TextureBase;
@@ -18,7 +18,6 @@ import openfl.display3D.textures.VideoTexture;
 import openfl.events.Event;
 
 import starling.core.Starling;
-import starling.utils.Execute.execute;
 
 /** @private
  *
@@ -26,7 +25,7 @@ import starling.utils.Execute.execute;
  *  For internal use only. */
 @:allow(starling) class ConcreteVideoTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:Function;
+    private var _textureReadyCallback:TextureUploadedCallback;
     private var _disposed:Bool;
 
     /** Creates a new instance with the given parameters.
@@ -66,7 +65,7 @@ import starling.utils.Execute.execute;
 
     /** @private */
     override private function attachVideo(type:String, attachment:Dynamic,
-                                           onComplete:Function=null):Void
+                                           onComplete:TextureUploadedCallback=null):Void
     {
         _textureReadyCallback = onComplete;
         var method = Reflect.field(base, "attach" + type);
@@ -79,7 +78,8 @@ import starling.utils.Execute.execute;
     private function onTextureReady(event:Event):Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
-        execute(_textureReadyCallback, [this]);
+        if (_textureReadyCallback != null)
+            _textureReadyCallback(this);
         _textureReadyCallback = null;
     }
 

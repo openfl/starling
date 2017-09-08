@@ -10,7 +10,6 @@
 
 package starling.rendering;
 
-import haxe.Constraints.Function;
 import openfl.geom.Matrix;
 import openfl.utils.Dictionary;
 import openfl.Vector;
@@ -18,6 +17,8 @@ import openfl.Vector;
 import starling.display.Mesh;
 import starling.display.MeshBatch;
 import starling.utils.MeshSubset;
+
+typedef BatchCompleteHandler = MeshBatch->Void;
 
 /** This class manages a list of mesh batches of different types;
  *  it acts as a "meta" MeshBatch that initiates all rendering.
@@ -28,7 +29,7 @@ class BatchProcessor
     private var _batchPool:BatchPool;
     private var _currentBatch:MeshBatch;
     private var _currentStyleType:Class<Dynamic>;
-    private var _onBatchComplete:Function;
+    private var _onBatchComplete:BatchCompleteHandler;
     private var _cacheToken:BatchToken;
 
     // helper objects
@@ -164,9 +165,9 @@ class BatchProcessor
     /** This callback is executed whenever a batch is finished and replaced by a new one.
      *  The finished MeshBatch is passed to the callback. Typically, this callback is used
      *  to actually render it. */
-    public var onBatchComplete(get, set):Function;
-    private function get_onBatchComplete():Function { return _onBatchComplete; }
-    private function set_onBatchComplete(value:Function):Function { return _onBatchComplete = value; }
+    public var onBatchComplete(get, set):BatchCompleteHandler;
+    private function get_onBatchComplete():BatchCompleteHandler { return _onBatchComplete; }
+    private function set_onBatchComplete(value:BatchCompleteHandler):BatchCompleteHandler { return _onBatchComplete = value; }
 }
 
 class BatchPool

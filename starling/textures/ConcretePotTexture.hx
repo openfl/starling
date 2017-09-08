@@ -10,8 +10,8 @@
 
 package starling.textures;
 
-import haxe.Constraints.Function;
 import haxe.Timer;
+import starling.textures.ConcreteTexture.TextureUploadedCallback;
 
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
@@ -26,7 +26,6 @@ import openfl.utils.ByteArray;
 
 import starling.core.Starling;
 import starling.utils.MathUtil;
-import starling.utils.Execute.execute;
 
 /** @private
  *
@@ -34,7 +33,7 @@ import starling.utils.Execute.execute;
  *  For internal use only. */
 @:allow(starling) class ConcretePotTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:Function;
+    private var _textureReadyCallback:TextureUploadedCallback;
 
     private static var sMatrix:Matrix = new Matrix();
     private static var sRectangle:Rectangle = new Rectangle();
@@ -72,13 +71,13 @@ import starling.utils.Execute.execute;
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:Dynamic=null):Void
+    override public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
     {
         var buffer:BitmapData = null;
-        var isAsync:Bool = Std.is(async, Function) || async == true;
+        var isAsync:Bool = async != null;
 
-        if (Std.is(async, Function))
-            _textureReadyCallback = cast async;
+        if (isAsync)
+            _textureReadyCallback = async;
 
         if (data.width != nativeWidth || data.height != nativeHeight)
         {
@@ -122,14 +121,14 @@ import starling.utils.Execute.execute;
     override private function get_isPotTexture():Bool { return true; }
 
     /** @inheritDoc */
-    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
+    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:TextureUploadedCallback = null):Void
     {
         data.endian = BIG_ENDIAN;
-        var isAsync:Bool = Std.is(async, Function) || async == true;
+        var isAsync:Bool = async != null;
 
-        if (Std.is(async, Function))
+        if (isAsync)
         {
-            _textureReadyCallback = cast async;
+            _textureReadyCallback = async;
             base.addEventListener(Event.TEXTURE_READY, onTextureReady);
         }
 
@@ -180,7 +179,8 @@ import starling.utils.Execute.execute;
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         base.removeEventListener(ErrorEvent.ERROR, onTextureReady);
 
-        execute(_textureReadyCallback, [this, event]);
+        if(_textureReadyCallback != null)
+            _textureReadyCallback(this);
         _textureReadyCallback = null;
     }
 

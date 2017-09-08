@@ -11,6 +11,7 @@
 package starling.display;
 
 import openfl.geom.Matrix;
+import starling.rendering.Effect;
 
 import starling.rendering.IndexData;
 import starling.rendering.MeshEffect;
@@ -255,7 +256,7 @@ class MeshBatch extends Mesh
             __effect.dispose();
 
         __effect = style.createEffect();
-        __effect.onRestore = __setVertexAndIndexDataChanged;
+        __effect.onRestore = function(effect:Effect):Void{__setVertexAndIndexDataChanged();};
 
         __setVertexAndIndexDataChanged(); // we've got a new set of buffers!
     }
