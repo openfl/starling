@@ -63,7 +63,7 @@ import utils.MenuButton;
         // strictly necessary, but it's faster when you are drawing with several fingers
         // simultaneously.
         
-        _renderTexture.drawBundled(function(unused0:DisplayObject, unused1:flash.geom.Matrix, unused2:Float):Void
+        _renderTexture.drawBundled(function():Void
         {
             var touches:Vector<Touch> = event.getTouches(_canvas);
         

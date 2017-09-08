@@ -22,8 +22,6 @@ import starling.utils.Padding;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 
-typedef TextureSetupHandler = Image->Void;
-
 /** An Image is a quad with a texture mapped onto it.
  *
  *  <p>Typically, the Image class will act as an equivalent of Flash's Bitmap class. Instead
@@ -528,7 +526,7 @@ class Image extends Quad
         *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
         *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
         */
-    public static function automateSetupForTexture(texture:Texture, onAssign:TextureSetupHandler, onRelease:TextureSetupHandler=null):Void
+    public static function automateSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
     {
         if (texture == null)
             return;
@@ -565,10 +563,10 @@ class Image extends Quad
 
 class TextureSetupSettings
 {
-    public var onAssign:TextureSetupHandler;
-    public var onRelease:Null<TextureSetupHandler>;
+    public var onAssign:Image->Void;
+    public var onRelease:Null<Image->Void>;
     
-    public function new(onAssign:TextureSetupHandler, onRelease:TextureSetupHandler = null):Void
+    public function new(onAssign:Image->Void, onRelease:Image->Void = null):Void
     {
         this.onAssign = onAssign;
         this.onRelease = onRelease;

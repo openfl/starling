@@ -30,9 +30,6 @@ import starling.events.Event;
 import starling.rendering.Painter;
 import starling.utils.Color;
 
-typedef TextureUploadedCallback = ConcreteTexture->Void;
-typedef TextureRestoredCallback = ConcreteTexture->Void;
-
 /** A ConcreteTexture wraps a Stage3D texture object, storing the properties of the texture
 *  and providing utility methods for data upload, etc.
 *
@@ -54,7 +51,7 @@ class ConcreteTexture extends Texture
     private var _premultipliedAlpha:Bool;
     private var _optimizedForRenderTexture:Bool;
     private var _scale:Float;
-    private var _onRestore:TextureRestoredCallback;
+    private var _onRestore:ConcreteTexture->Void;
     private var _dataUploaded:Bool;
 
     /** @private
@@ -105,7 +102,7 @@ class ConcreteTexture extends Texture
     *  <p>This is the expected function definition:
     *  <code>function(texture:ConcreteTexture):Void;</code>
     */
-    public function uploadBitmap(bitmap:Bitmap, async:TextureUploadedCallback=null):Void
+    public function uploadBitmap(bitmap:Bitmap, async:ConcreteTexture->Void=null):Void
     {
         uploadBitmapData(bitmap.bitmapData, async);
     }
@@ -121,7 +118,7 @@ class ConcreteTexture extends Texture
     *  <p>This is the expected function definition:
     *  <code>function(texture:ConcreteTexture):Void;</code>
     */
-    public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
+    public function uploadBitmapData(data:BitmapData, async:ConcreteTexture->Void=null):Void
     {
         throw new NotSupportedError();
     }
@@ -135,27 +132,27 @@ class ConcreteTexture extends Texture
     *  upload is complete, at which time the callback function will be executed. This is the
     *  expected function definition: <code>function(texture:ConcreteTexture):Void;</code></p>
     */
-    public function uploadAtfData(data:ByteArray, offset:Int=0, async:TextureUploadedCallback=null):Void
+    public function uploadAtfData(data:ByteArray, offset:Int=0, async:ConcreteTexture->Void=null):Void
     {
         throw new NotSupportedError();
     }
 
     /** Specifies a video stream to be rendered within the texture. */
-    public function attachNetStream(netStream:NetStream, onComplete:TextureUploadedCallback=null):Void
+    public function attachNetStream(netStream:NetStream, onComplete:ConcreteTexture->Void=null):Void
     {
         attachVideo("NetStream", netStream, onComplete);
     }
 
     #if flash
     /** Specifies a video stream from a camera to be rendered within the texture. */
-    public function attachCamera(camera:Camera, onComplete:TextureUploadedCallback=null):Void
+    public function attachCamera(camera:Camera, onComplete:ConcreteTexture->Void=null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }
     #end
 
     /** @private */
-    @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:TextureUploadedCallback=null):Void
+    @:allow(starling) private function attachVideo(type:String, attachment:Dynamic, onComplete:ConcreteTexture->Void=null):Void
     {
         throw new NotSupportedError();
     }
@@ -241,9 +238,9 @@ class ConcreteTexture extends Texture
     *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
     *  };</listing>
     */
-    public var onRestore(get, set):TextureRestoredCallback;
-    private function get_onRestore():TextureRestoredCallback { return _onRestore; }
-    private function set_onRestore(value:TextureRestoredCallback):TextureRestoredCallback
+    public var onRestore(get, set):ConcreteTexture->Void;
+    private function get_onRestore():ConcreteTexture->Void { return _onRestore; }
+    private function set_onRestore(value:ConcreteTexture->Void):ConcreteTexture->Void
     {
         Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         

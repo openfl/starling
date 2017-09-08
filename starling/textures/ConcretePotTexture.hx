@@ -11,8 +11,6 @@
 package starling.textures;
 
 import haxe.Timer;
-import starling.textures.ConcreteTexture.TextureUploadedCallback;
-
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
 import openfl.errors.ArgumentError;
@@ -33,7 +31,7 @@ import starling.utils.MathUtil;
  *  For internal use only. */
 @:allow(starling) class ConcretePotTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:TextureUploadedCallback;
+    private var _textureReadyCallback:ConcreteTexture->Void;
 
     private static var sMatrix:Matrix = new Matrix();
     private static var sRectangle:Rectangle = new Rectangle();
@@ -71,7 +69,7 @@ import starling.utils.MathUtil;
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
+    override public function uploadBitmapData(data:BitmapData, async:ConcreteTexture->Void=null):Void
     {
         var buffer:BitmapData = null;
         var isAsync:Bool = async != null;
@@ -121,7 +119,7 @@ import starling.utils.MathUtil;
     override private function get_isPotTexture():Bool { return true; }
 
     /** @inheritDoc */
-    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:TextureUploadedCallback = null):Void
+    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:ConcreteTexture->Void = null):Void
     {
         data.endian = BIG_ENDIAN;
         var isAsync:Bool = async != null;

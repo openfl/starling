@@ -10,6 +10,7 @@
 
 package starling.utils;
 
+import haxe.Constraints.Function;
 import openfl.display.Bitmap;
 import openfl.display.Loader;
 import openfl.display.LoaderInfo;
@@ -857,14 +858,14 @@ class AssetManager extends EventDispatcher
             }
             else if (Std.is(asset, Bitmap))
             {
-                options.onReady = prependCallback(cast options.onReady, function():Void
+                options.onReady = prependCallback(options.onReady, function(_):Void
                 {
                     addTexture(name, texture);
                     onComplete();
                 });
                 
                 texture = Texture.fromData(asset, options);
-                texture.root.onRestore = function():Void
+                texture.root.onRestore = function(_):Void
                 {
                     __numLostTextures++;
                     loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
@@ -894,14 +895,14 @@ class AssetManager extends EventDispatcher
                 
                 if (AtfData.isAtfData(bytes))
                 {
-                    options.onReady = prependCallback(cast options.onReady, function():Void
+                    options.onReady = prependCallback(options.onReady, function(_):Void
                     {
                         addTexture(name, texture);
                         onComplete();
                     });
 
                     texture = Texture.fromData(bytes, options);
-                    texture.root.onRestore = function():Void
+                    texture.root.onRestore = function(_):Void
                     {
                         __numLostTextures++;
                         loadRawAsset(rawAsset, null, function(asset:Dynamic):Void
@@ -909,7 +910,7 @@ class AssetManager extends EventDispatcher
                             try
                             {
                                 if (asset == null) throw new Error("Reload failed");
-                                texture.root.uploadAtfData(cast(asset, ByteArrayData), 0, false);
+                                texture.root.uploadAtfData(cast(asset, ByteArrayData), 0, null);
                                 asset.clear();
                             }
                             catch (e:Error)
@@ -1273,17 +1274,17 @@ class AssetManager extends EventDispatcher
         else return null;
     }
 
-    private function prependCallback(oldCallback:Void->Void, newCallback:Void->Void):Void->Void
+    private function prependCallback<T:(Function)>(oldCallback:T, newCallback:T):T
     {
         // TODO: it might make sense to add this (together with "appendCallback")
         //       as a public utility method ("FunctionUtil"?)
 
         if (oldCallback == null) return newCallback;
         else if (newCallback == null) return oldCallback;
-        else return function():Void
+        else return cast function(?_):Void
         {
-            newCallback();
-            oldCallback();
+            (newCallback:Function)();
+            (oldCallback:Function)();
         };
     }
 

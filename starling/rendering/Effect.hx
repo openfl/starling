@@ -22,8 +22,6 @@ import openfl.utils.Dictionary;
 import starling.core.Starling;
 import starling.errors.MissingContextError;
 
-typedef EffectRestoredCallback = Effect->Void;
-
 /** An effect encapsulates all steps of a Stage3D draw operation. It configures the
  *  render context and sets up shader programs as well as index- and vertex-buffers, thus
  *  providing the basic mechanisms of all low-level rendering.
@@ -110,7 +108,7 @@ class Effect
     private var _indexBufferUsesQuadLayout:Bool;
 
     private var _mvpMatrix3D:Matrix3D;
-    private var _onRestore:EffectRestoredCallback;
+    private var _onRestore:Effect->Void;
     private var _programBaseName:String;
 
     // helper objects
@@ -361,9 +359,9 @@ class Effect
     /** The function that you provide here will be called after a context loss.
      *  Call both "upload..." methods from within the callback to restore any vertex or
      *  index buffers. The callback will be executed with the effect as its sole parameter. */
-    public var onRestore(get, set):EffectRestoredCallback;
-    private function get_onRestore():EffectRestoredCallback { return _onRestore; }
-    private function set_onRestore(value:EffectRestoredCallback):EffectRestoredCallback { return _onRestore = value; }
+    public var onRestore(get, set):Effect->Void;
+    private function get_onRestore():Effect->Void { return _onRestore; }
+    private function set_onRestore(value:Effect->Void):Effect->Void { return _onRestore = value; }
 
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2"</code> */

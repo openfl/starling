@@ -27,8 +27,6 @@ import starling.utils.MatrixUtil;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 
-typedef DrawRequiredHandler = Void->Void;
-
 /** The RenderState stores a combination of settings that are currently used for rendering.
  *  This includes modelview and transformation matrices as well as context3D related settings.
  *
@@ -88,7 +86,7 @@ class RenderState
     private var _miscOptions:UInt = 0;
     private var _clipRect:Rectangle;
     private var _renderTarget:Texture;
-    private var _onDrawRequired:DrawRequiredHandler;
+    private var _onDrawRequired:Void->Void;
     private var _modelviewMatrix3D:Matrix3D;
     private var _projectionMatrix3D:Matrix3D;
     private var _projectionMatrix3DRev:UInt;
@@ -475,7 +473,7 @@ class RenderState
      *  This callback is executed whenever a state change requires a draw operation.
      *  This is the case if blend mode, render target, culling or clipping rectangle
      *  are changing. */
-    @:allow(starling) private var onDrawRequired(get, set):DrawRequiredHandler;
-    private function get_onDrawRequired():DrawRequiredHandler { return _onDrawRequired; }
-    private function set_onDrawRequired(value:DrawRequiredHandler):DrawRequiredHandler { return _onDrawRequired = value; }
+    @:allow(starling) private var onDrawRequired(get, set):Void->Void;
+    private function get_onDrawRequired():Void->Void { return _onDrawRequired; }
+    private function set_onDrawRequired(value:Void->Void):Void->Void { return _onDrawRequired = value; }
 }

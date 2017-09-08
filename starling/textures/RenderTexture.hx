@@ -25,7 +25,6 @@ import starling.filters.FragmentFilter;
 import starling.rendering.Painter;
 import starling.rendering.RenderState;
 
-typedef RenderBlock = DisplayObject->Matrix->Float->Void;
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
  * 
  *  <p>After creating a render texture, just call the <code>drawObject</code> method to render 
@@ -187,7 +186,7 @@ class RenderTexture extends SubTexture
      */
     public function drawBundled(drawingBlock:Void->Void, antiAliasing:Int=0):Void
     {
-        var renderBlockFunc:RenderBlock = function(object:DisplayObject, matrix:Matrix, alpha:Float):Void {drawingBlock();};
+        var renderBlockFunc = function(object:DisplayObject, matrix:Matrix, alpha:Float):Void {drawingBlock();};
         __renderBundled(renderBlockFunc, null, null, 1.0, antiAliasing);
     }
     
@@ -221,7 +220,7 @@ class RenderTexture extends SubTexture
         painter.cacheEnabled = wasCacheEnabled;
     }
     
-    private function __renderBundled(renderBlock:RenderBlock, object:DisplayObject=null,
+    private function __renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
                                      matrix:Matrix=null, alpha:Float=1.0,
                                      antiAliasing:Int=0):Void
     {

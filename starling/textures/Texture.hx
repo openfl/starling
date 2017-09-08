@@ -35,7 +35,6 @@ import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
-import starling.textures.ConcreteTexture.TextureUploadedCallback;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
@@ -297,7 +296,7 @@ class Texture
                                       optimizeForRenderToTexture:Bool=false,
                                       scale:Float=1, format:Context3DTextureFormat=BGRA,
                                       forcePotTexture:Bool=false,
-                                      async:TextureUploadedCallback=null):Texture
+                                      async:Texture->Void=null):Texture
     {
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture,
                               scale, format, forcePotTexture, async);
@@ -330,7 +329,7 @@ class Texture
                                           optimizeForRenderToTexture:Bool=false,
                                           scale:Float=1, format:Context3DTextureFormat=BGRA,
                                           forcePotTexture:Bool=false,
-                                          async:TextureUploadedCallback=null):Texture
+                                          async:Texture->Void=null):Texture
     {
         var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                                             generateMipMaps, optimizeForRenderToTexture, scale,
@@ -361,7 +360,7 @@ class Texture
      *                    tools.
      */
     public static function fromAtfData(data:ByteArray, scale:Float=1, useMipMaps:Bool=true,
-                                       async:TextureUploadedCallback=null, premultipliedAlpha:Bool=false):Texture
+                                       async:Texture->Void=null, premultipliedAlpha:Bool=false):Texture
     {
         var context:Context3D = Starling.current.context;
         if (context == null) throw new MissingContextError();
@@ -411,7 +410,7 @@ class Texture
      *                 of type 'Texture'.
      */
     public static function fromNetStream(stream:NetStream, scale:Float=1,
-                                         onComplete:TextureUploadedCallback=null):Texture
+                                         onComplete:Texture->Void=null):Texture
     {
         // workaround for bug in NetStream class:
         if (stream.client == stream && !(Reflect.hasField(stream, "onMetaData")))
@@ -441,14 +440,14 @@ class Texture
      */
     #if flash
     public static function fromCamera(camera:Camera, scale:Float=1,
-                                      onComplete:TextureUploadedCallback=null):Texture
+                                      onComplete:Texture->Void=null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }
     #end
 
     private static function fromVideoAttachment(type:String, attachment:Dynamic,
-                                                scale:Float, onComplete:TextureUploadedCallback):Texture
+                                                scale:Float, onComplete:Texture->Void):Texture
     {
         if (!SystemUtil.supportsVideoTexture)
             throw new NotSupportedError("Video Textures are not supported on this platform");

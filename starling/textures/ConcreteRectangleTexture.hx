@@ -11,7 +11,6 @@
 package starling.textures;
 
 import haxe.Timer;
-
 import openfl.display.BitmapData;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -20,7 +19,6 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 
 import starling.core.Starling;
-import starling.textures.ConcreteTexture.TextureUploadedCallback;
 
 /** @private
  *
@@ -28,7 +26,7 @@ import starling.textures.ConcreteTexture.TextureUploadedCallback;
  *  For internal use only. */
 @:allow(starling) class ConcreteRectangleTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:TextureUploadedCallback;
+    private var _textureReadyCallback:ConcreteTexture->Void;
 
     private static var sAsyncUploadEnabled:Bool = false;
 
@@ -43,7 +41,7 @@ import starling.textures.ConcreteTexture.TextureUploadedCallback;
     }
 
     /** @inheritDoc */
-    override public function uploadBitmapData(data:BitmapData, async:TextureUploadedCallback=null):Void
+    override public function uploadBitmapData(data:BitmapData, async:ConcreteTexture->Void=null):Void
     {
         if (async != null)
             _textureReadyCallback = async;

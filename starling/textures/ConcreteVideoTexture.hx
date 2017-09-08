@@ -10,8 +10,6 @@
 
 package starling.textures;
 
-import starling.textures.ConcreteTexture.TextureUploadedCallback;
-
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.VideoTexture;
@@ -25,7 +23,7 @@ import starling.core.Starling;
  *  For internal use only. */
 @:allow(starling) class ConcreteVideoTexture extends ConcreteTexture
 {
-    private var _textureReadyCallback:TextureUploadedCallback;
+    private var _textureReadyCallback:ConcreteTexture->Void;
     private var _disposed:Bool;
 
     /** Creates a new instance with the given parameters.
@@ -65,7 +63,7 @@ import starling.core.Starling;
 
     /** @private */
     override private function attachVideo(type:String, attachment:Dynamic,
-                                           onComplete:TextureUploadedCallback=null):Void
+                                           onComplete:ConcreteTexture->Void=null):Void
     {
         _textureReadyCallback = onComplete;
         var method = Reflect.field(base, "attach" + type);
