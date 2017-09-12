@@ -24,6 +24,7 @@ import flash.media.Camera;
 #end
 import flash.net.NetStream;
 import flash.utils.ByteArray;
+import haxe.Timer;
 
 import haxe.Constraints.Function;
 
@@ -122,6 +123,9 @@ class ConcreteTexture extends Texture
         }else if (async == true){
 			doAsync = true;
 		}
+		#if !AIR27
+		doAsync = false;
+		#end
 
         var potData:BitmapData = null;
         
@@ -137,15 +141,11 @@ class ConcreteTexture extends Texture
             var potTexture:flash.display3D.textures.Texture = 
                 cast mBase;
             
-			#if AIR27
 			if (doAsync){
 				untyped potTexture.uploadFromBitmapDataAsync(data);
 			}else{
 				potTexture.uploadFromBitmapData(data);
 			}
-			#else
-			potTexture.uploadFromBitmapData(data);
-			#end
             
             if (mMipMapping && data.width > 1 && data.height > 1)
             {
@@ -174,19 +174,22 @@ class ConcreteTexture extends Texture
         {
             var baseTexture:flash.display3D.textures.RectangleTexture = cast mBase;
             
-			#if AIR27
 			if (doAsync){
 				untyped baseTexture.uploadFromBitmapDataAsync(data);
 			}else{
 				baseTexture.uploadFromBitmapData(data);
 			}
-			#else
-			baseTexture.uploadFromBitmapData(data);
-			#end
         }
         
         if (potData != null) potData.dispose();
         mDataUploaded = true;
+		
+		#if !flash
+		if (!doAsync && Reflect.isFunction(async)){
+			// OpenFL doesn't fire TextureReady event in this case, flash does
+			Timer.delay (onTextureReady.bind(null), 1);
+		}
+		#end
     }
     
     /** Uploads ATF data from a ByteArray to the texture. Note that the size of the
