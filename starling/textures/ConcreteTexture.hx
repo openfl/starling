@@ -241,7 +241,7 @@ class ConcreteTexture extends Texture
         {
             mDataUploaded = true;
             mTextureReadyCallback = onComplete;
-            Reflect.callMethod(mBase, Reflect.getProperty(mBase, "attach" + type), attachment);
+            Reflect.callMethod(mBase, Reflect.getProperty(mBase, "attach" + type), [attachment]);
             mBase.addEventListener(TEXTURE_READY, onTextureReady);
         }
         else throw new Error("This texture type does not support " + type + " data");

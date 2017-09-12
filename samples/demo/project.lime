@@ -19,6 +19,7 @@
 	<assets path="assets/fonts/1x" />
 	<assets path="assets/fonts/DejaVuSans.ttf" />
 	<assets path="assets/fonts/Ubuntu-R.ttf" />
+	<haxeflag name="-D advanced-telemetry"></haxeflag>
 	
 	<section if="demo-video">
 		
