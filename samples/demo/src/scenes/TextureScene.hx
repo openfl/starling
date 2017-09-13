@@ -46,7 +46,7 @@ import starling.textures.Texture;
             #if flash
                 var textValue = "Flash Player and AIR must be at least 11.4 and 3.4 respectively (swf-version=17) to see a compressed ATF texture";
             #else
-                var textValue = "ATF textures are not support in non Flash/Air targets.";
+                var textValue = "ATF texture support failed: " + e.message;
             #end
             var textField:TextField = new TextField(220, 128, textValue, "DejaVu Sans", 14);
             textField.x = Constants.CenterX - textField.width / 2;

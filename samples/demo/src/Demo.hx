@@ -96,11 +96,13 @@ class Demo extends Sprite
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
             #if flash
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
-            #else
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
-            #end
             var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
             assets.addByteArray("compressed_texture", compressedTexture);
+            #else
+            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf.gzip");
+            assets.addByteArray("compressed_texture", lime.utils.compress.GZip.decompress(compressedTexture));
+            #end
             
             onComplete(assets);
         }, 0);
