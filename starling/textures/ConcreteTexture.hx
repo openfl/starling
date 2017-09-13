@@ -184,12 +184,9 @@ class ConcreteTexture extends Texture
         if (potData != null) potData.dispose();
         mDataUploaded = true;
 		
-		#if !flash
 		if (!doAsync && Reflect.isFunction(async)){
-			// OpenFL doesn't fire TextureReady event in this case, flash does
 			Timer.delay (onTextureReady.bind(null), 1);
 		}
-		#end
     }
     
     /** Uploads ATF data from a ByteArray to the texture. Note that the size of the
