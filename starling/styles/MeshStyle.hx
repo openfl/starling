@@ -109,13 +109,13 @@ class MeshStyle extends EventDispatcher
 
     /** Creates a new MeshStyle instance.
      *  Subclasses must provide a constructor that can be called without any arguments. */
-    public function new()
+    @:keep public function new()
     {
         super();
         _textureSmoothing = TextureSmoothing.BILINEAR;
         _type = Type.getClass(this);
     }
-
+    
     /** Copies all properties of the given style to the current instance (or a subset, if the
      *  classes don't match). Must be overridden by all subclasses!
      */
