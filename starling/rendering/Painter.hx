@@ -531,9 +531,10 @@ class Painter
     private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Bool
     {
         var quad:Quad = Std.is(mask, Quad) ? cast mask : null;
+		var isInverted:Bool = maskee != null && maskee.maskInverted;
         var is3D:Bool = mask.is3D || (maskee != null && maskee.is3D && mask.stage == null);
 
-        if (quad != null && !is3D && quad.texture == null)
+        if (quad != null && !isInverted && !is3D && quad.texture == null)
         {
             if (mask.stage != null) mask.getTransformationMatrix(null, out);
             else

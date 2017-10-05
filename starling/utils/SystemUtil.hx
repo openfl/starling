@@ -64,7 +64,7 @@ class SystemUtil
             #elseif flash
             #else
             var windowConfig:WindowConfig = Application.current.window.config;
-            sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
+            sSupportsDepthAndStencil = windowConfig.depthBuffer && windowConfig.stencilBuffer;
             #end
 
             #if air
