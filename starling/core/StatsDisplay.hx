@@ -21,6 +21,7 @@ import starling.styles.MeshStyle;
 import starling.text.BitmapFont;
 import starling.text.TextField;
 import starling.utils.Align;
+import starling.utils.MathUtil;
 
 /** A small, lightweight box that displays the current framerate, memory consumption and
  *  the number of draw calls per frame. The display is updated automatically once per frame. */
@@ -113,9 +114,9 @@ class StatsDisplay extends Sprite
         __memory = System.totalMemory * B_TO_MB;
         __gpuMemory = supportsGpuMem ? Reflect.field(Starling.current.context, "totalGPUMemory") * B_TO_MB : -1;
 
-        var fpsText:String = __fps < 100 ? Std.string(Math.round(__fps * 10) / 10) : Std.string(Math.round(__fps));
-        var memText:String = __memory < 100 ? Std.string(Math.round(__memory * 10) / 10) : Std.string(Math.round(__memory));
-        var gpuMemText:String = __gpuMemory < 100 ? Std.string(Math.round(__gpuMemory * 10) / 10) : Std.string(Math.round(__gpuMemory));
+        var fpsText:String = MathUtil.toFixed(__fps, __fps < 100 ? 1 : 0);
+        var memText:String = MathUtil.toFixed(__memory, __memory < 100 ? 1 : 0);
+        var gpuMemText:String = MathUtil.toFixed(__gpuMemory, __gpuMemory < 100 ? 1 : 0);
         var drwText:String = Std.string(__totalTime > 0 ? __drawCount - 2 : __drawCount); // ignore self
 
         __values.text = fpsText + "\n" + memText + "\n" +

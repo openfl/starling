@@ -276,8 +276,8 @@ class Polygon
         for (i in 0...numPoints)
         {
             result += "  [Vertex " + i + ": " +
-                "x=" + (Math.round(__coords[i * 2    ]*10)/10) + ", " +
-                "y=" + (Math.round(__coords[i * 2 + 1]*10)/10) + "]"  +
+                "x=" + MathUtil.toFixed(__coords[i * 2    ], 1) + ", " +
+                "y=" + MathUtil.toFixed(__coords[i * 2 + 1], 1) + "]"  +
                 (i == numPoints - 1 ? "\n" : ",\n");
         }
 

@@ -139,4 +139,10 @@ class MathUtil
     {
         return rad / Math.PI * 180.0;
     }
+    
+    public static function toFixed(value:Float, precision:Int):String {
+        var sign = value > 0 ? 1 : -1;
+        var mult = precision <= 0 ? 1 : precision * 10;
+        return Std.string(sign * Math.round(value * mult) / mult);
+    }
 }

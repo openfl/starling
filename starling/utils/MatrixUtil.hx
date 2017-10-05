@@ -244,14 +244,14 @@ class MatrixUtil
             if (value > highestValue) highestValue = value;
         }
 
-        var numChars:Int = toFixed(highestValue, precision).length + 1;
+        var numChars:Int = MathUtil.toFixed(highestValue, precision).length + 1;
 
         for(y in 0...numRows)
         {
             for(x in 0...numCols)
             {
                 value = data[numCols * y + x];
-                valueString = toFixed(value, precision);
+                valueString = MathUtil.toFixed(value, precision);
 
                 while (valueString.length < numChars) valueString = " " + valueString;
 
@@ -263,12 +263,6 @@ class MatrixUtil
         }
 
         return result;
-    }
-
-    /** Simpliest but not accurate realization of toFixed */
-    private static function toFixed(value:Float, precision:Int):String
-    {
-        return Std.string(Std.int(value * precision) / precision);
     }
 
     /** Updates the given matrix so that it points exactly to pixel boundaries. This works

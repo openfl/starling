@@ -373,14 +373,14 @@ class DisplayObject extends EventDispatcher
     {
         var bounds:Rectangle = getBounds(this, sHelperRect);
 
-        if (horizontalAlign == Align.LEFT)        __pivotX = bounds.x;
-        else if (horizontalAlign == Align.CENTER) __pivotX = bounds.x + bounds.width / 2.0;
-        else if (horizontalAlign == Align.RIGHT)  __pivotX = bounds.x + bounds.width;
+        if (horizontalAlign == Align.LEFT)        pivotX = bounds.x;
+        else if (horizontalAlign == Align.CENTER) pivotX = bounds.x + bounds.width / 2.0;
+        else if (horizontalAlign == Align.RIGHT)  pivotX = bounds.x + bounds.width;
         else throw new ArgumentError("Invalid horizontal alignment: " + horizontalAlign);
         
-        if (verticalAlign == Align.TOP)           __pivotY = bounds.y;
-        else if (verticalAlign == Align.CENTER)   __pivotY = bounds.y + bounds.height / 2.0;
-        else if (verticalAlign == Align.BOTTOM)   __pivotY = bounds.y + bounds.height;
+        if (verticalAlign == Align.TOP)           pivotY = bounds.y;
+        else if (verticalAlign == Align.CENTER)   pivotY = bounds.y + bounds.height / 2.0;
+        else if (verticalAlign == Align.BOTTOM)   pivotY = bounds.y + bounds.height;
         else throw new ArgumentError("Invalid vertical alignment: " + verticalAlign);
     }
 

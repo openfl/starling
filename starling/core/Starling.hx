@@ -382,7 +382,7 @@ class Starling extends EventDispatcher
         if (__root == null && __rootClass != null)
         {
             __root = Type.createInstance(__rootClass, []);
-            if (__root == null) throw new Error("Invalid root class: " + __rootClass);
+            if (__root == null || !Std.is(__root, DisplayObject)) throw new Error("Invalid root class: " + __rootClass);
             __stage.addChildAt(__root, 0);
 
             dispatchEventWith(starling.events.Event.ROOT_CREATED, false, __root);
