@@ -209,12 +209,12 @@ class RenderTexture extends SubTexture
         if (matrix != null) state.transformModelviewMatrix(matrix);
         else        state.transformModelviewMatrix(object.transformationMatrix);
 
-        if (mask != null)   painter.drawMask(mask);
+        if (mask != null)   painter.drawMask(mask, object);
 
         if (filter != null) filter.render(painter);
         else        object.render(painter);
 
-        if (mask != null)   painter.eraseMask(mask);
+        if (mask != null)   painter.eraseMask(mask, object);
 
         painter.popState();
         painter.cacheEnabled = wasCacheEnabled;

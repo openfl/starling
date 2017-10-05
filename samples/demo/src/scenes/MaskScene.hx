@@ -43,6 +43,7 @@ import starling.text.TextField;
         
         var maskText:TextField = new TextField(256, 128,
             "Move the mouse (or a finger) over the screen to move the mask.");
+        maskText.format.font = "DejaVu Sans";
         maskText.x = (stageWidth - maskText.width) / 2;
         maskText.y = 260;
         maskText.format.size = 20;
