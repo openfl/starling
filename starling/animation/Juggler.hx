@@ -56,6 +56,7 @@ class Juggler implements IAnimatable
     private var __timeScale:Float;
 
     private static var sCurrentObjectID:UInt = 0;
+    private static var sTweenInstanceFields:Array<String>;
     
     /** Create an empty juggler. */
     public function new()
@@ -326,13 +327,15 @@ class Juggler implements IAnimatable
         var tween:Tween = Tween.fromPool(target, time);
         var value:Dynamic;
         
+        if (sTweenInstanceFields == null) sTweenInstanceFields = Type.getInstanceFields (Tween);
+        
         for (property in Reflect.fields(properties))
         {
             value = Reflect.field(properties, property);
             
-            if (Reflect.getProperty(tween, property) != null)
+            if (sTweenInstanceFields.indexOf ("set_" + property) > -1)
                 Reflect.setProperty(tween, property, value);
-            else if (Reflect.getProperty(target, property) != null)
+            else if (Reflect.hasField(target, property) || Reflect.getProperty(target, property) != null)
                 tween.animate(property, value);
             else
                 throw new ArgumentError("Invalid property: " + property);
