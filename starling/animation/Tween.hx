@@ -256,12 +256,12 @@ import starling.utils.Color;
                 // add it to another juggler; so this event has to be dispatched *before*
                 // executing 'onComplete'.
                 dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                if (__onComplete != null)
+                if (onComplete != null)
                 {
-                    if (__onCompleteArgs != null) {
-                        Reflect.callMethod(__onComplete, __onComplete, __onCompleteArgs);
+                    if (onCompleteArgs != null) {
+                        Reflect.callMethod(onComplete, onComplete, onCompleteArgs);
                     } else {
-                        __onComplete();
+                        onComplete();
                     }
                 }
                 if (__currentTime == 0) carryOverTime = 0; // tween was reset
