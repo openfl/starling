@@ -272,6 +272,8 @@ class Starling extends EventDispatcher
         SystemUtil.initialize();
         sAll.push(this);
         makeCurrent();
+		
+		multitouchEnabled = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
 
         mRootClass = rootClass;
         mViewPort = viewPort;
@@ -846,7 +848,7 @@ class Starling extends EventDispatcher
         
         if (!multitouchEnabled || Mouse.supportsCursor)
         {
-            types.push(MouseEvent.MOUSE_DOWN);
+			types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
             types.push(MouseEvent.MOUSE_UP);
         }
@@ -1220,10 +1222,10 @@ class Starling extends EventDispatcher
     */
     
     /** Indicates if multitouch input should be supported. */
-    public static var multitouchEnabled(get, set):Bool;
+    @:isVar public static var multitouchEnabled(get, set):Bool = false;
     private static function get_multitouchEnabled():Bool 
     { 
-        return Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+		return multitouchEnabled;
     }
     
     private static function set_multitouchEnabled(value:Bool):Bool
@@ -1233,7 +1235,7 @@ class Starling extends EventDispatcher
         else 
             Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
                                            MultitouchInputMode.NONE;
-        return value;
+        return multitouchEnabled = value;
     }
     
     /** Indicates if Starling should automatically recover from a lost device context.
