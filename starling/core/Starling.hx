@@ -271,10 +271,9 @@ class Starling extends EventDispatcher
 
         SystemUtil.initialize();
         sAll.push(this);
+		
         makeCurrent();
 		
-		multitouchEnabled = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
-
         mRootClass = rootClass;
         mViewPort = viewPort;
         mPreviousViewPort = new Rectangle();
