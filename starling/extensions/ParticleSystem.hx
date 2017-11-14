@@ -216,7 +216,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         if (newCapacity > 0)
         {
             mVertexBuffer = context.createVertexBuffer(newCapacity * 4, VertexData.ELEMENTS_PER_VERTEX);
-            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, newCapacity * 4);
+            mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
 
             mIndexBuffer  = context.createIndexBuffer(newCapacity * 6);
             mIndexBuffer.uploadFromVector(mIndices, 0, newCapacity * 6);
@@ -402,7 +402,7 @@ class ParticleSystem extends DisplayObject implements IAnimatable
         
         if (context == null) throw new MissingContextError();
         
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mNumParticles * 4);
+        mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
         mIndexBuffer.uploadFromVector(mIndices, 0, mNumParticles * 6);
         
         context.setBlendFactors(mBlendFactorSource, mBlendFactorDestination);

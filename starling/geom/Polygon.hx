@@ -10,6 +10,7 @@
 
 package starling.geom;
 
+import lime.utils.Float32Array;
 import flash.errors.ArgumentError;
 import flash.errors.RangeError;
 import flash.geom.Point;
@@ -249,9 +250,23 @@ class Polygon
         if (target.numVertices < requiredTargetLength)
             target.numVertices = requiredTargetLength;
 
-        copyToVector(target.rawData,
+        copyToArray(target.rawData,
             targetIndex * VertexData.ELEMENTS_PER_VERTEX,
             VertexData.ELEMENTS_PER_VERTEX - 2);
+    }
+
+    /** Copies all vertices to an 'Array', beginning at a certain target index and skipping
+     * 'stride' coordinates between each 'x, y' pair. */
+    public function copyToArray(target:Float32Array, targetIndex:Int=0, stride:Int=0):Void
+    {
+        var numVertices:Int = this.numVertices;
+
+        for (i in 0...numVertices)
+        {
+            target[targetIndex++] = mCoords[i * 2];
+            target[targetIndex++] = mCoords[i * 2 + 1];
+            targetIndex += stride;
+        }
     }
 
     /** Copies all vertices to a 'Vector', beginning at a certain target index and skipping
