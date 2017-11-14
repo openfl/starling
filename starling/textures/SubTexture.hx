@@ -10,6 +10,7 @@
 
 package starling.textures;
 
+import lime.utils.Float32Array;
 import flash.display3D.textures.TextureBase;
 import flash.display3D.Context3DTextureFormat;
 import flash.errors.ArgumentError;
@@ -121,7 +122,7 @@ class SubTexture extends Texture
     }
 
     /** @inheritDoc */
-    public override function adjustTexCoords(texCoords:Vector<Float>,
+    public override function adjustTexCoords(texCoords:Float32Array,
                                              startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         if (count < 0)

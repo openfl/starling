@@ -10,6 +10,7 @@
 
 package starling.filters;
 
+import lime.utils.Float32Array;
 import flash.display.BitmapDataChannel;
 import flash.display3D.Context3D;
 import flash.display3D.Context3DMipFilter;
@@ -59,7 +60,7 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** Helper objects */
     private static var sOneHalf:Vector<Float> = Vector.ofArray([0.5, 0.5, 0.5, 0.5]);
-    private static var sMapTexCoords:Vector<Float> = Vector.ofArray([0, 0, 1, 0, 0, 1, 1, 1.]);
+    private static var sMapTexCoords:Float32Array = new Float32Array(null #if !(js && !display) ,null #end, [0, 0, 1, 0, 0, 1, 1, 1.0]);
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> = 
         Vector.ofArray([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
@@ -205,7 +206,7 @@ class DisplacementMapFilter extends FragmentFilter
         sMapTexCoords[6] = -mapX + maxU; sMapTexCoords[7] = -mapY + maxV;
         
         mMapTexture.adjustTexCoords(sMapTexCoords);
-        mMapTexCoordBuffer.uploadFromVector(sMapTexCoords, 0, 4);
+        mMapTexCoordBuffer.uploadFromTypedArray(sMapTexCoords);
     }
     
     // properties

@@ -10,6 +10,7 @@
 
 package starling.textures;
 
+import lime.utils.Float32Array;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display3D.Context3D;
@@ -530,7 +531,7 @@ class Texture
      * @param stride     the distance (in vector elements) of consecutive UV pairs.
      * @param count      the number of UV pairs that should be adjusted, or "-1" for all of them.
      */
-    public function adjustTexCoords(texCoords:Vector<Float>,
+    public function adjustTexCoords(texCoords:Float32Array,
                                     startIndex:Int=0, stride:Int=0, count:Int=-1):Void
     {
         // override in subclasses

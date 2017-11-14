@@ -370,7 +370,7 @@ class FragmentFilter
             mIndexBuffer.uploadFromVector(mIndexData, 0, 6);
         }
         
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, 4);
+        mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
     }
     
     private function updatePassTextures(width:Float, height:Float, scale:Float):Void
