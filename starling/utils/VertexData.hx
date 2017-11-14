@@ -143,13 +143,13 @@ class VertexData
         var targetIndex:Int = mRawData == null ? 0 : mRawData.length;
         var rawData:Float32Array = data.mRawData;
         var rawDataLength:Int = rawData.length;
-
+		
         mNumVertices += data.numVertices;
         __resizeRawData(mNumVertices);
         
         for (i in 0...rawDataLength)
             mRawData[targetIndex++] = rawData[i];
-
+			
     }
     
     // functions
@@ -525,9 +525,9 @@ class VertexData
             mRawData = null;
             return 0;
         }
-
+		
 		__resizeRawData(value);
-
+		
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
         var endIndex:Int = value * ELEMENTS_PER_VERTEX;
         
@@ -541,19 +541,19 @@ class VertexData
         mNumVertices = value;
         return value;
     }
-
+	
     private function __resizeRawData(numVertices: Int): Void
     {
         var existingRawData: Float32Array = mRawData;
         mRawData = new Float32Array(numVertices * ELEMENTS_PER_VERTEX);
-
+		
         if (existingRawData != null && existingRawData.byteLength < mRawData.byteLength) {
-
+			
             mRawData.set(existingRawData);
-
+			
         }
     }
-
+    
     /** The raw vertex data; not a copy! */
     public var rawData(get, never):Float32Array;
     private function get_rawData():Float32Array { return mRawData; }
