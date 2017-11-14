@@ -140,7 +140,6 @@ class VertexData
     /** Appends the vertices from another VertexData object. */
     public function append(data:VertexData):Void
     {
-
         var targetIndex:Int = mRawData == null ? 0 : mRawData.length;
         var rawData:Float32Array = data.mRawData;
         var rawDataLength:Int = rawData.length;
@@ -522,6 +521,11 @@ class VertexData
     private function get_numVertices():Int { return mNumVertices; }
     private function set_numVertices(value:Int):Int
     {
+        if (value == 0) {
+            mRawData = null;
+            return 0;
+        }
+
 		__resizeRawData(value);
 
         var startIndex:Int = mNumVertices * ELEMENTS_PER_VERTEX + COLOR_OFFSET + 3;
