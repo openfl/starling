@@ -10,13 +10,14 @@
 
 package starling.textures;
 
-import lime.utils.Float32Array;
 import flash.display3D.textures.TextureBase;
 import flash.display3D.Context3DTextureFormat;
 import flash.errors.ArgumentError;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
+
+import lime.utils.Float32Array;
 
 import openfl.Vector;
 
@@ -122,8 +123,13 @@ class SubTexture extends Texture
     }
 
     /** @inheritDoc */
+    #if (flash || use_vector)
+    public override function adjustTexCoords(texCoords:Vector<Float>,
+                                             startIndex:Int=0, stride:Int=0, count:Int=-1):Void
+    #else
     public override function adjustTexCoords(texCoords:Float32Array,
                                              startIndex:Int=0, stride:Int=0, count:Int=-1):Void
+    #end
     {
         if (count < 0)
             count = Std.int((texCoords.length - startIndex - 2) / (stride + 2) + 1);

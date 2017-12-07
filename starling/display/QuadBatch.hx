@@ -204,7 +204,11 @@ class QuadBatch extends DisplayObject
         if (context == null)  throw new MissingContextError();
         
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
+        #if (flash || use_vector)
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
+        #else
         mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
+        #end
 
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);
@@ -238,7 +242,11 @@ class QuadBatch extends DisplayObject
         {
             // as last parameter, we could also use 'mNumQuads * 4', but on some
             // GPU hardware (iOS!), this is slower than updating the complete buffer.
+            #if (flash || use_vector)
+            mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
+            #else
             mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
+            #end
             mSyncRequired = false;
         }
     }

@@ -10,10 +10,11 @@
 
 package starling.geom;
 
-import lime.utils.Float32Array;
 import flash.errors.ArgumentError;
 import flash.errors.RangeError;
 import flash.geom.Point;
+
+import lime.utils.Float32Array;
 
 import openfl.Vector;
 
@@ -250,9 +251,15 @@ class Polygon
         if (target.numVertices < requiredTargetLength)
             target.numVertices = requiredTargetLength;
 
+        #if (flash || use_vector)
+        copyToVector(target.rawData,
+            targetIndex * VertexData.ELEMENTS_PER_VERTEX,
+            VertexData.ELEMENTS_PER_VERTEX - 2);
+        #else
         copyToArray(target.rawData,
             targetIndex * VertexData.ELEMENTS_PER_VERTEX,
             VertexData.ELEMENTS_PER_VERTEX - 2);
+        #end
     }
 
     /** Copies all vertices to an 'Array', beginning at a certain target index and skipping
