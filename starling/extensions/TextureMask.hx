@@ -173,7 +173,11 @@ class TextureMask extends DisplayObject
         }
 
         mVertexBuffer = context.createVertexBuffer(mVertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
+        #if (flash || use_vector)
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
+        #else
+        mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
+        #end
 
         var indexData:Vector<UInt> = Vector.ofArray([0, 1, 2, 1, 3, 2]);
 
