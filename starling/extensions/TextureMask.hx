@@ -174,7 +174,7 @@ class TextureMask extends DisplayObject
 
         mVertexBuffer = context.createVertexBuffer(mVertexData.numVertices, VertexData.ELEMENTS_PER_VERTEX);
         #if (flash || use_vector)
-        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
+        mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, mVertexData.numVertices);
         #else
         mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
         #end
