@@ -488,6 +488,7 @@ class BitmapFont implements ITextCompositor
     
     /** An offset that moves any generated text along the y-axis (in points).
      * Useful to make up for incorrect font data. @default 0. */
+    public var offsetY(get, set):Float;
     private function get_offsetY():Float { return __offsetY; }
     private function set_offsetY(value:Float):Float { return __offsetY = value; }
 
