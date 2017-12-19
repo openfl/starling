@@ -17,22 +17,21 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="C:\_projects\HaxeLibraries\openfl\starling" />
-    <class path="C:\_sdks\haxe\lib\openfl\6,2,0" />
-    <class path="C:\_sdks\haxe\lib\lime\5,6,0" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,9,2" />
+    <class path="C:\_sdks\haxe\lib\lime\4,0,3" />
     <class path="src" />
-    <class path="C:\_sdks\haxe\lib\openfl\6,2,0\externs\core\flash" />
-    <class path="C:\_sdks\haxe\lib\openfl\6,2,0\externs\core\openfl" />
-    <class path="C:\_sdks\haxe\lib\openfl\6,2,0\externs\extras" />
-    <class path="bin\flash\haxe" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,9,2\externs\core\openfl" />
+    <class path="C:\_sdks\haxe\lib\openfl\4,9,2\externs\extras" />
+    <class path="bin\flash\release\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="starling=1.8.13&#xA;openfl=6.2.0&#xA;lime=5.6.0&#xA;tools=5.6.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;advanced-telemetry&#xA;display" />
+    <option directives="starling=1.8.9&#xA;openfl=4.9.2&#xA;lime=4.0.3&#xA;tools=4.0.3&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;advanced-telemetry&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--macro openfl._internal.utils.ExtraParams.include()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 12&#xA;-debug " />
+    <option additional="--macro openfl._internal.utils.ExtraParams.include()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 12" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

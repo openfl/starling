@@ -241,7 +241,11 @@ class Canvas extends DisplayObject
         var numIndices:Int  = mIndexData.length;
 
         mVertexBuffer = context.createVertexBuffer(numVertices, VertexData.ELEMENTS_PER_VERTEX);
+        #if (flash || use_vector)
         mVertexBuffer.uploadFromVector(mVertexData.rawData, 0, numVertices);
+        #else
+        mVertexBuffer.uploadFromTypedArray(mVertexData.rawData);
+        #end
 
         mIndexBuffer = context.createIndexBuffer(numIndices);
         mIndexBuffer.uploadFromVector(mIndexData, 0, numIndices);

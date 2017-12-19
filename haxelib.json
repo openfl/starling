@@ -4,7 +4,7 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "1.8.13",
+	"version": "1.8.12",
 	"releasenote": "tweak to multitouchEnabled and AssetManager fix",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {
