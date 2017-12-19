@@ -929,7 +929,7 @@ class AssetManager extends EventDispatcher
                         dispatchEventWith(Event.PARSE_ERROR, false, name);
                     }
 
-                    if (object) addObject(name, object);
+                    if (object != null) addObject(name, object);
 
                     bytes.clear();
                     onComplete();
