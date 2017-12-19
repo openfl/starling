@@ -271,8 +271,9 @@ class Starling extends EventDispatcher
 
         SystemUtil.initialize();
         sAll.push(this);
+		
         makeCurrent();
-
+		
         mRootClass = rootClass;
         mViewPort = viewPort;
         mPreviousViewPort = new Rectangle();
@@ -846,7 +847,7 @@ class Starling extends EventDispatcher
         
         if (!multitouchEnabled || Mouse.supportsCursor)
         {
-            types.push(MouseEvent.MOUSE_DOWN);
+			types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
             types.push(MouseEvent.MOUSE_UP);
         }
