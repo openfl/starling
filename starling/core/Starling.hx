@@ -1221,10 +1221,10 @@ class Starling extends EventDispatcher
     */
     
     /** Indicates if multitouch input should be supported. */
-    @:isVar public static var multitouchEnabled(get, set):Bool = false;
+    public static var multitouchEnabled(get, set):Bool;
     private static function get_multitouchEnabled():Bool 
     { 
-		return multitouchEnabled;
+        return Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
     }
     
     private static function set_multitouchEnabled(value:Bool):Bool
@@ -1234,7 +1234,7 @@ class Starling extends EventDispatcher
         else 
             Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
                                            MultitouchInputMode.NONE;
-        return multitouchEnabled = value;
+        return value;
     }
     
     /** Indicates if Starling should automatically recover from a lost device context.
