@@ -589,7 +589,7 @@ class AssetManager extends EventDispatcher
         #if air
         if (Std.is(asset, flash.filesystem.File)) {
             filename = Reflect.field(asset, "name");
-            asset = decodeURI(Reflect.field(asset, "url"));
+            asset = StringTools.urlDecode(Reflect.field(asset, "url"));
         }
         #end
         
