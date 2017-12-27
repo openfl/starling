@@ -13,7 +13,7 @@
 	<haxelib name="starling" />
 	<haxelib name="openfl" />
 	
-	<assets path="assets/audio/wing_flap.mp3" if="web" />
+	<assets path="assets/audio/wing_flap.mp3" if="web || air" />
 	<assets path="assets/audio/wing_flap.ogg" unless="flash" />
 	<assets path="assets/textures/1x" />
 	<assets path="assets/fonts/1x" />
