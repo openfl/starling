@@ -35,3 +35,8 @@ Tell haxelib where your development copy of Starling is installed:
 To return to release builds:
 
     haxelib dev starling
+    
+Sample Projects
+---------------
+
+- [StarlingDemoHaxe](https://github.com/zacdevon/StarlingDemoHaxe) - A simple demo mobile app built with FlashDevelop, Adobe AIR and Haxe/OpenFL/Starling
