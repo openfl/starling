@@ -19,6 +19,30 @@ To add it to an OpenFL project, add this to your project file:
 <haxelib name="starling" />
 ```
 
+Sample Projects
+---------------
+
+To list samples included with Starling, run:
+
+    openfl create starling
+
+To create a copy of one of the samples, and run it, you can do something like:
+
+    openfl create starling:demo
+    cd demo
+    openfl test html5
+
+There is also a command to create a new empty project:
+
+    openfl create starling:project MyNewProject
+    
+
+Other Samples
+-------------
+
+- [StarlingDemoHaxe](https://github.com/zacdevon/StarlingDemoHaxe) - A simple demo mobile app built with FlashDevelop, Adobe AIR and Haxe/OpenFL/Starling
+
+
 Development Builds
 ------------------
 
@@ -35,8 +59,4 @@ Tell haxelib where your development copy of Starling is installed:
 To return to release builds:
 
     haxelib dev starling
-    
-Sample Projects
----------------
 
-- [StarlingDemoHaxe](https://github.com/zacdevon/StarlingDemoHaxe) - A simple demo mobile app built with FlashDevelop, Adobe AIR and Haxe/OpenFL/Starling
