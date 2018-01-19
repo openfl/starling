@@ -195,7 +195,7 @@ class Juggler implements IAnimatable
     /** Figures out if the juggler contains one or more tweens with a certain target. */
     public function containsTweens(target:Dynamic):Bool
     {
-        if (target == null)
+        if (target != null)
         {
             var tween:Tween;
             var i:Int = __objects.length - 1;
