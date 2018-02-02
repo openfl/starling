@@ -1,0 +1,16 @@
+-js ../lib/_gen/_.js
+ImportAll
+# -lib starling
+-cp ../src
+#-lib hxgenjs
+-cp ../node_modules/hxgenjs/src
+-cp ../node_modules/tink_macro/src
+-cp ../node_modules/tink_core/src
+--macro genjs.Generator.use()
+# -D hxextern
+# -D tsextern
+-cp ../node_modules/openfl/lib/
+-D openfl
+-D commonjs
+--remap flash:openfl
+--no-inline

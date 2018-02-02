@@ -29,8 +29,8 @@ jobs:
          command: haxelib dev dox ~/dox
      - run:
          name: Generate Documentation
-         working_directory: docs
-         command: haxe build.hxml
+         working_directory: scripts
+         command: haxe docs.hxml
 
 
 workflows:

@@ -1,0 +1,4 @@
+node_modules
+src/app.js
+dist/app.js
+*.map

@@ -7,7 +7,6 @@
 	"version": "2.2.0",
 	"releasenote": "Update to Starling 2.2",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
-	"dependencies": {
-		
-	}
+	"dependencies": {},
+	"classPath": "src"
 }

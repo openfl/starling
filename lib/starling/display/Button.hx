@@ -1,0 +1,101 @@
+package starling.display;
+
+import starling.display.DisplayObjectContainer;
+import starling.text.TextField;
+import Std;
+import starling.display.Sprite;
+import starling.display.Image;
+
+@:jsRequire("starling/display/Button", "default")
+
+extern class Button extends starling.display.DisplayObjectContainer implements Dynamic {
+
+	function new(upState:Dynamic, ?text:Dynamic, ?downState:Dynamic, ?overState:Dynamic, ?disabledState:Dynamic);
+	var __upState:Dynamic;
+	var __downState:Dynamic;
+	var __overState:Dynamic;
+	var __disabledState:Dynamic;
+	var __contents:Dynamic;
+	var __body:Dynamic;
+	var __textField:Dynamic;
+	var __textBounds:Dynamic;
+	var __overlay:Dynamic;
+	var __scaleWhenDown:Dynamic;
+	var __scaleWhenOver:Dynamic;
+	var __alphaWhenDown:Dynamic;
+	var __alphaWhenDisabled:Dynamic;
+	var __enabled:Dynamic;
+	var __state:Dynamic;
+	var __triggerBounds:Dynamic;
+	override function dispose():Dynamic;
+	function readjustSize(?resetTextBounds:Dynamic):Dynamic;
+	function __createTextField():Dynamic;
+	override function __onTouch(event:Dynamic):Dynamic;
+	var state:Dynamic;
+	function get_state():Dynamic;
+	function set_state(value:Dynamic):Dynamic;
+	function __setStateTexture(texture:Dynamic):Dynamic;
+	var scaleWhenDown:Dynamic;
+	function get_scaleWhenDown():Dynamic;
+	function set_scaleWhenDown(value:Dynamic):Dynamic;
+	var scaleWhenOver:Dynamic;
+	function get_scaleWhenOver():Dynamic;
+	function set_scaleWhenOver(value:Dynamic):Dynamic;
+	var alphaWhenDown:Dynamic;
+	function get_alphaWhenDown():Dynamic;
+	function set_alphaWhenDown(value:Dynamic):Dynamic;
+	var alphaWhenDisabled:Dynamic;
+	function get_alphaWhenDisabled():Dynamic;
+	function set_alphaWhenDisabled(value:Dynamic):Dynamic;
+	var enabled:Dynamic;
+	function get_enabled():Dynamic;
+	function set_enabled(value:Dynamic):Dynamic;
+	var text:Dynamic;
+	function get_text():Dynamic;
+	function set_text(value:Dynamic):Dynamic;
+	var textFormat:Dynamic;
+	function get_textFormat():Dynamic;
+	function set_textFormat(value:Dynamic):Dynamic;
+	var textStyle:Dynamic;
+	function get_textStyle():Dynamic;
+	function set_textStyle(value:Dynamic):Dynamic;
+	var style:Dynamic;
+	function get_style():Dynamic;
+	function set_style(value:Dynamic):Dynamic;
+	var upState:Dynamic;
+	function get_upState():Dynamic;
+	function set_upState(value:Dynamic):Dynamic;
+	var downState:Dynamic;
+	function get_downState():Dynamic;
+	function set_downState(value:Dynamic):Dynamic;
+	var overState:Dynamic;
+	function get_overState():Dynamic;
+	function set_overState(value:Dynamic):Dynamic;
+	var disabledState:Dynamic;
+	function get_disabledState():Dynamic;
+	function set_disabledState(value:Dynamic):Dynamic;
+	var textBounds:Dynamic;
+	function get_textBounds():Dynamic;
+	function set_textBounds(value:Dynamic):Dynamic;
+	var color:Dynamic;
+	function get_color():Dynamic;
+	function set_color(value:Dynamic):Dynamic;
+	var textureSmoothing:Dynamic;
+	function get_textureSmoothing():Dynamic;
+	function set_textureSmoothing(value:Dynamic):Dynamic;
+	var overlay:Dynamic;
+	function get_overlay():Dynamic;
+	override function get_useHandCursor():Dynamic;
+	override function set_useHandCursor(value:Dynamic):Dynamic;
+	var pixelSnapping:Dynamic;
+	function get_pixelSnapping():Dynamic;
+	function set_pixelSnapping(value:Dynamic):Dynamic;
+	override function set_width(value:Dynamic):Dynamic;
+	override function set_height(value:Dynamic):Dynamic;
+	var scale9Grid:Dynamic;
+	function get_scale9Grid():Dynamic;
+	function set_scale9Grid(value:Dynamic):Dynamic;
+	static var MAX_DRAG_DIST:Dynamic;
+
+
+}

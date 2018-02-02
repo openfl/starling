@@ -1,0 +1,123 @@
+package starling.animation;
+
+import starling.animation.IAnimatable;
+import starling.events.EventDispatcher;
+import Reflect;
+import haxe.Log;
+import starling.utils.Color;
+import Std;
+import starling.animation.Transitions;
+import HxOverrides;
+
+@:jsRequire("starling/animation/Tween", "default")
+
+extern class Tween extends starling.events.EventDispatcher implements Dynamic {
+
+	function new(target:Dynamic, time:Dynamic, ?transition:Dynamic);
+	
+	function __transitionFunc(a1:Dynamic):Dynamic;
+	var __transitionName:Dynamic;
+	var __properties:Dynamic;
+	var __startValues:Dynamic;
+	var __endValues:Dynamic;
+	var __updateFuncs:Dynamic;
+	var __onStart:Dynamic;
+	var __onUpdate:Dynamic;
+	var __onRepeat:Dynamic;
+	var __onComplete:Dynamic;
+	var __onStartArgs:Dynamic;
+	var __onUpdateArgs:Dynamic;
+	var __onRepeatArgs:Dynamic;
+	var __onCompleteArgs:Dynamic;
+	var __totalTime:Dynamic;
+	var __currentTime:Dynamic;
+	var __progress:Dynamic;
+	var __delay:Dynamic;
+	var __roundToInt:Dynamic;
+	var __nextTween:Dynamic;
+	var __repeatCount:Dynamic;
+	var __repeatDelay:Dynamic;
+	var __reverse:Dynamic;
+	var __currentCycle:Dynamic;
+	function reset(target:Dynamic, time:Dynamic, ?transition:Dynamic):Dynamic;
+	function animate(property:Dynamic, endValue:Dynamic):Dynamic;
+	function scaleTo(factor:Dynamic):Dynamic;
+	function moveTo(x:Dynamic, y:Dynamic):Dynamic;
+	function fadeTo(alpha:Dynamic):Dynamic;
+	function rotateTo(angle:Dynamic, ?type:Dynamic):Dynamic;
+	function advanceTime(time:Dynamic):Dynamic;
+	function getUpdateFuncFromProperty(property:Dynamic):Dynamic;
+	function updateStandard(property:Dynamic, startValue:Dynamic, endValue:Dynamic):Dynamic;
+	function updateRgb(property:Dynamic, startValue:Dynamic, endValue:Dynamic):Dynamic;
+	function updateRad(property:Dynamic, startValue:Dynamic, endValue:Dynamic):Dynamic;
+	function updateDeg(property:Dynamic, startValue:Dynamic, endValue:Dynamic):Dynamic;
+	function updateAngle(pi:Dynamic, property:Dynamic, startValue:Dynamic, endValue:Dynamic):Dynamic;
+	function getEndValue(property:Dynamic):Dynamic;
+	function animatesProperty(property:Dynamic):Dynamic;
+	var isComplete:Dynamic;
+	function get_isComplete():Dynamic;
+	
+	function get_target():Dynamic;
+	var transition:Dynamic;
+	function get_transition():Dynamic;
+	function set_transition(value:Dynamic):Dynamic;
+	function transitionFunc(a1:Dynamic):Dynamic;
+	function get_transitionFunc():Dynamic;
+	function set_transitionFunc(value:Dynamic):Dynamic;
+	var totalTime:Dynamic;
+	function get_totalTime():Dynamic;
+	var currentTime:Dynamic;
+	function get_currentTime():Dynamic;
+	var progress:Dynamic;
+	function get_progress():Dynamic;
+	var delay:Dynamic;
+	function get_delay():Dynamic;
+	function set_delay(value:Dynamic):Dynamic;
+	var repeatCount:Dynamic;
+	function get_repeatCount():Dynamic;
+	function set_repeatCount(value:Dynamic):Dynamic;
+	var repeatDelay:Dynamic;
+	function get_repeatDelay():Dynamic;
+	function set_repeatDelay(value:Dynamic):Dynamic;
+	var reverse:Dynamic;
+	function get_reverse():Dynamic;
+	function set_reverse(value:Dynamic):Dynamic;
+	var roundToInt:Dynamic;
+	function get_roundToInt():Dynamic;
+	function set_roundToInt(value:Dynamic):Dynamic;
+	var onStart:Dynamic;
+	function get_onStart():Dynamic;
+	function set_onStart(value:Dynamic):Dynamic;
+	var onUpdate:Dynamic;
+	function get_onUpdate():Dynamic;
+	function set_onUpdate(value:Dynamic):Dynamic;
+	var onRepeat:Dynamic;
+	function get_onRepeat():Dynamic;
+	function set_onRepeat(value:Dynamic):Dynamic;
+	var onComplete:Dynamic;
+	function get_onComplete():Dynamic;
+	function set_onComplete(value:Dynamic):Dynamic;
+	var onStartArgs:Dynamic;
+	function get_onStartArgs():Dynamic;
+	function set_onStartArgs(value:Dynamic):Dynamic;
+	var onUpdateArgs:Dynamic;
+	function get_onUpdateArgs():Dynamic;
+	function set_onUpdateArgs(value:Dynamic):Dynamic;
+	var onRepeatArgs:Dynamic;
+	function get_onRepeatArgs():Dynamic;
+	function set_onRepeatArgs(value:Dynamic):Dynamic;
+	var onCompleteArgs:Dynamic;
+	function get_onCompleteArgs():Dynamic;
+	function set_onCompleteArgs(value:Dynamic):Dynamic;
+	var nextTween:Dynamic;
+	function get_nextTween():Dynamic;
+	function set_nextTween(value:Dynamic):Dynamic;
+	static var HINT_MARKER:Dynamic;
+	static function getPropertyHint(property:Dynamic):Dynamic;
+	static function getPropertyName(property:Dynamic):Dynamic;
+	static var sTweenPool:Dynamic;
+	static function fromPool(target:Dynamic, time:Dynamic, ?transition:Dynamic):Dynamic;
+	static function toPool(tween:Dynamic):Dynamic;
+
+
+}

@@ -1,0 +1,1 @@
+import * as starling from "./../lib/starling";

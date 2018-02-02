@@ -4,6 +4,6 @@
 	<window stencil-buffer="true" depth-buffer="true" />
 	
 	<sample path="samples" />
-	<template path="templates" />
+	<template path="assets/templates" />
 	
 </extension>

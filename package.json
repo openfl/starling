@@ -1,0 +1,66 @@
+{
+  "name": "starling-framework",
+  "version": "2.2.0",
+  "description": "A fast, productive library for 2D cross-platform development.",
+  "keywords": [
+    "starling",
+    "framework",
+    "game",
+    "gpu",
+    "openfl"
+  ],
+  "homepage": "https://gamua.com/starling/",
+  "bugs": {
+    "url": "https://github.com/openfl/starling/issues"
+  },
+  "license": "BSD-2-Clause",
+  "contributors": [
+    "Gamua",
+    "Joshua Granick",
+    "Other OpenFL contributors"
+  ],
+  "main": "dist/starling.min.js",
+  "module": "lib/starling/index.js",
+  "files": [
+    "bin",
+    "dist",
+    "docs",
+    "lib",
+    "scripts",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openfl/starling.git"
+  },
+  "scripts": {
+    "build": "npm run build-lib && npm run build-dist && npm run build-docs",
+    "build-dist": "npm run build-dist:dev && npm run build-dist:prod",
+    "build-dist:dev": "webpack --config webpack.dev.js",
+    "build-dist:prod": "webpack --config webpack.prod.js",
+    "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint starling --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,samples}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
+    "build-lib": "cd scripts && haxe build.hxml",
+    "dev-link": "npm link openfl && npm link hxgenjs",
+    "prepublishOnly": "npm run build",
+    "serve": "http-server -c-1 --cors",
+    "start": "npm run watch",
+    "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts  ./node_modules/openfl/src"
+  },
+  "config": {
+    "haxe": "3.4.4",
+    "haxelib_version": "3.2.0-rc.3"
+  },
+  "devDependencies": {
+    "haxe": "^4.1.0",
+    "hxgenjs": "kevinresol/hxgenjs",
+    "typedoc": "^0.9.0",
+    "typescript": "^2.7.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "watch": "^1.0.2",
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
+  },
+  "dependencies": {
+    "openfl": "^7.0.0"
+  }
+}
