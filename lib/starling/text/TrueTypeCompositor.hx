@@ -10,18 +10,9 @@ import starling.display.Quad;
 
 @:jsRequire("starling/text/TrueTypeCompositor", "default")
 
-extern class TrueTypeCompositor implements Dynamic {
-
-	function new();
-	function dispose():Dynamic;
-	function fillMeshBatch(meshBatch:Dynamic, width:Dynamic, height:Dynamic, text:Dynamic, format:Dynamic, ?options:Dynamic):Dynamic;
-	function clearMeshBatch(meshBatch:Dynamic):Dynamic;
-	function renderText(width:Dynamic, height:Dynamic, text:Dynamic, format:Dynamic, options:Dynamic):Dynamic;
-	function autoScaleNativeTextField(textField:Dynamic, text:Dynamic, isHtmlText:Dynamic):Dynamic;
-	static var sHelperMatrix:Dynamic;
-	static var sHelperQuad:Dynamic;
-	static var sNativeTextField:Dynamic;
-	static var sNativeFormat:Dynamic;
-
-
+extern class TrueTypeCompositor implements ITextCompositor {
+	function new() : Void;
+	function clearMeshBatch(meshBatch : starling.display.MeshBatch) : Void;
+	function dispose() : Void;
+	function fillMeshBatch(meshBatch : starling.display.MeshBatch, width : Float, height : Float, text : String, format : TextFormat, ?options : TextOptions) : Void;
 }

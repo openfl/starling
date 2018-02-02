@@ -6,13 +6,10 @@ import HxOverrides;
 
 @:jsRequire("starling/utils/StringUtil", "default")
 
-extern class StringUtil implements Dynamic {
-
-	static function format(format:Dynamic, args:Dynamic):Dynamic;
-	static function clean(string:Dynamic):Dynamic;
-	static function trimStart(string:Dynamic):Dynamic;
-	static function trimEnd(string:Dynamic):Dynamic;
-	static function trim(string:Dynamic):Dynamic;
-
-
+extern class StringUtil {
+	static function clean(string : String) : String;
+	static function format(format : String, args : Array<Dynamic>) : String;
+	static function trim(string : String) : String;
+	static function trimEnd(string : String) : String;
+	static function trimStart(string : String) : String;
 }

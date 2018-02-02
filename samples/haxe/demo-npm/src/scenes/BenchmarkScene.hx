@@ -1,5 +1,7 @@
 package scenes;
 
+import openfl.Vector;
+
 import starling.core.Starling;
 import starling.display.Button;
 import starling.display.DisplayObject;
@@ -11,7 +13,7 @@ import starling.text.BitmapFont;
 import starling.text.TextField;
 import starling.text.TextFormat;
 import starling.textures.Texture;
-import starling.utils.ArrayUtil;
+// import starling.utils.ArrayUtil;
 import starling.utils.StringUtil;
 
 import utils.MenuButton;
@@ -25,13 +27,13 @@ import utils.MenuButton;
     private var _resultText:TextField;
     private var _statusText:TextField;
     private var _container:Sprite;
-    private var _objectPool:Array<DisplayObject>;
+    private var _objectPool:Vector<DisplayObject>;
     private var _objectTexture:Texture;
 
     private var _frameCount:Int;
     private var _failCount:Int;
     private var _started:Bool;
-    private var _frameTimes:Array<Float>;
+    private var _frameTimes:Vector<Float>;
     private var _targetFps:Int;
     private var _phase:Int;
 
@@ -60,8 +62,8 @@ import utils.MenuButton;
         addChild(_startButton);
         
         _started = false;
-        _frameTimes = new Array<Float>();
-        _objectPool = new Array<DisplayObject>();
+        _frameTimes = new Vector<Float>();
+        _objectPool = new Vector<DisplayObject>();
         _objectTexture = Game.assets.getTexture("benchmark_object");
 
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -218,7 +220,7 @@ import utils.MenuButton;
         addChild(_resultText);
 
         _container.scale = 1.0;
-        ArrayUtil.clear(_frameTimes);
+        _frameTimes.length = 0;
         _statusText.text = "";
 
         var i:Int = numChildren - 1;

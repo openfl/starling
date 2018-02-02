@@ -3,33 +3,16 @@ package starling.events;
 import starling.events.Event;
 
 @:jsRequire("starling/events/KeyboardEvent", "default")
-
-extern class KeyboardEvent extends starling.events.Event implements Dynamic {
-
-	function new(type:Dynamic, ?charCode:Dynamic, ?keyCode:Dynamic, ?keyLocation:Dynamic, ?ctrlKey:Dynamic, ?altKey:Dynamic, ?shiftKey:Dynamic);
-	var __charCode:Dynamic;
-	var __keyCode:Dynamic;
-	var __keyLocation:Dynamic;
-	var __altKey:Dynamic;
-	var __ctrlKey:Dynamic;
-	var __shiftKey:Dynamic;
-	var __isDefaultPrevented:Dynamic;
-	function preventDefault():Dynamic;
-	function isDefaultPrevented():Dynamic;
-	var charCode:Dynamic;
-	function get_charCode():Dynamic;
-	var keyCode:Dynamic;
-	function get_keyCode():Dynamic;
-	var keyLocation:Dynamic;
-	function get_keyLocation():Dynamic;
-	var altKey:Dynamic;
-	function get_altKey():Dynamic;
-	var ctrlKey:Dynamic;
-	function get_ctrlKey():Dynamic;
-	var shiftKey:Dynamic;
-	function get_shiftKey():Dynamic;
-	static var KEY_UP:Dynamic;
-	static var KEY_DOWN:Dynamic;
-
-
+extern class KeyboardEvent extends Event {
+	var altKey(get,never) : Bool;
+	var charCode(get,never) : UInt;
+	var ctrlKey(get,never) : Bool;
+	var keyCode(get,never) : UInt;
+	var keyLocation(get,never) : UInt;
+	var shiftKey(get,never) : Bool;
+	function new(type : String, charCode : UInt = 0, keyCode : UInt = 0, keyLocation : UInt = 0, ctrlKey : Bool = false, altKey : Bool = false, shiftKey : Bool = false) : Void;
+	function isDefaultPrevented() : Bool;
+	function preventDefault() : Void;
+	static var KEY_DOWN(default,never) : String;
+	static var KEY_UP(default,never) : String;
 }

@@ -5,23 +5,20 @@ import starling.extensions.ColorArgb;
 
 @:jsRequire("starling/extensions/PDParticle", "default")
 
-extern class PDParticle extends starling.extensions.Particle implements Dynamic {
-
-	function new();
-	var colorArgb:Dynamic;
-	var colorArgbDelta:Dynamic;
-	var startX:Dynamic;
-	var startY:Dynamic;
-	var velocityX:Dynamic;
-	var velocityY:Dynamic;
-	var radialAcceleration:Dynamic;
-	var tangentialAcceleration:Dynamic;
-	var emitRadius:Dynamic;
-	var emitRadiusDelta:Dynamic;
-	var emitRotation:Dynamic;
-	var emitRotationDelta:Dynamic;
-	var rotationDelta:Dynamic;
-	var scaleDelta:Dynamic;
-
-
+extern class PDParticle extends Particle {
+	var colorArgb : ColorArgb;
+	var colorArgbDelta : ColorArgb;
+	var emitRadius : Float;
+	var emitRadiusDelta : Float;
+	var emitRotation : Float;
+	var emitRotationDelta : Float;
+	var radialAcceleration : Float;
+	var rotationDelta : Float;
+	var scaleDelta : Float;
+	var startX : Float;
+	var startY : Float;
+	var tangentialAcceleration : Float;
+	var velocityX : Float;
+	var velocityY : Float;
+	function new() : Void;
 }

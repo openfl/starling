@@ -8,42 +8,22 @@ import starling.rendering.BatchToken;
 
 @:jsRequire("starling/display/DisplayObjectContainer", "default")
 
-extern class DisplayObjectContainer extends starling.display.DisplayObject implements Dynamic {
-
-	function new();
-	var __children:Dynamic;
-	var __touchGroup:Dynamic;
-	override function dispose():Dynamic;
-	function addChild(child:Dynamic):Dynamic;
-	function addChildAt(child:Dynamic, index:Dynamic):Dynamic;
-	function removeChild(child:Dynamic, ?dispose:Dynamic):Dynamic;
-	function removeChildAt(index:Dynamic, ?dispose:Dynamic):Dynamic;
-	function removeChildren(?beginIndex:Dynamic, ?endIndex:Dynamic, ?dispose:Dynamic):Dynamic;
-	function getChildAt(index:Dynamic):Dynamic;
-	function getChildByName(name:Dynamic):Dynamic;
-	function getChildIndex(child:Dynamic):Dynamic;
-	function setChildIndex(child:Dynamic, index:Dynamic):Dynamic;
-	function swapChildren(child1:Dynamic, child2:Dynamic):Dynamic;
-	function swapChildrenAt(index1:Dynamic, index2:Dynamic):Dynamic;
-	function sortChildren(compareFunction:Dynamic):Dynamic;
-	function contains(child:Dynamic):Dynamic;
-	override function getBounds(targetSpace:Dynamic, ?out:Dynamic):Dynamic;
-	override function hitTest(localPoint:Dynamic):Dynamic;
-	override function render(painter:Dynamic):Dynamic;
-	function broadcastEvent(event:Dynamic):Dynamic;
-	function broadcastEventWith(eventType:Dynamic, ?data:Dynamic):Dynamic;
-	var numChildren:Dynamic;
-	function get_numChildren():Dynamic;
-	var touchGroup:Dynamic;
-	function get_touchGroup():Dynamic;
-	function set_touchGroup(value:Dynamic):Dynamic;
-	function __getChildEventListeners(object:Dynamic, eventType:Dynamic, listeners:Dynamic):Dynamic;
-	static var sHelperMatrix:Dynamic;
-	static var sHelperPoint:Dynamic;
-	static var sBroadcastListeners:Dynamic;
-	static var sSortBuffer:Dynamic;
-	static var sCacheToken:Dynamic;
-	static function mergeSort(input:Dynamic, compareFunc:Dynamic, startIndex:Dynamic, length:Dynamic, buffer:Dynamic):Dynamic;
-
-
+extern class DisplayObjectContainer extends DisplayObject {
+	var numChildren(get,never) : Int;
+	var touchGroup(get,set) : Bool;
+	function addChild(child : DisplayObject) : DisplayObject;
+	function addChildAt(child : DisplayObject, index : Int) : DisplayObject;
+	function broadcastEvent(event : starling.events.Event) : Void;
+	function broadcastEventWith(eventType : String, ?data : Dynamic) : Void;
+	function contains(child : DisplayObject) : Bool;
+	function getChildAt(index : Int) : DisplayObject;
+	function getChildByName(name : String) : DisplayObject;
+	function getChildIndex(child : DisplayObject) : Int;
+	function removeChild(child : DisplayObject, dispose : Bool = false) : DisplayObject;
+	function removeChildAt(index : Int, dispose : Bool = false) : DisplayObject;
+	function removeChildren(beginIndex : Int = 0, endIndex : Int = 0, dispose : Bool = false) : Void;
+	function setChildIndex(child : DisplayObject, index : Int) : Void;
+	function sortChildren(compareFunction : DisplayObject -> DisplayObject -> Int) : Void;
+	function swapChildren(child1 : DisplayObject, child2 : DisplayObject) : Void;
+	function swapChildrenAt(index1 : Int, index2 : Int) : Void;
 }

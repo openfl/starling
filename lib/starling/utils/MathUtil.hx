@@ -4,21 +4,17 @@ import Std;
 
 @:jsRequire("starling/utils/MathUtil", "default")
 
-extern class MathUtil implements Dynamic {
-
-	static var TWO_PI:Dynamic;
-	static function intersectLineWithXYPlane(pointA:Dynamic, pointB:Dynamic, ?out:Dynamic):Dynamic;
-	static function isPointInTriangle(p:Dynamic, a:Dynamic, b:Dynamic, c:Dynamic):Dynamic;
-	static function normalizeAngle(angle:Dynamic):Dynamic;
-	static function getNextPowerOfTwo(number:Dynamic):Dynamic;
-	static function isEquivalent(a:Dynamic, b:Dynamic, ?epsilon:Dynamic):Dynamic;
-	static function max(a:Dynamic, b:Dynamic):Dynamic;
-	static function min(a:Dynamic, b:Dynamic):Dynamic;
-	static function clamp(value:Dynamic, min:Dynamic, max:Dynamic):Dynamic;
-	static function minValues(values:Dynamic):Dynamic;
-	static function deg2rad(deg:Dynamic):Dynamic;
-	static function rad2deg(rad:Dynamic):Dynamic;
-	static function toFixed(value:Dynamic, precision:Dynamic):Dynamic;
-
-
+extern class MathUtil {
+	static function clamp(value : Float, min : Float, max : Float) : Float;
+	static function deg2rad(deg : Float) : Float;
+	static function getNextPowerOfTwo(number : Float) : Int;
+	static function intersectLineWithXYPlane(pointA : openfl.geom.Vector3D, pointB : openfl.geom.Vector3D, ?out : openfl.geom.Point) : openfl.geom.Point;
+	static function isEquivalent(a : Float, b : Float, epsilon : Float = 0) : Bool;
+	static function isPointInTriangle(p : openfl.geom.Point, a : openfl.geom.Point, b : openfl.geom.Point, c : openfl.geom.Point) : Bool;
+	static function max(a : Float, b : Float) : Float;
+	static function min(a : Float, b : Float) : Float;
+	static function minValues(values : Array<Float>) : Float;
+	static function normalizeAngle(angle : Float) : Float;
+	static function rad2deg(rad : Float) : Float;
+	static function toFixed(value : Float, precision : Int) : String;
 }

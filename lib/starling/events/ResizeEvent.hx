@@ -6,14 +6,9 @@ import js.Boot;
 
 @:jsRequire("starling/events/ResizeEvent", "default")
 
-extern class ResizeEvent extends starling.events.Event implements Dynamic {
-
-	function new(type:Dynamic, width:Dynamic, height:Dynamic, ?bubbles:Dynamic);
-	var width:Dynamic;
-	function get_width():Dynamic;
-	var height:Dynamic;
-	function get_height():Dynamic;
-	static var RESIZE:Dynamic;
-
-
+extern class ResizeEvent extends Event {
+	var height(get,never) : Int;
+	var width(get,never) : Int;
+	function new(type : String, width : Int, height : Int, bubbles : Bool = false) : Void;
+	static var RESIZE(default,never) : String;
 }

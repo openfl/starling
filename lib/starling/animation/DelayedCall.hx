@@ -1,38 +1,26 @@
 package starling.animation;
 
-import starling.animation.IAnimatable;
+
+import haxe.Constraints.Function;
 import starling.events.EventDispatcher;
-import Reflect;
 
 @:jsRequire("starling/animation/DelayedCall", "default")
 
-extern class DelayedCall extends starling.events.EventDispatcher implements Dynamic {
 
-	function new(callback:Dynamic, delay:Dynamic, ?args:Dynamic);
-	var __currentTime:Dynamic;
-	var __totalTime:Dynamic;
-	var __callback:Dynamic;
-	var __args:Dynamic;
-	var __repeatCount:Dynamic;
-	function reset(callback:Dynamic, delay:Dynamic, ?args:Dynamic):Dynamic;
-	function advanceTime(time:Dynamic):Dynamic;
-	function complete():Dynamic;
-	var isComplete:Dynamic;
-	function get_isComplete():Dynamic;
-	var totalTime:Dynamic;
-	function get_totalTime():Dynamic;
-	var currentTime:Dynamic;
-	function get_currentTime():Dynamic;
-	var repeatCount:Dynamic;
-	function get_repeatCount():Dynamic;
-	function set_repeatCount(value:Dynamic):Dynamic;
-	var callback:Dynamic;
-	function get_callback():Dynamic;
-	var arguments:Dynamic;
-	function get_arguments():Dynamic;
-	static var sPool:Dynamic;
-	static function fromPool(call:Dynamic, delay:Dynamic, ?args:Dynamic):Dynamic;
-	static function toPool(delayedCall:Dynamic):Dynamic;
-
-
+extern class DelayedCall extends EventDispatcher implements IAnimatable {
+	
+	
+	public var arguments (get, never):Array<Dynamic>;
+	public var callback (get, never):Function;
+	public var currentTime (get, never):Float;
+	public var isComplete (get, never):Bool;
+	public var repeatCount (get, set):Int;
+	public var totalTime (get, never):Float;
+	
+	public function new (callback:Function, delay:Float, args:Array<Dynamic> = null);
+	public function reset (callback:Function, delay:Float, args:Array<Dynamic> = null):DelayedCall;
+	public function advanceTime (time:Float):Void;
+	public function complete ():Void;
+	
+	
 }

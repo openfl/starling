@@ -6,28 +6,15 @@ import starling.rendering.BatchToken;
 
 @:jsRequire("starling/rendering/BatchProcessor", "default")
 
-extern class BatchProcessor implements Dynamic {
-
-	function new();
-	var _batches:Dynamic;
-	var _batchPool:Dynamic;
-	var _currentBatch:Dynamic;
-	var _currentStyleType:Dynamic;
-	function _onBatchComplete(a1:Dynamic):Dynamic;
-	var _cacheToken:Dynamic;
-	function dispose():Dynamic;
-	function addMesh(mesh:Dynamic, state:Dynamic, ?subset:Dynamic, ?ignoreTransformations:Dynamic):Dynamic;
-	function finishBatch():Dynamic;
-	function clear():Dynamic;
-	function getBatchAt(batchID:Dynamic):Dynamic;
-	function trim():Dynamic;
-	function fillToken(token:Dynamic):Dynamic;
-	var numBatches:Dynamic;
-	function get_numBatches():Dynamic;
-	function onBatchComplete(a1:Dynamic):Dynamic;
-	function get_onBatchComplete():Dynamic;
-	function set_onBatchComplete(value:Dynamic):Dynamic;
-	static var sMeshSubset:Dynamic;
-
-
+extern class BatchProcessor {
+	var numBatches(get,never) : Int;
+	var onBatchComplete(get,set) : starling.display.MeshBatch -> Void;
+	function new() : Void;
+	function addMesh(mesh : starling.display.Mesh, state : RenderState, ?subset : starling.utils.MeshSubset, ignoreTransformations : Bool = false) : Void;
+	function clear() : Void;
+	function dispose() : Void;
+	function fillToken(token : BatchToken) : BatchToken;
+	function finishBatch() : Void;
+	function getBatchAt(batchID : Int) : starling.display.MeshBatch;
+	function trim() : Void;
 }

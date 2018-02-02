@@ -9,70 +9,26 @@ import js.Boot;
 
 @:jsRequire("starling/styles/DistanceFieldStyle", "default")
 
-extern class DistanceFieldStyle extends starling.styles.MeshStyle implements Dynamic {
-
-	function new(?softness:Dynamic, ?threshold:Dynamic);
-	var _mode:Dynamic;
-	var _multiChannel:Dynamic;
-	var _threshold:Dynamic;
-	var _alpha:Dynamic;
-	var _softness:Dynamic;
-	var _outerThreshold:Dynamic;
-	var _outerAlphaEnd:Dynamic;
-	var _shadowOffsetX:Dynamic;
-	var _shadowOffsetY:Dynamic;
-	var _outerColor:Dynamic;
-	var _outerAlphaStart:Dynamic;
-	override function copyFrom(meshStyle:Dynamic):Dynamic;
-	override function createEffect():Dynamic;
-	override function get_vertexFormat():Dynamic;
-	override function onTargetAssigned(target:Dynamic):Dynamic;
-	function updateVertices():Dynamic;
-	override function batchVertexData(targetStyle:Dynamic, ?targetVertexID:Dynamic, ?matrix:Dynamic, ?vertexID:Dynamic, ?numVertices:Dynamic):Dynamic;
-	override function updateEffect(effect:Dynamic, state:Dynamic):Dynamic;
-	override function canBatchWith(meshStyle:Dynamic):Dynamic;
-	function setupBasic():Dynamic;
-	function setupOutline(?width:Dynamic, ?color:Dynamic, ?alpha:Dynamic):Dynamic;
-	function setupGlow(?blur:Dynamic, ?color:Dynamic, ?alpha:Dynamic):Dynamic;
-	function setupDropShadow(?blur:Dynamic, ?offsetX:Dynamic, ?offsetY:Dynamic, ?color:Dynamic, ?alpha:Dynamic):Dynamic;
-	var mode:Dynamic;
-	function get_mode():Dynamic;
-	function set_mode(value:Dynamic):Dynamic;
-	var multiChannel:Dynamic;
-	function get_multiChannel():Dynamic;
-	function set_multiChannel(value:Dynamic):Dynamic;
-	var threshold:Dynamic;
-	function get_threshold():Dynamic;
-	function set_threshold(value:Dynamic):Dynamic;
-	var softness:Dynamic;
-	function get_softness():Dynamic;
-	function set_softness(value:Dynamic):Dynamic;
-	var alpha:Dynamic;
-	function get_alpha():Dynamic;
-	function set_alpha(value:Dynamic):Dynamic;
-	var outerThreshold:Dynamic;
-	function get_outerThreshold():Dynamic;
-	function set_outerThreshold(value:Dynamic):Dynamic;
-	var outerAlphaStart:Dynamic;
-	function get_outerAlphaStart():Dynamic;
-	function set_outerAlphaStart(value:Dynamic):Dynamic;
-	var outerAlphaEnd:Dynamic;
-	function get_outerAlphaEnd():Dynamic;
-	function set_outerAlphaEnd(value:Dynamic):Dynamic;
-	var outerColor:Dynamic;
-	function get_outerColor():Dynamic;
-	function set_outerColor(value:Dynamic):Dynamic;
-	var shadowOffsetX:Dynamic;
-	function get_shadowOffsetX():Dynamic;
-	function set_shadowOffsetX(value:Dynamic):Dynamic;
-	var shadowOffsetY:Dynamic;
-	function get_shadowOffsetY():Dynamic;
-	function set_shadowOffsetY(value:Dynamic):Dynamic;
-	static var VERTEX_FORMAT:Dynamic;
-	static var MODE_BASIC:Dynamic;
-	static var MODE_OUTLINE:Dynamic;
-	static var MODE_GLOW:Dynamic;
-	static var MODE_SHADOW:Dynamic;
-
-
+extern class DistanceFieldStyle extends MeshStyle {
+	var alpha(get,set) : Float;
+	var mode(get,set) : String;
+	var multiChannel(get,set) : Bool;
+	var outerAlphaEnd(get,set) : Float;
+	var outerAlphaStart(get,set) : Float;
+	var outerColor(get,set) : UInt;
+	var outerThreshold(get,set) : Float;
+	var shadowOffsetX(get,set) : Float;
+	var shadowOffsetY(get,set) : Float;
+	var softness(get,set) : Float;
+	var threshold(get,set) : Float;
+	function new(softness : Float = 0, threshold : Float = 0) : Void;
+	function setupBasic() : Void;
+	function setupDropShadow(blur : Float = 0, offsetX : Float = 0, offsetY : Float = 0, color : UInt = 0, alpha : Float = 0) : Void;
+	function setupGlow(blur : Float = 0, color : UInt = 0, alpha : Float = 0) : Void;
+	function setupOutline(width : Float = 0, color : UInt = 0, alpha : Float = 0) : Void;
+	static var MODE_BASIC(default,never) : String;
+	static var MODE_GLOW(default,never) : String;
+	static var MODE_OUTLINE(default,never) : String;
+	static var MODE_SHADOW(default,never) : String;
+	static var VERTEX_FORMAT : starling.rendering.VertexDataFormat;
 }

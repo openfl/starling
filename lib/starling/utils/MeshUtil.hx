@@ -6,14 +6,8 @@ import starling.utils.MathUtil;
 
 @:jsRequire("starling/utils/MeshUtil", "default")
 
-extern class MeshUtil implements Dynamic {
-
-	function MeshUtil():Dynamic;
-	static var sPoint3D:Dynamic;
-	static var sMatrix:Dynamic;
-	static var sMatrix3D:Dynamic;
-	static function containsPoint(vertexData:Dynamic, indexData:Dynamic, point:Dynamic):Dynamic;
-	static function calculateBounds(vertexData:Dynamic, sourceSpace:Dynamic, targetSpace:Dynamic, ?out:Dynamic):Dynamic;
-
-
+extern class MeshUtil {
+	function MeshUtil() : Void;
+	static function calculateBounds(vertexData : starling.rendering.VertexData, sourceSpace : starling.display.DisplayObject, targetSpace : starling.display.DisplayObject, ?out : openfl.geom.Rectangle) : openfl.geom.Rectangle;
+	static function containsPoint(vertexData : starling.rendering.VertexData, indexData : starling.rendering.IndexData, point : openfl.geom.Point) : Bool;
 }

@@ -152,4 +152,11 @@ class Demo extends Sprite
         }
         catch(error:Error) {}
     }
+    
+    static function main () {
+		
+		var stage = new openfl.display.Stage (550, 400, 0xFFFFFF, Demo);
+		js.Browser.document.body.appendChild (stage.element);
+		
+	}
 }

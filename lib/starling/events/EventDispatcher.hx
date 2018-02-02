@@ -6,23 +6,16 @@ import Std;
 import starling.display.DisplayObject;
 import js.Boot;
 import starling.events.Event;
+import haxe.Constraints.Function;
 
 @:jsRequire("starling/events/EventDispatcher", "default")
 
-extern class EventDispatcher implements Dynamic {
-
-	function new();
-	var __eventListeners:Dynamic;
-	var __eventStack:Dynamic;
-	function addEventListener(type:Dynamic, listener:Dynamic):Dynamic;
-	function removeEventListener(type:Dynamic, listener:Dynamic):Dynamic;
-	function removeEventListeners(?type:Dynamic):Dynamic;
-	function dispatchEvent(event:Dynamic):Dynamic;
-	function __invokeEvent(event:Dynamic):Dynamic;
-	function __bubbleEvent(event:Dynamic):Dynamic;
-	function dispatchEventWith(type:Dynamic, ?bubbles:Dynamic, ?data:Dynamic):Dynamic;
-	function hasEventListener(type:Dynamic, ?listener:Dynamic):Dynamic;
-	static var sBubbleChains:Dynamic;
-
-
+extern class EventDispatcher {
+	function new() : Void;
+	function addEventListener(type : String, listener : Function) : Void;
+	function dispatchEvent(event : Event) : Void;
+	function dispatchEventWith(type : String, bubbles : Bool = false, ?data : Dynamic) : Void;
+	function hasEventListener(type : String, ?listener : Dynamic) : Bool;
+	function removeEventListener(type : String, listener : haxe.Constraints.Function) : Void;
+	function removeEventListeners(?type : String) : Void;
 }

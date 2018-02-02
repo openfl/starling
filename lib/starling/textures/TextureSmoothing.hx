@@ -4,12 +4,9 @@ package starling.textures;
 
 @:jsRequire("starling/textures/TextureSmoothing", "default")
 
-extern class TextureSmoothing implements Dynamic {
-
-	static var NONE:Dynamic;
-	static var BILINEAR:Dynamic;
-	static var TRILINEAR:Dynamic;
-	static function isValid(smoothing:Dynamic):Dynamic;
-
-
+extern class TextureSmoothing {
+	static var BILINEAR(default,never) : String;
+	static var NONE(default,never) : String;
+	static var TRILINEAR(default,never) : String;
+	static function isValid(smoothing : String) : Bool;
 }

@@ -10,68 +10,30 @@ import starling.rendering.IndexData;
 
 @:jsRequire("starling/display/Mesh", "default")
 
-extern class Mesh extends starling.display.DisplayObject implements Dynamic {
-
-	function new(vertexData:Dynamic, indexData:Dynamic, ?style:Dynamic);
-	var __style:Dynamic;
-	var __vertexData:Dynamic;
-	var __indexData:Dynamic;
-	var __pixelSnapping:Dynamic;
-	override function dispose():Dynamic;
-	override function hitTest(localPoint:Dynamic):Dynamic;
-	override function getBounds(targetSpace:Dynamic, ?out:Dynamic):Dynamic;
-	override function render(painter:Dynamic):Dynamic;
-	function setStyle(?meshStyle:Dynamic, ?mergeWithPredecessor:Dynamic):Dynamic;
-	function __createDefaultMeshStyle():Dynamic;
-	function setVertexDataChanged():Dynamic;
-	function setIndexDataChanged():Dynamic;
-	function getVertexPosition(vertexID:Dynamic, ?out:Dynamic):Dynamic;
-	function setVertexPosition(vertexID:Dynamic, x:Dynamic, y:Dynamic):Dynamic;
-	function getVertexAlpha(vertexID:Dynamic):Dynamic;
-	function setVertexAlpha(vertexID:Dynamic, alpha:Dynamic):Dynamic;
-	function getVertexColor(vertexID:Dynamic):Dynamic;
-	function setVertexColor(vertexID:Dynamic, color:Dynamic):Dynamic;
-	function getTexCoords(vertexID:Dynamic, ?out:Dynamic):Dynamic;
-	function setTexCoords(vertexID:Dynamic, u:Dynamic, v:Dynamic):Dynamic;
-	var vertexData:Dynamic;
-	function get_vertexData():Dynamic;
-	var indexData:Dynamic;
-	function get_indexData():Dynamic;
-	var style:Dynamic;
-	function get_style():Dynamic;
-	function set_style(value:Dynamic):Dynamic;
-	var texture:Dynamic;
-	function get_texture():Dynamic;
-	function set_texture(value:Dynamic):Dynamic;
-	var color:Dynamic;
-	function get_color():Dynamic;
-	function set_color(value:Dynamic):Dynamic;
-	var textureSmoothing:Dynamic;
-	function get_textureSmoothing():Dynamic;
-	function set_textureSmoothing(value:Dynamic):Dynamic;
-	var textureRepeat:Dynamic;
-	function get_textureRepeat():Dynamic;
-	function set_textureRepeat(value:Dynamic):Dynamic;
-	var pixelSnapping:Dynamic;
-	function get_pixelSnapping():Dynamic;
-	function set_pixelSnapping(value:Dynamic):Dynamic;
-	var numVertices:Dynamic;
-	function get_numVertices():Dynamic;
-	var numIndices:Dynamic;
-	function get_numIndices():Dynamic;
-	var numTriangles:Dynamic;
-	function get_numTriangles():Dynamic;
-	var vertexFormat:Dynamic;
-	function get_vertexFormat():Dynamic;
-	static var sDefaultStyle:Dynamic;
-	static function sDefaultStyleFactory(?a1:Dynamic):Dynamic;
-	static var defaultStyle:Dynamic;
-	static function get_defaultStyle():Dynamic;
-	static function set_defaultStyle(value:Dynamic):Dynamic;
-	static function defaultStyleFactory(?a1:Dynamic):Dynamic;
-	static function get_defaultStyleFactory():Dynamic;
-	static function set_defaultStyleFactory(value:Dynamic):Dynamic;
-	static function fromPolygon(polygon:Dynamic, ?style:Dynamic):Dynamic;
-
-
+extern class Mesh extends DisplayObject {
+	var color(get,set) : UInt;
+	var numIndices(get,never) : Int;
+	var numTriangles(get,never) : Int;
+	var numVertices(get,never) : Int;
+	var pixelSnapping(get,set) : Bool;
+	var style(get,set) : starling.styles.MeshStyle;
+	var texture(get,set) : starling.textures.Texture;
+	var textureRepeat(get,set) : Bool;
+	var textureSmoothing(get,set) : String;
+	var vertexFormat(get,never) : starling.rendering.VertexDataFormat;
+	function new(vertexData : starling.rendering.VertexData, indexData : starling.rendering.IndexData, ?style : starling.styles.MeshStyle) : Void;
+	function getTexCoords(vertexID : Int, ?out : openfl.geom.Point) : openfl.geom.Point;
+	function getVertexAlpha(vertexID : Int) : Float;
+	function getVertexColor(vertexID : Int) : UInt;
+	function getVertexPosition(vertexID : Int, ?out : openfl.geom.Point) : openfl.geom.Point;
+	function setIndexDataChanged() : Void;
+	function setStyle(?meshStyle : starling.styles.MeshStyle, mergeWithPredecessor : Bool = false) : Void;
+	function setTexCoords(vertexID : Int, u : Float, v : Float) : Void;
+	function setVertexAlpha(vertexID : Int, alpha : Float) : Void;
+	function setVertexColor(vertexID : Int, color : UInt) : Void;
+	function setVertexDataChanged() : Void;
+	function setVertexPosition(vertexID : Int, x : Float, y : Float) : Void;
+	static var defaultStyle(get,set) : Class<Dynamic>;
+	static var defaultStyleFactory(get,set) : Mesh -> starling.styles.MeshStyle;
+	static function fromPolygon(polygon : starling.geom.Polygon, ?style : starling.styles.MeshStyle) : Mesh;
 }

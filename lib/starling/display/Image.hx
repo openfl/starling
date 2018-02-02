@@ -11,37 +11,12 @@ import starling.utils.Padding;
 
 @:jsRequire("starling/display/Image", "default")
 
-extern class Image extends starling.display.Quad implements Dynamic {
-
-	function new(texture:Dynamic);
-	var __scale9Grid:Dynamic;
-	var __tileGrid:Dynamic;
-	var scale9Grid:Dynamic;
-	function get_scale9Grid():Dynamic;
-	function set_scale9Grid(value:Dynamic):Dynamic;
-	var tileGrid:Dynamic;
-	function get_tileGrid():Dynamic;
-	function set_tileGrid(value:Dynamic):Dynamic;
-	override function __setupVertices():Dynamic;
-	override function set_scaleX(value:Dynamic):Dynamic;
-	override function set_scaleY(value:Dynamic):Dynamic;
-	override function set_texture(value:Dynamic):Dynamic;
-	function __setupScale9Grid():Dynamic;
-	function __setupScale9GridAttributes(startX:Dynamic, startY:Dynamic, posCols:Dynamic, posRows:Dynamic, texCols:Dynamic, texRows:Dynamic):Dynamic;
-	function __setupTileGrid():Dynamic;
-	static var sSetupFunctions:Dynamic;
-	static var sPadding:Dynamic;
-	static var sBounds:Dynamic;
-	static var sBasCols:Dynamic;
-	static var sBasRows:Dynamic;
-	static var sPosCols:Dynamic;
-	static var sPosRows:Dynamic;
-	static var sTexCols:Dynamic;
-	static var sTexRows:Dynamic;
-	static function automateSetupForTexture(texture:Dynamic, onAssign:Dynamic, ?onRelease:Dynamic):Dynamic;
-	static function resetSetupForTexture(texture:Dynamic):Dynamic;
-	static function bindScale9GridToTexture(texture:Dynamic, scale9Grid:Dynamic):Dynamic;
-	static function bindPivotPointToTexture(texture:Dynamic, pivotX:Dynamic, pivotY:Dynamic):Dynamic;
-
-
+extern class Image extends Quad {
+	var scale9Grid(get,set) : openfl.geom.Rectangle;
+	var tileGrid(get,set) : openfl.geom.Rectangle;
+	function new(texture : starling.textures.Texture) : Void;
+	static function automateSetupForTexture(texture : starling.textures.Texture, onAssign : Image -> Void, onRelease : Null<Image -> Void> = null) : Void;
+	static function bindPivotPointToTexture(texture : starling.textures.Texture, pivotX : Float, pivotY : Float) : Void;
+	static function bindScale9GridToTexture(texture : starling.textures.Texture, scale9Grid : openfl.geom.Rectangle) : Void;
+	static function resetSetupForTexture(texture : starling.textures.Texture) : Void;
 }

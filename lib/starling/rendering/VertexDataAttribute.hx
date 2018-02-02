@@ -4,15 +4,11 @@ import haxe.ds.StringMap;
 
 @:jsRequire("starling/rendering/VertexDataAttribute", "default")
 
-extern class VertexDataAttribute implements Dynamic {
-
-	function new(name:Dynamic, format:Dynamic, offset:Dynamic);
-	var name:Dynamic;
-	var format:Dynamic;
-	var isColor:Dynamic;
-	var offset:Dynamic;
-	var size:Dynamic;
-	static var FORMAT_SIZES:Dynamic;
-
-
+extern class VertexDataAttribute {
+	var format : String;
+	var isColor : Bool;
+	var name : String;
+	var offset : Int;
+	var size : Int;
+	function new(name : String, format : String, offset : Int) : Void;
 }

@@ -6,21 +6,14 @@ import starling.utils.MathUtil;
 
 @:jsRequire("starling/utils/RectangleUtil", "default")
 
-extern class RectangleUtil implements Dynamic {
-
-	static var sPoint:Dynamic;
-	static var sPoint3D:Dynamic;
-	static var sPositions:Dynamic;
-	static function intersect(rect1:Dynamic, rect2:Dynamic, ?out:Dynamic):Dynamic;
-	static function fit(rectangle:Dynamic, into:Dynamic, ?scaleMode:Dynamic, ?pixelPerfect:Dynamic, ?out:Dynamic):Dynamic;
-	static function nextSuitableScaleFactor(factor:Dynamic, up:Dynamic):Dynamic;
-	static function normalize(rect:Dynamic):Dynamic;
-	static function extend(rect:Dynamic, ?left:Dynamic, ?right:Dynamic, ?top:Dynamic, ?bottom:Dynamic):Dynamic;
-	static function extendToWholePixels(rect:Dynamic, ?scaleFactor:Dynamic):Dynamic;
-	static function getBounds(rectangle:Dynamic, matrix:Dynamic, ?out:Dynamic):Dynamic;
-	static function getBoundsProjected(rectangle:Dynamic, matrix:Dynamic, camPos:Dynamic, ?out:Dynamic):Dynamic;
-	static function getPositions(rectangle:Dynamic, ?out:Dynamic):Dynamic;
-	static function compare(r1:Dynamic, r2:Dynamic, ?e:Dynamic):Dynamic;
-
-
+extern class RectangleUtil {
+	static function compare(r1 : openfl.geom.Rectangle, r2 : openfl.geom.Rectangle, e : Float = 0) : Bool;
+	static function extend(rect : openfl.geom.Rectangle, left : Float = 0, right : Float = 0, top : Float = 0, bottom : Float = 0) : Void;
+	static function extendToWholePixels(rect : openfl.geom.Rectangle, scaleFactor : Float = 0) : Void;
+	static function fit(rectangle : openfl.geom.Rectangle, into : openfl.geom.Rectangle, ?scaleMode : String, pixelPerfect : Bool = false, ?out : openfl.geom.Rectangle) : openfl.geom.Rectangle;
+	static function getBounds(rectangle : openfl.geom.Rectangle, matrix : openfl.geom.Matrix, ?out : openfl.geom.Rectangle) : openfl.geom.Rectangle;
+	static function getBoundsProjected(rectangle : openfl.geom.Rectangle, matrix : openfl.geom.Matrix3D, camPos : openfl.geom.Vector3D, ?out : openfl.geom.Rectangle) : openfl.geom.Rectangle;
+	static function getPositions(rectangle : openfl.geom.Rectangle, ?out : openfl.Vector<openfl.geom.Point>) : openfl.Vector<openfl.geom.Point>;
+	static function intersect(rect1 : openfl.geom.Rectangle, rect2 : openfl.geom.Rectangle, ?out : openfl.geom.Rectangle) : openfl.geom.Rectangle;
+	static function normalize(rect : openfl.geom.Rectangle) : Void;
 }

@@ -1,13 +1,13 @@
 package starling.animation;
 
 
-
 @:jsRequire("starling/animation/IAnimatable", "default")
 
-extern class IAnimatable implements Dynamic {
 
+extern interface IAnimatable {
 	
-	function advanceTime(time:Dynamic):Dynamic;
-
-
+	
+	public function advanceTime (time:Float):Void;
+	
+	
 }

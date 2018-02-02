@@ -8,22 +8,13 @@ import starling.display.Mesh;
 
 @:jsRequire("starling/display/Canvas", "default")
 
-extern class Canvas extends starling.display.DisplayObjectContainer implements Dynamic {
-
-	function new();
-	var __polygons:Dynamic;
-	var __fillColor:Dynamic;
-	var __fillAlpha:Dynamic;
-	override function dispose():Dynamic;
-	override function hitTest(localPoint:Dynamic):Dynamic;
-	function drawCircle(x:Dynamic, y:Dynamic, radius:Dynamic):Dynamic;
-	function drawEllipse(x:Dynamic, y:Dynamic, width:Dynamic, height:Dynamic):Dynamic;
-	function drawRectangle(x:Dynamic, y:Dynamic, width:Dynamic, height:Dynamic):Dynamic;
-	function drawPolygon(polygon:Dynamic):Dynamic;
-	function beginFill(?color:Dynamic, ?alpha:Dynamic):Dynamic;
-	function endFill():Dynamic;
-	function clear():Dynamic;
-	function __appendPolygon(polygon:Dynamic):Dynamic;
-
-
+extern class Canvas extends DisplayObjectContainer {
+	function new() : Void;
+	function beginFill(color : UInt = 0, alpha : Float = 0) : Void;
+	function clear() : Void;
+	function drawCircle(x : Float, y : Float, radius : Float) : Void;
+	function drawEllipse(x : Float, y : Float, width : Float, height : Float) : Void;
+	function drawPolygon(polygon : starling.geom.Polygon) : Void;
+	function drawRectangle(x : Float, y : Float, width : Float, height : Float) : Void;
+	function endFill() : Void;
 }

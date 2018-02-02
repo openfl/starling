@@ -4,37 +4,34 @@ import Std;
 
 @:jsRequire("starling/utils/Color", "default")
 
-extern class Color implements Dynamic {
-
-	static var WHITE:Dynamic;
-	static var SILVER:Dynamic;
-	static var GRAY:Dynamic;
-	static var BLACK:Dynamic;
-	static var RED:Dynamic;
-	static var MAROON:Dynamic;
-	static var YELLOW:Dynamic;
-	static var OLIVE:Dynamic;
-	static var LIME:Dynamic;
-	static var GREEN:Dynamic;
-	static var AQUA:Dynamic;
-	static var TEAL:Dynamic;
-	static var BLUE:Dynamic;
-	static var NAVY:Dynamic;
-	static var FUCHSIA:Dynamic;
-	static var PURPLE:Dynamic;
-	static function getAlpha(color:Dynamic):Dynamic;
-	static function getRed(color:Dynamic):Dynamic;
-	static function getGreen(color:Dynamic):Dynamic;
-	static function getBlue(color:Dynamic):Dynamic;
-	static function setAlpha(color:Dynamic, alpha:Dynamic):Dynamic;
-	static function setRed(color:Dynamic, red:Dynamic):Dynamic;
-	static function setGreen(color:Dynamic, green:Dynamic):Dynamic;
-	static function setBlue(color:Dynamic, blue:Dynamic):Dynamic;
-	static function rgb(red:Dynamic, green:Dynamic, blue:Dynamic):Dynamic;
-	static function argb(alpha:Dynamic, red:Dynamic, green:Dynamic, blue:Dynamic):Dynamic;
-	static function toVector(color:Dynamic, ?out:Dynamic):Dynamic;
-	static function multiply(color:Dynamic, factor:Dynamic):Dynamic;
-	static function interpolate(startColor:Dynamic, endColor:Dynamic, ratio:Dynamic):Dynamic;
-
-
+extern class Color {
+	static var AQUA(default,never) : UInt;
+	static var BLACK(default,never) : UInt;
+	static var BLUE(default,never) : UInt;
+	static var FUCHSIA(default,never) : UInt;
+	static var GRAY(default,never) : UInt;
+	static var GREEN(default,never) : UInt;
+	static var LIME(default,never) : UInt;
+	static var MAROON(default,never) : UInt;
+	static var NAVY(default,never) : UInt;
+	static var OLIVE(default,never) : UInt;
+	static var PURPLE(default,never) : UInt;
+	static var RED(default,never) : UInt;
+	static var SILVER(default,never) : UInt;
+	static var TEAL(default,never) : UInt;
+	static var WHITE(default,never) : UInt;
+	static var YELLOW(default,never) : UInt;
+	static function argb(alpha : Int, red : Int, green : Int, blue : Int) : UInt;
+	static function getAlpha(color : UInt) : Int;
+	static function getBlue(color : UInt) : Int;
+	static function getGreen(color : UInt) : Int;
+	static function getRed(color : UInt) : Int;
+	static function interpolate(startColor : UInt, endColor : UInt, ratio : Float) : UInt;
+	static function multiply(color : UInt, factor : Float) : UInt;
+	static function rgb(red : Int, green : Int, blue : Int) : UInt;
+	static function setAlpha(color : UInt, alpha : Int) : UInt;
+	static function setBlue(color : UInt, blue : Int) : UInt;
+	static function setGreen(color : UInt, green : Int) : UInt;
+	static function setRed(color : UInt, red : Int) : UInt;
+	static function toVector(color : UInt, ?out : openfl.Vector<Float>) : openfl.Vector<Float>;
 }

@@ -5,34 +5,23 @@ import haxe.ds.StringMap;
 
 @:jsRequire("starling/display/BlendMode", "default")
 
-extern class BlendMode implements Dynamic {
-
-	function new(name:Dynamic, sourceFactor:Dynamic, destinationFactor:Dynamic);
-	var __name:Dynamic;
-	var __sourceFactor:Dynamic;
-	var __destinationFactor:Dynamic;
-	function activate():Dynamic;
-	function toString():Dynamic;
-	var sourceFactor:Dynamic;
-	function get_sourceFactor():Dynamic;
-	var destinationFactor:Dynamic;
-	function get_destinationFactor():Dynamic;
-	var name:Dynamic;
-	function get_name():Dynamic;
-	static var sBlendModes:Dynamic;
-	static var AUTO:Dynamic;
-	static var NONE:Dynamic;
-	static var NORMAL:Dynamic;
-	static var ADD:Dynamic;
-	static var MULTIPLY:Dynamic;
-	static var SCREEN:Dynamic;
-	static var ERASE:Dynamic;
-	static var MASK:Dynamic;
-	static var BELOW:Dynamic;
-	static function get(modeName:Dynamic):Dynamic;
-	static function getByFactors(srcFactor:Dynamic, dstFactor:Dynamic):Dynamic;
-	static function register(name:Dynamic, srcFactor:Dynamic, dstFactor:Dynamic):Dynamic;
-	static function registerDefaults():Dynamic;
-
-
+extern class BlendMode {
+	var destinationFactor(get,never) : String;
+	var name(get,never) : String;
+	var sourceFactor(get,never) : String;
+	function new(name : String, sourceFactor : openfl.display3D.Context3DBlendFactor, destinationFactor : openfl.display3D.Context3DBlendFactor) : Void;
+	function activate() : Void;
+	function toString() : String;
+	static var ADD(default,never) : String;
+	static var AUTO(default,never) : String;
+	static var BELOW(default,never) : String;
+	static var ERASE(default,never) : String;
+	static var MASK(default,never) : String;
+	static var MULTIPLY(default,never) : String;
+	static var NONE(default,never) : String;
+	static var NORMAL(default,never) : String;
+	static var SCREEN(default,never) : String;
+	static function get(modeName : String) : BlendMode;
+	static function getByFactors(srcFactor : openfl.display3D.Context3DBlendFactor, dstFactor : openfl.display3D.Context3DBlendFactor) : Null<BlendMode>;
+	static function register(name : String, srcFactor : openfl.display3D.Context3DBlendFactor, dstFactor : openfl.display3D.Context3DBlendFactor) : BlendMode;
 }

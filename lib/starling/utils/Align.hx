@@ -4,17 +4,14 @@ import starling.errors.AbstractClassError;
 
 @:jsRequire("starling/utils/Align", "default")
 
-extern class Align implements Dynamic {
-
-	function Align():Dynamic;
-	static var LEFT:Dynamic;
-	static var RIGHT:Dynamic;
-	static var TOP:Dynamic;
-	static var BOTTOM:Dynamic;
-	static var CENTER:Dynamic;
-	static function isValid(align:Dynamic):Dynamic;
-	static function isValidHorizontal(align:Dynamic):Dynamic;
-	static function isValidVertical(align:Dynamic):Dynamic;
-
-
+extern class Align {
+	function Align() : Void;
+	static var BOTTOM(default,never) : String;
+	static var CENTER(default,never) : String;
+	static var LEFT(default,never) : String;
+	static var RIGHT(default,never) : String;
+	static var TOP(default,never) : String;
+	static function isValid(align : String) : Bool;
+	static function isValidHorizontal(align : String) : Bool;
+	static function isValidVertical(align : String) : Bool;
 }
