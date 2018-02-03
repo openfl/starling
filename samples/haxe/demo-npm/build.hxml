@@ -4,3 +4,4 @@
 -cp node_modules/starling-framework/lib
 -cp src
 -D source-map
+-dce no

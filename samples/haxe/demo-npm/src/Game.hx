@@ -34,8 +34,11 @@ import starling.utils.AssetManager;
     
     public function start(assets:AssetManager):Void
     {
+        trace ("start");
         sAssets = assets;
+        trace (assets.getTexture("background"));
         addChild(new Image(assets.getTexture("background")));
+        return;
         showMainMenu();
 
         addEventListener(Event.TRIGGERED, onButtonTriggered);

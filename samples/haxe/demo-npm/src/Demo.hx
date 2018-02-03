@@ -8,12 +8,13 @@ import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.system.System;
 import openfl.display.StageScaleMode;
+import openfl.utils.AssetLibrary;
+import openfl.utils.AssetManifest;
+import openfl.utils.Assets;
 import openfl.utils.ByteArray;
+import openfl.Vector;
 
 import haxe.Timer;
-
-import openfl.Assets;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.display.Stage;
@@ -45,9 +46,9 @@ class Demo extends Sprite
     private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-		
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		
+        
+        stage.scaleMode = StageScaleMode.NO_SCALE;
+        
         start();
     }
 
@@ -88,6 +89,8 @@ class Demo extends Sprite
             var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
             var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
+            // trace (Std.is (desyrelXml, Xml));
+            // trace (desyrelXml.elementsNamed ("foo"));
             var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
             TextField.registerCompositor(bitmapFont, bitmapFont.name);
             assets.addTexture("atlas", atlasTexture);
@@ -115,7 +118,6 @@ class Demo extends Sprite
     private function initElements():Void
     {
         // Add background image.
-
         _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
         _background.smoothing = true;
         addChild(_background);
@@ -154,9 +156,29 @@ class Demo extends Sprite
     }
     
     static function main () {
-		
-		var stage = new openfl.display.Stage (550, 400, 0xFFFFFF, Demo);
-		js.Browser.document.body.appendChild (stage.element);
-		
-	}
+        
+        var manifest = new AssetManifest ();
+        manifest.addBitmapData ("assets/textures/1x/atlas.png");
+        manifest.addText ("assets/textures/1x/atlas.xml");
+        manifest.addBitmapData ("assets/fonts/1x/desyrel.png");
+        manifest.addText ("assets/fonts/1x/desyrel.fnt");
+        manifest.addBitmapData ("assets/textures/1x/background.jpg");
+        manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3", "assets/audio/wing_flap.wav" ]);
+        manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
+        
+        AssetLibrary.loadFromManifest (manifest).onComplete (function (library) {
+            
+            Assets.registerLibrary ("default", library);
+            
+            var stage = new openfl.display.Stage (320, 480, 0xFFFFFF, Demo);
+            var content = js.Browser.document.getElementById ("openfl-content");
+            content.appendChild (stage.element);
+            
+        }).onError (function (e) {
+            
+            trace (e);
+            
+        });
+        
+    }
 }
