@@ -85,6 +85,23 @@ class BitmapFont implements ITextCompositor
     private static var sLines:Array<Vector<CharLocation>> = [];
     private static var sDefaultOptions:TextOptions = new TextOptions();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BitmapFont.prototype, {
+            "name": { get: untyped __js__ ("function () { return this.get_name (); }") },
+            "size": { get: untyped __js__ ("function () { return this.get_size (); }") },
+            "lineHeight": { get: untyped __js__ ("function () { return this.get_lineHeight (); }") },
+            "smoothing": { get: untyped __js__ ("function () { return this.get_smoothing (); }"), set: untyped __js__ ("function (v) { return this.set_smoothing (v); }") },
+            "baseline": { get: untyped __js__ ("function () { return this.get_baseline (); }"), set: untyped __js__ ("function (v) { return this.set_baseline (v); }") },
+            "offsetX": { get: untyped __js__ ("function () { return this.get_offsetX (); }"), set: untyped __js__ ("function (v) { return this.set_offsetX (v); }") },
+            "offsetY": { get: untyped __js__ ("function () { return this.get_offsetY (); }"), set: untyped __js__ ("function (v) { return this.set_offsetY (v); }") },
+            "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
      * If you don't pass any data, the "mini" font will be created. */
     public function new(texture:Texture=null, fontXml:Xml=null)

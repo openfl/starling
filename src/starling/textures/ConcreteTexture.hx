@@ -54,6 +54,18 @@ class ConcreteTexture extends Texture
     private var _onRestore:ConcreteTexture->Void;
     private var _dataUploaded:Bool;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ConcreteTexture.prototype, {
+            "optimizedForRenderTexture": { get: untyped __js__ ("function () { return this.get_optimizedForRenderTexture (); }") },
+            "isPotTexture": { get: untyped __js__ ("function () { return this.get_isPotTexture (); }") },
+            "onRestore": { get: untyped __js__ ("function () { return this.get_onRestore (); }"), set: untyped __js__ ("function (v) { return this.set_onRestore (v); }") },
+        });
+        
+    }
+    #end
+
     /** @private
     *
     *  Creates a ConcreteTexture object from a TextureBase, storing information about size,

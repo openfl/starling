@@ -29,6 +29,17 @@ class ResizeEvent extends Event
     /** Event type for a resized Flash player. */
     public static inline var RESIZE:String = "resize";
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ResizeEvent.prototype, {
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }") },
+            "height": { get: untyped __js__ ("function () { return this.get_height (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new ResizeEvent. */
     public function new(type:String, width:Int, height:Int, bubbles:Bool=false)
     {

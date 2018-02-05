@@ -45,6 +45,18 @@ class FilterEffect extends Effect
     private var _textureSmoothing:String;
     private var _textureRepeat:Bool;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (FilterEffect.prototype, {
+            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }"), set: untyped __js__ ("function (v) { return this.set_texture (v); }") },
+            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureRepeat": { get: untyped __js__ ("function () { return this.get_textureRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_textureRepeat (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new FilterEffect instance. */
     public function new()
     {

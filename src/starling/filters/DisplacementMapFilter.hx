@@ -55,6 +55,23 @@ class DisplacementMapFilter extends FragmentFilter
     // helpers
     private static var sBounds:Rectangle = new Rectangle();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DisplacementMapFilter.prototype, {
+            "componentX": { get: untyped __js__ ("function () { return this.get_componentX (); }"), set: untyped __js__ ("function (v) { return this.set_componentX (v); }") },
+            "componentY": { get: untyped __js__ ("function () { return this.get_componentY (); }"), set: untyped __js__ ("function (v) { return this.set_componentY (v); }") },
+            "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
+            "scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
+            "mapX": { get: untyped __js__ ("function () { return this.get_mapX (); }"), set: untyped __js__ ("function (v) { return this.set_mapX (v); }") },
+            "mapY": { get: untyped __js__ ("function () { return this.get_mapY (); }"), set: untyped __js__ ("function (v) { return this.set_mapY (v); }") },
+            "mapTexture": { get: untyped __js__ ("function () { return this.get_mapTexture (); }"), set: untyped __js__ ("function (v) { return this.set_mapTexture (v); }") },
+            "mapRepeat": { get: untyped __js__ ("function () { return this.get_mapRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_mapRepeat (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new displacement map filter that uses the provided map texture. */
     public function new(mapTexture:Texture,
                         componentX:UInt=0, componentY:UInt=0,
@@ -247,6 +264,21 @@ class DisplacementMapEffect extends FilterEffect
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> =
         Vector.ofArray([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
+
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DisplacementFilterEffect.prototype, {
+            "componentX": { get: untyped __js__ ("function () { return this.get_componentX (); }"), set: untyped __js__ ("function (v) { return this.set_componentX (v); }") },
+            "componentY": { get: untyped __js__ ("function () { return this.get_componentY (); }"), set: untyped __js__ ("function (v) { return this.set_componentY (v); }") },
+            "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
+            "scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
+            "mapTexture": { get: untyped __js__ ("function () { return this.get_mapTexture (); }"), set: untyped __js__ ("function (v) { return this.set_mapTexture (v); }") },
+            "mapRepeat": { get: untyped __js__ ("function () { return this.get_mapRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_mapRepeat (v); }") },
+        });
+        
+    }
+    #end
 
     public function new()
     {

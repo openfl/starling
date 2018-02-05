@@ -35,6 +35,21 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private var __args:Array<Dynamic>;
     private var __repeatCount:Int;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DelayedCall.prototype, {
+            "isComplete": { get: untyped __js__ ("function () { return this.get_alpha (); }") },
+            "totalTime": { get: untyped __js__ ("function () { return this.get_totalTime (); }") },
+            "currentTime": { get: untyped __js__ ("function () { return this.get_currentTime (); }") },
+            "repeatCount": { get: untyped __js__ ("function () { return this.get_repeatCount (); }"), set: untyped __js__ ("function (v) { return this.set_repeatCount (v); }") },
+            "callback": { get: untyped __js__ ("function () { return this.get_callback (); }") },
+            "arguments": { get: untyped __js__ ("function () { return this.get_arguments (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a delayed call. */
     public function new(callback:Function, delay:Float, args:Array<Dynamic>=null)
     {

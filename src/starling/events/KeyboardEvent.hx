@@ -36,6 +36,21 @@ class KeyboardEvent extends Event
     private var __shiftKey:Bool;
     private var __isDefaultPrevented:Bool;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (KeyboardEvent.prototype, {
+            "charCode": { get: untyped __js__ ("function () { return this.get_charCode (); }") },
+            "keyCode": { get: untyped __js__ ("function () { return this.get_keyCode (); }") },
+            "keyLocation": { get: untyped __js__ ("function () { return this.get_keyLocation (); }") },
+            "altKey": { get: untyped __js__ ("function () { return this.get_altKey (); }") },
+            "ctrlKey": { get: untyped __js__ ("function () { return this.get_ctrlKey (); }") },
+            "shiftKey": { get: untyped __js__ ("function () { return this.get_shiftKey (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new KeyboardEvent. */
     public function new(type:String, charCode:UInt=0, keyCode:UInt=0, 
                         keyLocation:UInt=0, ctrlKey:Bool=false, 

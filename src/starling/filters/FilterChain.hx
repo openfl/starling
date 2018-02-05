@@ -29,6 +29,16 @@ class FilterChain extends FragmentFilter
     // helpers
     private static var sPadding:Padding = new Padding();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (FilterChain.prototype, {
+            "numFilters": { get: untyped __js__ ("function () { return this.get_numFilters (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new chain with the given filters. */
     public function new(args:Array<FragmentFilter>)
     {

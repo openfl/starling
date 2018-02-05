@@ -43,6 +43,20 @@ class StatsDisplay extends Sprite
     private var __drawCount:Int = 0;
     private var __skipCount:Int = 0;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (StatsDisplay.prototype, {
+            "supportsGpuMem": { get: untyped __js__ ("function () { return this.get_supportsGpuMem (); }") },
+            "drawCount": { get: untyped __js__ ("function () { return this.get_drawCount (); }"), set: untyped __js__ ("function (v) { return this.set_drawCount (v); }") },
+            "fps": { get: untyped __js__ ("function () { return this.get_fps (); }"), set: untyped __js__ ("function (v) { return this.set_fps (v); }") },
+            "memory": { get: untyped __js__ ("function () { return this.get_memory (); }"), set: untyped __js__ ("function (v) { return this.set_memory (v); }") },
+            "gpuMemory": { get: untyped __js__ ("function () { return this.get_gpuMemory (); }"), set: untyped __js__ ("function (v) { return this.set_gpuMemory (v); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new Statistics Box. */
     public function new()
     {

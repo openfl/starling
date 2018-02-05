@@ -59,6 +59,24 @@ class ParticleSystem extends Mesh implements IAnimatable
     private static var sHelperPoint:Point = new Point();
     private static var sSubset:MeshSubset = new MeshSubset();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ParticleSystem.prototype, {
+            "capacity": { get: untyped __js__ ("function () { return this.get_capacity (); }"), set: untyped __js__ ("function (v) { return this.set_capacity (v); }") },
+            "isEmitting": { get: untyped __js__ ("function () { return this.get_isEmitting (); }") },
+            "numParticles": { get: untyped __js__ ("function () { return this.get_numParticles (); }") },
+            "emissionRate": { get: untyped __js__ ("function () { return this.get_emissionRate (); }"), set: untyped __js__ ("function (v) { return this.set_emissionRate (v); }") },
+            "emitterX": { get: untyped __js__ ("function () { return this.get_emitterX (); }"), set: untyped __js__ ("function (v) { return this.set_emitterX (v); }") },
+            "emitterY": { get: untyped __js__ ("function () { return this.get_emitterY (); }"), set: untyped __js__ ("function (v) { return this.set_emitterY (v); }") },
+            "blendFactorSource": { get: untyped __js__ ("function () { return this.get_blendFactorSource (); }"), set: untyped __js__ ("function (v) { return this.set_blendFactorSource (v); }") },
+            "blendFactorDestination": { get: untyped __js__ ("function () { return this.get_blendFactorDestination (); }"), set: untyped __js__ ("function (v) { return this.set_blendFactorDestination (v); }") },
+            "batchable": { get: untyped __js__ ("function () { return this.get_batchable (); }"), set: untyped __js__ ("function (v) { return this.set_batchable (v); }") },
+        });
+        
+    }
+    #end
+
     public function new(texture:Texture=null)
     {
         _vertexData = new VertexData();

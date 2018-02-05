@@ -26,6 +26,22 @@ class BitmapChar
     private var __xAdvance:Float;
     private var __kernings:Map<Int, Float>;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BitmapChar.prototype, {
+            "charID": { get: untyped __js__ ("function () { return this.get_charID (); }") },
+            "xOffset": { get: untyped __js__ ("function () { return this.get_xOffset (); }") },
+            "yOffset": { get: untyped __js__ ("function () { return this.get_yOffset (); }") },
+            "xAdvance": { get: untyped __js__ ("function () { return this.get_xAdvance (); }") },
+            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }") },
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }") },
+            "height": { get: untyped __js__ ("function () { return this.get_height (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a char with a texture and its properties. */
     public function new(id:Int, texture:Texture, 
                                xOffset:Float, yOffset:Float, xAdvance:Float)

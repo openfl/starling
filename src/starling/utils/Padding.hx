@@ -25,6 +25,19 @@ class Padding extends EventDispatcher
     private var _top:Float;
     private var _bottom:Float;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Padding.prototype, {
+            "left": { get: untyped __js__ ("function () { return this.get_left (); }"), set: untyped __js__ ("function (v) { return this.set_left (v); }") },
+            "right": { get: untyped __js__ ("function () { return this.get_right (); }"), set: untyped __js__ ("function (v) { return this.set_right (v); }") },
+            "top": { get: untyped __js__ ("function () { return this.get_top (); }"), set: untyped __js__ ("function (v) { return this.set_top (v); }") },
+            "bottom": { get: untyped __js__ ("function () { return this.get_bottom (); }"), set: untyped __js__ ("function (v) { return this.set_bottom (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new instance with the given properties. */
     public function new(left:Float=0, right:Float=0, top:Float=0, bottom:Float=0)
     {

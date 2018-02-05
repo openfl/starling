@@ -76,6 +76,17 @@ class DisplayObjectContainer extends DisplayObject
     private static var sSortBuffer:Vector<DisplayObject> = new Vector<DisplayObject>();
     private static var sCacheToken:BatchToken = new BatchToken();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DisplayObjectContainer.prototype, {
+            "numChildren": { get: untyped __js__ ("function () { return this.get_numChildren (); }") },
+            "touchGroup": { get: untyped __js__ ("function () { return this.get_touchGroup (); }"), set: untyped __js__ ("function (v) { return this.set_touchGroup (v); }") },
+        });
+        
+    }
+    #end
+    
     // construction
     
     /** @private */

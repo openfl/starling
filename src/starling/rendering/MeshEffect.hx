@@ -42,6 +42,17 @@ class MeshEffect extends FilterEffect
     // helper objects
     private static var sRenderAlpha:Vector<Float> = new Vector<Float>(4, true);
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (MeshEffect.prototype, {
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "tinted": { get: untyped __js__ ("function () { return this.get_tinted (); }"), set: untyped __js__ ("function (v) { return this.set_tinted (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new MeshEffect instance. */
     public function new()
     {

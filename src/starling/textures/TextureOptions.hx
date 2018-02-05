@@ -24,6 +24,22 @@ class TextureOptions
     private var _forcePotTexture:Bool;
     private var _onReady:Texture->Void = null;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TextureOptions.prototype, {
+            "scale": { get: untyped __js__ ("function () { return this.get_scale (); }"), set: untyped __js__ ("function (v) { return this.set_scale (v); }") },
+            "format": { get: untyped __js__ ("function () { return this.get_format (); }"), set: untyped __js__ ("function (v) { return this.set_format (v); }") },
+            "mipMapping": { get: untyped __js__ ("function () { return this.get_mipMapping (); }"), set: untyped __js__ ("function (v) { return this.set_mipMapping (v); }") },
+            "optimizeForRenderToTexture": { get: untyped __js__ ("function () { return this.get_optimizeForRenderToTexture (); }"), set: untyped __js__ ("function (v) { return this.set_optimizeForRenderToTexture (v); }") },
+            "forcePotTexture": { get: untyped __js__ ("function () { return this.get_forcePotTexture (); }"), set: untyped __js__ ("function (v) { return this.set_forcePotTexture (v); }") },
+            "onReady": { get: untyped __js__ ("function () { return this.get_onReady (); }"), set: untyped __js__ ("function (v) { return this.set_onReady (v); }") },
+            "premultipliedAlpha": { get: untyped __js__ ("function () { return this.get_premultipliedAlpha (); }"), set: untyped __js__ ("function (v) { return this.set_premultipliedAlpha (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new instance with the given options. */
     public function new(scale:Float=1.0, mipMapping:Bool=false, 
                         format:String="bgra", premultipliedAlpha:Bool=true,

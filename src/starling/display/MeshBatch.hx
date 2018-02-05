@@ -57,6 +57,16 @@ class MeshBatch extends Mesh
     // helper object
     private static var sFullMeshSubset:MeshSubset = new MeshSubset();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (MeshBatch.prototype, {
+            "batchable": { get: untyped __js__ ("function () { return this.get_batchable (); }"), set: untyped __js__ ("function (v) { return this.set_batchable (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new, empty MeshBatch instance. */
     public function new()
     {

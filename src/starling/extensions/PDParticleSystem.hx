@@ -103,6 +103,49 @@ class PDParticleSystem extends ParticleSystem
     private var _endColor:ColorArgb;                   // finishColor
     private var _endColorVariance:ColorArgb;           // finishColorVariance
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (PDParticleSystem.prototype, {
+            "defaultDuration": { get: untyped __js__ ("function () { return this.get_defaultDuration (); }"), set: untyped __js__ ("function (v) { return this.set_defaultDuration (v); }") },
+            "emitterType": { get: untyped __js__ ("function () { return this.get_emitterType (); }"), set: untyped __js__ ("function (v) { return this.set_emitterType (v); }") },
+            "emitterXVariance": { get: untyped __js__ ("function () { return this.get_emitterXVariance (); }"), set: untyped __js__ ("function (v) { return this.set_emitterXVariance (v); }") },
+            "emitterYVariance": { get: untyped __js__ ("function () { return this.get_emitterYVariance (); }"), set: untyped __js__ ("function (v) { return this.set_emitterYVariance (v); }") },
+            "lifespan": { get: untyped __js__ ("function () { return this.get_lifespan (); }"), set: untyped __js__ ("function (v) { return this.set_lifespan (v); }") },
+            "lifespanVariance": { get: untyped __js__ ("function () { return this.get_lifespanVariance (); }"), set: untyped __js__ ("function (v) { return this.set_lifespanVariance (v); }") },
+            "startSize": { get: untyped __js__ ("function () { return this.get_startSize (); }"), set: untyped __js__ ("function (v) { return this.set_startSize (v); }") },
+            "startSizeVariance": { get: untyped __js__ ("function () { return this.get_startSizeVariance (); }"), set: untyped __js__ ("function (v) { return this.set_startSizeVariance (v); }") },
+            "endSize": { get: untyped __js__ ("function () { return this.get_endSize (); }"), set: untyped __js__ ("function (v) { return this.set_endSize (v); }") },
+            "endSizeVariance": { get: untyped __js__ ("function () { return this.get_endSizeVariance (); }"), set: untyped __js__ ("function (v) { return this.set_endSizeVariance (v); }") },
+            "emitAngle": { get: untyped __js__ ("function () { return this.get_emitAngle (); }"), set: untyped __js__ ("function (v) { return this.set_emitAngle (v); }") },
+            "emitAngleVariance": { get: untyped __js__ ("function () { return this.get_emitAngleVariance (); }"), set: untyped __js__ ("function (v) { return this.set_emitAngleVariance (v); }") },
+            "startRotation": { get: untyped __js__ ("function () { return this.get_startRotation (); }"), set: untyped __js__ ("function (v) { return this.set_startRotation (v); }") },
+            "startRotationVariance": { get: untyped __js__ ("function () { return this.get_startRotationVariance (); }"), set: untyped __js__ ("function (v) { return this.set_startRotationVariance (v); }") },
+            "endRotation": { get: untyped __js__ ("function () { return this.get_endRotation (); }"), set: untyped __js__ ("function (v) { return this.set_endRotation (v); }") },
+            "endRotationVariance": { get: untyped __js__ ("function () { return this.get_endRotationVariance (); }"), set: untyped __js__ ("function (v) { return this.set_endRotationVariance (v); }") },
+            "speed": { get: untyped __js__ ("function () { return this.get_speed (); }"), set: untyped __js__ ("function (v) { return this.set_speed (v); }") },
+            "speedVariance": { get: untyped __js__ ("function () { return this.get_speedVariance (); }"), set: untyped __js__ ("function (v) { return this.set_speedVariance (v); }") },
+            "gravityX": { get: untyped __js__ ("function () { return this.get_gravityX (); }"), set: untyped __js__ ("function (v) { return this.set_gravityX (v); }") },
+            "gravityY": { get: untyped __js__ ("function () { return this.get_gravityY (); }"), set: untyped __js__ ("function (v) { return this.set_gravityY (v); }") },
+            "radialAcceleration": { get: untyped __js__ ("function () { return this.get_radialAcceleration (); }"), set: untyped __js__ ("function (v) { return this.set_radialAcceleration (v); }") },
+            "radialAccelerationVariance": { get: untyped __js__ ("function () { return this.get_radialAccelerationVariance (); }"), set: untyped __js__ ("function (v) { return this.set_radialAccelerationVariance (v); }") },
+            "tangentialAcceleration": { get: untyped __js__ ("function () { return this.get_tangentialAcceleration (); }"), set: untyped __js__ ("function (v) { return this.set_tangentialAcceleration (v); }") },
+            "tangentialAccelerationVariance": { get: untyped __js__ ("function () { return this.get_tangentialAccelerationVariance (); }"), set: untyped __js__ ("function (v) { return this.set_tangentialAccelerationVariance (v); }") },
+            "maxRadius": { get: untyped __js__ ("function () { return this.get_maxRadius (); }"), set: untyped __js__ ("function (v) { return this.set_maxRadius (v); }") },
+            "maxRadiusVariance": { get: untyped __js__ ("function () { return this.get_maxRadiusVariance (); }"), set: untyped __js__ ("function (v) { return this.set_maxRadiusVariance (v); }") },
+            "minRadius": { get: untyped __js__ ("function () { return this.get_minRadius (); }"), set: untyped __js__ ("function (v) { return this.set_minRadius (v); }") },
+            "minRadiusVariance": { get: untyped __js__ ("function () { return this.get_minRadiusVariance (); }"), set: untyped __js__ ("function (v) { return this.set_minRadiusVariance (v); }") },
+            "rotatePerSecond": { get: untyped __js__ ("function () { return this.get_rotatePerSecond (); }"), set: untyped __js__ ("function (v) { return this.set_rotatePerSecond (v); }") },
+            "rotatePerSecondVariance": { get: untyped __js__ ("function () { return this.get_rotatePerSecondVariance (); }"), set: untyped __js__ ("function (v) { return this.set_rotatePerSecondVariance (v); }") },
+            "startColor": { get: untyped __js__ ("function () { return this.get_startColor (); }"), set: untyped __js__ ("function (v) { return this.set_startColor (v); }") },
+            "startColorVariance": { get: untyped __js__ ("function () { return this.get_startColorVariance (); }"), set: untyped __js__ ("function (v) { return this.set_startColorVariance (v); }") },
+            "endColor": { get: untyped __js__ ("function () { return this.get_endColor (); }"), set: untyped __js__ ("function (v) { return this.set_endColor (v); }") },
+            "endColorVariance": { get: untyped __js__ ("function () { return this.get_endColorVariance (); }"), set: untyped __js__ ("function (v) { return this.set_endColorVariance (v); }") },
+        });
+        
+    }
+    #end
+    
     public function new(config:String, texture:Texture)
     {
         super(texture);

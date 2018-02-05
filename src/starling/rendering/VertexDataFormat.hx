@@ -58,6 +58,20 @@ class VertexDataFormat
     {
         _attributes = new Vector<VertexDataAttribute>();
     }
+    
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (VertexDataFormat.prototype, {
+            "attributes": { get: untyped __js__ ("function () { return this.get_attributes (); }") },
+            "formatString": { get: untyped __js__ ("function () { return this.get_formatString (); }") },
+            "vertexSize": { get: untyped __js__ ("function () { return this.get_vertexSize (); }") },
+            "vertexSizeIn32Bits": { get: untyped __js__ ("function () { return this.get_vertexSizeIn32Bits (); }") },
+            "numAttributes": { get: untyped __js__ ("function () { return this.get_numAttributes (); }") },
+        });
+        
+    }
+    #end
 
     /** Creates a new VertexDataFormat instance from the given String, or returns one from
      *  the cache (if an equivalent String has already been used before).
@@ -243,7 +257,7 @@ class VertexDataFormat
     }
 
     /** @private */
-    @:allow(starling) private var attributes(get, null):Vector<VertexDataAttribute>;
+    @:allow(starling) private var attributes(get, never):Vector<VertexDataAttribute>;
     private function get_attributes():Vector<VertexDataAttribute>
     {
         return _attributes;
@@ -252,28 +266,28 @@ class VertexDataFormat
     // properties
 
     /** Returns the normalized format string. */
-    public var formatString(get, null):String;
+    public var formatString(get, never):String;
     private function get_formatString():String
     {
         return _format;
     }
 
     /** The size (in bytes) of each vertex. */
-    public var vertexSize(get, null):Int;
+    public var vertexSize(get, never):Int;
     private function get_vertexSize():Int
     {
         return _vertexSize;
     }
 
     /** The size (in 32 bit units) of each vertex. */
-    public var vertexSizeIn32Bits(get, null):Int;
+    public var vertexSizeIn32Bits(get, never):Int;
     private function get_vertexSizeIn32Bits():Int
     {
         return Std.int(_vertexSize / 4);
     }
 
     /** The number of attributes per vertex. */
-    public var numAttributes(get, null):Int;
+    public var numAttributes(get, never):Int;
     private function get_numAttributes():Int
     {
         return _attributes.length;

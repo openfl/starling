@@ -78,6 +78,22 @@ class Sprite3D extends DisplayObjectContainer
     private static var sHelperPointAlt:Vector3D = new Vector3D();
     private static var sHelperMatrix:Matrix3D   = new Matrix3D();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Sprite3D.prototype, {
+            "z": { get: untyped __js__ ("function () { return this.get_z (); }"), set: untyped __js__ ("function (v) { return this.set_z (v); }") },
+            "pivotZ": { get: untyped __js__ ("function () { return this.get_pivotZ (); }"), set: untyped __js__ ("function (v) { return this.set_pivotZ (v); }") },
+            "scaleZ": { get: untyped __js__ ("function () { return this.get_scaleZ (); }"), set: untyped __js__ ("function (v) { return this.set_scaleZ (v); }") },
+            "rotationX": { get: untyped __js__ ("function () { return this.get_rotationX (); }"), set: untyped __js__ ("function (v) { return this.set_rotationX (v); }") },
+            "rotationY": { get: untyped __js__ ("function () { return this.get_rotationY (); }"), set: untyped __js__ ("function (v) { return this.set_rotationY (v); }") },
+            "rotationZ": { get: untyped __js__ ("function () { return this.get_rotationZ (); }"), set: untyped __js__ ("function (v) { return this.set_rotationZ (v); }") },
+            "isFlat": { get: untyped __js__ ("function () { return this.get_isFlat (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates an empty Sprite3D. */
     public function new()
     {

@@ -111,6 +111,20 @@ class RenderTexture extends SubTexture
     // helper object
     private static var sClipRect:Rectangle = new Rectangle();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (RenderTexture.prototype, {
+            "isPersistent": { get: untyped __js__ ("function () { return this.get_isPersistent (); }") },
+        });
+        
+        untyped Object.defineProperties (RenderTexture, {
+            "useDoubleBuffering": { get: untyped __js__ ("function () { return RenderTexture.get_useDoubleBuffering (); }"), set: untyped __js__ ("function (v) { return RenderTexture.set_useDoubleBuffering (v); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new RenderTexture with a certain size (in points). If the texture is
      *  persistent, its contents remains intact after each draw call, allowing you to use the
      *  texture just like a canvas. If it is not, it will be cleared before each draw call.

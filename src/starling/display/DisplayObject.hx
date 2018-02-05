@@ -168,6 +168,47 @@ class DisplayObject extends EventDispatcher
     private static var sHelperMatrixAlt3D:Matrix3D  = new Matrix3D();
     private static var sMaskWarningShown:Bool = false;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DisplayObject.prototype, {
+            "isMask": { get: untyped __js__ ("function () { return this.get_isMask (); }") },
+            "requiresRedraw": { get: untyped __js__ ("function () { return this.get_requiresRedraw (); }") },
+            "transformationMatrix": { get: untyped __js__ ("function () { return this.get_transformationMatrix (); }"), set: untyped __js__ ("function (v) { return this.set_transformationMatrix (v); }") },
+            "transformationMatrix3D": { get: untyped __js__ ("function () { return this.get_transformationMatrix3D (); }") },
+            "is3D": { get: untyped __js__ ("function () { return this.get_is3D (); }") },
+            "useHandCursor": { get: untyped __js__ ("function () { return this.get_useHandCursor (); }"), set: untyped __js__ ("function (v) { return this.set_useHandCursor (v); }") },
+            "bounds": { get: untyped __js__ ("function () { return this.get_bounds (); }") },
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }"), set: untyped __js__ ("function (v) { return this.set_widtht (v); }") },
+            "height": { get: untyped __js__ ("function () { return this.get_height (); }"), set: untyped __js__ ("function (v) { return this.set_height (v); }") },
+            "x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
+            "y": { get: untyped __js__ ("function () { return this.get_y (); }"), set: untyped __js__ ("function (v) { return this.set_y (v); }") },
+            "pivotX": { get: untyped __js__ ("function () { return this.get_pivotX (); }"), set: untyped __js__ ("function (v) { return this.set_pivotX (v); }") },
+            "pivotY": { get: untyped __js__ ("function () { return this.get_pivotY (); }"), set: untyped __js__ ("function (v) { return this.set_pivotY (v); }") },
+            "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
+            "scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
+            "scale": { get: untyped __js__ ("function () { return this.get_scale (); }"), set: untyped __js__ ("function (v) { return this.set_scale (v); }") },
+            "skewX": { get: untyped __js__ ("function () { return this.get_skewX (); }"), set: untyped __js__ ("function (v) { return this.set_skewX (v); }") },
+            "skewY": { get: untyped __js__ ("function () { return this.get_skewY (); }"), set: untyped __js__ ("function (v) { return this.set_skewY (v); }") },
+            "rotation": { get: untyped __js__ ("function () { return this.get_rotation (); }"), set: untyped __js__ ("function (v) { return this.set_rotation (v); }") },
+            "isRotated": { get: untyped __js__ ("function () { return this.get_isRotated (); }") },
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "visible": { get: untyped __js__ ("function () { return this.get_visible (); }"), set: untyped __js__ ("function (v) { return this.set_visible (v); }") },
+            "touchable": { get: untyped __js__ ("function () { return this.get_touchable (); }"), set: untyped __js__ ("function (v) { return this.set_touchable (v); }") },
+            "blendMode": { get: untyped __js__ ("function () { return this.get_blendMode (); }"), set: untyped __js__ ("function (v) { return this.set_blendMode (v); }") },
+            "name": { get: untyped __js__ ("function () { return this.get_name (); }"), set: untyped __js__ ("function (v) { return this.set_name (v); }") },
+            "filter": { get: untyped __js__ ("function () { return this.get_filter (); }"), set: untyped __js__ ("function (v) { return this.set_filter (v); }") },
+            "mask": { get: untyped __js__ ("function () { return this.get_mask (); }"), set: untyped __js__ ("function (v) { return this.set_mask (v); }") },
+            "maskInverted": { get: untyped __js__ ("function () { return this.get_maskInverted (); }"), set: untyped __js__ ("function (v) { return this.set_maskInverted (v); }") },
+            "parent": { get: untyped __js__ ("function () { return this.get_parent (); }") },
+            "base": { get: untyped __js__ ("function () { return this.get_base (); }") },
+            "root": { get: untyped __js__ ("function () { return this.get_root (); }") },
+            "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
+        });
+        
+    }
+    #end
+    
     /** @private */ 
     private function new()
     {

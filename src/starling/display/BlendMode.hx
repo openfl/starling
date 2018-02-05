@@ -43,6 +43,18 @@ class BlendMode
     
     private static var sBlendModes:Map<String, BlendMode>;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BlendMode.prototype, {
+            "sourceFactor": { get: untyped __js__ ("function () { return this.get_sourceFactor (); }") },
+            "destinationFactor": { get: untyped __js__ ("function () { return this.get_destinationFactor (); }") },
+            "name": { get: untyped __js__ ("function () { return this.get_name (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new BlendMode instance. Don't call this method directly; instead,
      *  register a new blend mode using <code>BlendMode.register</code>. */
     public function new(name:String, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor)

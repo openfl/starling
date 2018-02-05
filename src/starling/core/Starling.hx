@@ -240,6 +240,46 @@ class Starling extends EventDispatcher
     private static var sCurrent:Starling;
     private static var sAll:Vector<Starling> = new Vector<Starling>();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Starling.prototype, {
+            "touchEventTypes": { get: untyped __js__ ("function () { return this.get_touchEventTypes (); }") },
+            "mustAlwaysRender": { get: untyped __js__ ("function () { return this.get_mustAlwaysRender (); }") },
+            "isStarted": { get: untyped __js__ ("function () { return this.get_isStarted (); }") },
+            "juggler": { get: untyped __js__ ("function () { return this.get_juggler (); }") },
+            "context": { get: untyped __js__ ("function () { return this.get_context (); }"), set: untyped __js__ ("function (v) { return this.set_context (v); }") },
+            "simulateMultitouch": { get: untyped __js__ ("function () { return this.get_simulateMultitouch (); }"), set: untyped __js__ ("function (v) { return this.set_simulateMultitouch (v); }") },
+            "enableErrorChecking": { get: untyped __js__ ("function () { return this.get_enableErrorChecking (); }"), set: untyped __js__ ("function (v) { return this.set_enableErrorChecking (v); }") },
+            "antiAliasing": { get: untyped __js__ ("function () { return this.get_antiAliasing (); }"), set: untyped __js__ ("function (v) { return this.set_antiAliasing (v); }") },
+            "viewPort": { get: untyped __js__ ("function () { return this.get_viewPort (); }"), set: untyped __js__ ("function (v) { return this.set_viewPort (v); }") },
+            "contentScaleFactor": { get: untyped __js__ ("function () { return this.get_contentScaleFactor (); }") },
+            "nativeOverlay": { get: untyped __js__ ("function () { return this.get_nativeOverlay (); }") },
+            "showStats": { get: untyped __js__ ("function () { return this.get_showStats (); }"), set: untyped __js__ ("function (v) { return this.set_showStats (v); }") },
+            "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
+            "stage3D": { get: untyped __js__ ("function () { return this.get_stage3D (); }") },
+            "nativeStage": { get: untyped __js__ ("function () { return this.get_nativeStage (); }") },
+            "root": { get: untyped __js__ ("function () { return this.get_root (); }") },
+            "rootClass": { get: untyped __js__ ("function () { return this.get_rootClass (); }"), set: untyped __js__ ("function (v) { return this.set_rootClass (v); }") },
+            "shareContext": { get: untyped __js__ ("function () { return this.get_shareContext (); }"), set: untyped __js__ ("function (v) { return this.set_shareContext (v); }") },
+            "profile": { get: untyped __js__ ("function () { return this.get_profile (); }") },
+            "supportHighResolutions": { get: untyped __js__ ("function () { return this.get_supportHighResolutions (); }"), set: untyped __js__ ("function (v) { return this.set_supportHighResolutions (v); }") },
+            "skipUnchangedFrames": { get: untyped __js__ ("function () { return this.get_skipUnchangedFrames (); }"), set: untyped __js__ ("function (v) { return this.set_skipUnchangedFrames (v); }") },
+            "touchProcessor": { get: untyped __js__ ("function () { return this.get_touchProcessor (); }"), set: untyped __js__ ("function (v) { return this.set_touchProcessor (v); }") },
+            "frameID": { get: untyped __js__ ("function () { return this.get_frameID (); }") },
+            "contextValid": { get: untyped __js__ ("function () { return this.get_contextValid (); }") },
+        });
+        
+        untyped Object.defineProperties (Starling, {
+            "current": { get: untyped __js__ ("function () { return Starling.get_current (); }") },
+            "all": { get: untyped __js__ ("function () { return Starling.get_all (); }") },
+            "contentScaleFactor": { get: untyped __js__ ("function () { return Starling.get_contentScaleFactor (); }") },
+            "multitouchEnabled": { get: untyped __js__ ("function () { return Starling.get_multitouchEnabled (); }") },
+        });
+        
+    }
+    #end
+    
     // construction
     
     /** Creates a new Starling instance. 

@@ -107,6 +107,24 @@ class MeshStyle extends EventDispatcher
     // helper objects
     private static var sPoint:Point = new Point();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (MeshStyle.prototype, {
+            "vertexData": { get: untyped __js__ ("function () { return this.get_vertexData (); }") },
+            "indexData": { get: untyped __js__ ("function () { return this.get_indexData (); }") },
+            "type": { get: untyped __js__ ("function () { return this.get_type (); }") },
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "vertexFormat": { get: untyped __js__ ("function () { return this.get_vertexFormat (); }") },
+            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }"), set: untyped __js__ ("function (v) { return this.set_texture (v); }") },
+            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureRepeat": { get: untyped __js__ ("function () { return this.get_textureRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_textureRepeat (v); }") },
+            "target": { get: untyped __js__ ("function () { return this.get_target (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new MeshStyle instance.
      *  Subclasses must provide a constructor that can be called without any arguments. */
     @:keep public function new()

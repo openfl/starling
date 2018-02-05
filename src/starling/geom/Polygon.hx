@@ -35,6 +35,20 @@ class Polygon
     // Helper object
     private static var sRestIndices:Vector<UInt> = new Vector<UInt>();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Polygon.prototype, {
+            "isSimple": { get: untyped __js__ ("function () { return this.get_isSimple (); }") },
+            "isConvex": { get: untyped __js__ ("function () { return this.get_isConvex (); }") },
+            "area": { get: untyped __js__ ("function () { return this.get_area (); }") },
+            "numVertices": { get: untyped __js__ ("function () { return this.get_numVertices (); }"), set: untyped __js__ ("function (v) { return this.set_numVertices (v); }") },
+            "numTriangles": { get: untyped __js__ ("function () { return this.get_numTriangles (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a Polygon with the given coordinates.
      * @param vertices an array that contains either 'Point' instances or
      *                 alternating 'x' and 'y' coordinates.

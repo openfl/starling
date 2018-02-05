@@ -58,6 +58,18 @@ class Juggler implements IAnimatable
     private static var sCurrentObjectID:UInt = 0;
     private static var sTweenInstanceFields:Array<String>;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Juggler.prototype, {
+            "elapsedTime": { get: untyped __js__ ("function () { return this.get_elapsedTime (); }") },
+            "timeScale": { get: untyped __js__ ("function () { return this.get_timeScale (); }"), set: untyped __js__ ("function (v) { return this.set_timeScale (v); }") },
+            "objects": { get: untyped __js__ ("function () { return this.get_objects (); }") },
+        });
+        
+    }
+    #end
+    
     /** Create an empty juggler. */
     public function new()
     {

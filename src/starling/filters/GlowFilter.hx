@@ -27,6 +27,18 @@ class GlowFilter extends FragmentFilter
     private var _blurFilter:BlurFilter;
     private var _compositeFilter:CompositeFilter;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (GlowFilter.prototype, {
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "blur": { get: untyped __js__ ("function () { return this.get_blur (); }"), set: untyped __js__ ("function (v) { return this.set_blur (v); }") },
+        });
+        
+    }
+    #end
+
     /** Initializes a new GlowFilter instance with the specified parameters.
      *
      * @param color      the color of the glow

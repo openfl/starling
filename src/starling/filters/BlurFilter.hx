@@ -28,6 +28,21 @@ class BlurFilter extends FragmentFilter
     private var __blurX:Float;
     private var __blurY:Float;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BlurFilter.prototype, {
+            "totalBlurX": { get: untyped __js__ ("function () { return this.get_totalBlurX (); }") },
+            "totalBlurY": { get: untyped __js__ ("function () { return this.get_totalBlurY (); }") },
+            "blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
+            "blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
+            "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
+            "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
+        });
+        
+    }
+    #end
+
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *
      *  <p>The blur is rendered for each direction (x and y) separately; the number of
@@ -175,6 +190,17 @@ class BlurEffect extends FilterEffect
     private static var sTmpWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
     private static var sWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
     private static var sOffsets:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
+
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BlurEffect.prototype, {
+            "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
+            "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
+        });
+        
+    }
+    #end
 
     /** Creates a new BlurEffect. */
     public function new():Void

@@ -24,6 +24,20 @@ class DropShadowFilter extends FragmentFilter
     private var _distance:Float;
     private var _angle:Float;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DropShadowFilter.prototype, {
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "distance": { get: untyped __js__ ("function () { return this.get_distance (); }"), set: untyped __js__ ("function (v) { return this.set_distance (v); }") },
+            "angle": { get: untyped __js__ ("function () { return this.get_angle (); }"), set: untyped __js__ ("function (v) { return this.set_angle (v); }") },
+            "blur": { get: untyped __js__ ("function () { return this.get_blur (); }"), set: untyped __js__ ("function (v) { return this.set_blur (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new DropShadowFilter instance with the specified parameters.
      *
      * @param distance   the offset distance of the shadow, in points.

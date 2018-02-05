@@ -33,6 +33,17 @@ import starling.utils.MathUtil;
  */
 class CompositeFilter extends FragmentFilter
 {
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (CompositeFilter.prototype, {
+            "compositeEffect": { get: untyped __js__ ("function () { return this.get_compositeEffect (); }") },
+            "numLayers": { get: untyped __js__ ("function () { return this.get_numLayers (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new instance. */
     public function new()
     {

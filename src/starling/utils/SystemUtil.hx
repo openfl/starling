@@ -38,6 +38,26 @@ class SystemUtil
     private static var sEmbeddedFonts:Array<Font> = null;
     private static var sSupportsDepthAndStencil:Bool = true;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (SystemUtil, {
+            "isApplicationActive": { get: untyped __js__ ("function () { return SystemUtil.get_isApplicationActive (); }") },
+            "isAIR": { get: untyped __js__ ("function () { return SystemUtil.get_isAIR (); }") },
+            "version": { get: untyped __js__ ("function () { return SystemUtil.get_version (); }") },
+            "platform": { get: untyped __js__ ("function () { return SystemUtil.get_platform (); }"), set: untyped __js__ ("function (v) { return SystemUtil.set_platform (v); }") },
+            "supportsDepthAndStencil": { get: untyped __js__ ("function () { return SystemUtil.get_supportsDepthAndStencil (); }") },
+            "supportsVideoTexture": { get: untyped __js__ ("function () { return SystemUtil.get_supportsVideoTexture (); }") },
+            "isIOS": { get: untyped __js__ ("function () { return SystemUtil.get_isIOS (); }") },
+            "isAndroid": { get: untyped __js__ ("function () { return SystemUtil.get_isAndroid (); }") },
+            "isMac": { get: untyped __js__ ("function () { return SystemUtil.get_isMac (); }") },
+            "isWindows": { get: untyped __js__ ("function () { return SystemUtil.get_isWindows (); }") },
+            "isDesktop": { get: untyped __js__ ("function () { return SystemUtil.get_isDesktop (); }") },
+        });
+        
+    }
+    #end
+
     /** Initializes the <code>ACTIVATE/DEACTIVATE</code> event handlers on the native
         * application. This method is automatically called by the Starling constructor. */
     public static function initialize():Void

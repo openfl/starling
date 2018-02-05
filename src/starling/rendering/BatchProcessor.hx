@@ -33,6 +33,17 @@ class BatchProcessor
     // helper objects
     private static var sMeshSubset:MeshSubset = new MeshSubset();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (BatchProcessor.prototype, {
+            "numBatches": { get: untyped __js__ ("function () { return this.get_numBatches (); }") },
+            "onBatchComplete": { get: untyped __js__ ("function () { return this.get_onBatchComplete (); }"), set: untyped __js__ ("function (v) { return this.set_onBatchComplete (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new batch processor. */
     public function new()
     {

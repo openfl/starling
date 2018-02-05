@@ -25,6 +25,21 @@ class TouchMarker extends Sprite
     private var __center:Point;
     private var __texture:Texture;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TouchMarker.prototype, {
+            "realMarker": { get: untyped __js__ ("function () { return this.get_realMarker(); }") },
+            "mockMarker": { get: untyped __js__ ("function () { return this.get_mockMarker (); }") },
+            "realX": { get: untyped __js__ ("function () { return this.get_realX (); }") },
+            "realY": { get: untyped __js__ ("function () { return this.get_realY (); }") },
+            "mockX": { get: untyped __js__ ("function () { return this.get_mockX (); }") },
+            "mockY": { get: untyped __js__ ("function () { return this.get_mockY (); }") },
+        });
+        
+    }
+    #end
+    
     public function new()
     {
         super();

@@ -96,6 +96,31 @@ class RenderState
     private static var sMatrix3D:Matrix3D = new Matrix3D();
     private static var sProjectionMatrix3DRev:UInt = 0;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (RenderState.prototype, {
+            "modelviewMatrix": { get: untyped __js__ ("function () { return this.get_modelviewMatrix (); }"), set: untyped __js__ ("function (v) { return this.set_modelviewMatrix (v); }") },
+            "modelviewMatrix3D": { get: untyped __js__ ("function () { return this.get_modelviewMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_modelviewMatrix3D (v); }") },
+            "projectionMatrix3D": { get: untyped __js__ ("function () { return this.get_projectionMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_projectionMatrix3D (v); }") },
+            "mvpMatrix3D": { get: untyped __js__ ("function () { return this.get_mvpMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_mvpMatrix3D (v); }") },
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "blendMode": { get: untyped __js__ ("function () { return this.get_blendMode (); }"), set: untyped __js__ ("function (v) { return this.set_blendMode (v); }") },
+            "renderTarget": { get: untyped __js__ ("function () { return this.get_renderTargete (); }"), set: untyped __js__ ("function (v) { return this.set_renderTarget (v); }") },
+            "renderTargetBase": { get: untyped __js__ ("function () { return this.get_renderTargetBase (); }") },
+            "culling": { get: untyped __js__ ("function () { return this.get_culling (); }"), set: untyped __js__ ("function (v) { return this.set_culling (v); }") },
+            "depthMask": { get: untyped __js__ ("function () { return this.get_depthMask (); }"), set: untyped __js__ ("function (v) { return this.set_depthMask (v); }") },
+            "depthTest": { get: untyped __js__ ("function () { return this.get_depthTest (); }"), set: untyped __js__ ("function (v) { return this.set_depthTest (v); }") },
+            "clipRect": { get: untyped __js__ ("function () { return this.get_clipRect (); }"), set: untyped __js__ ("function (v) { return this.set_clipRect (v); }") },
+            "renderTargetAntiAlias": { get: untyped __js__ ("function () { return this.get_renderTargetAntiAlias (); }") },
+            "renderTargetSupportsDepthAndStencil": { get: untyped __js__ ("function () { return this.get_renderTargetSupportsDepthAndStencil (); }") },
+            "is3D": { get: untyped __js__ ("function () { return this.get_is3D (); }") },
+            "onDrawRequired": { get: untyped __js__ ("function () { return this.get_onDrawRequired (); }"), set: untyped __js__ ("function (v) { return this.set_onDrawRequired (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new render state with the default settings. */
     public function new()
     {

@@ -58,6 +58,25 @@ class MovieClip extends Image implements IAnimatable
     private var __wasStopped:Bool;
     private var __soundTransform:SoundTransform = null;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (MovieClip.prototype, {
+            "numFrames": { get: untyped __js__ ("function () { return this.get_numFrames (); }") },
+            "totalTime": { get: untyped __js__ ("function () { return this.get_totalTime (); }") },
+            "currentTime": { get: untyped __js__ ("function () { return this.get_currentTime (); }"), set: untyped __js__ ("function (v) { return this.set_currentTime (v); }") },
+            "loop": { get: untyped __js__ ("function () { return this.get_loop (); }"), set: untyped __js__ ("function (v) { return this.set_loop (v); }") },
+            "muted": { get: untyped __js__ ("function () { return this.get_muted (); }"), set: untyped __js__ ("function (v) { return this.set_muted (v); }") },
+            "soundTransform": { get: untyped __js__ ("function () { return this.get_soundTransform (); }"), set: untyped __js__ ("function (v) { return this.set_soundTransform (v); }") },
+            "currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }"), set: untyped __js__ ("function (v) { return this.set_currentFrame (v); }") },
+            "fps": { get: untyped __js__ ("function () { return this.get_fps (); }"), set: untyped __js__ ("function (v) { return this.set_fps (v); }") },
+            "isPlaying": { get: untyped __js__ ("function () { return this.get_isPlaying (); }") },
+            "isComplete": { get: untyped __js__ ("function () { return this.get_isComplete (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a movie clip from the provided textures and with the specified default framerate.
      * The movie will have the size of the first frame. */  
     public function new(textures:Vector<Texture>, fps:Float=12)

@@ -51,6 +51,17 @@ class ColorMatrixFilter extends FragmentFilter
     // helpers
     private static var sMatrix:Vector<Float> = new Vector<Float>();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ColorMatrixFilter.prototype, {
+            "matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
+            "colorEffect": { get: untyped __js__ ("function () { return this.get_colorEffect (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new ColorMatrixFilter instance with the specified matrix.
      *  @param matrix a vector of 20 items arranged as a 4x5 matrix.
      */
@@ -217,6 +228,16 @@ class ColorMatrixEffect extends FilterEffect
 
     // helpers
     private static var sMatrix:Vector<Float> = new Vector<Float>(20, true);
+
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ColorMatrixEffect.prototype, {
+            "matrix": { get: untyped __js__ ("function () { return this.get_matrix (); }"), set: untyped __js__ ("function (v) { return this.set_matrix (v); }") },
+        });
+        
+    }
+    #end
 
     public function new():Void
     {

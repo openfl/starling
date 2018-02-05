@@ -111,6 +111,32 @@ class TextField extends DisplayObjectContainer
     private static var sDefaultCompositor:ITextCompositor = new TrueTypeCompositor();
     private static var sDefaultTextureFormat:String = Context3DTextureFormat.BGRA_PACKED;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TextField.prototype, {
+            "isHorizontalAutoSize": { get: untyped __js__ ("function () { return this.get_isHorizontalAutoSize (); }") },
+            "isVerticalAutoSize": { get: untyped __js__ ("function () { return this.get_isVerticalAutoSize (); }") },
+            "textBounds": { get: untyped __js__ ("function () { return this.get_textBounds (); }") },
+            "text": { get: untyped __js__ ("function () { return this.get_text (); }"), set: untyped __js__ ("function (v) { return this.set_text (v); }") },
+            "format": { get: untyped __js__ ("function () { return this.get_format (); }"), set: untyped __js__ ("function (v) { return this.set_format (v); }") },
+            "options": { get: untyped __js__ ("function () { return this.get_options (); }") },
+            "border": { get: untyped __js__ ("function () { return this.get_border (); }"), set: untyped __js__ ("function (v) { return this.set_border (v); }") },
+            "autoScale": { get: untyped __js__ ("function () { return this.get_autoScale (); }"), set: untyped __js__ ("function (v) { return this.set_autoScale (v); }") },
+            "autoSize": { get: untyped __js__ ("function () { return this.get_autoSize (); }"), set: untyped __js__ ("function (v) { return this.set_autoSize (v); }") },
+            "wordWrap": { get: untyped __js__ ("function () { return this.get_wordWrap (); }"), set: untyped __js__ ("function (v) { return this.set_wordWrap (v); }") },
+            "batchable": { get: untyped __js__ ("function () { return this.get_batchable (); }"), set: untyped __js__ ("function (v) { return this.set_batchable (v); }") },
+            "isHtmlText": { get: untyped __js__ ("function () { return this.get_isHtmlText (); }"), set: untyped __js__ ("function (v) { return this.set_isHtmlText (v); }") },
+            "styleSheet": { get: untyped __js__ ("function () { return this.get_styleSheet (); }"), set: untyped __js__ ("function (v) { return this.set_styleSheet (v); }") },
+            "pixelSnapping": { get: untyped __js__ ("function () { return this.get_pixelSnapping (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSnapping (v); }") },
+            "style": { get: untyped __js__ ("function () { return this.get_style (); }"), set: untyped __js__ ("function (v) { return this.set_style (v); }") },
+            "defaultTextureFormat": { get: untyped __js__ ("function () { return this.get_defaultTextureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_defaultTextureFormat (v); }") },
+            "defaultCompositor": { get: untyped __js__ ("function () { return this.get_defaultCompositor (); }") },
+        });
+        
+    }
+    #end
+
     /** Create a new text field with the given properties. */
     public function new(width:Int, height:Int, text:String="", format:TextFormat=null)
     {

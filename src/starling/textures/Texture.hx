@@ -133,6 +133,35 @@ class Texture
     private static var sMatrix:Matrix = new Matrix();
     private static var sPoint:Point = new Point();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Texture.prototype, {
+            "frame": { get: untyped __js__ ("function () { return this.get_frame (); }") },
+            "frameWidth": { get: untyped __js__ ("function () { return this.get_frameWidth (); }") },
+            "frameHeight": { get: untyped __js__ ("function () { return this.get_frameHeight (); }") },
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }") },
+            "height": { get: untyped __js__ ("function () { return this.get_height (); }") },
+            "nativeWidth": { get: untyped __js__ ("function () { return this.get_nativeWidth (); }") },
+            "nativeHeight": { get: untyped __js__ ("function () { return this.get_nativeHeight (); }") },
+            "scale": { get: untyped __js__ ("function () { return this.get_scale (); }") },
+            "base": { get: untyped __js__ ("function () { return this.get_base (); }") },
+            "root": { get: untyped __js__ ("function () { return this.get_root (); }") },
+            "format": { get: untyped __js__ ("function () { return this.get_format (); }") },
+            "mipMapping": { get: untyped __js__ ("function () { return this.get_mipMapping (); }") },
+            "premultipliedAlpha": { get: untyped __js__ ("function () { return this.get_premultipliedAlpha (); }") },
+            "transformationMatrix": { get: untyped __js__ ("function () { return this.get_transformationMatrix (); }") },
+            "transformationMatrixToRoot": { get: untyped __js__ ("function () { return this.get_transformationMatrixToRoot (); }") },
+        });
+        
+        untyped Object.defineProperties (Texture, {
+            "maxSize": { get: untyped __js__ ("function () { return Texture.get_maxSize (); }") },
+            "asyncBitmapUploadEnabled": { get: untyped __js__ ("function () { return Texture.get_asyncBitmapUploadEnabled (); }"), set: untyped __js__ ("function (v) { return Texture.set_asyncBitmapUploadEnabled (v); }") },
+        });
+        
+    }
+    #end
+
     /** @private */
     private function new()
     {

@@ -40,6 +40,26 @@ class TextFormat extends EventDispatcher
     private var __leading:Float;
     private var __letterSpacing:Float;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TextFormat.prototype, {
+            "font": { get: untyped __js__ ("function () { return this.get_font (); }"), set: untyped __js__ ("function (v) { return this.set_font (v); }") },
+            "size": { get: untyped __js__ ("function () { return this.get_size (); }"), set: untyped __js__ ("function (v) { return this.set_size (v); }") },
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "bold": { get: untyped __js__ ("function () { return this.get_bold (); }"), set: untyped __js__ ("function (v) { return this.set_bold (v); }") },
+            "italic": { get: untyped __js__ ("function () { return this.get_italic (); }"), set: untyped __js__ ("function (v) { return this.set_italic (v); }") },
+            "underline": { get: untyped __js__ ("function () { return this.get_underline (); }"), set: untyped __js__ ("function (v) { return this.set_underline (v); }") },
+            "horizontalAlign": { get: untyped __js__ ("function () { return this.get_horizontalAlign (); }"), set: untyped __js__ ("function (v) { return this.set_horizontalAlign (v); }") },
+            "verticalAlign": { get: untyped __js__ ("function () { return this.get_verticalAlign (); }"), set: untyped __js__ ("function (v) { return this.set_verticalAlign (v); }") },
+            "kerning": { get: untyped __js__ ("function () { return this.get_kerning (); }"), set: untyped __js__ ("function (v) { return this.set_kerning (v); }") },
+            "leading": { get: untyped __js__ ("function () { return this.get_leading (); }"), set: untyped __js__ ("function (v) { return this.set_leading (v); }") },
+            "letterSpacing": { get: untyped __js__ ("function () { return this.get_letterSpacing (); }"), set: untyped __js__ ("function (v) { return this.set_letterSpacing (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new TextFormat instance with the given properties. */
     public function new(font:String="Verdana", size:Float=12, color:UInt=0x0,
                         horizontalAlign:String="center", verticalAlign:String="center")

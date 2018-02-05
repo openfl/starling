@@ -79,6 +79,21 @@ class TouchProcessor
     private static var sHoveringTouchData:Vector<Dynamic> = new Vector<Dynamic>();
     private static var sHelperPoint:Point = new Point();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TouchProcessor.prototype, {
+            "simulateMultitouch": { get: untyped __js__ ("function () { return this.get_simulateMultitouch (); }"), set: untyped __js__ ("function (v) { return this.set_simulateMultitouch (v); }") },
+            "multitapTime": { get: untyped __js__ ("function () { return this.get_multitapTime (); }"), set: untyped __js__ ("function (v) { return this.set_multitapTime (v); }") },
+            "multitapDistance": { get: untyped __js__ ("function () { return this.get_multitapDistance (); }"), set: untyped __js__ ("function (v) { return this.set_multitapDistance (v); }") },
+            "root": { get: untyped __js__ ("function () { return this.get_root (); }"), set: untyped __js__ ("function (v) { return this.set_root (v); }") },
+            "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
+            "numCurrentTouches": { get: untyped __js__ ("function () { return this.get_numCurrentTouches (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new TouchProcessor that will dispatch events to the given stage. */
     public function new(stage:Stage)
     {

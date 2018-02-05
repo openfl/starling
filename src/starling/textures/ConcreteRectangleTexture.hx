@@ -30,6 +30,16 @@ import starling.core.Starling;
 
     private static var sAsyncUploadEnabled:Bool = false;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (ConcreteRectangleTexture.prototype, {
+            "rectBase": { get: untyped __js__ ("function () { return this.get_rectBase (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new instance with the given parameters. */
     private function new(base:RectangleTexture, format:String,
                          width:Int, height:Int, premultipliedAlpha:Bool,

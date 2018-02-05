@@ -154,6 +154,26 @@ class AssetManager extends EventDispatcher
     /** Regex for name / extension extraction from URL. */
     private static var NAME_REGEX:EReg = ~/([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (AssetManager.prototype, {
+            "numQueuedAssets": { get: untyped __js__ ("function () { return this.get_numQueuedAssets (); }") },
+            "verbose": { get: untyped __js__ ("function () { return this.get_verbose (); }"), set: untyped __js__ ("function (v) { return this.set_verbose (v); }") },
+            "isLoading": { get: untyped __js__ ("function () { return this.get_isLoading (); }") },
+            "useMipMaps": { get: untyped __js__ ("function () { return this.get_useMipMaps (); }"), set: untyped __js__ ("function (v) { return this.set_useMipMaps (v); }") },
+            "scaleFactor": { get: untyped __js__ ("function () { return this.get_scaleFactor (); }"), set: untyped __js__ ("function (v) { return this.set_scaleFactor (v); }") },
+            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
+            "forcePotTextures": { get: untyped __js__ ("function () { return this.get_forcePotTextures (); }"), set: untyped __js__ ("function (v) { return this.set_forcePotTextures (v); }") },
+            "checkPolicyFile": { get: untyped __js__ ("function () { return this.get_checkPolicyFile (); }"), set: untyped __js__ ("function (v) { return this.set_checkPolicyFile (v); }") },
+            "keepAtlasXmls": { get: untyped __js__ ("function () { return this.get_keepAtlasXmls (); }"), set: untyped __js__ ("function (v) { return this.set_keepAtlasXmls (v); }") },
+            "keepFontXmls": { get: untyped __js__ ("function () { return this.get_keepFontXmls (); }"), set: untyped __js__ ("function (v) { return this.set_keepFontXmls (v); }") },
+            "numConnections": { get: untyped __js__ ("function () { return this.get_numConnections (); }"), set: untyped __js__ ("function (v) { return this.set_numConnections (v); }") },
+        });
+        
+    }
+    #end
+
     /** Create a new AssetManager. The 'scaleFactor' and 'useMipmaps' parameters define
      * how enqueued bitmaps will be converted to textures. */
     public function new(scaleFactor:Float=1, useMipmaps:Bool=false)
@@ -1298,8 +1318,8 @@ class AssetManager extends EventDispatcher
     private function get_queue():Array<Dynamic> { return __queue; }
     
     /** Returns the number of raw assets that have been enqueued, but not yet loaded. */
-    public var nu__queuedAssets(get, never):Int;
-    private function get_nu__queuedAssets():Int { return __queue.length; }
+    public var numQueuedAssets(get, never):Int;
+    private function get_numQueuedAssets():Int { return __queue.length; }
     
     /** When activated, the class will trace information about added/enqueued assets.
      * @default true */

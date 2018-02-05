@@ -79,6 +79,36 @@ import starling.utils.Color;
     private var __reverse:Bool;
     private var __currentCycle:Int;
     
+    #if commonjs
+	private static function __init__ () {
+		
+		untyped Object.defineProperties (Tween.prototype, {
+			"isComplete": { get: untyped __js__ ("function () { return this.get_isComplete (); }") },
+			"target": { get: untyped __js__ ("function () { return this.get_target (); }") },
+			"transition": { get: untyped __js__ ("function () { return this.get_transition (); }"), set: untyped __js__ ("function (v) { return this.set_transition (v); }") },
+			"transitionFunc": { get: untyped __js__ ("function () { return this.get_transitionFunc (); }"), set: untyped __js__ ("function (v) { return this.set_transitionFunc (v); }") },
+            "totalTime": { get: untyped __js__ ("function () { return this.get_totalTime (); }") },
+            "currentTime": { get: untyped __js__ ("function () { return this.get_currentTime (); }") },
+			"progress": { get: untyped __js__ ("function () { return this.get_progress (); }") },
+			"delay": { get: untyped __js__ ("function () { return this.get_delay (); }"), set: untyped __js__ ("function (v) { return this.set_delay (v); }") },
+			"repeatCount": { get: untyped __js__ ("function () { return this.get_repeatCount (); }"), set: untyped __js__ ("function (v) { return this.set_repeatCount (v); }") },
+			"repeatDelay": { get: untyped __js__ ("function () { return this.get_repeatDelay (); }"), set: untyped __js__ ("function (v) { return this.set_repeatDelay (v); }") },
+			"reverse": { get: untyped __js__ ("function () { return this.get_reverse (); }"), set: untyped __js__ ("function (v) { return this.set_reverse (v); }") },
+			"roundToInt": { get: untyped __js__ ("function () { return this.get_roundToInt (); }"), set: untyped __js__ ("function (v) { return this.set_roundToInt (v); }") },
+			"onStart": { get: untyped __js__ ("function () { return this.get_onStart (); }"), set: untyped __js__ ("function (v) { return this.set_onStart (v); }") },
+			"onUpdate": { get: untyped __js__ ("function () { return this.get_onUpdate (); }"), set: untyped __js__ ("function (v) { return this.set_onUpdate (v); }") },
+			"onRepeat": { get: untyped __js__ ("function () { return this.get_onRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_onRepeat (v); }") },
+			"onComplete": { get: untyped __js__ ("function () { return this.get_onComplete (); }"), set: untyped __js__ ("function (v) { return this.set_onComplete (v); }") },
+			"onStartArgs": { get: untyped __js__ ("function () { return this.get_onStartArgs (); }"), set: untyped __js__ ("function (v) { return this.set_onStartArgs (v); }") },
+			"onUpdateArgs": { get: untyped __js__ ("function () { return this.get_onUpdateArgs (); }"), set: untyped __js__ ("function (v) { return this.set_onUpdateArgs (v); }") },
+			"onRepeatArgs": { get: untyped __js__ ("function () { return this.get_onRepeatArgs (); }"), set: untyped __js__ ("function (v) { return this.set_onRepeatArgs (v); }") },
+			"onCompleteArgs": { get: untyped __js__ ("function () { return this.get_onCompleteArgs (); }"), set: untyped __js__ ("function (v) { return this.set_onCompleteArgs (v); }") },
+			"nextTween": { get: untyped __js__ ("function () { return this.get_nextTween (); }"), set: untyped __js__ ("function (v) { return this.set_nextTween (v); }") },
+		});
+		
+	}
+	#end
+    
     /** Creates a tween with a target, duration (in seconds) and a transition function.
      * @param target the object that you want to animate
      * @param time the duration of the Tween (in seconds)

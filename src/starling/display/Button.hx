@@ -64,6 +64,35 @@ class Button extends DisplayObjectContainer
     private var __state:String;
     private var __triggerBounds:Rectangle;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Button.prototype, {
+            "state": { get: untyped __js__ ("function () { return this.get_state (); }"), set: untyped __js__ ("function (v) { return this.set_state (v); }") },
+            "scaleWhenDown": { get: untyped __js__ ("function () { return this.get_scaleWhenDown (); }"), set: untyped __js__ ("function (v) { return this.set_scaleWhenDown (v); }") },
+            "scaleWhenOver": { get: untyped __js__ ("function () { return this.get_scaleWhenOver (); }"), set: untyped __js__ ("function (v) { return this.set_scaleWhenOver (v); }") },
+            "alphaWhenDown": { get: untyped __js__ ("function () { return this.get_alphaWhenDown (); }"), set: untyped __js__ ("function (v) { return this.set_alphaWhenDown (v); }") },
+            "alphaWhenDisabled": { get: untyped __js__ ("function () { return this.get_alphaWhenDisabled (); }"), set: untyped __js__ ("function (v) { return this.set_alphaWhenDisabled (v); }") },
+            "enabled": { get: untyped __js__ ("function () { return this.get_enabled (); }"), set: untyped __js__ ("function (v) { return this.set_enabled (v); }") },
+            "text": { get: untyped __js__ ("function () { return this.get_text (); }"), set: untyped __js__ ("function (v) { return this.set_text (v); }") },
+            "textFormat": { get: untyped __js__ ("function () { return this.get_textFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textFormat (v); }") },
+            "textStyle": { get: untyped __js__ ("function () { return this.get_textStyle (); }"), set: untyped __js__ ("function (v) { return this.set_textStyle (v); }") },
+            "style": { get: untyped __js__ ("function () { return this.get_style (); }"), set: untyped __js__ ("function (v) { return this.set_style (v); }") },
+            "upState": { get: untyped __js__ ("function () { return this.get_upState (); }"), set: untyped __js__ ("function (v) { return this.set_upState (v); }") },
+            "downState": { get: untyped __js__ ("function () { return this.get_downState (); }"), set: untyped __js__ ("function (v) { return this.set_downState (v); }") },
+            "overState": { get: untyped __js__ ("function () { return this.get_overState (); }"), set: untyped __js__ ("function (v) { return this.set_overState (v); }") },
+            "disabledState": { get: untyped __js__ ("function () { return this.get_disabledState (); }"), set: untyped __js__ ("function (v) { return this.set_disabledState (v); }") },
+            "textBounds": { get: untyped __js__ ("function () { return this.get_textBounds (); }"), set: untyped __js__ ("function (v) { return this.set_textBounds (v); }") },
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
+            "overlay": { get: untyped __js__ ("function () { return this.get_overlay (); }") },
+            "pixelSnapping": { get: untyped __js__ ("function () { return this.get_pixelSnapping (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSnapping (v); }") },
+            "scale9Grid": { get: untyped __js__ ("function () { return this.get_scale9Grid (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a button with a set of state-textures and (optionally) some text.
      * Any state that is left 'null' will display the up-state texture. Beware that all
      * state textures should have the same dimensions. */

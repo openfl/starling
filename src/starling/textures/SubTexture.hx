@@ -33,6 +33,19 @@ class SubTexture extends Texture
     private var _transformationMatrix:Matrix;
     private var _transformationMatrixToRoot:Matrix;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (SubTexture.prototype, {
+            "parent": { get: untyped __js__ ("function () { return this.get_parent (); }") },
+            "ownsParent": { get: untyped __js__ ("function () { return this.get_ownsParent (); }") },
+            "rotated": { get: untyped __js__ ("function () { return this.get_rotated (); }") },
+            "region": { get: untyped __js__ ("function () { return this.get_region (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new SubTexture containing the specified region of a parent texture.
      *
      *  @param parent     The texture you want to create a SubTexture from.

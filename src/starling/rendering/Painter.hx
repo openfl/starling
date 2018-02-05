@@ -127,6 +127,32 @@ class Painter
     private static var sScissorRect:Rectangle = new Rectangle();
     private static var sMeshSubset:MeshSubset = new MeshSubset();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped __js__ ("Object").defineProperties (Painter.prototype, {
+            "drawCount": { get: untyped __js__ ("function () { return this.get_drawCount (); }"), set: untyped __js__ ("function (v) { return this.set_drawCount (v); }") },
+            "stencilReferenceValue": { get: untyped __js__ ("function () { return this.get_stencilReferenceValue (); }"), set: untyped __js__ ("function (v) { return this.set_stencilReferenceValue (v); }") },
+            "cacheEnabled": { get: untyped __js__ ("function () { return this.get_cacheEnabled (); }"), set: untyped __js__ ("function (v) { return this.set_cacheEnabled (v); }") },
+            "state": { get: untyped __js__ ("function () { return this.get_state (); }") },
+            "stage3D": { get: untyped __js__ ("function () { return this.get_stage3D (); }") },
+            "context": { get: untyped __js__ ("function () { return this.get_context (); }") },
+            "frameID": { get: untyped __js__ ("function () { return this.get_frameID (); }"), set: untyped __js__ ("function (v) { return this.set_frameID (v); }") },
+            "pixelSize": { get: untyped __js__ ("function () { return this.get_pixelSize (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSize (v); }") },
+            "shareContext": { get: untyped __js__ ("function () { return this.get_shareContext (); }"), set: untyped __js__ ("function (v) { return this.set_shareContext (v); }") },
+            "enableErrorChecking": { get: untyped __js__ ("function () { return this.get_enableErrorChecking (); }"), set: untyped __js__ ("function (v) { return this.set_enableErrorChecking (v); }") },
+            "backBufferWidth": { get: untyped __js__ ("function () { return this.get_backBufferWidth (); }") },
+            "backBufferHeight": { get: untyped __js__ ("function () { return this.get_backBufferHeight (); }") },
+            "backBufferScaleFactor": { get: untyped __js__ ("function () { return this.get_backBufferScaleFactor (); }") },
+            "contextValid": { get: untyped __js__ ("function () { return this.get_contextValid (); }") },
+            "profile": { get: untyped __js__ ("function () { return this.get_profile (); }") },
+            "sharedData": { get: untyped __js__ ("function () { return this.get_sharedData (); }") },
+            //"programs": { get: untyped __js__ ("function () { return this.get_programs (); }") },
+        });
+        
+    }
+    #end
+
     // construction
     
     /** Creates a new Painter object. Normally, it's not necessary to create any custom

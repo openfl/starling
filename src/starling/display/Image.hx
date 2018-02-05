@@ -62,6 +62,17 @@ class Image extends Quad
     private static var sTexCols:Vector<Float> = new Vector<Float>(3, true);
     private static var sTexRows:Vector<Float> = new Vector<Float>(3, true);
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Image.prototype, {
+            "scale9Grid": { get: untyped __js__ ("function () { return this.get_scale9Grid (); }"), set: untyped __js__ ("function (v) { return this.set_scale9Grid (v); }") },
+            "tileGrid": { get: untyped __js__ ("function () { return this.get_tileGrid (); }"), set: untyped __js__ ("function (v) { return this.set_tileGrid (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates an image with a texture mapped onto it. */
     public function new(texture:Texture)
     {

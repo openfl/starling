@@ -25,6 +25,21 @@ class AtfData
     private var _isCubeMap:Bool;
     private var _data:ByteArray;
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (AtfData.prototype, {
+            "format": { get: untyped __js__ ("function () { return this.get_format (); }") },
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }") },
+            "height": { get: untyped __js__ ("function () { return this.get_height (); }") },
+            "numTextures": { get: untyped __js__ ("function () { return this.get_numTextures (); }") },
+            "isCubeMap": { get: untyped __js__ ("function () { return this.get_isCubeMap (); }") },
+            "data": { get: untyped __js__ ("function () { return this.get_data (); }") },
+        });
+        
+    }
+    #end
+    
     /** Create a new instance by parsing the given byte array. */
     public function new(data:ByteArray)
     {

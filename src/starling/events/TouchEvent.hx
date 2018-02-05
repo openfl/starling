@@ -65,6 +65,19 @@ class TouchEvent extends Event
     /** Helper object. */
     private static var sTouches:Vector<Touch> = new Vector<Touch>();
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (TouchEvent.prototype, {
+            "timestamp": { get: untyped __js__ ("function () { return this.get_timestamp (); }") },
+            "touches": { get: untyped __js__ ("function () { return this.get_touches (); }") },
+            "shiftKey": { get: untyped __js__ ("function () { return this.get_shiftKey (); }") },
+            "ctrlKey": { get: untyped __js__ ("function () { return this.get_ctrlKey (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new TouchEvent instance. */
     public function new(type:String, touches:Vector<Touch>=null, shiftKey:Bool=false,
                          ctrlKey:Bool=false, bubbles:Bool=true)

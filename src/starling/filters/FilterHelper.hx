@@ -49,6 +49,22 @@ class FilterHelper implements IFilterHelper
     // helpers
     private var sRegion:Rectangle = new Rectangle();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (FilterHelper.prototype, {
+            "projectionMatrix3D": { get: untyped __js__ ("function () { return this.get_projectionMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_projectionMatrix3D (v); }") },
+            "renderTarget": { get: untyped __js__ ("function () { return this.get_renderTarget (); }"), set: untyped __js__ ("function (v) { return this.set_renderTarget (v); }") },
+            "clipRect": { get: untyped __js__ ("function () { return this.get_clipRect (); }"), set: untyped __js__ ("function (v) { return this.set_clipRect (v); }") },
+            "targetBounds": { get: untyped __js__ ("function () { return this.get_targetBounds (); }"), set: untyped __js__ ("function (v) { return this.set_targetBounds (v); }") },
+            "target": { get: untyped __js__ ("function () { return this.get_target (); }"), set: untyped __js__ ("function (v) { return this.set_target (v); }") },
+            "targetScale": { get: untyped __js__ ("function () { return this.get_targetScale (); }"), set: untyped __js__ ("function (v) { return this.set_targetScale (v); }") },
+            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new, empty instance. */
     public function new(textureFormat:String="bgra")
     {

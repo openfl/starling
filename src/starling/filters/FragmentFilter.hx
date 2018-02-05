@@ -118,6 +118,26 @@ class FragmentFilter extends EventDispatcher
     // helpers
     private static var sMatrix3D:Matrix3D = new Matrix3D();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (FragmentFilter.prototype, {
+            "effect": { get: untyped __js__ ("function () { return this.get_effect (); }") },
+            "vertexData": { get: untyped __js__ ("function () { return this.get_vertexData (); }") },
+            "indexData": { get: untyped __js__ ("function () { return this.get_indexData (); }") },
+            "numPasses": { get: untyped __js__ ("function () { return this.get_numPasses (); }") },
+            "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
+            "isCached": { get: untyped __js__ ("function () { return this.get_isCached (); }") },
+            "resolution": { get: untyped __js__ ("function () { return this.get_resolution (); }"), set: untyped __js__ ("function (v) { return this.set_resolution (v); }") },
+            "antiAliasing": { get: untyped __js__ ("function () { return this.get_antiAliasing (); }"), set: untyped __js__ ("function (v) { return this.set_antiAliasing (v); }") },
+            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
+            "alwaysDrawToBackBuffer": { get: untyped __js__ ("function () { return this.get_alwaysDrawToBackBuffer (); }"), set: untyped __js__ ("function (v) { return this.set_alwaysDrawToBackBuffer (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new instance. The base class' implementation just draws the unmodified
      *  input texture. */
     public function new()

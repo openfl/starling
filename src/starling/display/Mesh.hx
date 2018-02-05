@@ -50,7 +50,33 @@ class Mesh extends DisplayObject
 
     private static var sDefaultStyle:Class<Dynamic> = MeshStyle;
     private static var sDefaultStyleFactory:?Mesh->MeshStyle = null;
-
+    
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (Mesh.prototype, {
+            "vertexData": { get: untyped __js__ ("function () { return this.get_vertexData (); }") },
+            "indexData": { get: untyped __js__ ("function () { return this.get_indexData (); }") },
+            "style": { get: untyped __js__ ("function () { return this.get_style (); }"), set: untyped __js__ ("function (v) { return this.set_style (v); }") },
+            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }"), set: untyped __js__ ("function (v) { return this.set_texture (v); }") },
+            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
+            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureRepeat": { get: untyped __js__ ("function () { return this.get_textureRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_textureRepeat (v); }") },
+            "pixelSnapping": { get: untyped __js__ ("function () { return this.get_pixelSnapping (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSnapping (v); }") },
+            "numVertices": { get: untyped __js__ ("function () { return this.get_numVertices (); }") },
+            "numIndices": { get: untyped __js__ ("function () { return this.get_numIndices (); }") },
+            "numTriangles": { get: untyped __js__ ("function () { return this.get_numTriangles (); }") },
+            "vertexFormat": { get: untyped __js__ ("function () { return this.get_vertexFormat (); }") },
+        });
+        
+        untyped Object.defineProperties (Mesh, {
+            "defaultStyle": { get: untyped __js__ ("function () { return Mesh.get_defaultStyle (); }"), set: untyped __js__ ("function (v) { return Mesh.set_defaultStyle (v); }") },
+            "defaultStyleFactory": { get: untyped __js__ ("function () { return Mesh.get_defaultStyleFactory (); }"), set: untyped __js__ ("function (v) { return Mesh.set_defaultStyleFactory (v); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates a new mesh with the given vertices and indices.
      *  If you don't pass a style, an instance of <code>MeshStyle</code> will be created
      *  for you. Note that the format of the vertex data will be matched to the

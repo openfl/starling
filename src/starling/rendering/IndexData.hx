@@ -77,6 +77,21 @@ class IndexData
     private static var sVector:Vector<UInt> = new Vector<UInt>();
     private static var sTrimData:ByteArray = new ByteArray();
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (IndexData.prototype, {
+            "numIndices": { get: untyped __js__ ("function () { return this.get_numIndices (); }"), set: untyped __js__ ("function (v) { return this.set_numIndices (v); }") },
+            "numTriangles": { get: untyped __js__ ("function () { return this.get_numTriangles (); }"), set: untyped __js__ ("function (v) { return this.set_numTriangles (v); }") },
+            "numQuads": { get: untyped __js__ ("function () { return this.get_numQuads (); }"), set: untyped __js__ ("function (v) { return this.set_numQuads (v); }") },
+            "indexSizeInBytes": { get: untyped __js__ ("function () { return this.get_indexSizeInBytes (); }") },
+            "useQuadLayout": { get: untyped __js__ ("function () { return this.get_useQuadLayout (); }"), set: untyped __js__ ("function (v) { return this.set_useQuadLayout (v); }") },
+            "rawData": { get: untyped __js__ ("function () { return this.get_rawData (); }") },
+        });
+        
+    }
+    #end
+
     /** Creates an empty IndexData instance with the given capacity (in indices).
      *
      *  @param initialCapacity

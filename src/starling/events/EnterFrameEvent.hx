@@ -22,6 +22,16 @@ class EnterFrameEvent extends Event
     /** Event type for a display object that is entering a new frame. */
     public static inline var ENTER_FRAME:String = "enterFrame";
     
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (EnterFrameEvent.prototype, {
+            "passedTime": { get: untyped __js__ ("function () { return this.get_passedTime (); }") },
+        });
+        
+    }
+    #end
+    
     /** Creates an enter frame event with the passed time. */
     public function new(type:String, passedTime:Float, bubbles:Bool=false)
     {

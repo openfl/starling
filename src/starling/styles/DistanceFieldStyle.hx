@@ -123,6 +123,26 @@ class DistanceFieldStyle extends MeshStyle
     private var _outerColor:UInt;
     private var _outerAlphaStart:Float;
 
+    #if commonjs
+    private static function __init__ () {
+        
+        untyped Object.defineProperties (DistanceFieldStyle.prototype, {
+            "mode": { get: untyped __js__ ("function () { return this.get_mode (); }"), set: untyped __js__ ("function (v) { return this.set_mode (v); }") },
+            "multiChannel": { get: untyped __js__ ("function () { return this.get_multiChannel (); }"), set: untyped __js__ ("function (v) { return this.set_multiChannel (v); }") },
+            "threshold": { get: untyped __js__ ("function () { return this.get_threshold (); }"), set: untyped __js__ ("function (v) { return this.set_threshold (v); }") },
+            "softness": { get: untyped __js__ ("function () { return this.get_softness (); }"), set: untyped __js__ ("function (v) { return this.set_softness (v); }") },
+            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
+            "outerThreshold": { get: untyped __js__ ("function () { return this.get_outerThreshold (); }"), set: untyped __js__ ("function (v) { return this.set_outerThreshold (v); }") },
+            "outerAlphaStart": { get: untyped __js__ ("function () { return this.get_outerAlphaStart (); }"), set: untyped __js__ ("function (v) { return this.set_outerAlphaStart (v); }") },
+            "outerAlphaEnd": { get: untyped __js__ ("function () { return this.get_outerAlphaEnd (); }"), set: untyped __js__ ("function (v) { return this.set_outerAlphaEnd (v); }") },
+            "outerColor": { get: untyped __js__ ("function () { return this.get_outerColor (); }"), set: untyped __js__ ("function (v) { return this.set_outerColor (v); }") },
+            "shadowOffsetX": { get: untyped __js__ ("function () { return this.get_shadowOffsetX (); }"), set: untyped __js__ ("function (v) { return this.set_shadowOffsetX (v); }") },
+            "shadowOffsetY": { get: untyped __js__ ("function () { return this.get_shadowOffsetY (); }"), set: untyped __js__ ("function (v) { return this.set_shadowOffsetY (v); }") },
+        });
+        
+    }
+    #end
+
     /** Creates a new distance field style.
      *
      *  @param softness   adds a soft transition between the inside and the outside.
