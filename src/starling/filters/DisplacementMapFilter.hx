@@ -268,7 +268,7 @@ class DisplacementMapEffect extends FilterEffect
     #if commonjs
     private static function __init__ () {
         
-        untyped Object.defineProperties (DisplacementFilterEffect.prototype, {
+        untyped Object.defineProperties (DisplacementMapEffect.prototype, {
             "componentX": { get: untyped __js__ ("function () { return this.get_componentX (); }"), set: untyped __js__ ("function (v) { return this.set_componentX (v); }") },
             "componentY": { get: untyped __js__ ("function () { return this.get_componentY (); }"), set: untyped __js__ ("function (v) { return this.set_componentY (v); }") },
             "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
