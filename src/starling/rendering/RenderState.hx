@@ -393,11 +393,8 @@ class RenderState
         if (this.culling != value)
         {
             if (_onDrawRequired != null) _onDrawRequired();
-
-trace (CULLING_VALUES);
-trace (value);
             var index:Int = CULLING_VALUES.indexOf(value);
-            trace (index);
+            
             if (index == -1) throw new ArgumentError("Invalid culling mode");
 
             _miscOptions = (_miscOptions & 0xfffff0ff) | (index << 8);
