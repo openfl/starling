@@ -165,6 +165,8 @@ class Demo extends Sprite
         manifest.addBitmapData ("assets/textures/1x/background.jpg");
         manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3", "assets/audio/wing_flap.wav" ]);
         manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
+        manifest.addFont ("DejaVu Sans");
+        manifest.addFont ("Ubuntu");
         
         AssetLibrary.loadFromManifest (manifest).onComplete (function (library) {
             
