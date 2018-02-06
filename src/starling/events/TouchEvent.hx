@@ -204,6 +204,7 @@ class TouchEvent extends Event
             
             for (i in 0...chainLength)
             {
+                if (chain[i] == null) continue;
                 var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
                 if (__visitedObjects.indexOf(chainElement) == -1)
                 {
