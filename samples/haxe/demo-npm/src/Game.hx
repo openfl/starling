@@ -34,13 +34,8 @@ import starling.utils.AssetManager;
     
     public function start(assets:AssetManager):Void
     {
-        // TODO: Add ES5 getter/setter properties to allow this step of the demo to work
-        
-        trace ("start");
         sAssets = assets;
-        trace (assets.getTexture("background"));
         addChild(new Image(assets.getTexture("background")));
-        return;
         showMainMenu();
 
         addEventListener(Event.TRIGGERED, onButtonTriggered);
