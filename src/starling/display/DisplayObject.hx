@@ -179,7 +179,7 @@ class DisplayObject extends EventDispatcher
             "is3D": { get: untyped __js__ ("function () { return this.get_is3D (); }") },
             "useHandCursor": { get: untyped __js__ ("function () { return this.get_useHandCursor (); }"), set: untyped __js__ ("function (v) { return this.set_useHandCursor (v); }") },
             "bounds": { get: untyped __js__ ("function () { return this.get_bounds (); }") },
-            "width": { get: untyped __js__ ("function () { return this.get_width (); }"), set: untyped __js__ ("function (v) { return this.set_widtht (v); }") },
+            "width": { get: untyped __js__ ("function () { return this.get_width (); }"), set: untyped __js__ ("function (v) { return this.set_width (v); }") },
             "height": { get: untyped __js__ ("function () { return this.get_height (); }"), set: untyped __js__ ("function (v) { return this.set_height (v); }") },
             "x": { get: untyped __js__ ("function () { return this.get_x (); }"), set: untyped __js__ ("function (v) { return this.set_x (v); }") },
             "y": { get: untyped __js__ ("function () { return this.get_y (); }"), set: untyped __js__ ("function (v) { return this.set_y (v); }") },

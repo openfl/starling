@@ -87,7 +87,7 @@ class Button extends DisplayObjectContainer
             "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
             "overlay": { get: untyped __js__ ("function () { return this.get_overlay (); }") },
             "pixelSnapping": { get: untyped __js__ ("function () { return this.get_pixelSnapping (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSnapping (v); }") },
-            "scale9Grid": { get: untyped __js__ ("function () { return this.get_scale9Grid (); }") },
+            "scale9Grid": { get: untyped __js__ ("function () { return this.get_scale9Grid (); }"), set: untyped __js__ ("function (v) { return this.set_scale9Grid (v); }") },
         });
         
     }

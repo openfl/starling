@@ -274,7 +274,7 @@ class Starling extends EventDispatcher
             "current": { get: untyped __js__ ("function () { return Starling.get_current (); }") },
             "all": { get: untyped __js__ ("function () { return Starling.get_all (); }") },
             "contentScaleFactor": { get: untyped __js__ ("function () { return Starling.get_contentScaleFactor (); }") },
-            "multitouchEnabled": { get: untyped __js__ ("function () { return Starling.get_multitouchEnabled (); }") },
+            "multitouchEnabled": { get: untyped __js__ ("function () { return Starling.get_multitouchEnabled (); }"), set: untyped __js__ ("function (v) { return Starling.set_multitouchEnabled (v); }") },
         });
         
     }
