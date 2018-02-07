@@ -1,16 +1,14 @@
 {
-  "name": "com.gamua.starling.demo-haxe",
+  "name": "com.gamua.starling.demo-typescript",
   "version": "1.0.0",
   "private": true,
-  "config": {
-    "haxe": "3.4.4"
-  },
   "devDependencies": {
+    "@types/core-js": "0.9.36",
     "copy-webpack-plugin": "^4.3.1",
-    "haxe": "^4.1.0",
-    "haxe-loader": "^0.5.0",
     "openfl": "*",
     "starling-framework": "*",
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.2",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
@@ -24,6 +22,5 @@
     "start": "npm run start:dev",
     "start:dev": "webpack-dev-server --open --config webpack.dev.js",
     "start:prod": "webpack-dev-server --open --config webpack.prod.js"
-  },
-  "dependencies": {}
+  }
 }

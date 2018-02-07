@@ -3,10 +3,10 @@ const WriteFilePlugin = require ('write-file-webpack-plugin');
 const path = require ('path');
 
 module.exports = {
-	entry: "./build.hxml",
+	entry: "./src/app.ts",
 	output: {
 		path: path.resolve (__dirname, "dist"),
-		filename: "app.js",
+		filename: "app.js"
 	},
 	plugins: [
 		new WriteFilePlugin (),
@@ -18,11 +18,12 @@ module.exports = {
 		alias: {
 			"openfl": path.resolve (__dirname, "node_modules/openfl/lib/openfl"),
 			"starling": path.resolve (__dirname, "node_modules/starling-framework/lib/starling")
-		}
+		},
+		extensions: [ '.ts', '.tsx', '.js' ]
 	},
 	module: {
 		rules: [
-			{ test: /\.hxml$/, loader: 'haxe-loader' }
+			{ test: /\.tsx?$/, loader: 'ts-loader' }
 		]
 	}
 };
