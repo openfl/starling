@@ -1,62 +1,52 @@
-package;
+import System from "openfl/system/System";
+import Keyboard from "openfl/ui/Keyboard";
 
-import openfl.system.System;
-import openfl.ui.Keyboard;
+import Scene from "./scenes/scene";
+import MainMenu from "./mainMenu";
 
-import scenes.Scene;
+import Starling from "starling/core/Starling";
+import Button from "starling/display/Button";
+import Image from "starling/display/Image";
+import Sprite from "starling/display/Sprite";
+import Event from "starling/events/Event";
+import KeyboardEvent from "starling/events/KeyboardEvent";
+import AssetManager from "starling/utils/AssetManager";
 
-import starling.core.Starling;
-import starling.display.Button;
-import starling.display.Image;
-import starling.display.Sprite;
-import starling.events.Event;
-import starling.events.KeyboardEvent;
-import starling.utils.AssetManager;
-
-@:keep class Game extends Sprite
-{
-    // Embed the Ubuntu Font. Beware: the 'embedAsCFF'-part IS REQUIRED!!!
-    #if 0
-    [Embed(source="../../demo/assets/fonts/Ubuntu-R.ttf", embedAsCFF="false", fontFamily="Ubuntu")]
-    private static const UbuntuRegular:Class;
-    #end
+class Game extends Sprite
+{   
+    private _mainMenu:MainMenu;
+    private _currentScene:Scene;
     
-    private var _mainMenu:MainMenu;
-    private var _currentScene:Scene;
+    private static sAssets:AssetManager;
     
-    private static var sAssets:AssetManager;
-    
-    public function new()
+    public constructor()
     {
         super();
         // nothing to do here -- Startup will call "start" immediately.
     }
     
-    public function start(assets:AssetManager):Void
+    public start(assets:AssetManager):void
     {
-        sAssets = assets;
-        addChild(new Image(assets.getTexture("background")));
-        showMainMenu();
+        Game.sAssets = assets;
+        this.addChild(new Image(assets.getTexture("background")));
+        this.showMainMenu();
 
-        addEventListener(Event.TRIGGERED, onButtonTriggered);
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, onKey);
+        this.addEventListener(Event.TRIGGERED, this.onButtonTriggered);
+        this.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKey);
     }
     
-    private function showMainMenu():Void
+    private showMainMenu():void
     {
         // now would be a good time for a clean-up
-        #if 0
-        System.pauseForGCIfCollectionImminent(0);
-        #end
         System.gc();
         
-        if (_mainMenu == null)
-            _mainMenu = new MainMenu();
+        // if (this._mainMenu == null)
+        //     this._mainMenu = new MainMenu();
         
-        addChild(_mainMenu);
+        // this.addChild(this._mainMenu);
     }
     
-    private function onKey(event:KeyboardEvent):Void
+    private onKey = (event:KeyboardEvent):void =>
     {
         if (event.keyCode == Keyboard.SPACE)
             Starling.current.showStats = !Starling.current.showStats;
@@ -64,33 +54,34 @@ import starling.utils.AssetManager;
             Starling.current.context.dispose();
     }
     
-    private function onButtonTriggered(event:Event):Void
+    private onButtonTriggered = (event:Event):void =>
     {
-        var button:Button = cast(event.target, Button);
+        var button:Button = event.target as Button;
         
         if (button.name == "backButton")
-            closeScene();
+            this.closeScene();
         else
-            showScene(button.name);
+            this.showScene(button.name);
     }
     
-    private function closeScene():Void
+    private closeScene():void
     {
-        _currentScene.removeFromParent(true);
-        _currentScene = null;
-        showMainMenu();
+        this._currentScene.removeFromParent(true);
+        this._currentScene = null;
+        this.showMainMenu();
     }
     
-    private function showScene(name:String):Void
+    private showScene(name:string):void
     {
-        if (_currentScene != null) return;
+        if (this._currentScene != null) return;
         
-        var sceneClass:Class<Dynamic> = Type.resolveClass(name);
-        _currentScene = cast(Type.createInstance(sceneClass, []), Scene);
-        _mainMenu.removeFromParent();
-        addChild(_currentScene);
+        // var sceneClass:Class<Dynamic> = Type.resolveClass(name);
+        // this._currentScene = cast(Type.createInstance(sceneClass, []), Scene);
+        // this._mainMenu.removeFromParent();
+        // addChild(this._currentScene);
     }
     
-    public static var assets(get, never):AssetManager;
-    @:noCompletion private static function get_assets():AssetManager { return sAssets; }
+    public static get assets():AssetManager { return Game.sAssets; }
 }
+
+export default Game;

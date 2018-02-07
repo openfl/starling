@@ -3,12 +3,13 @@
 		"target": "es5",
 		"baseUrl": ".",
 		"paths": {
-			"openfl/*": ["node_modules/openfl/lib/openfl/*"]
+			"openfl/*": ["node_modules/openfl/lib/openfl/*"],
+			"starling/*": ["node_modules/starling-framework/lib/starling/*"]
 		},
 		"lib": ["es2017", "dom"],
 		"sourceMap": true
 	},
 	"files": [
-		"src/app.ts"
+		"src/demo.ts"
 	]
 }

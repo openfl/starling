@@ -1,28 +1,29 @@
-package scenes;
+import Rectangle from "openfl/geom/Rectangle";
 
-import openfl.geom.Rectangle;
+import Button from "starling/display/Button";
+import Sprite from "starling/display/Sprite";
 
-import starling.display.Button;
-import starling.display.Sprite;
-
-import utils.MenuButton;
+import MenuButton from "utils/MenuButton";
+import Constants from "./../constants";
 
 class Scene extends Sprite
 {
-    private var _backButton:Button;
+    private _backButton:Button;
     
-    public function new()
+    public constructor()
     {
         super();
         // the main menu listens for TRIGGERED events, so we just need to add the button.
         // (the event will bubble up when it's dispatched.)
         
-        _backButton = new MenuButton("Back", 88, 50);
-        _backButton.x = Constants.CenterX - _backButton.width / 2;
-        _backButton.y = Constants.GameHeight - _backButton.height + 4;
-        _backButton.name = "backButton";
-        _backButton.textBounds.y -= 3;
-        _backButton.readjustSize(); // forces textBounds to update
-        addChild(_backButton);
+        this._backButton = new MenuButton("Back", 88, 50);
+        this._backButton.x = Constants.CenterX - this._backButton.width / 2;
+        this._backButton.y = Constants.GameHeight - this._backButton.height + 4;
+        this._backButton.name = "backButton";
+        this._backButton.textBounds.y -= 3;
+        this._backButton.readjustSize(); // forces textBounds to update
+        this.addChild(this._backButton);
     }
 }
+
+export default Scene;

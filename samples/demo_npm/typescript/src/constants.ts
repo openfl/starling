@@ -1,9 +1,10 @@
-package;
 class Constants
 {
-    public static var GameWidth:Int  = 320;
-    public static var GameHeight:Int = 480;
+    public static GameWidth:number  = 320;
+    public static GameHeight:number = 480;
     
-    public static var CenterX:Int = Std.int(GameWidth / 2);
-    public static var CenterY:Int = Std.int(GameHeight / 2);
+    public static CenterX:number = Math.floor(Constants.GameWidth / 2);
+    public static CenterY:number = Math.floor(Constants.GameHeight / 2);
 }
+
+export default Constants;

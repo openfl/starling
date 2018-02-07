@@ -1,55 +1,52 @@
-package utils;
-import openfl.display.GradientType;
-import openfl.display.Shape;
-import openfl.display.Sprite;
-import openfl.geom.Matrix;
+import GradientType from "openfl/display/GradientType";
+import Shape from "openfl/display/Shape";
+import Sprite from "openfl/display/Sprite";
+import Matrix from "openfl/geom/Matrix";
 
 class ProgressBar extends Sprite
 {
-    private var _background:Shape;
-    private var _bar:Shape;
+    private _background:Shape;
+    private _bar:Shape;
 
-    public function new(width:Int, height:Int)
+    public constructor(width:number, height:number)
     {
         super();
-        init(width, height);
+        this.init(width, height);
     }
     
-    private function init(width:Int, height:Int):Void
+    private init(width:number, height:number):void
     {
-        var padding:Float = height * 0.2;
-        var cornerRadius:Float = padding * 2;
+        var padding:number = height * 0.2;
+        var cornerRadius:number = padding * 2;
         
         // create black rounded box for background
         
-        _background = new Shape();
-        _background.graphics.beginFill(0x0, 0.5);
-        _background.graphics.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
-        _background.graphics.endFill();
-        addChild(_background);
+        this._background = new Shape();
+        this._background.graphics.beginFill(0x0, 0.5);
+        this._background.graphics.drawRoundRect(0, 0, width, height, cornerRadius, cornerRadius);
+        this._background.graphics.endFill();
+        this.addChild(this._background);
         
         // create progress bar shape
 
-        var barWidth:Float  = width  - 2 * padding;
-        var barHeight:Float = height - 2 * padding;
+        var barWidth:number  = width  - 2 * padding;
+        var barHeight:number = height - 2 * padding;
         var barMatrix:Matrix = new Matrix();
         barMatrix.createGradientBox(barWidth, barHeight, Math.PI / 2);
 
-        _bar = new Shape();
-        _bar.graphics.beginGradientFill(GradientType.LINEAR,
+        this._bar = new Shape();
+        this._bar.graphics.beginGradientFill(GradientType.LINEAR,
             [0xeeeeee, 0xaaaaaa], [1, 1], [0, 255], barMatrix);
-        _bar.graphics.drawRect(0, 0, barWidth, barHeight);
-        _bar.x = padding;
-        _bar.y = padding;
-        _bar.scaleX = 0.0;
-        addChild(_bar);
+        this._bar.graphics.drawRect(0, 0, barWidth, barHeight);
+        this._bar.x = padding;
+        this._bar.y = padding;
+        this._bar.scaleX = 0.0;
+        this.addChild(this._bar);
     }
     
-    public var ratio(get, set):Float;
-    @:noCompletion private function get_ratio():Float { return _bar.scaleX; }
-    @:noCompletion private function set_ratio(value:Float):Float 
+    public get ratio():number { return this._bar.scaleX; }
+    public set ratio(value:number)
     {
-        _bar.scaleX = Math.max(0.0, Math.min(1.0, value));
-        return get_ratio();
+        this._bar.scaleX = Math.max(0.0, Math.min(1.0, value));
     }
 }

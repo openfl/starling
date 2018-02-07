@@ -1,59 +1,58 @@
-package;
+import Bitmap from "openfl/display/Bitmap";
+import Sprite from "openfl/display/Sprite";
+import OpenFLStage from "openfl/display/Stage";
+import Context3DRenderMode from "openfl/display3D/Context3DRenderMode";
+import Error from "openfl/errors/Error";
+import OpenFLEvent from "openfl/events/Event";
+import Rectangle from "openfl/geom/Rectangle";
+import Capabilities from "openfl/system/Capabilities";
+import System from "openfl/system/System";
+import StageScaleMode from "openfl/display/StageScaleMode";
+import AssetLibrary from "openfl/utils/AssetLibrary";
+import AssetManifest from "openfl/utils/AssetManifest";
+import Assets from "openfl/utils/Assets";
+import ByteArray from "openfl/utils/ByteArray";
+import Vector from "openfl/Vector";
 
-import openfl.display.Bitmap;
-import openfl.display.Sprite;
-import openfl.display.Stage in OpenFLStage;
-import openfl.display3D.Context3DRenderMode;
-import openfl.errors.Error;
-import openfl.geom.Rectangle;
-import openfl.system.Capabilities;
-import openfl.system.System;
-import openfl.display.StageScaleMode;
-import openfl.utils.AssetLibrary;
-import openfl.utils.AssetManifest;
-import openfl.utils.Assets;
-import openfl.utils.ByteArray;
-import openfl.Vector;
+import Starling from "starling/core/Starling";
+import Stage from "starling/display/Stage";
+import Event from "starling/events/Event";
+import BitmapFont from "starling/text/BitmapFont";
+import TextField from "starling/text/TextField";
+import Texture from "starling/textures/Texture";
+import TextureAtlas from "starling/textures/TextureAtlas";
+import AssetManager from "starling/utils/AssetManager";
+import Max from "starling/utils/Max";
+import RectangleUtil from "starling/utils/RectangleUtil";
+import StringUtil from "starling/utils/StringUtil";
 
-import haxe.Timer;
-
-import starling.core.Starling;
-import starling.display.Stage;
-import starling.events.Event;
-import starling.text.BitmapFont;
-import starling.text.TextField;
-import starling.textures.Texture;
-import starling.textures.TextureAtlas;
-import starling.utils.AssetManager;
-import starling.utils.Max;
-import starling.utils.RectangleUtil;
-import starling.utils.StringUtil;
-
-import utils.ProgressBar;
+import ProgressBar from "utils/ProgressBar";
+import Constants from "./constants";
+import Game from "./game";
 
 class Demo extends Sprite
 {
-    private var _starling:Starling;
-    private var _background:Bitmap;
-    private var _progressBar:ProgressBar;
+    private _starling:Starling;
+    private _background:Bitmap;
+    private _progressBar:ProgressBar;
 
-    public function new()
+    public constructor()
     {
         super();
-        if (stage != null) start();
-        else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        if (this.stage != null) this.start();
+        else this.addEventListener(Event.ADDED_TO_STAGE, this.onAddedToStage);
     }
 
-    private function onAddedToStage(event:Dynamic):Void
+    private onAddedToStage = (event:OpenFLEvent):void =>
     {
-        removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        this.removeEventListener(Event.ADDED_TO_STAGE, this.onAddedToStage);
         
-        stage.scaleMode = StageScaleMode.NO_SCALE;
+        this.stage.scaleMode = StageScaleMode.NO_SCALE;
         
-        start();
+        this.start();
     }
 
-    private function start():Void
+    private start():void
     {
         // We develop the game in a *fixed* coordinate system of 320x480. The game might
         // then run on a device with a different resolution; for that case, we zoom the
@@ -61,67 +60,63 @@ class Demo extends Sprite
 
         Starling.multitouchEnabled = true; // for Multitouch Scene
 
-        _starling = new Starling(Game, stage, null, null, Context3DRenderMode.AUTO, "auto");
-        _starling.stage.stageWidth = Constants.GameWidth;
-        _starling.stage.stageHeight = Constants.GameHeight;
-        _starling.enableErrorChecking = Capabilities.isDebugger;
-        _starling.skipUnchangedFrames = true;
-        _starling.simulateMultitouch = true;
-        _starling.addEventListener(Event.ROOT_CREATED, function():Void
+        this._starling = new Starling(Game, this.stage, null, null, Context3DRenderMode.AUTO, "auto");
+        this._starling.stage.stageWidth = Constants.GameWidth;
+        this._starling.stage.stageHeight = Constants.GameHeight;
+        this._starling.enableErrorChecking = Capabilities.isDebugger;
+        this._starling.skipUnchangedFrames = true;
+        this._starling.simulateMultitouch = true;
+        this._starling.addEventListener(Event.ROOT_CREATED, () =>
         {
-            loadAssets(startGame);
+            this.loadAssets(this.startGame);
         });
         
-        this.stage.addEventListener(Event.RESIZE, onResize, false, Max.INT_MAX_VALUE, true);
+        this.stage.addEventListener(Event.RESIZE, this.onResize, false, Max.INT_MAX_VALUE, true);
 
-        _starling.start();
-        initElements();
+        this._starling.start();
+        this.initElements();
     }
 
-    private function loadAssets(onComplete:AssetManager->Void):Void
+    private loadAssets(onComplete:(assets:AssetManager)=>void):void
     {
         var assets:AssetManager = new AssetManager();
 
         assets.verbose = Capabilities.isDebugger;
 
-        Timer.delay(function()
+        setTimeout (function()
         {
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-            var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
+            // var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
+            // var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
             // trace (Std.is (desyrelXml, Xml));
             // trace (desyrelXml.elementsNamed ("foo"));
-            var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
-            TextField.registerCompositor(bitmapFont, bitmapFont.name);
+            // var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
+            // TextField.registerCompositor(bitmapFont, bitmapFont.name);
             assets.addTexture("atlas", atlasTexture);
-            assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
+            // assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
-            #if flash
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
-            #else
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
-            #end
             var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
             assets.addByteArray("compressed_texture", compressedTexture);
             
-            onComplete(assets);
+            this.onComplete(assets);
         }, 0);
     }
 
-    private function startGame(assets:AssetManager):Void
+    private startGame(assets:AssetManager):void
     {
-        var game:Game = cast(_starling.root, Game);
+        var game:Game = this._starling.root as Game;
         game.start(assets);
-        Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
+        setTimeout(this.removeElements, 150); // delay to make 100% sure there's no flickering.
     }
 
-    private function initElements():Void
+    private initElements():void
     {
         // Add background image.
-        _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
-        _background.smoothing = true;
-        addChild(_background);
+        this._background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
+        this._background.smoothing = true;
+        this.addChild(this._background);
 
         // While the assets are loaded, we will display a progress bar.
 
@@ -131,57 +126,53 @@ class Demo extends Sprite
         //addChild(_progressBar);
     }
 
-    private function removeElements():Void
+    private removeElements():void
     {
-        if (_background != null)
+        if (this._background != null)
         {
-            removeChild(_background);
-            _background = null;
+            this.removeChild(this._background);
+            this._background = null;
         }
 
-        if (_progressBar != null)
+        if (this._progressBar != null)
         {
-            removeChild(_progressBar);
-            _progressBar = null;
+            this.removeChild(this._progressBar);
+            this._progressBar = null;
         }
     }
     
-    private function onResize(e:openfl.events.Event):Void
+    private onResize(e:OpenFLEvent):void
     {
-        var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, stage.stageWidth, stage.stageHeight));
+        var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, this.stage.stageWidth, this.stage.stageHeight));
         try
         {
             this._starling.viewPort = viewPort;
         }
-        catch(error:Error) {}
-    }
-    
-    static function main () {
-        
-        var manifest = new AssetManifest ();
-        manifest.addBitmapData ("assets/textures/1x/atlas.png");
-        manifest.addText ("assets/textures/1x/atlas.xml");
-        manifest.addBitmapData ("assets/fonts/1x/desyrel.png");
-        manifest.addText ("assets/fonts/1x/desyrel.fnt");
-        manifest.addBitmapData ("assets/textures/1x/background.jpg");
-        manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3" ]);
-        manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
-        manifest.addFont ("DejaVu Sans");
-        manifest.addFont ("Ubuntu");
-        
-        AssetLibrary.loadFromManifest (manifest).onComplete (function (library) {
-            
-            Assets.registerLibrary ("default", library);
-            
-            var stage = new OpenFLStage (320, 480, 0xFFFFFF, Demo);
-            var content = js.Browser.document.getElementById ("openfl-content");
-            content.appendChild (stage.element);
-            
-        }).onError (function (e) {
-            
-            trace (e);
-            
-        });
-        
+        catch(error) {}
     }
 }
+
+var manifest = new AssetManifest ();
+manifest.addBitmapData ("assets/textures/1x/atlas.png");
+manifest.addText ("assets/textures/1x/atlas.xml");
+manifest.addBitmapData ("assets/fonts/1x/desyrel.png");
+manifest.addText ("assets/fonts/1x/desyrel.fnt");
+manifest.addBitmapData ("assets/textures/1x/background.jpg");
+manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3" ]);
+manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
+manifest.addFont ("DejaVu Sans");
+manifest.addFont ("Ubuntu");
+
+AssetLibrary.loadFromManifest (manifest).onComplete ((library) => {
+    
+    Assets.registerLibrary ("default", library);
+    
+    var stage = new OpenFLStage (320, 480, 0xFFFFFF, Demo);
+    var content = document.getElementById ("openfl-content");
+    content.appendChild (stage.element);
+    
+}).onError ((e) => {
+    
+    console.log (e);
+    
+});
