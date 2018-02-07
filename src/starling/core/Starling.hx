@@ -208,7 +208,7 @@ import starling.utils.SystemUtil;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    public static inline var VERSION:String = "2.1.1";
+    public static inline var VERSION:String = "2.2.0";
     
     // members
     
