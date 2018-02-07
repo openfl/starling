@@ -25,7 +25,7 @@ extern class BitmapFont implements ITextCompositor {
 	var padding(get,set) : Float;
 	var size(get,never) : Float;
 	var smoothing(get,set) : String;
-	function new(?texture : starling.textures.Texture, ?fontXml : Xml) : Void;
+	function new(?texture : starling.textures.Texture, ?fontXml : Dynamic) : Void;
 	function addChar(charID : Int, bitmapChar : BitmapChar) : Void;
 	function clearMeshBatch(meshBatch : starling.display.MeshBatch) : Void;
 	function createSprite(width : Float, height : Float, text : String, format : TextFormat, ?options : TextOptions) : starling.display.Sprite;

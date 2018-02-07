@@ -8,7 +8,7 @@ import haxe.ds.StringMap;
 
 extern class TextureAtlas {
 	var texture(get,never) : Texture;
-	function new(texture : Texture, ?atlasXml : Xml) : Void;
+	function new(texture : Texture, ?atlasXml : Dynamic) : Void;
 	function addRegion(name : String, region : openfl.geom.Rectangle, ?frame : openfl.geom.Rectangle, rotated : Bool = false) : Void;
 	function dispose() : Void;
 	function getFrame(name : String) : openfl.geom.Rectangle;

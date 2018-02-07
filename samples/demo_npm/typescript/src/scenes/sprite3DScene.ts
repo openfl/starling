@@ -28,7 +28,7 @@ class Sprite3DScene extends Scene
         this.addChild(this._cube);
         
         this.addEventListener(Event.ADDED_TO_STAGE, this.start);
-        this.addEventListener(Event.REMOVED_FROM_STAGE, stop);
+        this.addEventListener(Event.REMOVED_FROM_STAGE, this.stop);
     }
 
     private start = ():void =>
@@ -38,7 +38,7 @@ class Sprite3DScene extends Scene
         Starling.current.juggler.tween(this._cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
     }
 
-    private stop():void
+    private stop = ():void =>
     {
         Starling.current.juggler.removeTweens(this._cube);
     }

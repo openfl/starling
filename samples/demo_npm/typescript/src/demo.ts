@@ -168,7 +168,7 @@ class Demo extends Sprite
         }
     }
     
-    private onResize(e:OpenFLEvent):void
+    private onResize = (e:OpenFLEvent):void =>
     {
         var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, this.stage.stageWidth, this.stage.stageHeight));
         try
