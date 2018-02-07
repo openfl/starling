@@ -1,0 +1,5 @@
+node_modules
+src/app.js
+dist/app.js
+dist/assets
+*.map

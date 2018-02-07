@@ -1,8 +1,5 @@
 /samples/**/bin
 /samples/**/Export
-/samples/**/assets/fonts/*.eot
-/samples/**/assets/fonts/*.svg
-/samples/**/assets/fonts/*.woff
 /hxclasses/
 imports.js
 starling.js
