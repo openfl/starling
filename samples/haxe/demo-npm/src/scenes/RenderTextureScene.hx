@@ -75,10 +75,11 @@ import utils.MenuButton;
                 if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                     continue;
                 
+                var brushColor = _colors[touch.id];
                 var location:Point = touch.getLocation(_canvas);
                 _brush.x = location.x;
                 _brush.y = location.y;
-                _brush.color = _colors[touch.id];
+                _brush.color = brushColor;
                 _brush.rotation = Math.random() * Math.PI * 2.0;
                 
                 _renderTexture.draw(_brush);
