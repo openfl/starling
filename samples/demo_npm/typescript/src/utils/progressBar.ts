@@ -50,3 +50,5 @@ class ProgressBar extends Sprite
         this._bar.scaleX = Math.max(0.0, Math.min(1.0, value));
     }
 }
+
+export default ProgressBar;

@@ -3,7 +3,7 @@ const WriteFilePlugin = require ('write-file-webpack-plugin');
 const path = require ('path');
 
 module.exports = {
-	entry: "./src/app.ts",
+	entry: "./src/demo.ts",
 	output: {
 		path: path.resolve (__dirname, "dist"),
 		filename: "app.js"

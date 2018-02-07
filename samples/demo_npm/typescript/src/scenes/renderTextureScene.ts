@@ -1,112 +1,116 @@
-package scenes;
+import Matrix from "openfl/geom/Matrix";
+import Point from "openfl/geom/Point";
+import Vector from "openfl/Vector";
 
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.utils.Dictionary;
-import openfl.Vector;
+import BlendMode from "starling/display/BlendMode";
+import Button from "starling/display/Button";
+import DisplayObject from "starling/display/DisplayObject";
+import Image from "starling/display/Image";
+import Event from "starling/events/Event";
+import Touch from "starling/events/Touch";
+import TouchEvent from "starling/events/TouchEvent";
+import TouchPhase from "starling/events/TouchPhase";
+import TextField from "starling/text/TextField";
+import RenderTexture from "starling/textures/RenderTexture";
+import Max from "starling/utils/Max";
 
-import starling.display.BlendMode;
-import starling.display.Button;
-import starling.display.DisplayObject;
-import starling.display.Image;
-import starling.events.Event;
-import starling.events.Touch;
-import starling.events.TouchEvent;
-import starling.events.TouchPhase;
-import starling.text.TextField;
-import starling.textures.RenderTexture;
-import starling.utils.Max;
+import MenuButton from "./../utils/menuButton";
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-import utils.MenuButton;
-
-@:keep class RenderTextureScene extends Scene
+class RenderTextureScene extends Scene
 {
-    private var _renderTexture:RenderTexture;
-    private var _canvas:Image;
-    private var _brush:Image;
-    private var _button:Button;
-    private var _colors:Map<Int, UInt>;
+    private _renderTexture:RenderTexture;
+    private _canvas:Image;
+    private _brush:Image;
+    private _button:Button;
+    private _colors:Map<number, number>;
     
-    public function new()
+    public constructor()
     {
         super();
-        _colors = new Map<Int, UInt>();
-        _renderTexture = new RenderTexture(320, 435);
+        this._colors = new Map<number, number>();
+        this._renderTexture = new RenderTexture(320, 435);
         
-        _canvas = new Image(_renderTexture);
-        _canvas.addEventListener(TouchEvent.TOUCH, onTouch);
-        addChild(_canvas);
+        this._canvas = new Image(this._renderTexture);
+        this._canvas.addEventListener(TouchEvent.TOUCH, this.onTouch);
+        this.addChild(this._canvas);
         
-        _brush = new Image(Game.assets.getTexture("brush"));
-        _brush.pivotX = _brush.width / 2;
-        _brush.pivotY = _brush.height / 2;
-        _brush.blendMode = BlendMode.NORMAL;
+        this._brush = new Image(Game.assets.getTexture("brush"));
+        this._brush.pivotX = this._brush.width / 2;
+        this._brush.pivotY = this._brush.height / 2;
+        this._brush.blendMode = BlendMode.NORMAL;
         
         var infoText:TextField = new TextField(256, 128, "Touch the screen\nto draw!");
         infoText.format.font = "DejaVu Sans";
         infoText.format.size = 24;
         infoText.x = Constants.CenterX - infoText.width / 2;
         infoText.y = Constants.CenterY - infoText.height / 2;
-        _renderTexture.draw(infoText);
+        this._renderTexture.draw(infoText);
         infoText.dispose();
         
-        _button = new MenuButton("Mode: Draw");
-        _button.x = Std.int(Constants.CenterX - _button.width / 2);
-        _button.y = 15;
-        _button.addEventListener(Event.TRIGGERED, onButtonTriggered);
-        addChild(_button);
+        this._button = new MenuButton("Mode: Draw");
+        this._button.x = (Constants.CenterX - this._button.width / 2);
+        this._button.y = 15;
+        this._button.addEventListener(Event.TRIGGERED, this.onButtonTriggered);
+        this.addChild(this._button);
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private onTouch = (event:TouchEvent):void =>
     {
         // touching the canvas will draw a brush texture. The 'drawBundled' method is not
         // strictly necessary, but it's faster when you are drawing with several fingers
         // simultaneously.
         
-        _renderTexture.drawBundled(function():Void
+        this._renderTexture.drawBundled(():void =>
         {
-            var touches:Vector<Touch> = event.getTouches(_canvas);
+            var touches:Vector<Touch> = event.getTouches(this._canvas);
         
-            for (touch in touches)
+            for (var i = 0; i < touches.length; i++)
             {
+                var touch = touches[i];
+                
                 if (touch.phase == TouchPhase.BEGAN)
-                    _colors[touch.id] = Std.int(Math.random() * Max.UINT_MAX_VALUE);
+                    this._colors[touch.id] = Math.round(Math.random() * 0xFFFFFF);
                 
                 if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                     continue;
                 
-                var brushColor = _colors[touch.id];
-                var location:Point = touch.getLocation(_canvas);
-                _brush.x = location.x;
-                _brush.y = location.y;
-                _brush.color = brushColor;
-                _brush.rotation = Math.random() * Math.PI * 2.0;
+                var brushColor = this._colors[touch.id];
+                var location:Point = touch.getLocation(this._canvas);
+                this._brush.x = location.x;
+                this._brush.y = location.y;
+                this._brush.color = brushColor;
+                this._brush.rotation = Math.random() * Math.PI * 2.0;
                 
-                _renderTexture.draw(_brush);
+                this._renderTexture.draw(this._brush);
                 
                 // necessary because 'Starling.skipUnchangedFrames == true'
-                setRequiresRedraw();
+                this.setRequiresRedraw();
             }
         });
     }
     
-    private function onButtonTriggered():Void
+    private onButtonTriggered = ():void =>
     {
-        if (_brush.blendMode == BlendMode.NORMAL)
+        if (this._brush.blendMode == BlendMode.NORMAL)
         {
-            _brush.blendMode = BlendMode.ERASE;
-            _button.text = "Mode: Erase";
+            this._brush.blendMode = BlendMode.ERASE;
+            this._button.text = "Mode: Erase";
         }
         else
         {
-            _brush.blendMode = BlendMode.NORMAL;
-            _button.text = "Mode: Draw";
+            this._brush.blendMode = BlendMode.NORMAL;
+            this._button.text = "Mode: Draw";
         }
     }
     
-    public override function dispose():Void
+    public dispose():void
     {
-        _renderTexture.dispose();
+        this._renderTexture.dispose();
         super.dispose();
     }
 }
+
+export default RenderTextureScene;

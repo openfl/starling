@@ -1,46 +1,45 @@
-package;
+import AnimationScene from "./scenes/animationScene";
+import BenchmarkScene from "./scenes/benchmarkScene";
+import BlendModeScene from "./scenes/blendModeScene";
+import CustomHitTestScene from "./scenes/customHitTestScene";
+import FilterScene from "./scenes/filterScene";
+import MaskScene from "./scenes/maskScene";
+import MovieScene from "./scenes/movieScene";
+import RenderTextureScene from "./scenes/renderTextureScene";
+import Sprite3DScene from "./scenes/sprite3DScene";
+import TextScene from "./scenes/textScene";
+import TextureScene from "./scenes/textureScene";
+import TouchScene from "./scenes/touchScene";
+// import VideoScene from "./scenes/videoScene";
 
-import scenes.AnimationScene;
-import scenes.BenchmarkScene;
-import scenes.BlendModeScene;
-import scenes.CustomHitTestScene;
-import scenes.FilterScene;
-import scenes.MaskScene;
-import scenes.MovieScene;
-import scenes.RenderTextureScene;
-import scenes.Sprite3DScene;
-import scenes.TextScene;
-import scenes.TextureScene;
-import scenes.TouchScene;
-#if demo_video
-import scenes.VideoScene;
-#end
+import Starling from "starling/core/Starling";
+import Button from "starling/display/Button";
+import Image from "starling/display/Image";
+import Sprite from "starling/display/Sprite";
+import TouchEvent from "starling/events/TouchEvent";
+import TouchPhase from "starling/events/TouchPhase";
+import TextField from "starling/text/TextField";
+import Align from "starling/utils/Align";
 
-import starling.core.Starling;
-import starling.display.Button;
-import starling.display.Image;
-import starling.display.Sprite;
-import starling.events.TouchEvent;
-import starling.events.TouchPhase;
-import starling.text.TextField;
-import starling.utils.Align;
-
-import utils.MenuButton;
+import MenuButton from "./utils/menuButton";
+import Game from "./game";
 
 class MainMenu extends Sprite
 {
-    public function new()
+    public sceneClasses:Array<any> = [];
+    
+    public constructor()
     {
         super();
-        init();
+        this.init();
     }
     
-    private function init():Void
+    private init():void
     {
         var logo:Image = new Image(Game.assets.getTexture("logo"));
-        addChild(logo);
+        this.addChild(logo);
         
-        var scenesToCreate:Array<Array<Dynamic>> = [
+        var scenesToCreate:Array<Array<any>> = [
             ["Textures", TextureScene],
             ["Multitouch", TouchScene],
             ["TextFields", TextScene],
@@ -53,25 +52,24 @@ class MainMenu extends Sprite
             ["Benchmark", BenchmarkScene],
             ["Masks", MaskScene],
             ["Sprite 3D", Sprite3DScene]
-            #if demo_video
-            ,["Video", VideoScene]
-            #end
+            // ,["Video", VideoScene]
         ];
         
-        var count:Int = 0;
+        var count:number = 0;
         
-        for (sceneToCreate in scenesToCreate)
+        for (var sceneToCreate of scenesToCreate)
         {
-            var sceneTitle:String = sceneToCreate[0];
-            var sceneClass:Class<Dynamic>  = sceneToCreate[1];
+            var sceneTitle:string = sceneToCreate[0];
+            var sceneClass = sceneToCreate[1];
             
             var button:Button = new MenuButton(sceneTitle);
             button.height = 42;
             button.readjustSize();
             button.x = count % 2 == 0 ? 28 : 167;
-            button.y = #if demo_video 145 #else 155 #end + Std.int(count / 2) * 46;
-            button.name = Type.getClassName(sceneClass);
-            addChild(button);
+            button.y = /* 145 */ 155 + Math.floor(count / 2) * 46;
+            button.name = this.sceneClasses.length;
+            this.sceneClasses.push(sceneClass);
+            this.addChild(button);
             
             if (scenesToCreate.length % 2 != 0 && count % 2 == 1)
                 button.y += 24;
@@ -81,20 +79,22 @@ class MainMenu extends Sprite
         
         // show information about rendering method (hardware/software)
         
-        var driverInfo:String = Starling.current.context.driverInfo;
+        var driverInfo:string = Starling.current.context.driverInfo;
         var infoText:TextField = new TextField(310, 64, driverInfo);
         infoText.format.font = "DejaVu Sans";
         infoText.format.size = 10;
         infoText.format.verticalAlign = Align.BOTTOM;
         infoText.x = 5;
         infoText.y = 475 - infoText.height;
-        infoText.addEventListener(TouchEvent.TOUCH, onInfoTextTouched);
-        addChildAt(infoText, 0);
+        infoText.addEventListener(TouchEvent.TOUCH, this.onInfoTextTouched);
+        this.addChildAt(infoText, 0);
     }
     
-    private function onInfoTextTouched(event:TouchEvent):Void
+    private onInfoTextTouched = (event:TouchEvent):void =>
     {
         if (event.getTouch(this, TouchPhase.ENDED) != null)
             Starling.current.showStats = !Starling.current.showStats;
     }
 }
+
+export default MainMenu;

@@ -1,13 +1,13 @@
-package utils;
+import Rectangle from "openfl/geom/Rectangle";
 
-import openfl.geom.Rectangle;
+import Button from "starling/display/Button";
 
-import starling.display.Button;
+import Game from "./../game";
 
 /** A simple button that uses "scale9grid" with a single texture. */
 class MenuButton extends Button
 {
-    public function new(text:String, width:Float=128, height:Float=32)
+    public constructor(text:string, width:number=128, height:number=32)
     {
         super(Game.assets.getTexture("button_normal"), text);
     
@@ -17,3 +17,5 @@ class MenuButton extends Button
         this.height = height;
     }
 }
+
+export default MenuButton;

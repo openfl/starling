@@ -40,10 +40,10 @@ class Game extends Sprite
         // now would be a good time for a clean-up
         System.gc();
         
-        // if (this._mainMenu == null)
-        //     this._mainMenu = new MainMenu();
+        if (this._mainMenu == null)
+            this._mainMenu = new MainMenu();
         
-        // this.addChild(this._mainMenu);
+        this.addChild(this._mainMenu);
     }
     
     private onKey = (event:KeyboardEvent):void =>
@@ -75,10 +75,10 @@ class Game extends Sprite
     {
         if (this._currentScene != null) return;
         
-        // var sceneClass:Class<Dynamic> = Type.resolveClass(name);
-        // this._currentScene = cast(Type.createInstance(sceneClass, []), Scene);
-        // this._mainMenu.removeFromParent();
-        // addChild(this._currentScene);
+        var sceneClass = this._mainMenu.sceneClasses[name];
+        this._currentScene = new sceneClass ();
+        this._mainMenu.removeFromParent();
+        this.addChild(this._currentScene);
     }
     
     public static get assets():AssetManager { return Game.sAssets; }

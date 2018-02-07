@@ -1,70 +1,72 @@
-package scenes;
+import Context3DTriangleFace from "openfl/display3D/Context3DTriangleFace";
 
-import openfl.display3D.Context3DTriangleFace;
+import Starling from "starling/core/Starling";
+import Image from "starling/display/Image";
+import Sprite3D from "starling/display/Sprite3D";
+import Event from "starling/events/Event";
+import Painter from "starling/rendering/Painter";
+import Texture from "starling/textures/Texture";
 
-import starling.core.Starling;
-import starling.display.Image;
-import starling.display.Sprite3D;
-import starling.events.Event;
-import starling.rendering.Painter;
-import starling.textures.Texture;
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-@:keep class Sprite3DScene extends Scene
+class Sprite3DScene extends Scene
 {
-    private var _cube:Sprite3D;
+    private _cube:Sprite3D;
     
-    public function new()
+    public constructor()
     {
         super();
         var texture:Texture = Game.assets.getTexture("gamua-logo");
         
-        _cube = createCube(texture);
-        _cube.x = Constants.CenterX;
-        _cube.y = Constants.CenterY;
-        _cube.z = 100;
+        this._cube = this.createCube(texture);
+        this._cube.x = Constants.CenterX;
+        this._cube.y = Constants.CenterY;
+        this._cube.z = 100;
         
-        addChild(_cube);
+        this.addChild(this._cube);
         
-        addEventListener(Event.ADDED_TO_STAGE, start);
-        addEventListener(Event.REMOVED_FROM_STAGE, stop);
+        this.addEventListener(Event.ADDED_TO_STAGE, this.start);
+        this.addEventListener(Event.REMOVED_FROM_STAGE, stop);
     }
 
-    private function start():Void
+    private start = ():void =>
     {
-        Starling.current.juggler.tween(_cube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
-        Starling.current.juggler.tween(_cube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
-        Starling.current.juggler.tween(_cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
+        Starling.current.juggler.tween(this._cube, 6, { rotationX: 2 * Math.PI, repeatCount: 0 });
+        Starling.current.juggler.tween(this._cube, 7, { rotationY: 2 * Math.PI, repeatCount: 0 });
+        Starling.current.juggler.tween(this._cube, 8, { rotationZ: 2 * Math.PI, repeatCount: 0 });
     }
 
-    private function stop():Void
+    private stop():void
     {
-        Starling.current.juggler.removeTweens(_cube);
+        Starling.current.juggler.removeTweens(this._cube);
     }
 
-    private function createCube(texture:Texture):Sprite3D
+    private createCube(texture:Texture):Sprite3D
     {
-        var offset:Float = texture.width / 2;
+        var offset:number = texture.width / 2;
         
-        var front:Sprite3D = createSidewall(texture, 0xff0000);
+        var front:Sprite3D = this.createSidewall(texture, 0xff0000);
         front.z = -offset;
         
-        var back:Sprite3D = createSidewall(texture, 0x00ff00);
+        var back:Sprite3D = this.createSidewall(texture, 0x00ff00);
         back.rotationX = Math.PI;
         back.z = offset;
         
-        var top:Sprite3D = createSidewall(texture, 0x0000ff);
+        var top:Sprite3D = this.createSidewall(texture, 0x0000ff);
         top.y = - offset;
         top.rotationX = Math.PI / -2.0;
         
-        var bottom:Sprite3D = createSidewall(texture, 0xffff00);
+        var bottom:Sprite3D = this.createSidewall(texture, 0xffff00);
         bottom.y = offset;
         bottom.rotationX = Math.PI / 2.0;
         
-        var left:Sprite3D = createSidewall(texture, 0xff00ff);
+        var left:Sprite3D = this.createSidewall(texture, 0xff00ff);
         left.x = -offset;
         left.rotationY = Math.PI / 2.0;
         
-        var right:Sprite3D = createSidewall(texture, 0x00ffff);
+        var right:Sprite3D = this.createSidewall(texture, 0x00ffff);
         right.x = offset;
         right.rotationY = Math.PI / -2.0;
         
@@ -79,7 +81,7 @@ import starling.textures.Texture;
         return cube;
     }
     
-    private function createSidewall(texture:Texture, color:UInt=0xffffff):Sprite3D
+    private createSidewall(texture:Texture, color:number=0xffffff):Sprite3D
     {
         var image:Image = new Image(texture);
         image.color = color;
@@ -91,15 +93,17 @@ import starling.textures.Texture;
         return sprite;
     }
     
-    public override function render(painter:Painter):Void
+    public render(painter:Painter):void
     {
         // Starling does not make any depth-tests, so we use a trick in order to only show
         // the front quads: we're activating backface culling, i.e. we hide triangles at which
         // we look from behind. 
 
         painter.pushState();
-        painter.state.culling = Context3DTriangleFace.BACK;
+        painter.state.culling = "back";
         super.render(painter);
         painter.popState();
     }
 }
+
+export default Sprite3DScene;

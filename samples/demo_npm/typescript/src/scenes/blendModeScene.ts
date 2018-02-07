@@ -1,20 +1,21 @@
-package scenes;
+import BlendMode from "starling/display/BlendMode";
+import Button from "starling/display/Button";
+import Image from "starling/display/Image";
+import Event from "starling/events/Event";
+import TextField from "starling/text/TextField";
 
-import starling.display.BlendMode;
-import starling.display.Button;
-import starling.display.Image;
-import starling.events.Event;
-import starling.text.TextField;
+import MenuButton from "./../utils/menuButton";
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-import utils.MenuButton;
-
-@:keep class BlendModeScene extends Scene
+class BlendModeScene extends Scene
 {
-    private var _button:Button;
-    private var _image:Image;
-    private var _infoText:TextField;
+    private _button:Button;
+    private _image:Image;
+    private _infoText:TextField;
     
-    private var _blendModes:Array<String> = [
+    private _blendModes:Array<string> = [
         BlendMode.NORMAL,
         BlendMode.MULTIPLY,
         BlendMode.SCREEN,
@@ -23,37 +24,39 @@ import utils.MenuButton;
         BlendMode.NONE
     ];
     
-    public function new()
+    public constructor()
     {
         super();
         
-        _button = new MenuButton("Switch Mode");
-        _button.x = Std.int(Constants.CenterX - _button.width / 2);
-        _button.y = 15;
-        _button.addEventListener(Event.TRIGGERED, onButtonTriggered);
-        addChild(_button);
+        this._button = new MenuButton("Switch Mode");
+        this._button.x = (Constants.CenterX - this._button.width / 2);
+        this._button.y = 15;
+        this._button.addEventListener(Event.TRIGGERED, this.onButtonTriggered);
+        this.addChild(this._button);
         
-        _image = new Image(Game.assets.getTexture("starling_rocket"));
-        _image.x = Std.int(Constants.CenterX - _image.width / 2);
-        _image.y = 170;
-        addChild(_image);
+        this._image = new Image(Game.assets.getTexture("starling_rocket"));
+        this._image.x = (Constants.CenterX - this._image.width / 2);
+        this._image.y = 170;
+        this.addChild(this._image);
         
-        _infoText = new TextField(300, 32);
-        _infoText.format.size = 19;
-        _infoText.format.font = "DejaVu Sans";
-        _infoText.x = 10;
-        _infoText.y = 330;
-        addChild(_infoText);
+        this._infoText = new TextField(300, 32);
+        this._infoText.format.size = 19;
+        this._infoText.format.font = "DejaVu Sans";
+        this._infoText.x = 10;
+        this._infoText.y = 330;
+        this.addChild(this._infoText);
         
-        onButtonTriggered();
+        this.onButtonTriggered();
     }
     
-    private function onButtonTriggered():Void
+    private onButtonTriggered = ():void =>
     {
-        var blendMode:String = _blendModes.shift();
-        _blendModes.push(blendMode);
+        var blendMode:string = this._blendModes.shift();
+        this._blendModes.push(blendMode);
         
-        _infoText.text = blendMode;
-        _image.blendMode = blendMode;
+        this._infoText.text = blendMode;
+        this._image.blendMode = blendMode;
     }
 }
+
+export default BlendModeScene;

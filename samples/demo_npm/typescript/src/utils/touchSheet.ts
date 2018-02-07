@@ -1,31 +1,29 @@
-package utils;
+import Point from "openfl/geom/Point";
+import Vector from "openfl/Vector";
 
-import openfl.geom.Point;
-
-import starling.display.DisplayObject;
-import starling.display.Sprite;
-import starling.events.Touch;
-import starling.events.TouchEvent;
-import starling.events.TouchPhase;
-import openfl.Vector;
+import DisplayObject from "starling/display/DisplayObject";
+import Sprite from "starling/display/Sprite";
+import Touch from "starling/events/Touch";
+import TouchEvent from "starling/events/TouchEvent";
+import TouchPhase from "starling/events/TouchPhase";
 
 class TouchSheet extends Sprite
 {
-    public function new(contents:DisplayObject=null)
+    public constructor(contents:DisplayObject=null)
     {
         super();
-        addEventListener(TouchEvent.TOUCH, onTouch);
-        useHandCursor = true;
+        this.addEventListener(TouchEvent.TOUCH, this.onTouch);
+        this.useHandCursor = true;
         
         if (contents != null)
         {
-            contents.x = Std.int(contents.width / -2);
-            contents.y = Std.int(contents.height / -2);
-            addChild(contents);
+            contents.x = (contents.width / -2);
+            contents.y = (contents.height / -2);
+            this.addChild(contents);
         }
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private onTouch = (event:TouchEvent):void =>
     {
         var touches:Vector<Touch> = event.getTouches(this, TouchPhase.MOVED);
         
@@ -33,8 +31,8 @@ class TouchSheet extends Sprite
         {
             // one finger touching -> move
             var delta:Point = touches[0].getMovement(parent);
-            x += delta.x;
-            y += delta.y;
+            this.x += delta.x;
+            this.y += delta.y;
         }            
         else if (touches.length == 2)
         {
@@ -50,42 +48,44 @@ class TouchSheet extends Sprite
             var currentVector:Point  = currentPosA.subtract(currentPosB);
             var previousVector:Point = previousPosA.subtract(previousPosB);
             
-            var currentAngle:Float  = Math.atan2(currentVector.y, currentVector.x);
-            var previousAngle:Float = Math.atan2(previousVector.y, previousVector.x);
-            var deltaAngle:Float = currentAngle - previousAngle;
+            var currentAngle:number  = Math.atan2(currentVector.y, currentVector.x);
+            var previousAngle:number = Math.atan2(previousVector.y, previousVector.x);
+            var deltaAngle:number = currentAngle - previousAngle;
             
             // update pivot point based on previous center
             var previousLocalA:Point  = touchA.getPreviousLocation(this);
             var previousLocalB:Point  = touchB.getPreviousLocation(this);
-            pivotX = (previousLocalA.x + previousLocalB.x) * 0.5;
-            pivotY = (previousLocalA.y + previousLocalB.y) * 0.5;
+            this.pivotX = (previousLocalA.x + previousLocalB.x) * 0.5;
+            this.pivotY = (previousLocalA.y + previousLocalB.y) * 0.5;
             
             // update location based on the current center
-            x = (currentPosA.x + currentPosB.x) * 0.5;
-            y = (currentPosA.y + currentPosB.y) * 0.5;
+            this.x = (currentPosA.x + currentPosB.x) * 0.5;
+            this.y = (currentPosA.y + currentPosB.y) * 0.5;
             
             // rotate
-            rotation += deltaAngle;
+            this.rotation += deltaAngle;
 
             // scale
-            var sizeDiff:Float = currentVector.length / previousVector.length;
-            scaleX *= sizeDiff;
-            scaleY *= sizeDiff;
+            var sizeDiff:number = currentVector.length / previousVector.length;
+            this.scaleX *= sizeDiff;
+            this.scaleY *= sizeDiff;
         }
         
         var touch:Touch = event.getTouch(this, TouchPhase.ENDED);
         
         if (touch != null && touch.tapCount == 2)
-            parent.addChild(this); // bring self to front
+        this.parent.addChild(this); // bring self to front
         
         // enable this code to see when you're hovering over the object
         // touch = event.getTouch(this, TouchPhase.HOVER);            
         // alpha = touch ? 0.8 : 1.0;
     }
     
-    public override function dispose():Void
+    public dispose():void
     {
-        removeEventListener(TouchEvent.TOUCH, onTouch);
+        removeEventListener(TouchEvent.TOUCH, this.onTouch);
         super.dispose();
     }
 }
+
+export default TouchSheet;

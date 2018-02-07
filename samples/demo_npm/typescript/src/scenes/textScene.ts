@@ -1,33 +1,35 @@
-package scenes;
+import BitmapFont from "starling/text/BitmapFont";
+import TextField from "starling/text/TextField";
+import TextFormat from "starling/text/TextFormat";
+import Align from "starling/utils/Align";
+import Color from "starling/utils/Color";
 
-import starling.text.BitmapFont;
-import starling.text.TextField;
-import starling.text.TextFormat;
-import starling.utils.Align;
-import starling.utils.Color;
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-@:keep class TextScene extends Scene
+class TextScene extends Scene
 {
-    public function new()
+    public constructor()
     {
         super();
-        init();
+        this.init();
     }
 
-    private function init():Void
+    private init():void
     {
         // TrueType fonts
         
-        var offset:Int = 10;
+        var offset:number = 10;
         var ttFont:String = "Ubuntu";
-        var ttFontSize:Int = 19;
+        var ttFontSize:number = 19;
         
         var colorTF:TextField = new TextField(300, 80, 
             "TextFields can have a border and a color. They can be aligned in different ways, ...");
         colorTF.format.setTo(ttFont, ttFontSize, 0x33399);
         colorTF.x = colorTF.y = offset;
         colorTF.border = true;
-        addChild(colorTF);
+        this.addChild(colorTF);
         
         var leftTF:TextField = new TextField(145, 80, "... e.g.\ntop-left ...");
         leftTF.format.setTo(ttFont, ttFontSize, 0x996633);
@@ -36,7 +38,7 @@ import starling.utils.Color;
         leftTF.x = offset;
         leftTF.y = colorTF.y + colorTF.height + offset;
         leftTF.border = true;
-        addChild(leftTF);
+        this.addChild(leftTF);
         
         var rightTF:TextField = new TextField(145, 80, "... or\nbottom right ...");
         rightTF.format.setTo(ttFont, ttFontSize, 0x208020);
@@ -45,7 +47,7 @@ import starling.utils.Color;
         rightTF.border = true;
         rightTF.x = 2 * offset + leftTF.width;
         rightTF.y = leftTF.y;
-        addChild(rightTF);
+        this.addChild(rightTF);
         
         var fontTF:TextField = new TextField(300, 80,
             "... or centered. Embedded fonts are detected automatically and " +
@@ -58,7 +60,7 @@ import starling.utils.Color;
         fontTF.y = leftTF.y + leftTF.height + offset;
         fontTF.border = true;
         fontTF.isHtmlText = true;
-        addChild(fontTF);
+        this.addChild(fontTF);
 
         // Bitmap fonts!
         
@@ -79,8 +81,10 @@ import starling.utils.Color;
         bmpFontTF.format.color = Color.WHITE; // white will draw the texture as is (no tinting)
         bmpFontTF.x = offset;
         bmpFontTF.y = fontTF.y + fontTF.height + offset;
-        addChild(bmpFontTF);
+        this.addChild(bmpFontTF);
         
         // A tip: you can also add the font-texture to your standard texture atlas!
     }
 }
+
+export default TextScene;

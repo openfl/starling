@@ -1,10 +1,12 @@
 package;
 
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.display.Stage in OpenFLStage;
 import openfl.display3D.Context3DRenderMode;
 import openfl.errors.Error;
+import openfl.events.Event in OpenFLEvent;
 import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.system.System;
@@ -84,29 +86,49 @@ class Demo extends Sprite
 
         assets.verbose = Capabilities.isDebugger;
 
-        Timer.delay(function()
-        {
+        var manifest = new AssetManifest ();
+        manifest.addBitmapData ("assets/textures/1x/atlas.png");
+        manifest.addText ("assets/textures/1x/atlas.xml");
+        manifest.addBitmapData ("assets/fonts/1x/desyrel.png");
+        manifest.addText ("assets/fonts/1x/desyrel.fnt");
+        manifest.addBitmapData ("assets/textures/1x/background.jpg");
+        manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3" ]);
+        manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
+        manifest.addFont ("DejaVu Sans");
+        manifest.addFont ("Ubuntu");
+        
+        AssetLibrary.loadFromManifest (manifest).onComplete (function (library) {
+            
+            Assets.registerLibrary ("default", library);
+            
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-            var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
+            var atlasXml:String = Assets.getText("assets/textures/1x/atlas.xml");
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-            // trace (Std.is (desyrelXml, Xml));
-            // trace (desyrelXml.elementsNamed ("foo"));
+            var desyrelXml:String = Assets.getText("assets/fonts/1x/desyrel.fnt");
             var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
             TextField.registerCompositor(bitmapFont, bitmapFont.name);
             assets.addTexture("atlas", atlasTexture);
             assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
             assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
-            #if flash
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
-            #else
             assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
-            #end
             var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
             assets.addByteArray("compressed_texture", compressedTexture);
             
             onComplete(assets);
-        }, 0);
+            
+        }).onProgress (function (bytesLoaded, bytesTotal) {
+            
+            if (_progressBar != null && bytesTotal > 0) {
+                
+                _progressBar.ratio = (bytesLoaded / bytesTotal);
+                
+            }
+            
+        }).onError (function (e) {
+            
+            trace (e);
+            
+        });
     }
 
     private function startGame(assets:AssetManager):Void
@@ -119,16 +141,18 @@ class Demo extends Sprite
     private function initElements():Void
     {
         // Add background image.
-        _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
-        _background.smoothing = true;
-        addChild(_background);
+        BitmapData.loadFromFile("assets/textures/1x/background.jpg").onComplete(function(bitmapData) {
+            _background = new Bitmap(bitmapData);
+            _background.smoothing = true;
+            addChild(_background);
+            
+            // While the assets are loaded, we will display a progress bar.
 
-        // While the assets are loaded, we will display a progress bar.
-
-        //_progressBar = new ProgressBar(175, 20);
-        //_progressBar.x = (_background.width - _progressBar.width) / 2;
-        //_progressBar.y =  _background.height * 0.7;
-        //addChild(_progressBar);
+            _progressBar = new ProgressBar(175, 20);
+            _progressBar.x = (_background.width - _progressBar.width) / 2;
+            _progressBar.y =  _background.height * 0.7;
+            addChild(_progressBar);
+        });
     }
 
     private function removeElements():Void
@@ -146,7 +170,7 @@ class Demo extends Sprite
         }
     }
     
-    private function onResize(e:openfl.events.Event):Void
+    private function onResize(e:OpenFLEvent):Void
     {
         var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, Constants.GameWidth, Constants.GameHeight), new Rectangle(0, 0, stage.stageWidth, stage.stageHeight));
         try
@@ -158,30 +182,9 @@ class Demo extends Sprite
     
     static function main () {
         
-        var manifest = new AssetManifest ();
-        manifest.addBitmapData ("assets/textures/1x/atlas.png");
-        manifest.addText ("assets/textures/1x/atlas.xml");
-        manifest.addBitmapData ("assets/fonts/1x/desyrel.png");
-        manifest.addText ("assets/fonts/1x/desyrel.fnt");
-        manifest.addBitmapData ("assets/textures/1x/background.jpg");
-        manifest.addSound ([ "assets/audio/wing_flap.ogg", "assets/audio/wing_flap.mp3" ]);
-        manifest.addBytes ("assets/textures/1x/compressed_texture.atf");
-        manifest.addFont ("DejaVu Sans");
-        manifest.addFont ("Ubuntu");
-        
-        AssetLibrary.loadFromManifest (manifest).onComplete (function (library) {
-            
-            Assets.registerLibrary ("default", library);
-            
-            var stage = new OpenFLStage (320, 480, 0xFFFFFF, Demo);
-            var content = js.Browser.document.getElementById ("openfl-content");
-            content.appendChild (stage.element);
-            
-        }).onError (function (e) {
-            
-            trace (e);
-            
-        });
+        var stage = new OpenFLStage (320, 480, 0xFFFFFF, Demo);
+        var content = js.Browser.document.getElementById ("openfl-content");
+        content.appendChild (stage.element);
         
     }
 }

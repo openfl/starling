@@ -1,40 +1,43 @@
-package scenes;
-import openfl.geom.Point;
+import Point from "openfl/geom/Point";
 
-import starling.core.Starling;
-import starling.display.Canvas;
-import starling.display.Image;
-import starling.display.Quad;
-import starling.display.Sprite;
-import starling.events.Touch;
-import starling.events.TouchEvent;
-import starling.events.TouchPhase;
-import starling.filters.ColorMatrixFilter;
-import starling.text.TextField;
+import Starling from "starling/core/Starling";
+import Canvas from "starling/display/Canvas";
+import Image from "starling/display/Image";
+import Quad from "starling/display/Quad";
+import Sprite from "starling/display/Sprite";
+import Touch from "starling/events/Touch";
+import TouchEvent from "starling/events/TouchEvent";
+import TouchPhase from "starling/events/TouchPhase";
+import ColorMatrixFilter from "starling/filters/ColorMatrixFilter";
+import TextField from "starling/text/TextField";
 
-@:keep class MaskScene extends Scene
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
+
+class MaskScene extends Scene
 {
-    private var _contents:Sprite;
-    private var _mask2:Canvas;
-    private var _maskDisplay:Canvas;
+    private _contents:Sprite;
+    private _mask2:Canvas;
+    private _maskDisplay:Canvas;
     
-    public function new()
+    public constructor()
     {
         super();
-        _contents = new Sprite();
-        addChild(_contents);
+        this._contents = new Sprite();
+        this.addChild(this._contents);
         
-        var stageWidth:Float  = Starling.current.stage.stageWidth;
-        var stageHeight:Float = Starling.current.stage.stageHeight;
+        var stageWidth:number  = Starling.current.stage.stageWidth;
+        var stageHeight:number = Starling.current.stage.stageHeight;
         
         var touchQuad:Quad = new Quad(stageWidth, stageHeight);
         touchQuad.alpha = 0; // only used to get touch events
-        addChildAt(touchQuad, 0);
+        this.addChildAt(touchQuad, 0);
         
         var image:Image = new Image(Game.assets.getTexture("flight_00"));
         image.x = (stageWidth - image.width) / 2;
         image.y = 80;
-        _contents.addChild(image);
+        this._contents.addChild(image);
 
         // just to prove it works, use a filter on the image.
         var cm:ColorMatrixFilter = new ColorMatrixFilter();
@@ -47,20 +50,20 @@ import starling.text.TextField;
         maskText.x = (stageWidth - maskText.width) / 2;
         maskText.y = 260;
         maskText.format.size = 20;
-        _contents.addChild(maskText);
+        this._contents.addChild(maskText);
         
-        _maskDisplay = createCircle();
-        _maskDisplay.alpha = 0.1;
-        _maskDisplay.touchable = false;
-        addChild(_maskDisplay);
+        this._maskDisplay = this.createCircle();
+        this._maskDisplay.alpha = 0.1;
+        this._maskDisplay.touchable = false;
+        this.addChild(this._maskDisplay);
 
-        _mask2 = createCircle();
-        _contents.mask = _mask2;
+        this._mask2 = this.createCircle();
+        this._contents.mask = this._mask2;
         
-        addEventListener(TouchEvent.TOUCH, onTouch);
+        this.addEventListener(TouchEvent.TOUCH, this.onTouch);
     }
     
-    private function onTouch(event:TouchEvent):Void
+    private onTouch = (event:TouchEvent):void =>
     {
         var touch:Touch = event.getTouch(this, TouchPhase.HOVER);
         if (touch == null) touch = event.getTouch(this, TouchPhase.BEGAN);
@@ -69,12 +72,12 @@ import starling.text.TextField;
         if (touch != null)
         {
             var localPos:Point = touch.getLocation(this);
-            _mask2.x = _maskDisplay.x = localPos.x;
-            _mask2.y = _maskDisplay.y = localPos.y;
+            this._mask2.x = this._maskDisplay.x = localPos.x;
+            this._mask2.y = this._maskDisplay.y = localPos.y;
         }
     }
 
-    private function createCircle():Canvas
+    private createCircle():Canvas
     {
         var circle:Canvas = new Canvas();
         circle.beginFill(0xEA8220);
@@ -84,3 +87,5 @@ import starling.text.TextField;
     }
 
 }
+
+export default MaskScene;

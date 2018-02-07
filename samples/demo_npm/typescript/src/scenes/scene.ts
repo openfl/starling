@@ -3,7 +3,7 @@ import Rectangle from "openfl/geom/Rectangle";
 import Button from "starling/display/Button";
 import Sprite from "starling/display/Sprite";
 
-import MenuButton from "utils/MenuButton";
+import MenuButton from "./../utils/menuButton";
 import Constants from "./../constants";
 
 class Scene extends Sprite

@@ -1,96 +1,98 @@
-package scenes;
+import Error from "openfl/errors/Error";
+import NetStatusEvent from "openfl/events/NetStatusEvent";
+import NetConnection from "openfl/net/NetConnection";
+import NetStream from "openfl/net/NetStream";
 
-import openfl.errors.Error;
-import openfl.events.NetStatusEvent;
-import openfl.net.NetConnection;
-import openfl.net.NetStream;
-import starling.display.Image;
-import starling.text.TextField;
-import starling.textures.Texture;
-import starling.utils.SystemUtil;
+import Image from "starling/display/Image";
+import TextField from "starling/text/TextField";
+import Texture from "starling/textures/Texture";
+import SystemUtil from "starling/utils/SystemUtil";
 
-@:keep class VideoScene extends Scene
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
+
+class VideoScene extends Scene
 {
-	var url:String = "videos/sample.mp4";
-	var texture:Texture;
-	var ns:NetStream;
-	var nc:NetConnection;
-	var image:Image;
+	private url:String = "assets/videos/sample.mp4";
+	private texture:Texture;
+	private ns:NetStream;
+	private nc:NetConnection;
+	private image:Image;
 	
-	public function new()
+	public constructor()
 	{
 		super(); 
-		play();
+		this.play();
 	}
 	
-	function play() 
+	private play():void
 	{
 		if (SystemUtil.supportsVideoTexture)
 		{
-			nc = new NetConnection();
-			nc.connect(null);
+			this.nc = new NetConnection();
+			this.nc.connect(null);
 			
-			ns = new NetStream(nc);
-			ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
+			this.ns = new NetStream(this.nc);
+			this.ns.addEventListener(NetStatusEvent.NET_STATUS, this.onNetStatus);
 			
-			ns.client = { onMetaData:function(info:MetaInfo) {
-				trace(info.duration);
+			this.ns.client = { onMetaData:function(info:MetaInfo) {
+				console.log(info.duration);
 			}};
 			
-			texture = Texture.fromNetStream(ns, 1, function():Void
+			this.texture = Texture.fromNetStream(this.ns, 1, ():void =>
 			{
-				image = new Image(texture);
-				addChild(image);
-				var scale:Float = 320 / image.width;
-				image.scaleX = image.scaleY = scale;
-				image.y = 120;
+				this.image = new Image(this.texture);
+				this.addChild(this.image);
+				var scale:number = 320 / this.image.width;
+				this.image.scaleX = this.image.scaleY = scale;
+				this.image.y = 120;
 			});
 			
-			ns.play(url);
+			this.ns.play(this.url);
 		}
 		else
 		{
-			#if flash
-				var errorMessage:String = "Video texture requires AIR 17.0, Flash Player 18.0";
-			#else
-				var errorMessage:String = "Video texture is not supported on this platform";
-			#end
+			var errorMessage:String = "Video texture is not supported on this platform";
 			
-			var textField:TextField = new TextField(220, 128, errorMessage, "DejaVu Sans", 14);
+			var textField:TextField = new TextField(220, 128, errorMessage);
+			textField.format.font = "DejaVu Sans";
 			textField.x = Constants.CenterX - textField.width / 2;
 			textField.y = Constants.CenterY - textField.height / 2;
-			addChild(textField);
+			this.addChild(textField);
 		}
 	}
 	
-	static private function onNetStatus(e:NetStatusEvent):Void 
+	private onNetStatus = (e:NetStatusEvent):void => 
 	{
-		trace(e.info.code);
+		console.log(e.info.code);
 	}
 	
-	override public function dispose():Void
+	public dispose():void
 	{
-		if (ns != null) {
-			ns.close();
+		if (this.ns != null) {
+			this.ns.close();
 		}
-		if (image != null) {
-			if (image.parent != null) {
-				image.parent.removeChild(image, true);
-				image = null;
+		if (this.image != null) {
+			if (this.image.parent != null) {
+				this.image.parent.removeChild(this.image, true);
+				this.image = null;
 			}
 		}
-		if (texture != null) {
-			texture.dispose();
-			texture = null;
+		if (this.texture != null) {
+			this.texture.dispose();
+			this.texture = null;
 		}
 		super.dispose();
 	}
 }
 
-typedef MetaInfo =
+export default VideoScene;
+
+declare class MetaInfo
 {
-	var duration:Float;
-	var width:UInt;
-	var height:UInt;
-	var framerate:UInt;
+	public duration:number;
+	public width:number;
+	public height:number;
+	public framerate:number;
 }

@@ -1,52 +1,56 @@
-package scenes;
+import Sound from "openfl/media/Sound";
+import Vector from "openfl/Vector";
 
-import openfl.media.Sound;
-import openfl.Vector;
+import Starling from "starling/core/Starling";
+import MovieClip from "starling/display/MovieClip";
+import Event from "starling/events/Event";
+import Texture from "starling/textures/Texture";
 
-import starling.core.Starling;
-import starling.display.MovieClip;
-import starling.events.Event;
-import starling.textures.Texture;
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-@:keep class MovieScene extends Scene
+class MovieScene extends Scene
 {
-    private var _movie:MovieClip;
+    private _movie:MovieClip;
     
-    public function new()
+    public constructor()
     {
         super();
         var frames:Vector<Texture> = Game.assets.getTextures("flight");
-        _movie = new MovieClip(frames, 15);
+        this._movie = new MovieClip(frames, 15);
         
         // add sounds
         var stepSound:Sound = Game.assets.getSound("wing_flap");
-        _movie.setFrameSound(2, stepSound);
+        this._movie.setFrameSound(2, stepSound);
         
         // move the clip to the center and add it to the stage
-        _movie.x = Constants.CenterX - Std.int(_movie.width / 2);
-        _movie.y = Constants.CenterY - Std.int(_movie.height / 2);
-        addChild(_movie);
+        this._movie.x = Constants.CenterX - (this._movie.width / 2);
+        this._movie.y = Constants.CenterY - (this._movie.height / 2);
+        this.addChild(this._movie);
         
         // like any animation, the movie needs to be added to the juggler!
         // this is the recommended way to do that.
-        addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-        addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+        this.addEventListener(Event.ADDED_TO_STAGE, this.onAddedToStage);
+        this.addEventListener(Event.REMOVED_FROM_STAGE, this.onRemovedFromStage);
     }
     
-    private function onAddedToStage():Void
+    private onAddedToStage = ():void =>
     {
-        Starling.current.juggler.add(_movie);
+        Starling.current.juggler.add(this._movie);
     }
     
-    private function onRemovedFromStage():Void
+    private onRemovedFromStage = ():void =>
     {
-        Starling.current.juggler.remove(_movie);
+        Starling.current.juggler.remove(this._movie);
     }
     
-    public override function dispose():Void
+    public dispose():void
     {
-        removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
-        removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        this.removeEventListener(Event.REMOVED_FROM_STAGE, this.onRemovedFromStage);
+        this.removeEventListener(Event.ADDED_TO_STAGE, this.onAddedToStage);
         super.dispose();
     }
 }
+
+export default MovieScene;

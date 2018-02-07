@@ -1,122 +1,125 @@
-package scenes;
+import BitmapData from "openfl/display/BitmapData";
+import BitmapDataChannel from "openfl/display/BitmapDataChannel";
 
-import openfl.display.BitmapData;
-import openfl.display.BitmapDataChannel;
+import Starling from "starling/core/Starling";
+import Button from "starling/display/Button";
+import Image from "starling/display/Image";
+import Event from "starling/events/Event";
+import BlurFilter from "starling/filters/BlurFilter";
+import ColorMatrixFilter from "starling/filters/ColorMatrixFilter";
+import DisplacementMapFilter from "starling/filters/DisplacementMapFilter";
+import DropShadowFilter from "starling/filters/DropShadowFilter";
+import FilterChain from "starling/filters/FilterChain";
+import FragmentFilter from "starling/filters/FragmentFilter";
+import GlowFilter from "starling/filters/GlowFilter";
+import TextField from "starling/text/TextField";
+import Texture from "starling/textures/Texture";
 
-import starling.core.Starling;
-import starling.display.Button;
-import starling.display.Image;
-import starling.events.Event;
-import starling.filters.BlurFilter;
-import starling.filters.ColorMatrixFilter;
-import starling.filters.DisplacementMapFilter;
-import starling.filters.DropShadowFilter;
-import starling.filters.FilterChain;
-import starling.filters.FragmentFilter;
-import starling.filters.GlowFilter;
-import starling.text.TextField;
-import starling.textures.Texture;
+import MenuButton from "./../utils/menuButton";
+import Constants from "./../constants";
+import Game from "./../game";
+import Scene from "./scene";
 
-import utils.MenuButton;
-
-@:keep class FilterScene extends Scene
+class FilterScene extends Scene
 {
-    private var _button:Button;
-    private var _image:Image;
-    private var _infoText:TextField;
-    private var _filterInfos:Array<Array<Dynamic>>;
-    private var _displacementMap:Texture;
+    private _button:Button;
+    private _image:Image;
+    private _infoText:TextField;
+    private _filterInfos:Array<Array<any>>;
+    private _displacementMap:Texture;
     
-    public function new()
+    public constructor()
     {
         super();
         
-        _button = new MenuButton("Switch Filter");
-        _button.x = Std.int(Constants.CenterX - _button.width / 2);
-        _button.y = 15;
-        _button.addEventListener(Event.TRIGGERED, onButtonTriggered);
-        addChild(_button);
+        this._button = new MenuButton("Switch Filter");
+        this._button.x = (Constants.CenterX - this._button.width / 2);
+        this._button.y = 15;
+        this._button.addEventListener(Event.TRIGGERED, this.onButtonTriggered);
+        this.addChild(this._button);
         
-        _image = new Image(Game.assets.getTexture("starling_rocket"));
-        _image.x = Std.int(Constants.CenterX - _image.width / 2);
-        _image.y = 170;
-        addChild(_image);
+        this._image = new Image(Game.assets.getTexture("starling_rocket"));
+        this._image.x = (Constants.CenterX - this._image.width / 2);
+        this._image.y = 170;
+        this.addChild(this._image);
         
-        _infoText = new TextField(300, 32);
-        _infoText.format.font = "DejaVu Sans";
-        _infoText.format.size = 19;
-        _infoText.x = 10;
-        _infoText.y = 330;
-        addChild(_infoText);
+        this._infoText = new TextField(300, 32);
+        this._infoText.format.font = "DejaVu Sans";
+        this._infoText.format.size = 19;
+        this._infoText.x = 10;
+        this._infoText.y = 330;
+        this.addChild(this._infoText);
         
-        initFilters();
-        onButtonTriggered();
+        this.initFilters();
+        this.onButtonTriggered();
     }
     
-    override public function dispose():Void
+    public dispose():void
     {
-        _displacementMap.dispose();
+        this._displacementMap.dispose();
         super.dispose();
     }
     
-    private function onButtonTriggered():Void
+    private onButtonTriggered = ():void =>
     {
-        var filterInfo:Array<Dynamic> = _filterInfos.shift();
-        _filterInfos.push(filterInfo);
+        var filterInfo:Array<any> = this._filterInfos.shift();
+        this._filterInfos.push(filterInfo);
         
-        _infoText.text = filterInfo[0];
-        _image.filter  = filterInfo[1];
+        this._infoText.text = filterInfo[0];
+        this._image.filter  = filterInfo[1];
     }
     
-    private function initFilters():Void
+    private initFilters():void
     {
-        _filterInfos = [
+        this._filterInfos = [
             ["Identity", new FragmentFilter()],
             ["Blur", new BlurFilter()],
             ["Drop Shadow", new DropShadowFilter()],
             ["Glow", new GlowFilter()]
         ];
         
-        _displacementMap = createDisplacementMap(_image.width, _image.height);
+        this._displacementMap = this.createDisplacementMap(this._image.width, this._image.height);
         
         var displacementFilter:DisplacementMapFilter = new DisplacementMapFilter(
-            _displacementMap, cast BitmapDataChannel.RED, cast BitmapDataChannel.GREEN, 25, 25);
-        _filterInfos.push(["Displacement Map", displacementFilter]);
+            this._displacementMap, BitmapDataChannel.RED, BitmapDataChannel.GREEN, 25, 25);
+            this._filterInfos.push(["Displacement Map", displacementFilter]);
         
         var invertFilter:ColorMatrixFilter = new ColorMatrixFilter();
         invertFilter.invert();
-        _filterInfos.push(["Invert", invertFilter]);
+        this._filterInfos.push(["Invert", invertFilter]);
         
         var grayscaleFilter:ColorMatrixFilter = new ColorMatrixFilter();
         grayscaleFilter.adjustSaturation(-1);
-        _filterInfos.push(["Grayscale", grayscaleFilter]);
+        this._filterInfos.push(["Grayscale", grayscaleFilter]);
         
         var saturationFilter:ColorMatrixFilter = new ColorMatrixFilter();
         saturationFilter.adjustSaturation(1);
-        _filterInfos.push(["Saturation", saturationFilter]);
+        this._filterInfos.push(["Saturation", saturationFilter]);
         
         var contrastFilter:ColorMatrixFilter = new ColorMatrixFilter();
         contrastFilter.adjustContrast(0.75);
-        _filterInfos.push(["Contrast", contrastFilter]);
+        this._filterInfos.push(["Contrast", contrastFilter]);
 
         var brightnessFilter:ColorMatrixFilter = new ColorMatrixFilter();
         brightnessFilter.adjustBrightness(-0.25);
-        _filterInfos.push(["Brightness", brightnessFilter]);
+        this._filterInfos.push(["Brightness", brightnessFilter]);
 
         var hueFilter:ColorMatrixFilter = new ColorMatrixFilter();
         hueFilter.adjustHue(1);
-        _filterInfos.push(["Hue", hueFilter]);
+        this._filterInfos.push(["Hue", hueFilter]);
         
         var chain:FilterChain = new FilterChain([hueFilter, new DropShadowFilter()]);
-        _filterInfos.push(["Hue + Shadow", chain]);
+        this._filterInfos.push(["Hue + Shadow", chain]);
     }
     
-    private function createDisplacementMap(width:Float, height:Float):Texture
+    private createDisplacementMap(width:number, height:number):Texture
     {
-        var scale:Float = Starling.current.contentScaleFactor;
-        var map:BitmapData = new BitmapData(Std.int(width*scale), Std.int(height*scale), false);
+        var scale:number = Starling.current.contentScaleFactor;
+        var map:BitmapData = new BitmapData((width*scale), (height*scale), false);
         map.perlinNoise(20*scale, 20*scale, 3, 5, false, true);
         var texture:Texture = Texture.fromBitmapData(map, false, false, scale);
         return texture;
     }
 }
+
+export default FilterScene;
