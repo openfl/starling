@@ -384,7 +384,7 @@ class AssetManager extends EventDispatcher
     /** Register an XML object under a certain name. It will be available right away.
      * If the name was already taken, the existing XML will be disposed and replaced
      * by the new one. */
-    public function addXml(name:String, xml:Xml):Void
+    public function addXml(name:String, xml:Dynamic):Void
     {
         log("Adding XML '" + name + "'");
         
@@ -395,7 +395,12 @@ class AssetManager extends EventDispatcher
             System.disposeXML(__xmls[name]);
             #end
         }
-
+        
+        if (xml != null && Std.is(xml, String))
+        {
+            xml = Xml.parse(xml).firstElement();
+        }
+        
         __xmls[name] = xml;
     }
     

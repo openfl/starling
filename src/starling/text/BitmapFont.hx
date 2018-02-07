@@ -104,8 +104,13 @@ class BitmapFont implements ITextCompositor
     
     /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
      * If you don't pass any data, the "mini" font will be created. */
-    public function new(texture:Texture=null, fontXml:Xml=null)
+    public function new(texture:Texture=null, fontXml:Dynamic=null)
     {
+        if (fontXml != null && Std.is(fontXml, String))
+        {
+            fontXml = Xml.parse(fontXml).firstElement();
+        }
+        
         // if no texture is passed in, we create the minimal, embedded font
         if (texture == null && fontXml == null)
         {
@@ -142,7 +147,7 @@ class BitmapFont implements ITextCompositor
         var frameY:Float = frame != null ? frame.y : 0;
 
         var info:Xml = fontXml.elementsNamed("info").next();
-	if (info == null) {
+        if (info == null) {
             fontXml = fontXml.firstElement();
             info = fontXml.elementsNamed("info").next();
         }

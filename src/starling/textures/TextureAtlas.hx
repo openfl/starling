@@ -88,8 +88,13 @@ class TextureAtlas
     #end
     
     /** Create a texture atlas from a texture by parsing the regions from an XML file. */
-    public function new(texture:Texture, atlasXml:Xml=null)
+    public function new(texture:Texture, atlasXml:Dynamic=null)
     {
+        if (atlasXml != null && Std.is(atlasXml, String))
+        {
+            atlasXml = Xml.parse(atlasXml).firstElement();
+        }
+        
         __subTextures = new Map();
         __atlasTexture = texture;
         
