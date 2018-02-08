@@ -61,6 +61,6 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
-    "openfl": "^7.0.0"
+    "openfl": "^7.1.0"
   }
 }

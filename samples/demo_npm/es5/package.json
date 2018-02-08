@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "copy-webpack-plugin": "^4.3.1",
-    "openfl": "^7.0.0",
+    "openfl": "^7.1.0",
     "starling-framework": "*",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0",
