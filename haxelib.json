@@ -5,7 +5,7 @@
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
 	"version": "2.2.0",
-	"releasenote": "Update to Starling 2.2",
+	"releasenote": "Initial release of Starling 2.2",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {},
 	"classPath": "src"
