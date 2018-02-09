@@ -90,6 +90,8 @@ import utils.MenuButton;
         _frameCount = 0;
         _failCount = 0;
         _phase = 0;
+        
+        if (_targetFps <= 0) _targetFps = 60;
 
         for (i in 0...FRAME_TIME_WINDOW_SIZE)
             _frameTimes[i] = 1.0 / _targetFps;

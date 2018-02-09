@@ -78,6 +78,8 @@ class BenchmarkScene extends Scene
         this._frameCount = 0;
         this._failCount = 0;
         this._phase = 0;
+        
+        if (this._targetFps <= 0) this._targetFps = 60;
 
         for (var i = 0; i < BenchmarkScene.FRAME_TIME_WINDOW_SIZE; i++)
             this._frameTimes[i] = 1.0 / this._targetFps;
@@ -134,7 +136,7 @@ class BenchmarkScene extends Scene
             }
         }
 
-        if (this._frameCount % (this._targetFps / 4) == 0)
+        if (this._frameCount % Math.round(this._targetFps / 4) == 0)
         this._statusText.text = this._container.numChildren + " objects";
     }
 
