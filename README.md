@@ -35,12 +35,6 @@ To create a copy of one of the samples, and run it, you can do something like:
 There is also a command to create a new empty project:
 
     openfl create starling:project MyNewProject
-    
-
-Other Samples
--------------
-
-- [StarlingDemoHaxe](https://github.com/zacdevon/StarlingDemoHaxe) - A simple demo mobile app built with FlashDevelop, Adobe AIR and Haxe/OpenFL/Starling
 
 
 Development Builds
