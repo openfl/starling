@@ -30,7 +30,7 @@ class TouchSheet extends Sprite
         if (touches.length == 1)
         {
             // one finger touching -> move
-            var delta = touches[0].getMovement(parent);
+            var delta = touches[0].getMovement(this.parent);
             this.x += delta.x;
             this.y += delta.y;
         }            
@@ -40,10 +40,10 @@ class TouchSheet extends Sprite
             var touchA = touches[0];
             var touchB = touches[1];
             
-            var currentPosA  = touchA.getLocation(parent);
-            var previousPosA = touchA.getPreviousLocation(parent);
-            var currentPosB  = touchB.getLocation(parent);
-            var previousPosB = touchB.getPreviousLocation(parent);
+            var currentPosA  = touchA.getLocation(this.parent);
+            var previousPosA = touchA.getPreviousLocation(this.parent);
+            var currentPosB  = touchB.getLocation(this.parent);
+            var previousPosB = touchB.getPreviousLocation(this.parent);
             
             var currentVector  = currentPosA.subtract(currentPosB);
             var previousVector = previousPosA.subtract(previousPosB);
