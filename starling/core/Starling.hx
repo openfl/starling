@@ -272,7 +272,7 @@ class Starling extends EventDispatcher
         SystemUtil.initialize();
         sAll.push(this);
 		
-        makeCurrent();
+        if (sCurrent == null) makeCurrent();
 		
         mRootClass = rootClass;
         mViewPort = viewPort;
