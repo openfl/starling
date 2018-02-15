@@ -208,8 +208,12 @@ class Image extends Quad
 
             super.texture = value;
             
-            if (value != null && textureSetupSettings != null)
-                textureSetupSettings.onAssign(this);
+            if (value != null && sSetupFunctions.exists(value))
+            {
+                textureSetupSettings = sSetupFunctions[value];
+                if (textureSetupSettings.onAssign != null)
+                    textureSetupSettings.onAssign(this);
+            }
             else if (__scale9Grid != null && value != null)
                 readjustSize();
         }
