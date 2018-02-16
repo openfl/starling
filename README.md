@@ -83,8 +83,3 @@ News and Updates
 * [Facebook](https://facebook.com/gamua.co)
 * [Google+](https://www.google.com/+gamua)
 * [LinkedIn](https://www.linkedin.com/company/gamua)
-
-License
--------
-
-Simplified BSD license
