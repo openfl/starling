@@ -8,7 +8,7 @@ The Cross Platform Game Engine
 
 The Starling Framework allows you to create hardware accelerated apps in ActionScript 3, Haxe, TypeScript or JavaScript. The main target is the creation of 2D games, but Starling may be used for any graphical application. Thanks to Adobe AIR, Starling-based applications can be deployed to mobile devices (iOS, Android), the desktop (Windows, OS X), and to the browser (via the Flash plugin).
 
-You can also pair Starling with OpenFL to deploy native builds for iOS, Android, Windows, OS X, Linux or WebAssembly, as well as regular HTML5 releases without WebAssembly. HTML5 support is available in TypeScript, Haxe, ES5 JavaScript or ES6+ JavaScript.
+You can also pair Starling with OpenFL to deploy native builds for iOS, Android, Windows, OS X, Linux or WebAssembly, as well as Flash/AIR or regular HTML5 releases without WebAssembly. HTML5 support is available in TypeScript, Haxe, ES5 JavaScript or ES6+ JavaScript.
 
 While Starling mimics the classic display tree architecture of Adobe AIR/Flash, it provides much better performance than the Adobe version: all objects are rendered directly by the GPU (using the Stage3D API). When paired with OpenFL, Starling provides an alternative GPU renderer with helpful features. The complete architecture was designed for working well with the GPU; common game development tasks were built right into its core. Starling hides Stage3D internals from developers, but makes it easy to access them for those who need full performance and flexibility.
 
