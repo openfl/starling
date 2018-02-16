@@ -1,4 +1,4 @@
-[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/starling) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/starling.svg)](https://circleci.com/gh/openfl/starling)
+[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/starling-framework.svg?style=flat)](http://npmjs.com/package/starling-framework) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/starling) [![Build Status](https://img.shields.io/circleci/project/github/openfl/openfl/starling.svg)](https://circleci.com/gh/openfl/starling)
 
 Starling Framework
 ==================
