@@ -6,7 +6,7 @@ const package = require ("./package.json");
 
 module.exports = merge (common, {
 	output: {
-		filename: "openfl.min.js"
+		filename: "starling.min.js"
 	},
 	plugins: [
 		new UglifyJSPlugin ({
@@ -16,7 +16,7 @@ module.exports = merge (common, {
 			}
 		}),
 		new webpack.BannerPlugin ({
-			banner: "/*! OpenFL v" + package.version + " | MIT (c) Joshua Granick and other OpenFL contributors | openfl.org */",
+			banner: "/*! Starling Framework v" + package.version + " | Simplified BSD (c) Gamua | gamua.com/starling */",
 			raw: true,
 			entryOnly: true
 		}),
