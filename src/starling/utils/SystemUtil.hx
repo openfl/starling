@@ -70,6 +70,12 @@ class SystemUtil
 
         try
         {
+			#if flash
+			var nativeAppClass:Dynamic = Type.resolveClass("flash.desktop::NativeApplication");
+			if (nativeAppClass == null)
+				throw new Error("Not Air");
+			#end
+			
             //var nativeAppClass:Object = getDefinitionByName("flash.desktop::NativeApplication");
             //var nativeApp:EventDispatcher = nativeAppClass["nativeApplication"] as EventDispatcher;
             var nativeApp = Lib.current;
