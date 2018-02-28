@@ -12,7 +12,6 @@ package starling.text;
 
 import openfl.errors.ArgumentError;
 import openfl.geom.Rectangle;
-import openfl.errors.Error;
 
 import openfl.Vector;
 
@@ -61,16 +60,17 @@ import starling.text.BitmapChar;
 class BitmapFont implements ITextCompositor
 {
     /** Use this constant for the <code>fontSize</code> property of the TextField class to 
-     * render the bitmap font in exactly the size it was created. */ 
+	 * render the bitmap font in exactly the size it was created. */ 
     public static inline var NATIVE_SIZE:Int = -1;
     
     /** The font name of the embedded minimal bitmap font. Use this e.g. for debug output. */
     public static inline var MINI:String = "mini";
     
-    private static inline var CHAR_SPACE:Int           = 32;
+    private static inline var CHAR_MISSING:Int         =  0;
     private static inline var CHAR_TAB:Int             =  9;
     private static inline var CHAR_NEWLINE:Int         = 10;
     private static inline var CHAR_CARRIAGE_RETURN:Int = 13;
+	private static inline var CHAR_SPACE:Int           = 32;
     
     private var __texture:Texture;
     private var __chars:Map<Int, BitmapChar>;
@@ -86,7 +86,7 @@ class BitmapFont implements ITextCompositor
     private var __distanceFieldSpread:Float;
 
     // helper objects
-    private static var sLines:Array<Vector<CharLocation>> = [];
+    private static var sLines:Array<Vector<BitmapCharLocation>> = [];
     private static var sDefaultOptions:TextOptions = new TextOptions();
     
     #if commonjs
@@ -137,6 +137,7 @@ class BitmapFont implements ITextCompositor
 		__type = BitmapFontType.STANDARD;
         __distanceFieldSpread = 0.0;
         
+		addChar(CHAR_MISSING, new BitmapChar(CHAR_MISSING, null, 0, 0, 0));
         parseFontXml(fontXml);
     }
     
@@ -176,7 +177,7 @@ class BitmapFont implements ITextCompositor
         }
 		
 		var distanceField:Xml = fontXml.elementsNamed("distanceField").next();
-		if (distanceField != null)
+		if (distanceField != null && distanceField.exists("distanceRange") && distanceField.exists("fieldType"))
 		{
 			__distanceFieldSpread = Std.parseFloat(distanceField.get("distanceRange"));
 			__type = distanceField.get("fieldType") == "msdf" ?
@@ -269,13 +270,13 @@ class BitmapFont implements ITextCompositor
     public function createSprite(width:Float, height:Float, text:String,
                                  format:TextFormat, options:TextOptions=null):Sprite
     {
-        var charLocations:Vector<CharLocation> = arrangeChars(width, height, text, format, options);
+        var charLocations:Vector<BitmapCharLocation> = arrangeChars(width, height, text, format, options);
         var numChars:Int = charLocations.length;
         var sprite:Sprite = new Sprite();
         
         for (i in 0...numChars)
         {
-            var charLocation:CharLocation = charLocations[i];
+            var charLocation:BitmapCharLocation = charLocations[i];
             var char:Image = charLocation.char.createImage();
             char.x = charLocation.x;
             char.y = charLocation.y;
@@ -285,7 +286,7 @@ class BitmapFont implements ITextCompositor
             sprite.addChild(char);
         }
         
-        CharLocation.rechargePool();
+        BitmapCharLocation.rechargePool();
         return sprite;
     }
     
@@ -293,14 +294,14 @@ class BitmapFont implements ITextCompositor
     public function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
                                   format:TextFormat, options:TextOptions=null):Void
     {
-        var charLocations:Vector<CharLocation> = arrangeChars(
+        var charLocations:Vector<BitmapCharLocation> = arrangeChars(
                 width, height, text, format, options);
         var numChars:Int = charLocations.length;
         __helperImage.color = format.color;
         
         for (i in 0...numChars)
         {
-            var charLocation:CharLocation = charLocations[i];
+            var charLocation:BitmapCharLocation = charLocations[i];
             __helperImage.texture = charLocation.char.texture;
             __helperImage.readjustSize();
             __helperImage.x = charLocation.x;
@@ -309,7 +310,7 @@ class BitmapFont implements ITextCompositor
             meshBatch.addMesh(__helperImage);
         }
 
-        CharLocation.rechargePool();
+        BitmapCharLocation.rechargePool();
     }
 
     /** @inheritDoc */
@@ -336,16 +337,23 @@ class BitmapFont implements ITextCompositor
 	}
 	
     
-    /** Arranges the characters of a text inside a rectangle, adhering to the given settings. 
-     *  Returns a Vector of CharLocations. */
+	/** Arranges the characters of text inside a rectangle, adhering to the given settings.
+	 *  Returns a Vector of BitmapCharLocations.
+	 *
+	 *  <p>BEWARE: This method uses an object pool for the returned vector and all
+	 *  (returned and temporary) BitmapCharLocation instances. Do not save any references and
+	 *  always call <code>BitmapCharLocation.rechargePool()</code> when you are done processing.
+	 *  </p>
+	 */
     private function arrangeChars(width:Float, height:Float, text:String,
-                                  format:TextFormat, options:TextOptions):Vector<CharLocation>
+                                  format:TextFormat, options:TextOptions):Vector<BitmapCharLocation>
     {
-        if (text == null || text.length == 0) return CharLocation.vectorFromPool();
+        if (text == null || text.length == 0) return BitmapCharLocation.vectorFromPool();
         if (options == null) options = sDefaultOptions;
 
         var kerning:Bool = format.kerning;
         var leading:Float = format.leading;
+		var spacing:Float = format.letterSpacing;
         var hAlign:String = format.horizontalAlign;
         var vAlign:String = format.verticalAlign;
         var fontSize:Float = format.size;
@@ -353,7 +361,7 @@ class BitmapFont implements ITextCompositor
         var wordWrap:Bool = options.wordWrap;
 
         var finished:Bool = false;
-        var charLocation:CharLocation;
+        var charLocation:BitmapCharLocation;
         var numChars:Int;
         var containerWidth:Float = 0;
         var containerHeight:Float = 0;
@@ -371,11 +379,11 @@ class BitmapFont implements ITextCompositor
             containerWidth  = (width  - 2 * __padding) / scale;
             containerHeight = (height - 2 * __padding) / scale;
             
-            if (__lineHeight <= containerHeight)
+            if (__size <= containerHeight)
             {
                 var lastWhiteSpace:Int = -1;
                 var lastCharID:Int = -1;
-                var currentLine:Vector<CharLocation> = CharLocation.vectorFromPool();
+                var currentLine:Vector<BitmapCharLocation> = BitmapCharLocation.vectorFromPool();
                 var currentX:Float = 0;
                 currentY = 0;
                 
@@ -391,24 +399,30 @@ class BitmapFont implements ITextCompositor
                     {
                         lineFull = true;
                     }
-                    else if (char == null)
-                    {
-                        trace("[Starling] Font: "+ name + " missing character: " + text.charAt(i) + " id: "+ charID);
-                    }
                     else
                     {
+						if (char == null)
+						{
+							trace(StringUtil.format(
+								"[Starling] Character '{0}' (id: {1}) not found in '{2}'",
+								[text.charAt(i), charID, name]));
+
+							charID = CHAR_MISSING;
+							char = getChar(CHAR_MISSING);
+						}
+
                         if (charID == CHAR_SPACE || charID == CHAR_TAB)
                             lastWhiteSpace = i;
                         
                         if (kerning)
                             currentX += char.getKerning(lastCharID);
                         
-                        charLocation = CharLocation.instanceFromPool(char);
+                        charLocation = BitmapCharLocation.instanceFromPool(char);
                         charLocation.x = currentX + char.xOffset;
                         charLocation.y = currentY + char.yOffset;
                         currentLine[currentLine.length] = charLocation; // push
                         
-                        currentX += char.xAdvance;
+                        currentX += char.xAdvance + spacing;
                         lastCharID = charID;
                         
                         if (charLocation.x + char.width > containerWidth)
@@ -456,9 +470,9 @@ class BitmapFont implements ITextCompositor
                         if (lastWhiteSpace == i)
                             currentLine.pop();
                         
-                        if (currentY + leading + 2 * __lineHeight <= containerHeight)
+                        if (currentY + __lineHeight + leading + __size <= containerHeight)
                         {
-                            currentLine = CharLocation.vectorFromPool();
+                            currentLine = BitmapCharLocation.vectorFromPool();
                             currentX = 0;
                             currentY += __lineHeight + leading;
                             lastWhiteSpace = -1;
@@ -479,7 +493,7 @@ class BitmapFont implements ITextCompositor
                 finished = true; 
         } // while (!finished)
         
-        var finalLocations:Vector<CharLocation> = CharLocation.vectorFromPool();
+        var finalLocations:Vector<BitmapCharLocation> = BitmapCharLocation.vectorFromPool();
         var numLines:Int = sLines.length;
         var bottom:Float = currentY + __lineHeight;
         var yOffset:Int = 0;
@@ -489,13 +503,13 @@ class BitmapFont implements ITextCompositor
         
         for (lineID in 0...numLines)
         {
-            var line:Vector<CharLocation> = sLines[lineID];
+            var line:Vector<BitmapCharLocation> = sLines[lineID];
             numChars = line.length;
             
             if (numChars == 0) continue;
             
             var xOffset:Int = 0;
-            var lastLocation:CharLocation = line[line.length-1];
+            var lastLocation:BitmapCharLocation = line[line.length-1];
             var right:Float = lastLocation.x - lastLocation.char.xOffset 
                                               + lastLocation.char.xAdvance;
             
@@ -573,73 +587,4 @@ class BitmapFont implements ITextCompositor
 
     /** The underlying texture that contains all the chars. */
     private function get_texture():Texture { return __texture; }
-}
-
-class CharLocation
-{
-    public var char:BitmapChar;
-    public var scale:Float;
-    public var x:Float;
-    public var y:Float;
-
-    public function new(char:BitmapChar)
-    {
-        reset(char);
-    }
-
-    private function reset(char:BitmapChar):CharLocation
-    {
-        this.char = char;
-        return this;
-    }
-
-    // pooling
-
-    private static var sInstancePool:Vector<CharLocation> = new Vector<CharLocation>();
-    private static var sVectorPool:Array<Vector<CharLocation>> = [];
-
-    private static var sInstanceLoan:Vector<CharLocation> = new Vector<CharLocation>();
-    private static var sVectorLoan:Array<Vector<CharLocation>> = [];
-
-    public static function instanceFromPool(char:BitmapChar):CharLocation
-    {
-        var instance:CharLocation = sInstancePool.length > 0 ?
-            sInstancePool.pop() : new CharLocation(char);
-
-        instance.reset(char);
-        sInstanceLoan[sInstanceLoan.length] = instance;
-
-        return instance;
-    }
-
-    public static function vectorFromPool():Vector<CharLocation>
-    {
-        var vector:Vector<CharLocation> = sVectorPool.length > 0 ?
-            sVectorPool.pop() : new Vector<CharLocation>();
-
-        vector.length = 0;
-        sVectorLoan[sVectorLoan.length] = vector;
-
-        return vector;
-    }
-
-    public static function rechargePool():Void
-    {
-        var instance:CharLocation;
-        var vector:Vector<CharLocation>;
-
-        while (sInstanceLoan.length > 0)
-        {
-            instance = sInstanceLoan.pop();
-            instance.char = null;
-            sInstancePool[sInstancePool.length] = instance;
-        }
-
-        while (sVectorLoan.length > 0)
-        {
-            vector = sVectorLoan.pop();
-            vector.length = 0;
-            sVectorPool[sVectorPool.length] = vector;
-        }
-    }
 }

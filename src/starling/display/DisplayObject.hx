@@ -960,8 +960,9 @@ class DisplayObject extends EventDispatcher
 
         var actualWidth:Float;
         var scaleIsNaN:Bool = __scaleX != __scaleX; // avoid 'isNaN' call
+		var scaleIsZero:Bool = __scaleX < 1e-8 && __scaleX > -1e-8;
 
-        if (__scaleX == 0.0 || scaleIsNaN) { scaleX = 1.0; actualWidth = width; }
+        if (scaleIsZero || scaleIsNaN) { scaleX = 1.0; actualWidth = width; }
         else actualWidth = Math.abs(width / __scaleX);
 
         if (actualWidth != 0) scaleX = value / actualWidth;
@@ -978,8 +979,9 @@ class DisplayObject extends EventDispatcher
     {
         var actualHeight:Float;
         var scaleIsNaN:Bool = __scaleY != __scaleY; // avoid 'isNaN' call
-
-        if (__scaleY == 0.0 || scaleIsNaN) { scaleY = 1.0; actualHeight = height; }
+		var scaleIsZero:Bool = __scaleY < 1e-8 && __scaleY > -1e-8;
+		
+        if (scaleIsZero || scaleIsNaN) { scaleY = 1.0; actualHeight = height; }
         else actualHeight = Math.abs(height / __scaleY);
 
         if (actualHeight != 0) scaleY = value / actualHeight;
