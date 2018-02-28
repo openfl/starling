@@ -19,6 +19,8 @@ import openfl.Vector;
 import starling.display.Image;
 import starling.display.MeshBatch;
 import starling.display.Sprite;
+import starling.styles.DistanceFieldStyle;
+import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.Align;
@@ -80,6 +82,8 @@ class BitmapFont implements ITextCompositor
     private var __offsetY:Float;
     private var __padding:Float;
     private var __helperImage:Image;
+	private var __type:String;
+    private var __distanceFieldSpread:Float;
 
     // helper objects
     private static var sLines:Array<Vector<CharLocation>> = [];
@@ -97,6 +101,8 @@ class BitmapFont implements ITextCompositor
             "offsetX": { get: untyped __js__ ("function () { return this.get_offsetX (); }"), set: untyped __js__ ("function (v) { return this.set_offsetX (v); }") },
             "offsetY": { get: untyped __js__ ("function () { return this.get_offsetY (); }"), set: untyped __js__ ("function (v) { return this.set_offsetY (v); }") },
             "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
+			"type": { get: untyped __js__ ("function () { return this.get_type (); }"), set: untyped __js__ ("function (v) { return this.set_type (v); }") },
+			"distanceFieldSpread": { get: untyped __js__ ("function () { return this.get_distanceFieldSpread (); }"), set: untyped __js__ ("function (v) { return this.set_distanceFieldSpread (v); }") },
         });
         
     }
@@ -128,6 +134,8 @@ class BitmapFont implements ITextCompositor
         __texture = texture;
         __chars = new Map<Int, BitmapChar>();
         __helperImage = new Image(texture);
+		__type = BitmapFontType.STANDARD;
+        __distanceFieldSpread = 0.0;
         
         parseFontXml(fontXml);
     }
@@ -166,6 +174,19 @@ class BitmapFont implements ITextCompositor
             trace("[Starling] Warning: invalid font size in '" + __name + "' font.");
             __size = (__size == 0.0 ? 16.0 : __size * -1.0);
         }
+		
+		var distanceField:Xml = fontXml.elementsNamed("distanceField").next();
+		if (distanceField != null)
+		{
+			__distanceFieldSpread = Std.parseFloat(distanceField.get("distanceRange"));
+			__type = distanceField.get("fieldType") == "msdf" ?
+				BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD : BitmapFontType.DISTANCE_FIELD;
+		}
+		else
+		{
+			__distanceFieldSpread = 0.0;
+			__type = BitmapFontType.STANDARD;
+		}
         
         var chars:Xml = fontXml.elementsNamed("chars").next();
         for (charElement in chars.elementsNamed("char"))
@@ -296,6 +317,24 @@ class BitmapFont implements ITextCompositor
     {
         meshBatch.clear();
     }
+	
+	
+	/** @inheritDoc */
+	public function getDefaultMeshStyle(previousStyle:MeshStyle,
+										format:TextFormat, options:TextOptions):MeshStyle
+	{
+		if (__type == BitmapFontType.STANDARD) return null;
+		else // -> distance field font
+		{
+			var dfStyle:DistanceFieldStyle;
+			var fontSize:Float = format.size < 0 ? format.size * -__size : format.size;
+			dfStyle = Std.is(previousStyle, DistanceFieldStyle) ? cast previousStyle : new DistanceFieldStyle();
+			dfStyle.multiChannel = (__type == BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD);
+			dfStyle.softness = __size / (fontSize * __distanceFieldSpread);
+			return dfStyle;
+		}
+	}
+	
     
     /** Arranges the characters of a text inside a rectangle, adhering to the given settings. 
      *  Returns a Vector of CharLocations. */
@@ -485,6 +524,17 @@ class BitmapFont implements ITextCompositor
     /** The native size of the font. */
     public var size(get, never):Float;
     private function get_size():Float { return __size; }
+		
+	/** The type of the bitmap font. @see starling.text.BitmapFontType @default standard */
+	public var type(get, set):String;
+	public function get_type():String { return __type; }
+	public function set_type(value:String):String { return __type = value; }
+
+	/** If the font uses a distance field texture, this property returns its spread (i.e.
+	 *  the width of the blurred edge in points). */
+	public var distanceFieldSpread(get, set):Float;
+	public function get_distanceFieldSpread():Float { return __distanceFieldSpread; }
+	public function set_distanceFieldSpread(value:Float):Float { return __distanceFieldSpread = value; }
     
     /** The height of one line in points. */
     public var lineHeight(get, never):Float;

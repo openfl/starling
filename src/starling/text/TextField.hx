@@ -103,7 +103,8 @@ class TextField extends DisplayObjectContainer
     private var _requiresRecomposition:Bool;
     private var _border:DisplayObjectContainer;
     private var _meshBatch:MeshBatch;
-    private var _style:MeshStyle;
+    private var _customStyle:MeshStyle;
+    private var _defaultStyle:MeshStyle;
     private var _recomposing:Bool;
 
     // helper objects
@@ -221,7 +222,13 @@ class TextField extends DisplayObjectContainer
         _options.textureScale = Starling.current.contentScaleFactor;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, _format, _options);
 
-        if (_style != null) _meshBatch.style = _style;
+        if (_customStyle != null) _meshBatch.style = _customStyle;
+		else
+		{
+			_defaultStyle = _compositor.getDefaultMeshStyle(_defaultStyle, _format, _options);
+			if (_defaultStyle != null) _meshBatch.style = _defaultStyle;
+		}
+		
         if (_options.autoSize != TextFieldAutoSize.NONE)
         {
             _textBounds = _meshBatch.getBounds(_meshBatch, _textBounds);
@@ -471,10 +478,14 @@ class TextField extends DisplayObjectContainer
     /** The mesh style that is used to render the text.
      *  Note that a style instance may only be used on one mesh at a time. */
     public var style(get, set):MeshStyle;
-    private function get_style():MeshStyle { return _meshBatch.style; }
+    private function get_style():MeshStyle 
+	{
+		if (_requiresRecomposition) recompose(); // might change style!
+			return _meshBatch.style;
+	}
     private function set_style(value:MeshStyle):MeshStyle
     {
-        _meshBatch.style = _style = value;
+        _customStyle = value;
         setRequiresRecomposition();
         return value;
     }

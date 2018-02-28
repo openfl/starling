@@ -264,6 +264,9 @@ class DistanceFieldStyle extends MeshStyle
                 var targetVertexData:VertexData = cast(targetStyle, DistanceFieldStyle).vertexData;
                 var maxScale:Float = DistanceFieldEffect.MAX_SCALE;
                 var minScale:Float = maxScale / 255;
+				
+				if (numVertices < 0)
+					numVertices = vertexData.numVertices - vertexID;
 
                 for (i in 0...numVertices)
                 {
