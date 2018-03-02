@@ -10,7 +10,6 @@
 
 package starling.display;
 
-import openfl.errors.ArgumentError;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
@@ -21,6 +20,7 @@ import starling.utils.MathUtil;
 import starling.utils.Padding;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
+import starling.utils.Execute;
 
 /** An Image is a quad with a texture mapped onto it.
  *
@@ -50,7 +50,7 @@ class Image extends Quad
     private var __scale9Grid:Rectangle;
     private var __tileGrid:Rectangle;
 
-    private static var sSetupFunctions = new Map<Texture, TextureSetupSettings>();
+    private static var sAutomators = new Map<Texture, SetupAutomator>();
 
     // helper objects
     private static var sPadding:Padding = new Padding();
@@ -197,22 +197,22 @@ class Image extends Quad
     {
         if (value != texture)
         {
-            var textureSetupSettings:TextureSetupSettings = null;
+            var setupAutomator:SetupAutomator = null;
             
-            if (texture != null && sSetupFunctions.exists(texture))
+            if (texture != null && sAutomators.exists(texture))
             {
-                textureSetupSettings = sSetupFunctions[texture];
-                if (textureSetupSettings.onRelease != null)
-                    textureSetupSettings.onRelease(this);
+                setupAutomator = sAutomators[texture];
+                if (setupAutomator.onRelease != null)
+                    setupAutomator.onRelease(this);
             }
 
             super.texture = value;
             
-            if (value != null && sSetupFunctions.exists(value))
+            if (value != null && sAutomators.exists(value))
             {
-                textureSetupSettings = sSetupFunctions[value];
-                if (textureSetupSettings.onAssign != null)
-                    textureSetupSettings.onAssign(this);
+                setupAutomator = sAutomators[value];
+                if (setupAutomator.onAssign != null)
+                    setupAutomator.onAssign(this);
             }
             else if (__scale9Grid != null && value != null)
                 readjustSize();
@@ -536,38 +536,44 @@ class Image extends Quad
     // bindings
 
     /** Injects code that is called by all instances whenever the given texture is assigned or replaced.
-        *
-        *  @param texture    Assignment of this texture instance will lead to the following callback(s) being executed.
-        *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
-        *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
-        */
+	 *  The new functions will be executed after any existing ones.
+	 * 
+	 *  @param texture    Assignment of this texture instance will lead to the following callback(s) being executed.
+	 *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
+	 *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
+	 */
     public static function automateSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
     {
-        if (texture == null)
-            return;
-        else if (onAssign == null && onRelease == null)
-            sSetupFunctions.remove(texture);
-        else
-            sSetupFunctions[texture] = new TextureSetupSettings(onAssign, onRelease);
-    }
+		var automator:SetupAutomator = sAutomators[texture];
+		if (automator != null) automator.add(onAssign, onRelease);
+		else sAutomators[texture] = new SetupAutomator(onAssign, onRelease);
+	}
 
-    /** Removes any custom setup functions for the given texture. */
+    /** Removes all custom setup functions for the given texture, including those created via
+     *  'bindScale9GridToTexture' and 'bindPivotPointToTexture'. */
     public static function resetSetupForTexture(texture:Texture):Void
     {
-        automateSetupForTexture(texture, null, null);
+		sAutomators.remove(texture);
     }
+	
+	/** Removes specific setup functions for the given texture. */
+	public static function removeSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
+	{
+		var automator:SetupAutomator = sAutomators[texture];
+		if (automator != null) automator.remove(onAssign, onRelease);
+	}
 
     /** Binds the given scaling grid to the given texture so that any image which displays the texture will
-        *  automatically use the grid. */
+     *  automatically use the grid. */
     public static function bindScale9GridToTexture(texture:Texture, scale9Grid:Rectangle):Void
     {
         automateSetupForTexture(texture,
             function(image:Image):Void { image.scale9Grid = scale9Grid; },
             function(image:Image):Void { image.scale9Grid = null; });
     }
-
+	
     /** Binds the given pivot point to the given texture so that any image which displays the texture will
-        *  automatically use the pivot point. */
+     *  automatically use the pivot point. */
     public static function bindPivotPointToTexture(texture:Texture, pivotX:Float, pivotY:Float):Void
     {
         automateSetupForTexture(texture,
@@ -576,15 +582,47 @@ class Image extends Quad
     }
 }
 
-class TextureSetupSettings
+class SetupAutomator
 {
-    public var onAssign:Image->Void;
-    public var onRelease:Null<Image->Void>;
-    
-    public function new(onAssign:Image->Void, onRelease:Image->Void = null):Void
+    private var _onAssign:Array<Image->Void>;
+    private var _onRelease:Array<Image->Void>;
+
+    public function new(onAssign:Image->Void, onRelease:Image->Void)
     {
-        this.onAssign = onAssign;
-        this.onRelease = onRelease;
+        _onAssign = new Array<Image->Void>();
+        _onRelease = new Array<Image->Void>();
+        add(onAssign, onRelease);
     }
-    
+
+    public function add(onAssign:Image->Void, onRelease:Image->Void):Void
+    {
+        if (onAssign != null && _onAssign.indexOf(onAssign) == -1)
+            _onAssign[_onAssign.length] = onAssign;
+
+        if (onRelease != null && _onRelease.indexOf(onRelease) == -1)
+            _onRelease[_onRelease.length] = onRelease;
+    }
+
+    public function remove(onAssign:Image->Void, onRelease:Image->Void):Void
+    {
+        if (onAssign != null)
+            _onAssign.remove(onAssign);
+
+        if (onRelease != null)
+            _onRelease.remove(onRelease);
+    }
+
+    public function onAssign(image:Image):Void
+    {
+        var count:Int = _onAssign.length;
+        for (i in 0...count)
+            Execute.execute(_onAssign[i], [image]);
+    }
+
+    public function onRelease(image:Image):Void
+    {
+        var count:Int = _onRelease.length;
+        for (i in 0...count)
+            Execute.execute(_onRelease[i], [image]);
+    }
 }

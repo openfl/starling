@@ -47,22 +47,22 @@ class DropShadowFilter extends FragmentFilter
      *                   opacity; values > 1 will make it stronger, i.e. produce a harder edge.
      * @param blur       the amount of blur with which the shadow is created. Note that high
      *                   values will cause the number of render passes to grow.
-     * @param resolution the resolution of the filter texture. '1' means full resolution,
-     *                   '0.5' half resolution, etc.
+     * @param quality 	 the quality of the shadow blur, '1' being the best (range 0.1 - 1.0)
      */
     public function new(distance:Float=4.0, angle:Float=0.785,
                         color:UInt=0x0, alpha:Float=0.5, blur:Float=1.0,
-                        resolution:Float=0.5)
+                        quality:Float=0.5)
     {
         super();
         
         _compositeFilter = new CompositeFilter();
-        _blurFilter = new BlurFilter(blur, blur, resolution);
+        _blurFilter = new BlurFilter(blur, blur);
         _distance = distance;
         _angle = angle;
 
         this.color = color;
         this.alpha = alpha;
+		this.quality = quality;
 
         updatePadding();
     }
@@ -183,13 +183,15 @@ class DropShadowFilter extends FragmentFilter
         return value;
     }
 
-    /** @private */
-    override private function get_resolution():Float { return _blurFilter.resolution; }
-    override private function set_resolution(value:Float):Float
+    /** The quality used for blurring the shadow.
+	 *  Forwarded to the internally used <em>BlurFilter</em>. */
+	public var quality(get, set):Float;
+    private function get_quality():Float { return _blurFilter.quality; }
+    private function set_quality(value:Float):Float
     {
-        if (resolution != value)
+        if (quality != value)
         {
-            _blurFilter.resolution = value;
+            _blurFilter.quality = value;
             setRequiresRedraw();
             updatePadding();
         }

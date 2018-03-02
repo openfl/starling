@@ -198,7 +198,7 @@ class Painter
 
         if (!_shareContext)
         {
-            _context.dispose(false);
+            if (_context != null) _context.dispose(false);
             sSharedData = new Map();
         }
     }
@@ -954,6 +954,8 @@ class Painter
     {
         _enableErrorChecking = value;
         if (_context != null) _context.enableErrorChecking = value;
+		if (value) trace("[Starling] Warning: 'enableErrorChecking' has a " +
+                "negative impact on performance. Never activate for release builds!");
         return value;
     }
 
