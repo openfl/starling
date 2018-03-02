@@ -26,12 +26,9 @@ import openfl.geom.Rectangle;
 import flash.media.Camera;
 #end
 import openfl.net.NetStream;
-import openfl.system.Capabilities;
 import openfl.utils.ByteArray;
-import openfl.Vector;
 
 import starling.core.Starling;
-import starling.errors.AbstractClassError;
 import starling.errors.MissingContextError;
 import starling.errors.NotSupportedError;
 import starling.rendering.VertexData;
@@ -281,6 +278,15 @@ class Texture
                 textureRoot.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
+		else if (Std.is(asset, BitmapData))
+		{
+			texture = Texture.fromBitmapData(cast asset, mipMapping,
+								optimizeForRenderToTexture, scale, format, forcePotTexture);
+			texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
+			{
+				texture.root.uploadBitmapData(Type.createInstance(assetClass, []));
+			};
+		}
         else if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null);

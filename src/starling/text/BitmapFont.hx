@@ -108,24 +108,24 @@ class BitmapFont implements ITextCompositor
     }
     #end
     
-    /** Creates a bitmap font by parsing an XML file and uses the specified texture. 
-     * If you don't pass any data, the "mini" font will be created. */
-    public function new(texture:Texture=null, fontXml:Dynamic=null)
+    /** Creates a bitmap font from the given texture and font data.
+	 *  If you don't pass any data, the "mini" font will be created.
+	 *
+	 * @param texture  The texture containing all the glyphs.
+	 * @param fontData Typically an XML file in the standard AngelCode format. Override the
+	 *                 the 'parseFontData' method to add support for additional formats.
+	 */
+    public function new(texture:Texture=null, fontData:Dynamic=null)
     {
-        if (fontXml != null && Std.is(fontXml, String))
-        {
-            fontXml = Xml.parse(fontXml).firstElement();
-        }
-        
         // if no texture is passed in, we create the minimal, embedded font
-        if (texture == null && fontXml == null)
+        if (texture == null && fontData == null)
         {
             texture = MiniBitmapFont.texture;
-            fontXml = MiniBitmapFont.xml;
+            fontData = MiniBitmapFont.xml;
         }
-        else if (texture != null && fontXml == null)
+        else if (texture != null && fontData == null)
         {
-            throw new ArgumentError("Set both of the 'texture' and 'fontXml' arguments to valid objects or leave both of them null.");
+            throw new ArgumentError("Set both of the 'texture' and 'fontData' arguments to valid objects or leave both of them null.");
         }
         
         __name = "unknown";
@@ -138,7 +138,7 @@ class BitmapFont implements ITextCompositor
         __distanceFieldSpread = 0.0;
         
 		addChar(CHAR_MISSING, new BitmapChar(CHAR_MISSING, null, 0, 0, 0));
-        parseFontXml(fontXml);
+        parseFontData(fontData);
     }
     
     /** Disposes the texture of the bitmap font! */
@@ -147,6 +147,26 @@ class BitmapFont implements ITextCompositor
         if (__texture != null)
             __texture.dispose();
     }
+	
+	/** Parses the data that's passed as second argument to the constructor.
+	 *  Override this method to support different file formats. */
+	private function parseFontData(data:Dynamic):Void
+	{
+		try
+		{
+			var fontXml:Xml = null;
+			if(Std.is(data, String))
+				fontXml = Xml.parse(data).firstElement();
+			else if(Std.is(data, Xml))
+				fontXml = cast data;
+				
+			parseFontXml(fontXml);
+		}
+		catch (error:Dynamic)
+		{
+			throw new ArgumentError("BitmapFont only supports XML data");
+		}	
+	}
     
     private function parseFontXml(fontXml:Xml):Void
     {
@@ -345,7 +365,7 @@ class BitmapFont implements ITextCompositor
 	 *  always call <code>BitmapCharLocation.rechargePool()</code> when you are done processing.
 	 *  </p>
 	 */
-    private function arrangeChars(width:Float, height:Float, text:String,
+    public function arrangeChars(width:Float, height:Float, text:String,
                                   format:TextFormat, options:TextOptions):Vector<BitmapCharLocation>
     {
         if (text == null || text.length == 0) return BitmapCharLocation.vectorFromPool();

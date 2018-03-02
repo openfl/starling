@@ -10,9 +10,14 @@
 
 package starling.textures;
 
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.errors.ArgumentError;
 
 import openfl.Vector;
+
+import starling.display.Image;
+import starling.utils.StringUtil;
 
 /** A texture atlas is a collection of many smaller textures in one big image. This class
  *  is used to access textures from such an atlas.
@@ -70,6 +75,8 @@ import openfl.Vector;
  */
 class TextureAtlas
 {
+	private static var NAME_REGEX:EReg = ~/(.+?)\d+$/; // find text before trailing digits
+	
     private var __atlasTexture:Texture;
     private var __subTextures:Map<String, SubTexture>;
     private var __subTextureNames:Vector<String>;
@@ -87,19 +94,15 @@ class TextureAtlas
     }
     #end
     
-    /** Create a texture atlas from a texture by parsing the regions from an XML file. */
-    public function new(texture:Texture, atlasXml:Dynamic=null)
+    /** Create a texture atlas from a texture and atlas data. The second argument typically
+	 *  points to an XML file. */
+    public function new(texture:Texture, data:Dynamic=null)
     {
-        if (atlasXml != null && Std.is(atlasXml, String))
-        {
-            atlasXml = Xml.parse(atlasXml).firstElement();
-        }
-        
         __subTextures = new Map();
         __atlasTexture = texture;
         
-        if (atlasXml != null)
-            parseAtlasXml(atlasXml);
+        if (data != null)
+            parseAtlasXml(data);
     }
     
     /** Disposes the atlas texture. */
@@ -107,24 +110,36 @@ class TextureAtlas
     {
         __atlasTexture.dispose();
     }
+	
+	/** Parses the data that's passed as second argument to the constructor.
+	 *  Override this method to add support for additional file formats. */
+	private function parseAtlasData(data:Dynamic):Void
+	{
+		try
+		{
+			var atlasXml:Xml = null;
+			if(Std.is(data, String))
+				atlasXml = Xml.parse(data).firstElement();
+			else if(Std.is(data, Xml))
+				atlasXml = cast data;
+				
+			parseAtlasXml(atlasXml);
+		}
+		catch (error:Dynamic)
+		{
+			throw new ArgumentError("TextureAtlas only supports XML data");
+		}
+	}
     
-    private function getXmlFloat(xml:Xml, attributeName:String):Float
-    {
-        var value:String = xml.get (attributeName);
-        if (value != null)
-            return Std.parseFloat(value);
-        else
-            return 0;
-    }
-    
-    /** This function is called by the constructor and will parse an XML in Starling's 
-     * default atlas file format. Override this method to create custom parsing logic
-     * (e.g. to support a different file format). */
+    /** This function is called by 'parseAtlasData' for XML data. It will parse an XML in
+	 *  Starling's default atlas file format. Override this method to create custom parsing
+	 *  logic (e.g. to support additional attributes). */
     private function parseAtlasXml(atlasXml:Xml):Void
     {
         var scale:Float = __atlasTexture.scale;
         var region:Rectangle = new Rectangle();
         var frame:Rectangle  = new Rectangle();
+		var pivotPoints:Map<String, Point> = new Map<String, Point>();
         
 		if (atlasXml.firstElement().nodeName == "TextureAtlas") {
 			atlasXml = atlasXml.firstElement();
@@ -133,14 +148,16 @@ class TextureAtlas
         for (subTexture in atlasXml.elementsNamed("SubTexture"))
         {
             var name:String        = subTexture.get("name");
-            var x:Float            = getXmlFloat(subTexture, "x") / scale;
-            var y:Float            = getXmlFloat(subTexture, "y") / scale;
-            var width:Float        = getXmlFloat(subTexture, "width") / scale;
-            var height:Float       = getXmlFloat(subTexture, "height") / scale;
-            var frameX:Float       = getXmlFloat(subTexture, "frameX") / scale;
-            var frameY:Float       = getXmlFloat(subTexture, "frameY") / scale;
-            var frameWidth:Float   = getXmlFloat(subTexture, "frameWidth") / scale;
-            var frameHeight:Float  = getXmlFloat(subTexture, "frameHeight") / scale;
+            var x:Float            = scale > 0 ? getXmlFloat(subTexture, "x") / scale : 0.0;
+            var y:Float            = scale > 0 ? getXmlFloat(subTexture, "y") / scale : 0.0;
+            var width:Float        = scale > 0 ? getXmlFloat(subTexture, "width") / scale : 0.0;
+            var height:Float       = scale > 0 ? getXmlFloat(subTexture, "height") / scale : 0.0;
+            var frameX:Float       = scale > 0 ? getXmlFloat(subTexture, "frameX") / scale : 0.0;
+            var frameY:Float       = scale > 0 ? getXmlFloat(subTexture, "frameY") / scale : 0.0;
+            var frameWidth:Float   = scale > 0 ? getXmlFloat(subTexture, "frameWidth") / scale : 0.0;
+            var frameHeight:Float  = scale > 0 ? getXmlFloat(subTexture, "frameHeight") / scale : 0.0;
+			var pivotX:Float       = scale > 0 ? getXmlFloat(subTexture, "pivotX") / scale : 0.0;
+            var pivotY:Float       = scale > 0 ? getXmlFloat(subTexture, "pivotY") / scale : 0.0;
             var rotated:Bool       = parseBool(subTexture.get("rotated"));
 
             region.setTo(x, y, width, height);
@@ -150,7 +167,29 @@ class TextureAtlas
                 addRegion(name, region, frame, rotated);
             else
                 addRegion(name, region, null,  rotated);
+				
+			if (pivotX != 0 || pivotY != 0)
+			{
+				Image.bindPivotPointToTexture(getTexture(name), pivotX, pivotY);
+				pivotPoints[name] = new Point(pivotX, pivotY);
+			}
         }
+		
+		// Adobe Animate writes pivot points only for the first texture of an animation.
+		// The code below duplicates the pivot points for the rest of them.
+
+		for (pivotName in pivotPoints.keys())
+		{
+			if (NAME_REGEX.match(pivotName))
+			{
+				var baseName:String = NAME_REGEX.matched(1);
+				var pivot:Point = pivotPoints[pivotName];
+
+				for (name in __subTextures.keys())
+					if (name.indexOf(baseName) == 0 && !pivotPoints.exists(name))
+						Image.bindPivotPointToTexture(__subTextures[name], pivot.x, pivot.y);
+			}
+		}
     }
     
     /** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */
@@ -239,11 +278,20 @@ class TextureAtlas
     public var texture(get, never):Texture;
     private function get_texture():Texture { return __atlasTexture; }
     
-    // utility methods
+    
+	// utility methods
 
     private static function parseBool(value:String):Bool
     {
         return value != null ? value.toLowerCase() == "true" : false;
+    }
+	private function getXmlFloat(xml:Xml, attributeName:String):Float
+    {
+        var value:String = xml.get (attributeName);
+        if (value != null)
+            return Std.parseFloat(value);
+        else
+            return 0;
     }
 
     private function compare(a:String, b:String) {return (a < b) ? -1 : (a > b) ? 1 : 0;}

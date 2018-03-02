@@ -10,6 +10,7 @@
 
 package starling.utils;
 
+import haxe.Constraints.Function;
 import haxe.Timer;
 
 import openfl.display.Stage3D;
@@ -25,7 +26,6 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 
 import starling.core.Starling;
-import starling.errors.AbstractClassError;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.Execute.execute;
@@ -225,9 +225,12 @@ class RenderUtil
     {
         var profiles:Array<Dynamic>;
         var currentProfile:String;
+		var executeFunc:Function->Array<Dynamic>->Void = SystemUtil.isDesktop ?
+                execute : SystemUtil.executeWhenApplicationIsActive;
 
         if (profile == "auto")
-            profiles = ["standardExtended", "standard", "standardConstrained",
+            profiles = ["enhanced",
+						"standardExtended", "standard", "standardConstrained",
                         "baselineExtended", "baseline", "baselineConstrained"];
         else if (Std.is(profile, String))
             profiles = [Std.string(profile)];
@@ -245,7 +248,10 @@ class RenderUtil
         {
             currentProfile = profiles.shift();
 
-            try { execute(stage3D.requestContext3D, [renderMode, currentProfile]); }
+            try 
+			{
+				executeFunc(stage3D.requestContext3D, [renderMode, currentProfile]);
+			}
             catch (error:Error)
             {
                 if (profiles.length != 0) Timer.delay(requestNextProfile, 1);

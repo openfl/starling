@@ -27,7 +27,8 @@ class BlurFilter extends FragmentFilter
 {
     private var __blurX:Float;
     private var __blurY:Float;
-
+	private var __quality:Float;
+	
     #if commonjs
     private static function __init__ () {
         
@@ -36,6 +37,7 @@ class BlurFilter extends FragmentFilter
             "totalBlurY": { get: untyped __js__ ("function () { return this.get_totalBlurY (); }") },
             "blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
             "blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
             "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
             "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
         });
@@ -63,7 +65,9 @@ class BlurFilter extends FragmentFilter
         super();
         __blurX = Math.abs(blurX);
         __blurY = Math.abs(blurY);
+		__quality = 1.0;
         this.resolution = resolution;
+		this.maintainResolutionAcrossPasses = true;
     }
 
     /** @private */
@@ -84,6 +88,7 @@ class BlurFilter extends FragmentFilter
         var strengthX:Float = totalBlurX;
         var strengthY:Float = totalBlurY;
 
+		effect.quality = __quality;
         effect.direction = BlurEffect.HORIZONTAL;
 
         while (strengthX > 0)
@@ -129,8 +134,8 @@ class BlurFilter extends FragmentFilter
 
     private function updatePadding():Void
     {
-        var paddingX:Float = __blurX != 0 ? (totalBlurX * 3 + 2) / resolution : 0;
-        var paddingY:Float = __blurY != 0 ? (totalBlurY * 3 + 2) / resolution : 0;
+        var paddingX:Float = __blurX != 0 ? (totalBlurX * 3 + 2) / (resolution * __quality) : 0;
+        var paddingY:Float = __blurY != 0 ? (totalBlurY * 3 + 2) / (resolution * __quality) : 0;
 
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }
@@ -161,8 +166,11 @@ class BlurFilter extends FragmentFilter
     private function get_blurX():Float { return __blurX; }
     private function set_blurX(value:Float):Float
     {
-        __blurX = Math.abs(value);
-        updatePadding();
+		if (__blurX != value)
+        {
+			__blurX = Math.abs(value);
+			updatePadding();
+		}
         return value;
     }
 
@@ -172,10 +180,34 @@ class BlurFilter extends FragmentFilter
     private function get_blurY():Float { return __blurY; }
     private function set_blurY(value:Float):Float
     {
-        __blurY = Math.abs(value);
-        updatePadding();
+		if (__blurY != value)
+        {
+			__blurY = Math.abs(value);
+			updatePadding();
+		}
         return value;
     }
+	
+	/** The quality of the blur effect. Low values will look as if the target was drawn
+	 *  multiple times in close proximity (range: 0.1 - 1).
+	 *
+	 *  <p>Typically, it's better to reduce the filter resolution instead; however, if that
+	 *  is not an option (e.g. when using the BlurFilter as part of a composite filter),
+	 *  this property may provide an alternative.</p>
+	 *
+	 *  @default 1.0
+	 */
+	public var quality(get, set):Float;
+	public function get_quality():Float { return __quality; }
+	public function set_quality(value:Float):Float
+	{
+		if (__quality != value)
+		{
+			__quality = MathUtil.clamp(value, 0.1, 1.0);
+			updatePadding();
+		}
+		return value;
+	}
 }
 
 
@@ -186,6 +218,7 @@ class BlurEffect extends FilterEffect
 
     private var _strength:Float;
     private var _direction:String;
+	private var _quality:Float;
 
     private static var sTmpWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
     private static var sWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
@@ -197,6 +230,7 @@ class BlurEffect extends FilterEffect
         untyped Object.defineProperties (BlurEffect.prototype, {
             "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
             "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
+			"quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
         });
         
     }
@@ -208,6 +242,7 @@ class BlurEffect extends FilterEffect
         super();
         _strength = 0.0;
         _direction = HORIZONTAL;
+		_quality = 1.0;
     }
 
     override private function createProgram():Program
@@ -331,13 +366,13 @@ class BlurEffect extends FilterEffect
 
         if (_direction == HORIZONTAL)
         {
-            sOffsets[0] = offset1 * pixelSize; sOffsets[1] = 0;
-            sOffsets[2] = offset2 * pixelSize; sOffsets[3] = 0;
+            sOffsets[0] = offset1 * pixelSize / _quality; sOffsets[1] = 0;
+            sOffsets[2] = offset2 * pixelSize / _quality; sOffsets[3] = 0;
         }
         else
         {
-            sOffsets[0] = 0; sOffsets[1] = offset1 * pixelSize;
-            sOffsets[2] = 0; sOffsets[3] = offset2 * pixelSize;
+            sOffsets[0] = 0; sOffsets[1] = offset1 * pixelSize / _quality;
+            sOffsets[2] = 0; sOffsets[3] = offset2 * pixelSize / _quality;
         }
     }
 
@@ -353,4 +388,8 @@ class BlurEffect extends FilterEffect
     public var strength(get, set):Float;
     private function get_strength():Float { return _strength; }
     private function set_strength(value:Float):Float { return _strength = value; }
+	
+	public var quality(get, set):Float;
+    private function get_quality():Float { return _quality; }
+    private function set_quality(value:Float):Float { return _quality = value; }
 }
