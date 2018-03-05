@@ -1091,7 +1091,7 @@ class AssetManager extends EventDispatcher
 
             switch (extension)
             {
-                case "mpeg", "mp3":
+                case "mpeg", "mp3", "ogg", "wav":
                     sound = new Sound();
                     sound.loadCompressedDataFromByteArray(bytes, bytes.length);
                     bytes.clear();
