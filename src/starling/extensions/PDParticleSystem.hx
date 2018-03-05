@@ -198,8 +198,8 @@ class PDParticleSystem extends ParticleSystem
         var endSize:Float = _endSize + _endSizeVariance * (Math.random() * 2.0 - 1.0);
         if (startSize < 0.1) startSize = 0.1;
         if (endSize < 0.1)   endSize = 0.1;
-        particle.scale = startSize / texture.width;
-        particle.scaleDelta = ((endSize - startSize) / lifespan) / texture.width;
+        particle.scale = startSize / textureWidth;
+        particle.scaleDelta = ((endSize - startSize) / lifespan) / textureWidth;
         
         // colors
         
