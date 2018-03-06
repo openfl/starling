@@ -130,7 +130,7 @@ class SystemUtil
 
     /** Executes the given function with its arguments the next time the application is active.
         * (If it <em>is</em> active already, the call will be executed right away.) */
-    public static function executeWhenApplicationIsActive(call:Function, args:Array<Dynamic>):Void
+    public static function executeWhenApplicationIsActive(call:Function, args:Array<Dynamic> = null):Void
     {
         initialize();
         

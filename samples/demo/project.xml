@@ -6,7 +6,7 @@
 	
 	<window width="320" height="480" orientation="portrait" background="0xffffff" />
 	<window resizable="false" unless="mobile" />
-	<window stencil-buffer="false" if="android" />
+	<window depth-buffer="true" stencil-buffer="true" />
 	
 	<source path="src" />
 	

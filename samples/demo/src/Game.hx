@@ -11,7 +11,7 @@ import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.events.KeyboardEvent;
-import starling.utils.AssetManager;
+import starling.assets.AssetManager;
 
 @:keep class Game extends Sprite
 {

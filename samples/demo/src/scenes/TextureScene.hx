@@ -33,9 +33,7 @@ import starling.textures.Texture;
         try
         {
             // display a compressed texture
-
-            var compressedBA:ByteArray = Game.assets.getByteArray("compressed_texture");
-            var compressedTexture:Texture = Texture.fromAtfData(compressedBA);
+            var compressedTexture:Texture = Game.assets.getTexture("compressed_texture");
             var image4:Image = new Image(compressedTexture);
             image4.x = Constants.CenterX - image4.width / 2;
             image4.y = 280;

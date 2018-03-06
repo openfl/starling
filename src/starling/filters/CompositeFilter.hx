@@ -21,7 +21,6 @@ import starling.rendering.Painter;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 import starling.textures.Texture;
-import starling.utils.ArrayUtil;
 import starling.utils.Color;
 import starling.utils.RenderUtil;
 import starling.utils.StringUtil;
@@ -163,7 +162,7 @@ class CompositeEffect extends FilterEffect
     private function getUsedLayers(out:Array<CompositeLayer>=null):Array<CompositeLayer>
     {
         if (out == null) out = [];
-        else ArrayUtil.clear(out);
+        else out.splice(0, out.length);
 
         for (layer in _layers)
             if (layer.texture != null) out[out.length] = layer;

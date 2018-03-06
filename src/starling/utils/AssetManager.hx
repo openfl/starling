@@ -547,7 +547,7 @@ class AssetManager extends EventDispatcher
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
-        ArrayUtil.clear(__queue);
+		__queue.splice(0, __queue.length);
         dispatchEventWith(Event.CANCEL);
     }
     
@@ -868,7 +868,8 @@ class AssetManager extends EventDispatcher
         for (i in 0...__numConnections)
             loadNextQueueElement();
 
-        ArrayUtil.clear(__queue);
+        __queue.splice(0, __queue.length);
+
         __numLoadingQueues++;
         addEventListener(Event.CANCEL, cancel);
     }
