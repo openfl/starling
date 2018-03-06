@@ -94,13 +94,13 @@ class TrueTypeCompositor implements ITextCompositor
             meshBatch.texture = null;
         }
     }
-	
-	/** @private */
-	public function getDefaultMeshStyle(previousStyle:MeshStyle,
-										format:TextFormat, options:TextOptions):MeshStyle
-	{
-		return null;
-	}
+    
+    /** @private */
+    public function getDefaultMeshStyle(previousStyle:MeshStyle,
+                                        format:TextFormat, options:TextOptions):MeshStyle
+    {
+        return null;
+    }
 
 
     private function renderText(width:Float, height:Float, text:String,

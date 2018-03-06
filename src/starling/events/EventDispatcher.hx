@@ -49,13 +49,13 @@ class EventDispatcher
     /** Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Function):Void
     {
-		// Original Starling makes a change here from Vector.<Function> to Array and adds the following comment:
-		// "The listeners are stored inside an Array instead of a Vector as a workaround
-		// to a strange String allocation taking place in the AOT compiler.
-		// See: https://tracker.adobe.com/#/view/AIR-4115729"
-		// Could that AOT complier bug apply to Haxe too, when using the flash target? Should we switch from Vector<Dynamic> to Array<Dynamic>?
-		// For now I left things as they where
-			
+        // Original Starling makes a change here from Vector.<Function> to Array and adds the following comment:
+        // "The listeners are stored inside an Array instead of a Vector as a workaround
+        // to a strange String allocation taking place in the AOT compiler.
+        // See: https://tracker.adobe.com/#/view/AIR-4115729"
+        // Could that AOT complier bug apply to Haxe too, when using the flash target? Should we switch from Vector<Dynamic> to Array<Dynamic>?
+        // For now I left things as they where
+        
         if (listener == null) throw new ArgumentError("null listener added");
         
         if (__eventListeners == null)

@@ -278,15 +278,15 @@ class Texture
                 textureRoot.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
-		else if (Std.is(asset, BitmapData))
-		{
-			texture = Texture.fromBitmapData(cast asset, mipMapping,
-								optimizeForRenderToTexture, scale, format, forcePotTexture);
-			texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
-			{
-				texture.root.uploadBitmapData(Type.createInstance(assetClass, []));
-			};
-		}
+        else if (Std.is(asset, BitmapData))
+        {
+            texture = Texture.fromBitmapData(cast asset, mipMapping,
+                                optimizeForRenderToTexture, scale, format, forcePotTexture);
+            texture.root.onRestore = function(textureRoot:ConcreteTexture):Void
+            {
+                texture.root.uploadBitmapData(Type.createInstance(assetClass, []));
+            };
+        }
         else if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null);

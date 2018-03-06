@@ -147,7 +147,7 @@ class DistanceFieldStyle extends MeshStyle
      *
      *  @param softness   adds a soft transition between the inside and the outside.
      *                    This should typically be 1.0 divided by the spread (in points)
-	 * 					  used when creating the distance field texture.
+     *                    used when creating the distance field texture.
      *  @param threshold  the value separating the inside from the outside of the shape.
      *                    Range: 0 - 1.
      */
@@ -264,9 +264,9 @@ class DistanceFieldStyle extends MeshStyle
                 var targetVertexData:VertexData = cast(targetStyle, DistanceFieldStyle).vertexData;
                 var maxScale:Float = DistanceFieldEffect.MAX_SCALE;
                 var minScale:Float = maxScale / 255;
-				
-				if (numVertices < 0)
-					numVertices = vertexData.numVertices - vertexID;
+                
+                if (numVertices < 0)
+                    numVertices = vertexData.numVertices - vertexID;
 
                 for (i in 0...numVertices)
                 {
@@ -588,7 +588,7 @@ class DistanceFieldEffect extends MeshEffect
             /// *** VERTEX SHADER ***
 
             var vertexShader:Vector<String> = Vector.ofArray([
-				"m44 op, va0, vc0",       // 4x4 matrix transform to output clip-space
+                "m44 op, va0, vc0",       // 4x4 matrix transform to output clip-space
                 "mov v0, va1",            // pass texture coordinates to fragment program
                 "mul vt4, va3.yyyy, vc4", // multiply inner alpha (va3.y) with state alpha (vc4)
                 "mul v1, va2, vt4",       // multiply vertex color (va2) with combined alpha (vt4)

@@ -55,22 +55,22 @@ class TextureOptions
     /** Creates a clone of the TextureOptions object with the exact same properties. */
     public function clone():TextureOptions
     {
-		var clone:TextureOptions = new TextureOptions();
-		clone.copyFrom(this);
-		return clone;
+        var clone:TextureOptions = new TextureOptions();
+        clone.copyFrom(this);
+        return clone;
     }
-	
-	/** Copies all properties from another TextureOptions instance. */
-	public function copyFrom(other:TextureOptions):Void
-	{
-		_scale = other._scale;
-		_mipMapping = other._mipMapping;
-		_format = other._format;
-		_optimizeForRenderToTexture = other._optimizeForRenderToTexture;
-		_premultipliedAlpha = other._premultipliedAlpha;
-		_forcePotTexture = other._forcePotTexture;
-		_onReady = other._onReady;
-	}
+    
+    /** Copies all properties from another TextureOptions instance. */
+    public function copyFrom(other:TextureOptions):Void
+    {
+        _scale = other._scale;
+        _mipMapping = other._mipMapping;
+        _format = other._format;
+        _optimizeForRenderToTexture = other._optimizeForRenderToTexture;
+        _premultipliedAlpha = other._premultipliedAlpha;
+        _forcePotTexture = other._forcePotTexture;
+        _onReady = other._onReady;
+    }
 
     /** The scale factor, which influences width and height properties. If you pass '-1',
      *  the current global content scale factor will be used. @default 1.0 */

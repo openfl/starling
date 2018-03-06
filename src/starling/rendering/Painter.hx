@@ -954,7 +954,7 @@ class Painter
     {
         _enableErrorChecking = value;
         if (_context != null) _context.enableErrorChecking = value;
-		if (value) trace("[Starling] Warning: 'enableErrorChecking' has a " +
+        if (value) trace("[Starling] Warning: 'enableErrorChecking' has a " +
                 "negative impact on performance. Never activate for release builds!");
         return value;
     }

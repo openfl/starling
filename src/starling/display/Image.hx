@@ -536,32 +536,32 @@ class Image extends Quad
     // bindings
 
     /** Injects code that is called by all instances whenever the given texture is assigned or replaced.
-	 *  The new functions will be executed after any existing ones.
-	 * 
-	 *  @param texture    Assignment of this texture instance will lead to the following callback(s) being executed.
-	 *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
-	 *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
-	 */
+     *  The new functions will be executed after any existing ones.
+     * 
+     *  @param texture    Assignment of this texture instance will lead to the following callback(s) being executed.
+     *  @param onAssign   Called when the texture is assigned. Receives one parameter of type 'Image'.
+     *  @param onRelease  Called when the texture is replaced. Receives one parameter of type 'Image'. (Optional.)
+     */
     public static function automateSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
     {
-		var automator:SetupAutomator = sAutomators[texture];
-		if (automator != null) automator.add(onAssign, onRelease);
-		else sAutomators[texture] = new SetupAutomator(onAssign, onRelease);
-	}
+        var automator:SetupAutomator = sAutomators[texture];
+        if (automator != null) automator.add(onAssign, onRelease);
+        else sAutomators[texture] = new SetupAutomator(onAssign, onRelease);
+    }
 
     /** Removes all custom setup functions for the given texture, including those created via
      *  'bindScale9GridToTexture' and 'bindPivotPointToTexture'. */
     public static function resetSetupForTexture(texture:Texture):Void
     {
-		sAutomators.remove(texture);
+       sAutomators.remove(texture);
     }
-	
-	/** Removes specific setup functions for the given texture. */
-	public static function removeSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
-	{
-		var automator:SetupAutomator = sAutomators[texture];
-		if (automator != null) automator.remove(onAssign, onRelease);
-	}
+
+    /** Removes specific setup functions for the given texture. */
+    public static function removeSetupForTexture(texture:Texture, onAssign:Image->Void, onRelease:Image->Void=null):Void
+    {
+        var automator:SetupAutomator = sAutomators[texture];
+        if (automator != null) automator.remove(onAssign, onRelease);
+    }
 
     /** Binds the given scaling grid to the given texture so that any image which displays the texture will
      *  automatically use the grid. */
@@ -571,7 +571,7 @@ class Image extends Quad
             function(image:Image):Void { image.scale9Grid = scale9Grid; },
             function(image:Image):Void { image.scale9Grid = null; });
     }
-	
+    
     /** Binds the given pivot point to the given texture so that any image which displays the texture will
      *  automatically use the pivot point. */
     public static function bindPivotPointToTexture(texture:Texture, pivotX:Float, pivotY:Float):Void

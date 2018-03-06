@@ -38,120 +38,120 @@ import starling.utils.Execute;
  */
 class DataLoader
 {
-	// This HTTPStatusEvent is only available in AIR
-	private static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+    // This HTTPStatusEvent is only available in AIR
+    private static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
-	private var _urlLoaders:Map<URLLoader, Bool>;
+    private var _urlLoaders:Map<URLLoader, Bool>;
 
-	/** Creates a new DataLoader instance. */
-	public function new()
-	{
-		_urlLoaders = new Map<URLLoader, Bool>();
-	}
+    /** Creates a new DataLoader instance. */
+    public function new()
+    {
+        _urlLoaders = new Map<URLLoader, Bool>();
+    }
 
-	/** Loads the binary data from a specific URL. Always supply both 'onComplete' and
-	 *  'onError' parameters; in case of an error, only the latter will be called.
-	 *
-	 * @param url          a String, URLRequest or any object with an "url" property.
-	 * @param onComplete   will be called when the data has been loaded.
-	 *                     <code>function(data:ByteArray, mimeType:String):void</code>
-	 * @param onError      will be called in case of an error. The 2nd parameter is optional.
-	 *                     <code>function(error:String, httpStatus:int):void</code>
-	 * @param onProgress   will be called multiple times with the current load ratio (0-1).
-	 *                     <code>function(ratio:Number):void</code>
-	 */
-	public function load(url:Dynamic, onComplete:ByteArray->?String->Void,
-						 onError:String->Void, onProgress:Float->Void=null):Void
-	{
-		var loader:URLLoader;
-		var message:String;
-		var mimeType:String = null;
-		var httpStatus:Int = 0;
-		var request:URLRequest = null;
-		
-		var cleanup:Void->Void = null;
-		var onHttpResponseStatus:HTTPStatusEvent->Void = null;
-		var onLoadError:ErrorEvent->Void = null;
-		var onLoadProgress:ProgressEvent->Void = null;
-		var onLoadComplete:Dynamic->Void = null;
-		
-		cleanup = function ():Void
-		{
-			loader.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-			loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
-			loader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-			loader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-			loader.removeEventListener(Event.COMPLETE, onLoadComplete);
-			_urlLoaders.remove(loader);
-		}
+    /** Loads the binary data from a specific URL. Always supply both 'onComplete' and
+     *  'onError' parameters; in case of an error, only the latter will be called.
+     *
+     * @param url          a String, URLRequest or any object with an "url" property.
+     * @param onComplete   will be called when the data has been loaded.
+     *                     <code>function(data:ByteArray, mimeType:String):void</code>
+     * @param onError      will be called in case of an error. The 2nd parameter is optional.
+     *                     <code>function(error:String, httpStatus:int):void</code>
+     * @param onProgress   will be called multiple times with the current load ratio (0-1).
+     *                     <code>function(ratio:Number):void</code>
+     */
+    public function load(url:Dynamic, onComplete:ByteArray->?String->Void,
+                         onError:String->Void, onProgress:Float->Void=null):Void
+    {
+        var loader:URLLoader;
+        var message:String;
+        var mimeType:String = null;
+        var httpStatus:Int = 0;
+        var request:URLRequest = null;
+        
+        var cleanup:Void->Void = null;
+        var onHttpResponseStatus:HTTPStatusEvent->Void = null;
+        var onLoadError:ErrorEvent->Void = null;
+        var onLoadProgress:ProgressEvent->Void = null;
+        var onLoadComplete:Dynamic->Void = null;
+        
+        cleanup = function ():Void
+        {
+            loader.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+            loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
+            loader.removeEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+            loader.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+            loader.removeEventListener(Event.COMPLETE, onLoadComplete);
+            _urlLoaders.remove(loader);
+        }
 
-		onHttpResponseStatus = function (event:HTTPStatusEvent):Void
-		{
-			httpStatus = event.status;
-			mimeType = getHttpHeader(event.responseHeaders, "Content-Type");
-		}
+        onHttpResponseStatus = function (event:HTTPStatusEvent):Void
+        {
+            httpStatus = event.status;
+            mimeType = getHttpHeader(event.responseHeaders, "Content-Type");
+        }
 
-		onLoadError = function (event:ErrorEvent):Void
-		{
-			cleanup();
-			message = event.type + " - " + event.text;
-			Execute.execute(onError, [message]);
-		}
+        onLoadError = function (event:ErrorEvent):Void
+        {
+            cleanup();
+            message = event.type + " - " + event.text;
+            Execute.execute(onError, [message]);
+        }
 
-		onLoadProgress = function (event:ProgressEvent):Void
-		{
-			if (onProgress != null && event.bytesTotal > 0)
-				onProgress(event.bytesLoaded / event.bytesTotal);
-		}
+        onLoadProgress = function (event:ProgressEvent):Void
+        {
+            if (onProgress != null && event.bytesTotal > 0)
+                onProgress(event.bytesLoaded / event.bytesTotal);
+        }
 
-		onLoadComplete = function (event:Dynamic):Void
-		{
-			cleanup();
+        onLoadComplete = function (event:Dynamic):Void
+        {
+            cleanup();
 
-			if (httpStatus < 400)
-				Execute.execute(onComplete, [loader.data, mimeType]);
-			else
-				Execute.execute(onError, ["Unexpected HTTP status '" + httpStatus + "'. URL: " + request.url]);
-		}
-		
-		if (Std.is(url, String))
-			request = new URLRequest(cast (url, String));
-		else if (Std.is(url, URLRequest))
-			request = cast (url, URLRequest);
-		else if (Reflect.hasField(url, "url"))
-			request = new URLRequest(cast (Reflect.field(url, "url"), String));
-		
-		loader = new URLLoader();
-		loader.dataFormat = URLLoaderDataFormat.BINARY;
-		loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-		loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
-		loader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
-		loader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-		loader.addEventListener(Event.COMPLETE, onLoadComplete);
-		loader.load(request);
+            if (httpStatus < 400)
+                Execute.execute(onComplete, [loader.data, mimeType]);
+            else
+                Execute.execute(onError, ["Unexpected HTTP status '" + httpStatus + "'. URL: " + request.url]);
+        }
+        
+        if (Std.is(url, String))
+            request = new URLRequest(cast (url, String));
+        else if (Std.is(url, URLRequest))
+            request = cast (url, URLRequest);
+        else if (Reflect.hasField(url, "url"))
+            request = new URLRequest(cast (Reflect.field(url, "url"), String));
+        
+        loader = new URLLoader();
+        loader.dataFormat = URLLoaderDataFormat.BINARY;
+        loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+        loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
+        loader.addEventListener(HTTP_RESPONSE_STATUS, onHttpResponseStatus);
+        loader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+        loader.addEventListener(Event.COMPLETE, onLoadComplete);
+        loader.load(request);
 
-		_urlLoaders[loader] = true;
-	}
+        _urlLoaders[loader] = true;
+    }
 
-	/** Aborts all current load operations. The loader can still be used, though. */
-	public function close():Void
-	{
-		for (loader in _urlLoaders.keys())
-		{
-			try { loader.close(); }
-			catch (e:Error) {}
-		}
+    /** Aborts all current load operations. The loader can still be used, though. */
+    public function close():Void
+    {
+        for (loader in _urlLoaders.keys())
+        {
+            try { loader.close(); }
+            catch (e:Error) {}
+        }
 
-		_urlLoaders =new Map<URLLoader, Bool>();
-	}
+        _urlLoaders =new Map<URLLoader, Bool>();
+    }
 
-	private static function getHttpHeader(headers:Array<URLRequestHeader>, headerName:String):String
-	{
-		if (headers != null)
-		{
-			for (header in headers)
-				if (header.name == headerName) return header.value;
-		}
-		return null;
-	}
+    private static function getHttpHeader(headers:Array<URLRequestHeader>, headerName:String):String
+    {
+        if (headers != null)
+        {
+            for (header in headers)
+                if (header.name == headerName) return header.value;
+        }
+        return null;
+    }
 }

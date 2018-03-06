@@ -17,48 +17,48 @@ import openfl.errors.Error;
 /** This AssetFactory creates sound assets. */
 class SoundFactory extends AssetFactory
 {
-	/** Creates a new instance. */
-	public function new()
-	{
-		super();
-		addMimeTypes(["audio/mp3", "audio/mpeg3", "audio/mpeg", "audio/ogg"]);
-		addExtensions(["mp3", "mpeg", "ogg", "wav"]);
-	}
+    /** Creates a new instance. */
+    public function new()
+    {
+        super();
+        addMimeTypes(["audio/mp3", "audio/mpeg3", "audio/mpeg", "audio/ogg"]);
+        addExtensions(["mp3", "mpeg", "ogg", "wav"]);
+    }
 
-	/** @inheritDoc */
-	override public function canHandle(reference:AssetReference):Bool
-	{
-		return Std.is(reference.data, Sound) || super.canHandle(reference);
-	}
+    /** @inheritDoc */
+    override public function canHandle(reference:AssetReference):Bool
+    {
+        return Std.is(reference.data, Sound) || super.canHandle(reference);
+    }
 
-	/** @inheritDoc */
-	override public function create(reference:AssetReference, helper:AssetFactoryHelper,
-									onComplete:String->Dynamic->Void, onError:String->Void):Void
-	{
-		var sound:Sound = null;
-		
-		try
-		{
-			if(Std.is(reference.data, Sound))
-				sound = cast(reference.data, Sound);
-			else
-			{
-				var bytes:ByteArray = cast(reference.data, ByteArray);
+    /** @inheritDoc */
+    override public function create(reference:AssetReference, helper:AssetFactoryHelper,
+                                    onComplete:String->Dynamic->Void, onError:String->Void):Void
+    {
+        var sound:Sound = null;
+        
+        try
+        {
+            if(Std.is(reference.data, Sound))
+                sound = cast(reference.data, Sound);
+            else
+            {
+                var bytes:ByteArray = cast(reference.data, ByteArray);
 
-				if (bytes != null)
-				{
-					sound = new Sound();
-					sound.loadCompressedDataFromByteArray(bytes, bytes.length);
-				}
-			}
-			
-			onComplete(reference.name, sound);
-		
-		}
-		catch (e:Error)
-		{
-			onError("Could not load sound data: " + e.message);
-			return;
-		}
-	}
+                if (bytes != null)
+                {
+                    sound = new Sound();
+                    sound.loadCompressedDataFromByteArray(bytes, bytes.length);
+                }
+            }
+            
+            onComplete(reference.name, sound);
+        
+        }
+        catch (e:Error)
+        {
+            onError("Could not load sound data: " + e.message);
+            return;
+        }
+    }
 }

@@ -34,6 +34,7 @@ class GlowFilter extends FragmentFilter
             "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
             "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
             "blur": { get: untyped __js__ ("function () { return this.get_blur (); }"), set: untyped __js__ ("function (v) { return this.set_blur (v); }") },
+            "quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
         });
         
     }

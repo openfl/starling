@@ -16,25 +16,25 @@ import openfl.utils.ByteArray;
  *  no other factory can handle an asset reference (default priority: -100). */
 class ByteArrayFactory extends AssetFactory
 {
-	/** Creates a new instance. */
-	public function new()
-	{
-		// not used, actually - this factory is used as a fallback with low priority
-		super();
-		addExtensions(["bin"]);
-		addMimeTypes(["application/octet-stream"]);
-	}
+    /** Creates a new instance. */
+    public function new()
+    {
+        // not used, actually - this factory is used as a fallback with low priority
+        super();
+        addExtensions(["bin"]);
+        addMimeTypes(["application/octet-stream"]);
+    }
 
-	/** @inheritDoc */
-	override public function canHandle(reference:AssetReference):Bool
-	{
-		return Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
-	}
+    /** @inheritDoc */
+    override public function canHandle(reference:AssetReference):Bool
+    {
+        return Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
+    }
 
-	/** @inheritDoc */
-	override public function create(reference:AssetReference, helper:AssetFactoryHelper,
-									onComplete:String->Dynamic->Void, onError:String->Void):Void
-	{
-		onComplete(reference.name, cast(reference.data, ByteArray));
-	}
+    /** @inheritDoc */
+    override public function create(reference:AssetReference, helper:AssetFactoryHelper,
+                                    onComplete:String->Dynamic->Void, onError:String->Void):Void
+    {
+        onComplete(reference.name, cast(reference.data, ByteArray));
+    }
 }

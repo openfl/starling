@@ -59,7 +59,7 @@ import starling.text.BitmapChar;
 class BitmapFont implements ITextCompositor
 {
     /** Use this constant for the <code>fontSize</code> property of the TextField class to 
-	 * render the bitmap font in exactly the size it was created. */ 
+     * render the bitmap font in exactly the size it was created. */ 
     public static inline var NATIVE_SIZE:Int = -1;
     
     /** The font name of the embedded minimal bitmap font. Use this e.g. for debug output. */
@@ -69,7 +69,7 @@ class BitmapFont implements ITextCompositor
     private static inline var CHAR_TAB:Int             =  9;
     private static inline var CHAR_NEWLINE:Int         = 10;
     private static inline var CHAR_CARRIAGE_RETURN:Int = 13;
-	private static inline var CHAR_SPACE:Int           = 32;
+    private static inline var CHAR_SPACE:Int           = 32;
     
     private var __texture:Texture;
     private var __chars:Map<Int, BitmapChar>;
@@ -81,7 +81,7 @@ class BitmapFont implements ITextCompositor
     private var __offsetY:Float;
     private var __padding:Float;
     private var __helperImage:Image;
-	private var __type:String;
+    private var __type:String;
     private var __distanceFieldSpread:Float;
 
     // helper objects
@@ -100,20 +100,20 @@ class BitmapFont implements ITextCompositor
             "offsetX": { get: untyped __js__ ("function () { return this.get_offsetX (); }"), set: untyped __js__ ("function (v) { return this.set_offsetX (v); }") },
             "offsetY": { get: untyped __js__ ("function () { return this.get_offsetY (); }"), set: untyped __js__ ("function (v) { return this.set_offsetY (v); }") },
             "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
-			"type": { get: untyped __js__ ("function () { return this.get_type (); }"), set: untyped __js__ ("function (v) { return this.set_type (v); }") },
-			"distanceFieldSpread": { get: untyped __js__ ("function () { return this.get_distanceFieldSpread (); }"), set: untyped __js__ ("function (v) { return this.set_distanceFieldSpread (v); }") },
+            "type": { get: untyped __js__ ("function () { return this.get_type (); }"), set: untyped __js__ ("function (v) { return this.set_type (v); }") },
+            "distanceFieldSpread": { get: untyped __js__ ("function () { return this.get_distanceFieldSpread (); }"), set: untyped __js__ ("function (v) { return this.set_distanceFieldSpread (v); }") },
         });
         
     }
     #end
     
     /** Creates a bitmap font from the given texture and font data.
-	 *  If you don't pass any data, the "mini" font will be created.
-	 *
-	 * @param texture  The texture containing all the glyphs.
-	 * @param fontData Typically an XML file in the standard AngelCode format. Override the
-	 *                 the 'parseFontData' method to add support for additional formats.
-	 */
+     *  If you don't pass any data, the "mini" font will be created.
+     *
+     * @param texture  The texture containing all the glyphs.
+     * @param fontData Typically an XML file in the standard AngelCode format. Override the
+     *                 the 'parseFontData' method to add support for additional formats.
+     */
     public function new(texture:Texture=null, fontData:Dynamic=null)
     {
         // if no texture is passed in, we create the minimal, embedded font
@@ -133,10 +133,10 @@ class BitmapFont implements ITextCompositor
         __texture = texture;
         __chars = new Map<Int, BitmapChar>();
         __helperImage = new Image(texture);
-		__type = BitmapFontType.STANDARD;
+        __type = BitmapFontType.STANDARD;
         __distanceFieldSpread = 0.0;
         
-		addChar(CHAR_MISSING, new BitmapChar(CHAR_MISSING, null, 0, 0, 0));
+        addChar(CHAR_MISSING, new BitmapChar(CHAR_MISSING, null, 0, 0, 0));
         parseFontData(fontData);
     }
     
@@ -146,26 +146,26 @@ class BitmapFont implements ITextCompositor
         if (__texture != null)
             __texture.dispose();
     }
-	
-	/** Parses the data that's passed as second argument to the constructor.
-	 *  Override this method to support different file formats. */
-	private function parseFontData(data:Dynamic):Void
-	{
-		try
-		{
-			var fontXml:Xml = null;
-			if(Std.is(data, String))
-				fontXml = Xml.parse(data).firstElement();
-			else if(Std.is(data, Xml))
-				fontXml = cast data;
-				
-			parseFontXml(fontXml);
-		}
-		catch (error:Dynamic)
-		{
-			throw new ArgumentError("BitmapFont only supports XML data");
-		}	
-	}
+    
+    /** Parses the data that's passed as second argument to the constructor.
+     *  Override this method to support different file formats. */
+    private function parseFontData(data:Dynamic):Void
+    {
+        try
+        {
+            var fontXml:Xml = null;
+            if(Std.is(data, String))
+                fontXml = Xml.parse(data).firstElement();
+            else if(Std.is(data, Xml))
+                fontXml = cast data;
+                
+            parseFontXml(fontXml);
+        }
+        catch (error:Dynamic)
+        {
+            throw new ArgumentError("BitmapFont only supports XML data");
+        }	
+    }
     
     private function parseFontXml(fontXml:Xml):Void
     {
@@ -194,19 +194,19 @@ class BitmapFont implements ITextCompositor
             trace("[Starling] Warning: invalid font size in '" + __name + "' font.");
             __size = (__size == 0.0 ? 16.0 : __size * -1.0);
         }
-		
-		var distanceField:Xml = fontXml.elementsNamed("distanceField").next();
-		if (distanceField != null && distanceField.exists("distanceRange") && distanceField.exists("fieldType"))
-		{
-			__distanceFieldSpread = Std.parseFloat(distanceField.get("distanceRange"));
-			__type = distanceField.get("fieldType") == "msdf" ?
-				BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD : BitmapFontType.DISTANCE_FIELD;
-		}
-		else
-		{
-			__distanceFieldSpread = 0.0;
-			__type = BitmapFontType.STANDARD;
-		}
+        
+        var distanceField:Xml = fontXml.elementsNamed("distanceField").next();
+        if (distanceField != null && distanceField.exists("distanceRange") && distanceField.exists("fieldType"))
+        {
+            __distanceFieldSpread = Std.parseFloat(distanceField.get("distanceRange"));
+            __type = distanceField.get("fieldType") == "msdf" ?
+                BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD : BitmapFontType.DISTANCE_FIELD;
+        }
+        else
+        {
+            __distanceFieldSpread = 0.0;
+            __type = BitmapFontType.STANDARD;
+        }
         
         var chars:Xml = fontXml.elementsNamed("chars").next();
         for (charElement in chars.elementsNamed("char"))
@@ -337,33 +337,33 @@ class BitmapFont implements ITextCompositor
     {
         meshBatch.clear();
     }
-	
-	
-	/** @inheritDoc */
-	public function getDefaultMeshStyle(previousStyle:MeshStyle,
-										format:TextFormat, options:TextOptions):MeshStyle
-	{
-		if (__type == BitmapFontType.STANDARD) return null;
-		else // -> distance field font
-		{
-			var dfStyle:DistanceFieldStyle;
-			var fontSize:Float = format.size < 0 ? format.size * -__size : format.size;
-			dfStyle = Std.is(previousStyle, DistanceFieldStyle) ? cast previousStyle : new DistanceFieldStyle();
-			dfStyle.multiChannel = (__type == BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD);
-			dfStyle.softness = __size / (fontSize * __distanceFieldSpread);
-			return dfStyle;
-		}
-	}
-	
     
-	/** Arranges the characters of text inside a rectangle, adhering to the given settings.
-	 *  Returns a Vector of BitmapCharLocations.
-	 *
-	 *  <p>BEWARE: This method uses an object pool for the returned vector and all
-	 *  (returned and temporary) BitmapCharLocation instances. Do not save any references and
-	 *  always call <code>BitmapCharLocation.rechargePool()</code> when you are done processing.
-	 *  </p>
-	 */
+    
+    /** @inheritDoc */
+    public function getDefaultMeshStyle(previousStyle:MeshStyle,
+                                        format:TextFormat, options:TextOptions):MeshStyle
+    {
+        if (__type == BitmapFontType.STANDARD) return null;
+        else // -> distance field font
+        {
+            var dfStyle:DistanceFieldStyle;
+            var fontSize:Float = format.size < 0 ? format.size * -__size : format.size;
+            dfStyle = Std.is(previousStyle, DistanceFieldStyle) ? cast previousStyle : new DistanceFieldStyle();
+            dfStyle.multiChannel = (__type == BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD);
+            dfStyle.softness = __size / (fontSize * __distanceFieldSpread);
+            return dfStyle;
+        }
+    }
+    
+    
+    /** Arranges the characters of text inside a rectangle, adhering to the given settings.
+     *  Returns a Vector of BitmapCharLocations.
+     *
+     *  <p>BEWARE: This method uses an object pool for the returned vector and all
+     *  (returned and temporary) BitmapCharLocation instances. Do not save any references and
+     *  always call <code>BitmapCharLocation.rechargePool()</code> when you are done processing.
+     *  </p>
+     */
     public function arrangeChars(width:Float, height:Float, text:String,
                                   format:TextFormat, options:TextOptions):Vector<BitmapCharLocation>
     {
@@ -372,7 +372,7 @@ class BitmapFont implements ITextCompositor
 
         var kerning:Bool = format.kerning;
         var leading:Float = format.leading;
-		var spacing:Float = format.letterSpacing;
+        var spacing:Float = format.letterSpacing;
         var hAlign:String = format.horizontalAlign;
         var vAlign:String = format.verticalAlign;
         var fontSize:Float = format.size;
@@ -420,15 +420,15 @@ class BitmapFont implements ITextCompositor
                     }
                     else
                     {
-						if (char == null)
-						{
-							trace(StringUtil.format(
-								"[Starling] Character '{0}' (id: {1}) not found in '{2}'",
-								[text.charAt(i), charID, name]));
+                        if (char == null)
+                        {
+                            trace(StringUtil.format(
+                                "[Starling] Character '{0}' (id: {1}) not found in '{2}'",
+                                [text.charAt(i), charID, name]));
 
-							charID = CHAR_MISSING;
-							char = getChar(CHAR_MISSING);
-						}
+                            charID = CHAR_MISSING;
+                            char = getChar(CHAR_MISSING);
+                        }
 
                         if (charID == CHAR_SPACE || charID == CHAR_TAB)
                             lastWhiteSpace = i;
@@ -557,17 +557,17 @@ class BitmapFont implements ITextCompositor
     /** The native size of the font. */
     public var size(get, never):Float;
     private function get_size():Float { return __size; }
-		
-	/** The type of the bitmap font. @see starling.text.BitmapFontType @default standard */
-	public var type(get, set):String;
-	public function get_type():String { return __type; }
-	public function set_type(value:String):String { return __type = value; }
+        
+    /** The type of the bitmap font. @see starling.text.BitmapFontType @default standard */
+    public var type(get, set):String;
+    public function get_type():String { return __type; }
+    public function set_type(value:String):String { return __type = value; }
 
-	/** If the font uses a distance field texture, this property returns its spread (i.e.
-	 *  the width of the blurred edge in points). */
-	public var distanceFieldSpread(get, set):Float;
-	public function get_distanceFieldSpread():Float { return __distanceFieldSpread; }
-	public function set_distanceFieldSpread(value:Float):Float { return __distanceFieldSpread = value; }
+    /** If the font uses a distance field texture, this property returns its spread (i.e.
+     *  the width of the blurred edge in points). */
+    public var distanceFieldSpread(get, set):Float;
+    public function get_distanceFieldSpread():Float { return __distanceFieldSpread; }
+    public function set_distanceFieldSpread(value:Float):Float { return __distanceFieldSpread = value; }
     
     /** The height of one line in points. */
     public var lineHeight(get, never):Float;

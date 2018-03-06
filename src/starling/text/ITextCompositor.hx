@@ -23,13 +23,13 @@ interface ITextCompositor
     /** Clears the MeshBatch (filled by the same class) and disposes any resources that
      *  are no longer needed. */
     public function clearMeshBatch(meshBatch:MeshBatch):Void;
-	
-	/** Creates and/or sets up the default MeshStyle to be used for rendering.
-	 *  If <code>previousStyle</code> has the correct type, it is configured as needed and
-	 *  then returned; otherwise, a new style is created, configured and returned.
-	 *  The method may return <code>null</code> if there are no special style requirements. */
-	function getDefaultMeshStyle(previousStyle:MeshStyle,
-								 format:TextFormat, options:TextOptions):MeshStyle;
+    
+    /** Creates and/or sets up the default MeshStyle to be used for rendering.
+     *  If <code>previousStyle</code> has the correct type, it is configured as needed and
+     *  then returned; otherwise, a new style is created, configured and returned.
+     *  The method may return <code>null</code> if there are no special style requirements. */
+    function getDefaultMeshStyle(previousStyle:MeshStyle,
+                                 format:TextFormat, options:TextOptions):MeshStyle;
 
     /** Frees all resources allocated by the compositor. */
     public function dispose():Void;
