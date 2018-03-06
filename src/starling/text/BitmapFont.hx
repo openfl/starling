@@ -23,7 +23,6 @@ import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
 import starling.utils.Align;
-import starling.utils.ArrayUtil;
 import starling.utils.StringUtil;
 import starling.text.BitmapChar;
 
@@ -394,7 +393,7 @@ class BitmapFont implements ITextCompositor
         
         while (!finished)
         {
-            ArrayUtil.clear(sLines);
+            sLines.splice(0, sLines.length);
             scale = fontSize / __size;
             containerWidth  = (width  - 2 * __padding) / scale;
             containerHeight = (height - 2 * __padding) / scale;

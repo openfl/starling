@@ -22,7 +22,7 @@ import starling.text.BitmapFont;
 import starling.text.TextField;
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
-import starling.utils.AssetManager;
+import starling.assets.AssetManager;
 import starling.utils.Max;
 import starling.utils.RectangleUtil;
 import starling.utils.StringUtil;
@@ -34,6 +34,7 @@ class Demo extends Sprite
     private var _starling:Starling;
     private var _background:Bitmap;
     private var _progressBar:ProgressBar;
+	private var _assets:AssetManager;
 
     public function new()
     {
@@ -76,39 +77,52 @@ class Demo extends Sprite
         initElements();
     }
 
-    private function loadAssets(onComplete:AssetManager->Void):Void
+    private function loadAssets(onComplete:Void->Void):Void
     {
-        var assets:AssetManager = new AssetManager();
+        _assets = new AssetManager();
 
-        assets.verbose = Capabilities.isDebugger;
+        _assets.verbose = Capabilities.isDebugger;
 
-        Timer.delay(function()
+		#if html5
+		_assets.enqueue([
+			"/assets/textures/1x/background.jpg",
+			"/assets/textures/1x/atlas.png",
+			"/assets/textures/1x/atlas.xml",
+			"/assets/textures/1x/compressed_texture.atf",
+			"/assets/fonts/1x/desyrel.png",
+			"/assets/fonts/1x/desyrel.fnt",
+			"/assets/audio/wing_flap.ogg"
+		]);
+		_assets.loadQueue(onComplete);
+		#else
+		Timer.delay(function()
         {
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
             var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
             var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-            var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
+            var compressedTexture:Texture = Texture.fromAtfData(Assets.getBytes("assets/textures/1x/compressed_texture.atf"));
+			var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
             TextField.registerCompositor(bitmapFont, bitmapFont.name);
-            assets.addTexture("atlas", atlasTexture);
-            assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
-            assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
+			
+			_assets.addAsset("atlas", new TextureAtlas(atlasTexture, atlasXml));
+            _assets.addAsset("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg")));
             #if flash
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
+            _assets.addAsset("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
             #else
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            _assets.addAsset("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
             #end
-            var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
-            assets.addByteArray("compressed_texture", compressedTexture);
+            _assets.addAsset("compressed_texture", compressedTexture);
             
-            onComplete(assets);
-        }, 0);
+            onComplete();
+        }, 0);		
+		#end
     }
 
-    private function startGame(assets:AssetManager):Void
+    private function startGame():Void
     {
         var game:Game = cast(_starling.root, Game);
-        game.start(assets);
+        game.start(_assets);
         Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
 
