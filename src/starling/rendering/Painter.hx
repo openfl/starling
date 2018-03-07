@@ -157,12 +157,15 @@ class Painter
     
     /** Creates a new Painter object. Normally, it's not necessary to create any custom
      *  painters; instead, use the global painter found on the Starling instance. */
-    public function new(stage3D:Stage3D)
+    public function new(stage3D:Stage3D, sharedContext:Null<Bool>=null)
     {
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-        _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
+		
+		if (sharedContext != null) _shareContext = sharedContext;
+		else _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
+		
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
