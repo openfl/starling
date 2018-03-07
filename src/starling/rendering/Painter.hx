@@ -636,10 +636,8 @@ class Painter
         setupContextDefaults();
 
         // reset everything else
-		if (!shareContext) {
-			stencilReferenceValue = DEFAULT_STENCIL_VALUE;
-		}
-        _clipRectStack.length = 0;
+		stencilReferenceValue = DEFAULT_STENCIL_VALUE;
+		_clipRectStack.length = 0;
         _drawCount = 0;
         _stateStackPos = -1;
         _state.reset();
