@@ -79,7 +79,7 @@ class Painter
 
     /** The value with which the stencil buffer will be cleared,
         *  and the default reference value used for stencil tests. */
-    public static inline var DEFAULT_STENCIL_VALUE:UInt = 127;
+    public static var DEFAULT_STENCIL_VALUE:UInt = 127;
 
     // members
 
@@ -636,7 +636,9 @@ class Painter
         setupContextDefaults();
 
         // reset everything else
-        stencilReferenceValue = DEFAULT_STENCIL_VALUE;
+		if (!shareContext) {
+			stencilReferenceValue = DEFAULT_STENCIL_VALUE;
+		}
         _clipRectStack.length = 0;
         _drawCount = 0;
         _stateStackPos = -1;
