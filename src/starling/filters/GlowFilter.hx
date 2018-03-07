@@ -34,6 +34,7 @@ class GlowFilter extends FragmentFilter
             "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
             "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
             "blur": { get: untyped __js__ ("function () { return this.get_blur (); }"), set: untyped __js__ ("function (v) { return this.set_blur (v); }") },
+            "quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
         });
         
     }
@@ -46,15 +47,16 @@ class GlowFilter extends FragmentFilter
      *                   opacity; values > 1 will make it stronger, i.e. produce a harder edge.
      * @param blur       the amount of blur used to create the glow. Note that high
      *                   values will cause the number of render passes to grow.
-     * @param resolution the resolution of the filter texture. '1' means full resolution,
-     *                   '0.5' half resolution, etc.
+     * @param quality 	 the quality of the glow's blur, '1' being the best (range 0.1 - 1.0)
      */
     public function new(color:UInt=0xffff00, alpha:Float=1.0, blur:Float=1.0,
-                        resolution:Float=0.5)
+                        quality:Float=0.5)
     {
         super();
         
-        _blurFilter = new BlurFilter(blur, blur, resolution);
+        _blurFilter = new BlurFilter(blur, blur);
+		_blurFilter.quality = quality;
+		
         _compositeFilter = new CompositeFilter();
         _compositeFilter.setColorAt(0, color, true);
         _compositeFilter.setAlphaAt(0, alpha);
@@ -135,14 +137,16 @@ class GlowFilter extends FragmentFilter
         }
         return value;
     }
-
-    /** @private */
-    override private function get_resolution():Float { return _blurFilter.resolution; }
-    override private function set_resolution(value:Float):Float
+	
+	/** The quality used for blurring the glow.
+	 *  Forwarded to the internally used <em>BlurFilter</em>. */
+	public var quality(get, set):Float;
+    private function get_quality():Float { return _blurFilter.quality; }
+    private function set_quality(value:Float):Float
     {
-        if (resolution != value)
+        if (quality != value)
         {
-            _blurFilter.resolution = value;
+            _blurFilter.quality = value;
             setRequiresRedraw();
             updatePadding();
         }

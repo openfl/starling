@@ -341,12 +341,13 @@ class DisplacementMapEffect extends FilterEffect
 
             sClampUV[0] = texture.width  / texture.root.width  - 0.5 / texture.root.nativeWidth;
             sClampUV[1] = texture.height / texture.root.height - 0.5 / texture.root.nativeHeight;
-
+            var mapRepeat:Bool = _mapRepeat && _mapTexture.root.isPotTexture;
+            
             vertexFormat.setVertexBufferAt(2, vertexBuffer, "mapTexCoords");
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, sOffset);
             context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 1, sClampUV);
             context.setProgramConstantsFromMatrix(Context3DProgramType.FRAGMENT, 2, sMatrix, true);
-            RenderUtil.setSamplerStateAt(1, _mapTexture.mipMapping, textureSmoothing, _mapRepeat);
+            RenderUtil.setSamplerStateAt(1, _mapTexture.mipMapping, textureSmoothing, mapRepeat);
             context.setTextureAt(1, _mapTexture.base);
         }
     }
@@ -404,23 +405,23 @@ class DisplacementMapEffect extends FilterEffect
     private function get_componentX():UInt { return _componentX; }
     private function set_componentX(value:UInt):UInt { return _componentX = value; }
 
-	public var componentY(get, set):UInt;
+    public var componentY(get, set):UInt;
     private function get_componentY():UInt { return _componentY; }
     private function set_componentY(value:UInt):UInt { return _componentY = value; }
 
-	public var scaleX(get, set):Float;
+    public var scaleX(get, set):Float;
     private function get_scaleX():Float { return _scaleX; }
     private function set_scaleX(value:Float):Float { return _scaleX = value; }
 
-	public var scaleY(get, set):Float;
+    public var scaleY(get, set):Float;
     private function get_scaleY():Float { return _scaleY; }
     private function set_scaleY(value:Float):Float { return _scaleY = value; }
 
-	public var mapTexture(get, set):Texture;
+    public var mapTexture(get, set):Texture;
     private function get_mapTexture():Texture { return _mapTexture; }
     private function set_mapTexture(value:Texture):Texture { return _mapTexture = value; }
 
-	public var mapRepeat(get, set):Bool;
+    public var mapRepeat(get, set):Bool;
     private function get_mapRepeat():Bool { return _mapRepeat; }
     private function set_mapRepeat(value:Bool):Bool { return _mapRepeat = value; }
 }

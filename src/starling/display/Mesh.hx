@@ -142,7 +142,7 @@ class Mesh extends DisplayObject
      */
     public function setStyle(meshStyle:MeshStyle=null, mergeWithPredecessor:Bool=true):Void
     {
-        if (meshStyle == null) meshStyle = __createDefaultMeshStyle();
+        if (meshStyle == null) meshStyle = createDefaultStyle(this);
         else if (meshStyle == __style) return;
         else if (meshStyle.target != null) meshStyle.target.setStyle();
 
@@ -158,7 +158,11 @@ class Mesh extends DisplayObject
         setRequiresRedraw();
     }
 
-    private function __createDefaultMeshStyle():MeshStyle
+    /** Creates a new instance of the current default MeshStyle. Internally, this method
+     *  calls either the <code>defaultStyleFactory</code> or (if no factory has been assigned)
+     *  instantiates <code>defaultStyle</code>.
+     */
+    private function createDefaultStyle(instance:Mesh=null):MeshStyle
     {
         var meshStyle:MeshStyle = null;
 
@@ -174,7 +178,7 @@ class Mesh extends DisplayObject
             var numArgs:Int = 1;
             #end
             if (numArgs == 0) meshStyle = sDefaultStyleFactory();
-            else meshStyle = sDefaultStyleFactory(this);
+            else meshStyle = sDefaultStyleFactory(instance);
         }
 
         if (meshStyle == null)

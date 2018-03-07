@@ -18,6 +18,7 @@ import openfl.text.TextField;
 import starling.textures.ConcreteTexture;
 import starling.display.MeshBatch;
 import starling.display.Quad;
+import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.utils.Align;
 import starling.utils.MathUtil;
@@ -93,6 +94,14 @@ class TrueTypeCompositor implements ITextCompositor
             meshBatch.texture = null;
         }
     }
+    
+    /** @private */
+    public function getDefaultMeshStyle(previousStyle:MeshStyle,
+                                        format:TextFormat, options:TextOptions):MeshStyle
+    {
+        return null;
+    }
+
 
     private function renderText(width:Float, height:Float, text:String,
                                 format:TextFormat, options:TextOptions):BitmapDataEx
