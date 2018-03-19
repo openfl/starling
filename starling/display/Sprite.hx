@@ -232,10 +232,11 @@ class Sprite extends DisplayObjectContainer
             
             var alpha:Float = parentAlpha * this.alpha;
             var numBatches:Int = mFlattenedContents.length;
-            var mvpMatrix:Matrix3D = support.mvpMatrix3D;
             
             support.finishQuadBatch();
             support.raiseDrawCount(numBatches);
+            
+            var mvpMatrix:Matrix3D = support.mvpMatrix3D;
             
             for (i in 0...numBatches)
             {
