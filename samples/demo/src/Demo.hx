@@ -76,7 +76,7 @@ class Demo extends Sprite
         initElements();
     }
 
-    private function loadAssets(onComplete:Void->Void):Void
+    private function loadAssets(onComplete:AssetManager->Void):Void
     {
         _assets = new AssetManager();
 
@@ -97,7 +97,7 @@ class Demo extends Sprite
         _assets.loadQueue(onComplete);
     }
 
-    private function startGame():Void
+    private function startGame(assets:AssetManager):Void
     {
         var game:Game = cast(_starling.root, Game);
         game.start(_assets);

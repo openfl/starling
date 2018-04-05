@@ -369,11 +369,11 @@ class AssetManager extends EventDispatcher
      *  if you are working with more than one Starling instance, be sure to call
      *  "makeCurrent()" on the appropriate instance before processing the queue.</p>
      *
-     *  @param onComplete   function():Void;
-     *  @param onError      function(error:String):Void;
-     *  @param onProgress   function(ratio:Float):Void;
+     *  @param onComplete   <code>function(manager:AssetManager):void;</code>
+     *  @param onError      <code>function(error:String):void;</code>
+     *  @param onProgress   <code>function(ratio:Number):void;</code>
      */
-    public function loadQueue(onComplete:Void->Void,
+    public function loadQueue(onComplete:AssetManager->Void,
                               onError:String->Void=null, onProgress:Float->Void=null):Void
     {
         var self:AssetManager = this;
@@ -471,7 +471,7 @@ class AssetManager extends EventDispatcher
         {
             onCanceled();
             Execute.execute(onProgress, [1.0]);
-            Execute.execute(onComplete);
+            Execute.execute(onComplete, self);
         }
         
         if (_queue.length == 0)
@@ -568,7 +568,7 @@ class AssetManager extends EventDispatcher
             Execute.execute(onError, [error]);
         }
 
-        onManagerComplete = function ():Void
+        onManagerComplete = function (assets:AssetManager):Void
         {
             Execute.execute(onComplete, [asset.name, asset.data]);
         }
