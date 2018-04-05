@@ -228,6 +228,7 @@ class Starling extends EventDispatcher
     private var __supportHighResolutions:Bool;
     private var __skipUnchangedFrames:Bool;
     private var __showStats:Bool;
+    private var __supportsCursor:Bool;
     
     private var __viewPort:Rectangle;
     private var __previousViewPort:Rectangle;
@@ -336,6 +337,7 @@ class Starling extends EventDispatcher
         __painter = new Painter(stage3D, sharedContext);
         __frameTimestamp = Lib.getTimer() / 1000.0;
         __frameID = 1;
+        __supportsCursor = Mouse.supportsCursor || Capabilities.os.indexOf("Windows") == 0;
         
         // all other modes are problematic in Starling, so we force those here
         stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -745,7 +747,7 @@ class Starling extends EventDispatcher
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
 
-            if (Mouse.supportsCursor && touchEvent.isPrimaryTouchPoint) return;
+            if (__supportsCursor && touchEvent.isPrimaryTouchPoint) return;
             else
             {
                 globalX  = touchEvent.stageX;
@@ -777,7 +779,7 @@ class Starling extends EventDispatcher
         __touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
         
         // allow objects that depend on mouse-over state to be updated immediately
-        if (event.type == MouseEvent.MOUSE_UP && Mouse.supportsCursor)
+        if (event.type == MouseEvent.MOUSE_UP && __supportsCursor)
             __touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
 
@@ -793,7 +795,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        if (!multitouchEnabled || Mouse.supportsCursor)
+        if (!multitouchEnabled || __supportsCursor)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
