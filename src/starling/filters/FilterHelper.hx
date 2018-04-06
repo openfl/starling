@@ -159,7 +159,7 @@ class FilterHelper implements IFilterHelper
     {
         var factor:Float;
         var newScale:Float = _preferredScale;
-        var maxNativeSize:Int   = Texture.maxSize;
+        var maxNativeSize:Int   = Texture.getMaxSize(_textureFormat);
         var newNativeWidth:Int  = getNativeSize(width,  newScale);
         var newNativeHeight:Int = getNativeSize(height, newScale);
 

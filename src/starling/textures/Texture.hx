@@ -803,16 +803,30 @@ class Texture
     public var transformationMatrixToRoot(get, never):Matrix;
     private function get_transformationMatrixToRoot():Matrix { return null; }
 
-    /** Returns the maximum size constraint (for both width and height) for textures in the
-     * current Context3D profile. */
+    /** Returns the maximum size constraint (for both width and height) for uncompressed
+     *  textures in the current Context3D profile. */
     public static var maxSize(get, never):Int;
-    private static function get_maxSize():Int
+    private static function get_maxSize():Int { return getMaxSize(); }
+
+    /** Returns the maximum size constraint (for both width and height) for normal and
+     *  RectangleTextures with the given format in the current Context3D profile.
+     *
+     *  <p>Note: compressed textures, as well as video and cube textures are currently limited
+     *  to 4096 pixels (or less in some profiles). Only uncompressed normal (POT) and
+     *  RectangleTextures may support 8k dimensions.</p>
+     */
+    public static function getMaxSize(textureFormat:Context3DTextureFormat=Context3DTextureFormat.BGRA):int
     {
         var target:Starling = Starling.current;
-        var profile:Context3DProfile = target != null ? target.profile : Context3DProfile.BASELINE;
+        var context:Context3D = target.context;
+        var profile:String = target == null ? target.profile : "baseline";
+        var isCompressed:Boolean = (textureFormat == Context3DTextureFormat.COMPRESSED ||
+                                    textureFormat == Context3DTextureFormat.COMPRESSED_ALPHA);
 
-        if (profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_CONSTRAINED)
+        if (profile == "baseline" || profile == "baselineConstrained")
             return 2048;
+        else if (!isCompressed && context != null && Reflect.hasField(context, "supports8kTexture") && Reflect.field(context, "supports8kTexture"))
+            return 8192;
         else
             return 4096;
     }
