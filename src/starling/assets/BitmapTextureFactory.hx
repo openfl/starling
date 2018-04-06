@@ -64,18 +64,18 @@ class BitmapTextureFactory extends AssetFactory
         {
             helper.loadDataFromUrl(url, function(data:ByteArray, ?mimeType:String):Void
             {
-               loadFromByteArray(data, onComplete, onReloadError);
+               createBitmapDataFromByteArray(data, onComplete, onReloadError);
             }, onReloadError);
         }
 
-        createDownloadedTexture = function (bitmapOrBitmapData:Dynamic):Void
+        createFromBitmapData = function (bitmapData:BitmapData):Void
         {
             reference.textureOptions.onReady = function(_):Void
             {
                 onComplete(reference.name, texture);
             };
 
-            texture = Texture.fromData(bitmapOrBitmapData, reference.textureOptions);
+            texture = Texture.fromData(bitmapData, reference.textureOptions);
 
             if (url != null)
             {
@@ -83,11 +83,11 @@ class BitmapTextureFactory extends AssetFactory
                 {
                     helper.onBeginRestore();
 
-                    reload(url, function(bitmap:Bitmap):Void
+                    reload(url, function(bitmapData:BitmapData):Void
                     {
                         helper.executeWhenContextReady(function():Void
                         {
-                            texture.root.uploadBitmap(bitmap);
+                            texture.root.uploadBitmapData(bitmapData);
                             helper.onEndRestore();
                         });
                     });
@@ -95,22 +95,36 @@ class BitmapTextureFactory extends AssetFactory
             }
         }
         
-        onLoadComplete = function (bitmap:Bitmap):Void
+        onBitmapDataCreated = function (bitmapData:BitmapData):Void
         {
-            helper.executeWhenContextReady(createDownloadedTexture, [bitmap]);
+            helper.executeWhenContextReady(createFromBitmapData, [bitmapData]);
         }
         
-        if (Std.is(data, Bitmap) || Std.is(data, BitmapData))
+        if (Std.is(data, Bitmap))
         {
-            helper.executeWhenContextReady(createDownloadedTexture, [data]);
+            onBitmapDataCreated(cast(data, Bitmap).bitmapData);
+        }
+        else if (Std.is(data, BitmapData))
+        {
+            onBitmapDataCreated(cast(data, BitmapData));
         }
         else if (Std.is(data, #if commonjs ByteArray #else ByteArrayData #end))
         {
-            loadFromByteArray(cast data, onLoadComplete, onError);
+            createBitmapDataFromByteArray(cast data, onBitmapDataCreated, onError);
         }
     }
 
-    private function loadFromByteArray(data:ByteArray, onComplete:Bitmap->Void, onError:String->Void):Void
+    /** Called by 'create' to convert a ByteArray to a BitmapData.
+     *
+     *  @param data        A ByteArray that contains image data
+     *                     (like the contents of a PNG or JPG file).
+     *  @param onComplete  Called with the BitmapData when successful.
+     *                     <pre>function(bitmapData:BitmapData):void;</pre>
+     *  @param onError     To be called when creation fails for some reason.
+     *                     <pre>function(error:String):void</pre>
+     */
+    protected function createBitmapDataFromByteArray(data:ByteArray,
+                                                     onComplete:BitmapData->Void, onError:String->Void):void
     {
         var loader:Loader;
         var loaderInfo:LoaderInfo;
@@ -128,13 +142,13 @@ class BitmapTextureFactory extends AssetFactory
 
         onLoaderComplete = function (event:Dynamic):Void
         {
-            complete(event.target.content);
+            complete(event.target.content.bitmapData);
         }
 
-        complete = function (asset:Dynamic):Void
+        complete = function (bitmapData:BitmapData):Void
         {
             cleanup();
-            Execute.execute(onComplete, [asset]);
+            Execute.execute(onComplete, [bitmapData]);
         }
 
         cleanup = function ():Void
