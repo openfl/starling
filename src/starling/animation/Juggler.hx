@@ -369,9 +369,9 @@ class Juggler implements IAnimatable
         var currentIndex:Int = 0;
         var i:Int = 0;
 
+        _elapsedTime += time;
         time *= __timeScale;
         if (numObjects == 0 || time == 0) return;
-        __elapsedTime += time;
         
         // there is a high probability that the "advanceTime" function modifies the list 
         // of animatables. we must not process new objects right now (they will be processed
