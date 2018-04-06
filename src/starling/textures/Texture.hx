@@ -820,7 +820,7 @@ class Texture
         var target:Starling = Starling.current;
         var context:Context3D = target.context;
         var profile:String = target == null ? target.profile : "baseline";
-        var isCompressed:Boolean = (textureFormat == Context3DTextureFormat.COMPRESSED ||
+        var isCompressed:Bool = (textureFormat == Context3DTextureFormat.COMPRESSED ||
                                     textureFormat == Context3DTextureFormat.COMPRESSED_ALPHA);
 
         if (profile == "baseline" || profile == "baselineConstrained")

@@ -369,7 +369,7 @@ class Juggler implements IAnimatable
         var currentIndex:Int = 0;
         var i:Int = 0;
 
-        _elapsedTime += time;
+        __elapsedTime += time;
         time *= __timeScale;
         if (numObjects == 0 || time == 0) return;
         
