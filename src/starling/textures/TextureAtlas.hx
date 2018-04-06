@@ -267,7 +267,7 @@ class TextureAtlas
 	/** Adds a named region for an instance of SubTexture or an instance of its sub-classes.*/
 	public function addSubTexture(name:String, subTexture:SubTexture):Void
 	{
-		if (subTexture.root != _atlasTexture.root)
+		if (subTexture.root != __atlasTexture.root)
 			throw new ArgumentError("SubTexture's root must be atlas texture.");
 			
 		__subTextures[name] = subTexture;
