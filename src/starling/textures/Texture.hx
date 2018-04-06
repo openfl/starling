@@ -815,7 +815,7 @@ class Texture
      *  to 4096 pixels (or less in some profiles). Only uncompressed normal (POT) and
      *  RectangleTextures may support 8k dimensions.</p>
      */
-    public static function getMaxSize(textureFormat:Context3DTextureFormat=Context3DTextureFormat.BGRA):int
+    public static function getMaxSize(textureFormat:Context3DTextureFormat=Context3DTextureFormat.BGRA):Int
     {
         var target:Starling = Starling.current;
         var context:Context3D = target.context;
