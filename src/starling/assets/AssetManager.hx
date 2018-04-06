@@ -471,7 +471,7 @@ class AssetManager extends EventDispatcher
         {
             onCanceled();
             Execute.execute(onProgress, [1.0]);
-            Execute.execute(onComplete, self);
+            Execute.execute(onComplete, [self]);
         }
         
         if (_queue.length == 0)
@@ -517,7 +517,7 @@ class AssetManager extends EventDispatcher
         var onLoadError:String->Void = null;
         var onCreateError:String->Void = null;
         var onAnyError:String->Void = null;
-        var onManagerComplete:Void->Void = null;
+        var onManagerComplete:AssetManager->Void = null;
         
         onLoadComplete = function (data:Dynamic, ?mimeType:String=null):Void
         {

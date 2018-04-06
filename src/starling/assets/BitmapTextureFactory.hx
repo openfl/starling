@@ -50,9 +50,9 @@ class BitmapTextureFactory extends AssetFactory
         var data:Dynamic = reference.data;
         
         var onReloadError:String->Void = null;
-        var reload:String->(Bitmap->Void)->Void = null;
-        var createDownloadedTexture:Dynamic->Void = null;
-        var onLoadComplete:Bitmap->Void = null;
+        var reload:String->(BitmapData->Void)->Void = null;
+        var createFromBitmapData:BitmapData->Void = null;
+        var onBitmapDataCreated:BitmapData->Void = null;
         
         onReloadError = function (error:String):Void
         {
@@ -60,7 +60,7 @@ class BitmapTextureFactory extends AssetFactory
             helper.onEndRestore();
         }
         
-        reload = function (url:String, onComplete:Bitmap->Void):Void
+        reload = function (url:String, onComplete:BitmapData->Void):Void
         {
             helper.loadDataFromUrl(url, function(data:ByteArray, ?mimeType:String):Void
             {
@@ -123,8 +123,8 @@ class BitmapTextureFactory extends AssetFactory
      *  @param onError     To be called when creation fails for some reason.
      *                     <pre>function(error:String):void</pre>
      */
-    protected function createBitmapDataFromByteArray(data:ByteArray,
-                                                     onComplete:BitmapData->Void, onError:String->Void):void
+    private function createBitmapDataFromByteArray(data:ByteArray,
+                                                     onComplete:BitmapData->Void, onError:String->Void):Void
     {
         var loader:Loader;
         var loaderInfo:LoaderInfo;
