@@ -33,6 +33,7 @@ class DropShadowFilter extends FragmentFilter
             "distance": { get: untyped __js__ ("function () { return this.get_distance (); }"), set: untyped __js__ ("function (v) { return this.set_distance (v); }") },
             "angle": { get: untyped __js__ ("function () { return this.get_angle (); }"), set: untyped __js__ ("function (v) { return this.set_angle (v); }") },
             "blur": { get: untyped __js__ ("function () { return this.get_blur (); }"), set: untyped __js__ ("function (v) { return this.set_blur (v); }") },
+            "quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
         });
         
     }
@@ -62,7 +63,7 @@ class DropShadowFilter extends FragmentFilter
 
         this.color = color;
         this.alpha = alpha;
-		this.quality = quality;
+        this.quality = quality;
 
         updatePadding();
     }
@@ -184,8 +185,8 @@ class DropShadowFilter extends FragmentFilter
     }
 
     /** The quality used for blurring the shadow.
-	 *  Forwarded to the internally used <em>BlurFilter</em>. */
-	public var quality(get, set):Float;
+     *  Forwarded to the internally used <em>BlurFilter</em>. */
+    public var quality(get, set):Float;
     private function get_quality():Float { return _blurFilter.quality; }
     private function set_quality(value:Float):Float
     {

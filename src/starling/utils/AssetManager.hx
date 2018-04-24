@@ -134,7 +134,7 @@ class AssetManager extends EventDispatcher
     private var __numLoadingQueues:Int = 0;
 
     private var __defaultTextureOptions:TextureOptions;
-	private var __registerBitmapFontsWithFontFace:Bool;
+    private var __registerBitmapFontsWithFontFace:Bool;
     private var __checkPolicyFile:Bool;
     private var __keepAtlasXmls:Bool;
     private var __keepFontXmls:Bool;
@@ -148,7 +148,7 @@ class AssetManager extends EventDispatcher
     private var __xmls:Map<String, Xml>;
     private var __objects:Map<String, Dynamic>;
     private var __byteArrays:Map<String, ByteArray>;
-	private var __bitmapFonts:Map<String, BitmapFont>;
+    private var __bitmapFonts:Map<String, BitmapFont>;
     
     /** helper objects */
     private static var sNames:Vector<String> = new Vector<String>();
@@ -188,7 +188,7 @@ class AssetManager extends EventDispatcher
         __xmls = new Map();
         __objects = new Map();
         __byteArrays = new Map();
-		__bitmapFonts = new Map();
+        __bitmapFonts = new Map();
         __numConnections = 3;
         __verbose = true;
         __queue = [];
@@ -215,8 +215,8 @@ class AssetManager extends EventDispatcher
         
         for (byteArray in __byteArrays)
             byteArray.clear();
-		
-		for (bitmapFont in __bitmapFonts)
+        
+        for (bitmapFont in __bitmapFonts)
             bitmapFont.dispose();
     }
     
@@ -340,19 +340,19 @@ class AssetManager extends EventDispatcher
     {
         return getDictionaryKeys(__byteArrays, prefix, out);
     }
-	
-	/** Returns a bitmaps font with a certain name, or null if it's not found. */
-	public function getBitmapFont(name:String):BitmapFont
-	{
-		return __bitmapFonts[name];
-	}
+    
+    /** Returns a bitmaps font with a certain name, or null if it's not found. */
+    public function getBitmapFont(name:String):BitmapFont
+    {
+        return __bitmapFonts[name];
+    }
 
-	/** Returns all bitmap fonts names that start with a certain string, sorted alphabetically. 
+    /** Returns all bitmap fonts names that start with a certain string, sorted alphabetically. 
      * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-	public function getBitmapFontNames(prefix:String="", out:Vector<String>=null):Vector<String>
-	{
-		return getDictionaryKeys(__bitmapFonts, prefix, out);
-	}
+    public function getBitmapFontNames(prefix:String="", out:Vector<String>=null):Vector<String>
+    {
+        return getDictionaryKeys(__bitmapFonts, prefix, out);
+    }
     
     // direct adding
     
@@ -450,26 +450,26 @@ class AssetManager extends EventDispatcher
         
         __byteArrays[name] = byteArray;
     }
-	
-	/** Register a bitmap font under a certain name. It will be available right away.
-	 *  If the name was already taken, the existing font will be disposed and replaced
-	 *  by the new one.
-	 *
-	 *  <p>Note that the font is <strong>not</strong> registered at the TextField class.
-	 *  This only happens when a bitmap font is loaded via the asset queue.</p>
-	 */
-	public function addBitmapFont(name:String, font:BitmapFont):Void
-	{
-		log("Adding bitmap font '" + name + "'");
+    
+    /** Register a bitmap font under a certain name. It will be available right away.
+     *  If the name was already taken, the existing font will be disposed and replaced
+     *  by the new one.
+     *
+     *  <p>Note that the font is <strong>not</strong> registered at the TextField class.
+     *  This only happens when a bitmap font is loaded via the asset queue.</p>
+     */
+    public function addBitmapFont(name:String, font:BitmapFont):Void
+    {
+        log("Adding bitmap font '" + name + "'");
 
-		if (__bitmapFonts.exists(name) && font != __bitmapFonts[name])
-		{
-			log("Warning: name was already in use; the previous font will be replaced.");
-			__bitmapFonts[name].dispose();
-		}
+        if (__bitmapFonts.exists(name) && font != __bitmapFonts[name])
+        {
+            log("Warning: name was already in use; the previous font will be replaced.");
+            __bitmapFonts[name].dispose();
+        }
 
-		__bitmapFonts[name] = font;
-	}
+        __bitmapFonts[name] = font;
+    }
     
     // removing
     
@@ -532,22 +532,22 @@ class AssetManager extends EventDispatcher
         
         __byteArrays.remove(name);
     }
-	
-	/** Removes a certain bitmap font, optionally disposing it. */
-	public function removeBitmapFont(name:String, dispose:Bool=true):Void
-	{
-		log("Removing bitmap font '" + name + "'");
+    
+    /** Removes a certain bitmap font, optionally disposing it. */
+    public function removeBitmapFont(name:String, dispose:Bool=true):Void
+    {
+        log("Removing bitmap font '" + name + "'");
 
-		if (dispose && __bitmapFonts.exists(name))
-			__bitmapFonts[name].dispose();
+        if (dispose && __bitmapFonts.exists(name))
+            __bitmapFonts[name].dispose();
 
-		__bitmapFonts.remove(name);
-	}
+        __bitmapFonts.remove(name);
+    }
     
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
-		__queue.splice(0, __queue.length);
+        __queue.splice(0, __queue.length);
         dispatchEventWith(Event.CANCEL);
     }
     
@@ -566,7 +566,7 @@ class AssetManager extends EventDispatcher
         __xmls = new Map<String, Xml>();
         __objects = new Map<String, Dynamic>();
         __byteArrays = new Map<String, ByteArray>();
-		__bitmapFonts = new Map<String, BitmapFont>();
+        __bitmapFonts = new Map<String, BitmapFont>();
     }
     
     // queued adding
@@ -665,11 +665,11 @@ class AssetManager extends EventDispatcher
         else                 options = options.clone();
         
         log("Enqueuing '" + name + "'");
-		
-		#if air
-		if (Std.is(asset, flash.filesystem.File))
-			asset = StringTools.urlDecode(Reflect.field(asset, "url"));
-		#end
+        
+        #if air
+        if (Std.is(asset, flash.filesystem.File))
+            asset = StringTools.urlDecode(Reflect.field(asset, "url"));
+        #end
         
         __queue.push({
             name: name,
@@ -793,12 +793,12 @@ class AssetManager extends EventDispatcher
             }
 
             var texture:Texture;
-			var name:String;
-			var fontName:String;
+            var name:String;
+            var fontName:String;
             var xml:Xml = xmls[index];
             var rootNode:String = xml.nodeName;
             var xmlProgress:Float = (index + 1) / (xmls.length + 1);
-			var bitmapFont:BitmapFont;
+            var bitmapFont:BitmapFont;
 
             if (rootNode == "TextureAtlas")
             {
@@ -808,29 +808,29 @@ class AssetManager extends EventDispatcher
                 if (texture != null) addTextureAtlas(name, new TextureAtlas(texture, xml));
                 else log("Cannot create atlas: texture '" + name + "' is missing.");
                     
-				if (__keepAtlasXmls) addXml(name, xml);
-				#if 0
-				else System.disposeXML(xml);
-				#end
+                if (__keepAtlasXmls) addXml(name, xml);
+                #if 0
+                else System.disposeXML(xml);
+                #end
             }
             else if (rootNode == "font")
             {
                 name = getName(xml.elementsNamed("pages").next().elementsNamed("page").next().get("file"));
-				fontName = __registerBitmapFontsWithFontFace ? xml.elementsNamed("info").next().get("face") : name;
+                fontName = __registerBitmapFontsWithFontFace ? xml.elementsNamed("info").next().get("face") : name;
                 texture = getTexture(name);
 
                 if (texture != null)
                 {
-					bitmapFont = new BitmapFont(texture, xml);
-					addBitmapFont(fontName, bitmapFont);
-					TextField.registerCompositor(bitmapFont, fontName);
+                    bitmapFont = new BitmapFont(texture, xml);
+                    addBitmapFont(fontName, bitmapFont);
+                    TextField.registerCompositor(bitmapFont, fontName);
                 }
                 else log("Cannot create bitmap font: texture '" + name + "' is missing.");
-				
-				if (__keepFontXmls) addXml(name, xml);
-				#if 0
-				else System.disposeXML(xml);
-				#end
+                
+                if (__keepFontXmls) addXml(name, xml);
+                #if 0
+                else System.disposeXML(xml);
+                #end
             }
             else
                 throw new Error("XML contents not recognized: " + rootNode);
@@ -1433,13 +1433,13 @@ class AssetManager extends EventDispatcher
     public var numConnections(get, set):Int;
     private function get_numConnections():Int { return __numConnections; }
     private function set_numConnections(value:Int):Int { return __numConnections = value; }
-	
-	/** Indicates if bitmap fonts should be registered with their "face" attribute from the
-	 *  font XML file. Per default, they are registered with the name of the texture file.
-	 *  @default false */
-	public var registerBitmapFontsWithFontFace(get, set):Bool;
-	public function get_registerBitmapFontsWithFontFace():Bool { return __registerBitmapFontsWithFontFace; }
-	public function set_registerBitmapFontsWithFontFace(value:Bool):Bool { return __registerBitmapFontsWithFontFace = value; }
+    
+    /** Indicates if bitmap fonts should be registered with their "face" attribute from the
+     *  font XML file. Per default, they are registered with the name of the texture file.
+     *  @default false */
+    public var registerBitmapFontsWithFontFace(get, set):Bool;
+    public function get_registerBitmapFontsWithFontFace():Bool { return __registerBitmapFontsWithFontFace; }
+    public function set_registerBitmapFontsWithFontFace(value:Bool):Bool { return __registerBitmapFontsWithFontFace = value; }
 }
 
 @:dox(hide) typedef QueuedAsset = {

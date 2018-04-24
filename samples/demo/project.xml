@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="Starling Demo" package="com.demoweb" version="1.0.0" company="OpenFL" />
+	<meta title="Starling Demo" package="com.gamua.starling-demo" version="1.0.0" company="OpenFL" />
 	<app main="Demo" file="Demo" path="bin" swf-version="19" />
 	
 	<window width="320" height="480" orientation="portrait" background="0xffffff" />
@@ -13,10 +13,10 @@
 	<haxelib name="starling" />
 	<haxelib name="openfl" />
 	
-	<assets path="assets/audio/wing_flap.mp3" if="web || air" />
-	<assets path="assets/audio/wing_flap.ogg" unless="flash" />
-	<assets path="assets/textures/1x" />
-	<assets path="assets/fonts/1x" />
+	<assets path="assets/audio/wing_flap.mp3" if="web || air" embed="false" />
+	<assets path="assets/audio/wing_flap.ogg" unless="flash" embed="false" />
+	<assets path="assets/textures/1x" embed="false" />
+	<assets path="assets/fonts/1x" embed="false" />
 	<assets path="assets/fonts/DejaVuSans.ttf" />
 	<assets path="assets/fonts/Ubuntu-R.ttf" />
 	
@@ -26,5 +26,7 @@
 		<assets path="assets/videos" rename="videos" embed="false" />
 		
 	</section>
+	
+	<define name="AIR_SDK" value="${AIR_SDK}"></define>
 	
 </project>

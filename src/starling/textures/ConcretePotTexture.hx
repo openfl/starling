@@ -153,7 +153,7 @@ import starling.utils.MathUtil;
         if (sAsyncUploadEnabled)
         {
             var method = Reflect.field(base, "uploadFromBitmapDataAsync");
-            try { Reflect.callMethod(method, method, [source, mipLevel]); }
+            try { Reflect.callMethod(base, method, [source, mipLevel]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)

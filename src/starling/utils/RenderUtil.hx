@@ -225,12 +225,12 @@ class RenderUtil
     {
         var profiles:Array<Dynamic>;
         var currentProfile:String;
-		var executeFunc:Function->Array<Dynamic>->Void = SystemUtil.isDesktop ?
+        var executeFunc:Function->Array<Dynamic>->Void = SystemUtil.isDesktop ?
                 execute : SystemUtil.executeWhenApplicationIsActive;
 
         if (profile == "auto")
             profiles = ["enhanced",
-						"standardExtended", "standard", "standardConstrained",
+                        "standardExtended", "standard", "standardConstrained",
                         "baselineExtended", "baseline", "baselineConstrained"];
         else if (Std.is(profile, String))
             profiles = [Std.string(profile)];
@@ -249,9 +249,9 @@ class RenderUtil
             currentProfile = profiles.shift();
 
             try 
-			{
-				executeFunc(stage3D.requestContext3D, [renderMode, currentProfile]);
-			}
+            {
+                executeFunc(stage3D.requestContext3D, [renderMode, currentProfile]);
+            }
             catch (error:Error)
             {
                 if (profiles.length != 0) Timer.delay(requestNextProfile, 1);

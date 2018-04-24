@@ -26,32 +26,32 @@ import starling.text.BitmapChar;
 
 class BitmapCharLocation
 {
-	/** The actual bitmap char to be drawn. */
-	public var char:BitmapChar;
-	
-	/** The scale with which the char must be placed. */
-	public var scale:Float;
-	
-	/** The x-coordinate of the char's location. */
-	public var x:Float;
-	
-	/** The y-coordinate of the char's location. */
-	public var y:Float;
-	
-	/** The index of this char in the processed String. */
-	public var index:Int;
+    /** The actual bitmap char to be drawn. */
+    public var char:BitmapChar;
+    
+    /** The scale with which the char must be placed. */
+    public var scale:Float;
+    
+    /** The x-coordinate of the char's location. */
+    public var x:Float;
+    
+    /** The y-coordinate of the char's location. */
+    public var y:Float;
+    
+    /** The index of this char in the processed String. */
+    public var index:Int;
 
-	/** Create a new instance that references the given char. */
+    /** Create a new instance that references the given char. */
     public function new(char:BitmapChar)
-	{
-		init(char);
-	}
+    {
+        init(char);
+    }
 
-	private function init(char:BitmapChar):BitmapCharLocation
-	{
-		this.char = char;
-		return this;
-	}
+    private function init(char:BitmapChar):BitmapCharLocation
+    {
+        this.char = char;
+        return this;
+    }
 
     // pooling
 
@@ -61,8 +61,8 @@ class BitmapCharLocation
     private static var sInstanceLoan:Vector<BitmapCharLocation> = new Vector<BitmapCharLocation>();
     private static var sVectorLoan:Array<Vector<BitmapCharLocation>> = [];
 
-	/** Returns a "BitmapCharLocation" instance from the pool, initialized with the given char.
-	 *  All instances will be returned to the pool when calling <code>rechargePool</code>. */
+    /** Returns a "BitmapCharLocation" instance from the pool, initialized with the given char.
+     *  All instances will be returned to the pool when calling <code>rechargePool</code>. */
     public static function instanceFromPool(char:BitmapChar):BitmapCharLocation
     {
         var instance:BitmapCharLocation = sInstancePool.length > 0 ?
@@ -74,8 +74,8 @@ class BitmapCharLocation
         return instance;
     }
 
-	/** Returns an empty Vector for "BitmapCharLocation" instances from the pool.
-	 *  All vectors will be returned to the pool when calling <code>rechargePool</code>. */
+    /** Returns an empty Vector for "BitmapCharLocation" instances from the pool.
+     *  All vectors will be returned to the pool when calling <code>rechargePool</code>. */
     public static function vectorFromPool():Vector<BitmapCharLocation>
     {
         var vector:Vector<BitmapCharLocation> = sVectorPool.length > 0 ?
@@ -87,8 +87,8 @@ class BitmapCharLocation
         return vector;
     }
 
-	/** Puts all objects that were previously returned by either of the "...fromPool" methods
-	 *  back into the pool. */
+    /** Puts all objects that were previously returned by either of the "...fromPool" methods
+     *  back into the pool. */
     public static function rechargePool():Void
     {
         var instance:BitmapCharLocation;

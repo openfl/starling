@@ -112,7 +112,7 @@ class FragmentFilter extends EventDispatcher
     private var _textureFormat:String;
     private var _textureSmoothing:String;
     private var _alwaysDrawToBackBuffer:Bool;
-	private var _maintainResolutionAcrossPasses:Bool;
+    private var _maintainResolutionAcrossPasses:Bool;
     private var _cacheRequested:Bool;
     private var _cached:Bool;
 
@@ -526,24 +526,24 @@ class FragmentFilter extends EventDispatcher
         }
         return value;
     }
-	
-	/** Indicates if the filter requires all passes to be processed with the exact same
-	 *  resolution.
-	 *
-	 *  <p>Some filters must use the same resolution for input and output; e.g. the blur filter
-	 *  is very sensitive to changes of pixel / texel sizes. When the filter is used as part
-	 *  of a filter chain, or if its last pass is drawn directly to the back buffer, such a
-	 *  filter produces artifacts. In that case, the filter author must set this property
-	 *  to <code>true</code>.</p>
-	 *
-	 *  @default false
-	 */
-	private var maintainResolutionAcrossPasses(get, set):Bool;
-	private function get_maintainResolutionAcrossPasses():Bool { return _maintainResolutionAcrossPasses; }
-	private function set_maintainResolutionAcrossPasses(value:Bool):Bool
-	{
-		return _maintainResolutionAcrossPasses = value;
-	}
+
+    /** Indicates if the filter requires all passes to be processed with the exact same
+     *  resolution.
+     *
+     *  <p>Some filters must use the same resolution for input and output; e.g. the blur filter
+     *  is very sensitive to changes of pixel / texel sizes. When the filter is used as part
+     *  of a filter chain, or if its last pass is drawn directly to the back buffer, such a
+     *  filter produces artifacts. In that case, the filter author must set this property
+     *  to <code>true</code>.</p>
+     *
+     *  @default false
+     */
+    private var maintainResolutionAcrossPasses(get, set):Bool;
+    private function get_maintainResolutionAcrossPasses():Bool { return _maintainResolutionAcrossPasses; }
+    private function set_maintainResolutionAcrossPasses(value:Bool):Bool
+    {
+        return _maintainResolutionAcrossPasses = value;
+    }
 
     /** The anti-aliasing level. This is only used for rendering the target object
      *  into a texture, not for the filter passes. 0 - none, 4 - maximum. @default 0 */

@@ -158,7 +158,7 @@ class Mesh extends DisplayObject
         setRequiresRedraw();
     }
 
-	/** Creates a new instance of the current default MeshStyle. Internally, this method
+    /** Creates a new instance of the current default MeshStyle. Internally, this method
      *  calls either the <code>defaultStyleFactory</code> or (if no factory has been assigned)
      *  instantiates <code>defaultStyle</code>.
      */

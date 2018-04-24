@@ -79,7 +79,7 @@ class Painter
 
     /** The value with which the stencil buffer will be cleared,
         *  and the default reference value used for stencil tests. */
-    public static inline var DEFAULT_STENCIL_VALUE:UInt = 127;
+    public static var DEFAULT_STENCIL_VALUE:UInt = 127;
 
     // members
 
@@ -157,12 +157,15 @@ class Painter
     
     /** Creates a new Painter object. Normally, it's not necessary to create any custom
      *  painters; instead, use the global painter found on the Starling instance. */
-    public function new(stage3D:Stage3D)
+    public function new(stage3D:Stage3D, sharedContext:Null<Bool>=null)
     {
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-        _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
+		
+		if (sharedContext != null) _shareContext = sharedContext;
+		else _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
+		
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
@@ -636,8 +639,8 @@ class Painter
         setupContextDefaults();
 
         // reset everything else
-        stencilReferenceValue = DEFAULT_STENCIL_VALUE;
-        _clipRectStack.length = 0;
+		stencilReferenceValue = DEFAULT_STENCIL_VALUE;
+		_clipRectStack.length = 0;
         _drawCount = 0;
         _stateStackPos = -1;
         _state.reset();
@@ -954,7 +957,7 @@ class Painter
     {
         _enableErrorChecking = value;
         if (_context != null) _context.enableErrorChecking = value;
-		if (value) trace("[Starling] Warning: 'enableErrorChecking' has a " +
+        if (value) trace("[Starling] Warning: 'enableErrorChecking' has a " +
                 "negative impact on performance. Never activate for release builds!");
         return value;
     }

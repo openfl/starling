@@ -8,12 +8,11 @@ import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.system.System;
 import openfl.display.StageScaleMode;
+import openfl.utils.Assets;
 import openfl.utils.ByteArray;
+import openfl.Vector;
 
 import haxe.Timer;
-
-import openfl.Assets;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.display.Stage;
@@ -34,7 +33,7 @@ class Demo extends Sprite
     private var _starling:Starling;
     private var _background:Bitmap;
     private var _progressBar:ProgressBar;
-	private var _assets:AssetManager;
+    private var _assets:AssetManager;
 
     public function new()
     {
@@ -46,9 +45,9 @@ class Demo extends Sprite
     private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-		
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		
+        
+        stage.scaleMode = StageScaleMode.NO_SCALE;
+        
         start();
     }
 
@@ -82,41 +81,20 @@ class Demo extends Sprite
         _assets = new AssetManager();
 
         _assets.verbose = Capabilities.isDebugger;
-
-		#if html5
-		_assets.enqueue([
-			"/assets/textures/1x/background.jpg",
-			"/assets/textures/1x/atlas.png",
-			"/assets/textures/1x/atlas.xml",
-			"/assets/textures/1x/compressed_texture.atf",
-			"/assets/fonts/1x/desyrel.png",
-			"/assets/fonts/1x/desyrel.fnt",
-			"/assets/audio/wing_flap.ogg"
-		]);
-		_assets.loadQueue(onComplete);
-		#else
-		Timer.delay(function()
-        {
-            var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-            var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
-            var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-            var compressedTexture:Texture = Texture.fromAtfData(Assets.getBytes("assets/textures/1x/compressed_texture.atf"));
-			var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
-            TextField.registerCompositor(bitmapFont, bitmapFont.name);
-			
-			_assets.addAsset("atlas", new TextureAtlas(atlasTexture, atlasXml));
-            _assets.addAsset("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg")));
+        _assets.enqueue([
+            Assets.getPath ("assets/textures/1x/background.jpg"),
+            Assets.getPath ("assets/textures/1x/atlas.png"),
+            Assets.getPath ("assets/textures/1x/atlas.xml"),
+            Assets.getPath ("assets/textures/1x/compressed_texture.atf"),
+            Assets.getPath ("assets/fonts/1x/desyrel.png"),
+            Assets.getPath ("assets/fonts/1x/desyrel.fnt"),
             #if flash
-            _assets.addAsset("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
+            Assets.getPath ("assets/audio/wing_flap.mp3")
             #else
-            _assets.addAsset("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            Assets.getPath ("assets/audio/wing_flap.ogg")
             #end
-            _assets.addAsset("compressed_texture", compressedTexture);
-            
-            onComplete();
-        }, 0);		
-		#end
+        ]);
+        _assets.loadQueue(onComplete);
     }
 
     private function startGame():Void
@@ -130,7 +108,10 @@ class Demo extends Sprite
     {
         // Add background image.
 
-        _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
+        _background = new Bitmap();
+        Assets.loadBitmapData("assets/textures/1x/background.jpg").onComplete (function (bitmapData) {
+            _background.bitmapData = bitmapData;
+        });
         _background.smoothing = true;
         addChild(_background);
 

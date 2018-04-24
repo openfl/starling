@@ -94,7 +94,7 @@ import starling.core.Starling;
         if (sAsyncUploadEnabled)
         {
             var method = Reflect.field(base, "uploadFromBitmapDataAsync");
-            try { Reflect.callMethod(method, method, [source]); }
+            try { Reflect.callMethod(base, method, [source]); }
             catch (error:Error)
             {
                 if (error.errorID == 3708 || error.errorID == 1069)

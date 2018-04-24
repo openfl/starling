@@ -223,12 +223,12 @@ class TextField extends DisplayObjectContainer
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, _format, _options);
 
         if (_customStyle != null) _meshBatch.style = _customStyle;
-		else
-		{
-			_defaultStyle = _compositor.getDefaultMeshStyle(_defaultStyle, _format, _options);
-			if (_defaultStyle != null) _meshBatch.style = _defaultStyle;
-		}
-		
+        else
+        {
+            _defaultStyle = _compositor.getDefaultMeshStyle(_defaultStyle, _format, _options);
+            if (_defaultStyle != null) _meshBatch.style = _defaultStyle;
+        }
+        
         if (_options.autoSize != TextFieldAutoSize.NONE)
         {
             _textBounds = _meshBatch.getBounds(_meshBatch, _textBounds);
@@ -309,7 +309,7 @@ class TextField extends DisplayObjectContainer
     public var textBounds(get, never):Rectangle;
     private function get_textBounds():Rectangle
     {
-		return getTextBounds(this);
+        return getTextBounds(this);
     }
     
     /** @inheritDoc */
@@ -319,15 +319,15 @@ class TextField extends DisplayObjectContainer
         getTransformationMatrix(targetSpace, sMatrix);
         return RectangleUtil.getBounds(_hitArea, sMatrix, out);
     }
-	
-	/** Returns the bounds of the text within the text field in the given coordinate space. */
-	public function getTextBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
-	{
-		if (_requiresRecomposition) recompose();
-		if (_textBounds == null) _textBounds = _meshBatch.getBounds(this);
-		getTransformationMatrix(targetSpace, sMatrix);
-		return RectangleUtil.getBounds(_textBounds, sMatrix, out);
-	}
+    
+    /** Returns the bounds of the text within the text field in the given coordinate space. */
+    public function getTextBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
+    {
+        if (_requiresRecomposition) recompose();
+        if (_textBounds == null) _textBounds = _meshBatch.getBounds(this);
+        getTransformationMatrix(targetSpace, sMatrix);
+        return RectangleUtil.getBounds(_textBounds, sMatrix, out);
+    }
     
     /** @inheritDoc */
     public override function hitTest(localPoint:Point):DisplayObject
@@ -486,10 +486,10 @@ class TextField extends DisplayObjectContainer
      *  Note that a style instance may only be used on one mesh at a time. */
     public var style(get, set):MeshStyle;
     private function get_style():MeshStyle 
-	{
-		if (_requiresRecomposition) recompose(); // might change style!
-			return _meshBatch.style;
-	}
+    {
+        if (_requiresRecomposition) recompose(); // might change style!
+            return _meshBatch.style;
+    }
     private function set_style(value:MeshStyle):MeshStyle
     {
         _customStyle = value;
