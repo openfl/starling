@@ -12,6 +12,7 @@ package starling.events;
 
 import openfl.errors.Error;
 import openfl.geom.Point;
+import openfl.utils.Object;
 import openfl.Lib;
 import openfl.Vector;
 
@@ -76,7 +77,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
-    private static var sHoveringTouchData:Vector<Dynamic> = new Vector<Dynamic>();
+    private static var sHoveringTouchData:Vector<Object> = new Vector<Object>();
     private static var sHelperPoint:Point = new Point();
     
     #if commonjs
