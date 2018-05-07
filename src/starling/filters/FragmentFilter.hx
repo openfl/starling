@@ -112,6 +112,7 @@ class FragmentFilter extends EventDispatcher
     private var _textureFormat:String;
     private var _textureSmoothing:String;
     private var _alwaysDrawToBackBuffer:Bool;
+    private var _maintainResolutionAcrossPasses:Bool;
     private var _cacheRequested:Bool;
     private var _cached:Bool;
 
@@ -216,7 +217,8 @@ class FragmentFilter extends EventDispatcher
             // (1) 'FilterEffect' can't handle alpha (and that will do the rendering)
             // (2) we don't want lower layers (CompositeFilter!) to shine through.
 
-            drawLastPassToBackBuffer = painter.state.alpha == 1.0;
+            drawLastPassToBackBuffer = painter.state.alpha == 1.0 &&
+                    (!_maintainResolutionAcrossPasses || _resolution == 1.0);
             painter.excludeFromCache(_target);
         }
 
@@ -523,6 +525,24 @@ class FragmentFilter extends EventDispatcher
             setRequiresRedraw();
         }
         return value;
+    }
+
+    /** Indicates if the filter requires all passes to be processed with the exact same
+     *  resolution.
+     *
+     *  <p>Some filters must use the same resolution for input and output; e.g. the blur filter
+     *  is very sensitive to changes of pixel / texel sizes. When the filter is used as part
+     *  of a filter chain, or if its last pass is drawn directly to the back buffer, such a
+     *  filter produces artifacts. In that case, the filter author must set this property
+     *  to <code>true</code>.</p>
+     *
+     *  @default false
+     */
+    private var maintainResolutionAcrossPasses(get, set):Bool;
+    private function get_maintainResolutionAcrossPasses():Bool { return _maintainResolutionAcrossPasses; }
+    private function set_maintainResolutionAcrossPasses(value:Bool):Bool
+    {
+        return _maintainResolutionAcrossPasses = value;
     }
 
     /** The anti-aliasing level. This is only used for rendering the target object

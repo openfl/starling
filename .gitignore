@@ -13,5 +13,6 @@ node_modules
 package-lock.json
 lib/_gen
 npm-debug.log
+dist
 *.map
 *.tgz

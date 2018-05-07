@@ -98,9 +98,9 @@ class BitmapChar
     
     /** The width of the character in points. */
     public var width(get, never):Float;
-    private function get_width():Float { return __texture.width; }
+    private function get_width():Float { return __texture != null ? __texture.width : 0; }
     
     /** The height of the character in points. */
     public var height(get, never):Float;
-    private function get_height():Float { return __texture.height; }
+    private function get_height():Float { return __texture != null ? __texture.height : 0; }
 }

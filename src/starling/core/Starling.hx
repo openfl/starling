@@ -208,7 +208,7 @@ import starling.utils.SystemUtil;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    public static inline var VERSION:String = "2.2.0";
+    public static inline var VERSION:String = "2.3.1";
     
     // members
     
@@ -308,7 +308,7 @@ class Starling extends EventDispatcher
      */
     public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage, 
                              viewPort:Rectangle=null, stage3D:Stage3D=null,
-                             renderMode:Context3DRenderMode=AUTO, profile:Dynamic="auto")
+                             renderMode:Context3DRenderMode=AUTO, profile:Dynamic="auto", sharedContext:Null<Bool>=null)
     {
         super();
         
@@ -333,7 +333,7 @@ class Starling extends EventDispatcher
         __juggler = new Juggler();
         __antiAliasing = 0;
         __supportHighResolutions = false;
-        __painter = new Painter(stage3D);
+        __painter = new Painter(stage3D, sharedContext);
         __frameTimestamp = Lib.getTimer() / 1000.0;
         __frameID = 1;
         

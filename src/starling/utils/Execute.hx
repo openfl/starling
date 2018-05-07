@@ -16,10 +16,12 @@ class Execute
 {
     /** Executes a function with the specified arguments. If the argument count does not match
      *  the function, the argument list is cropped / filled up with <code>null</code> values. */
-    public static function execute(func:Function, args:Array<Dynamic>):Void
+    public static function execute(func:Function, args:Array<Dynamic> = null):Void
     {
         if (func != null)
         {
+			if (args == null) args = [];
+			
             #if (flash || js)
             var maxNumArgs:Int = untyped func.length;
             #elseif neko

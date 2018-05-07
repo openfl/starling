@@ -67,7 +67,7 @@ import starling.core.Starling;
     {
         _textureReadyCallback = onComplete;
         var method = Reflect.field(base, "attach" + type);
-        Reflect.callMethod(method, method, [attachment]);
+        Reflect.callMethod(base, method, [attachment]);
         base.addEventListener(Event.TEXTURE_READY, onTextureReady);
 
         setDataUploaded();

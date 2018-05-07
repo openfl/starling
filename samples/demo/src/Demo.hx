@@ -8,12 +8,11 @@ import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.system.System;
 import openfl.display.StageScaleMode;
+import openfl.utils.Assets;
 import openfl.utils.ByteArray;
+import openfl.Vector;
 
 import haxe.Timer;
-
-import openfl.Assets;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.display.Stage;
@@ -22,7 +21,7 @@ import starling.text.BitmapFont;
 import starling.text.TextField;
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
-import starling.utils.AssetManager;
+import starling.assets.AssetManager;
 import starling.utils.Max;
 import starling.utils.RectangleUtil;
 import starling.utils.StringUtil;
@@ -34,6 +33,7 @@ class Demo extends Sprite
     private var _starling:Starling;
     private var _background:Bitmap;
     private var _progressBar:ProgressBar;
+    private var _assets:AssetManager;
 
     public function new()
     {
@@ -45,9 +45,9 @@ class Demo extends Sprite
     private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-		
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		
+        
+        stage.scaleMode = StageScaleMode.NO_SCALE;
+        
         start();
     }
 
@@ -76,39 +76,31 @@ class Demo extends Sprite
         initElements();
     }
 
-    private function loadAssets(onComplete:AssetManager->Void):Void
+    private function loadAssets(onComplete:Void->Void):Void
     {
-        var assets:AssetManager = new AssetManager();
+        _assets = new AssetManager();
 
-        assets.verbose = Capabilities.isDebugger;
-
-        Timer.delay(function()
-        {
-            var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-            var atlasXml:Xml = Xml.parse(Assets.getText("assets/textures/1x/atlas.xml")).firstElement();
-            var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:Xml = Xml.parse(Assets.getText("assets/fonts/1x/desyrel.fnt")).firstElement();
-            var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
-            TextField.registerCompositor(bitmapFont, bitmapFont.name);
-            assets.addTexture("atlas", atlasTexture);
-            assets.addTextureAtlas("atlas", new TextureAtlas(atlasTexture, atlasXml));
-            assets.addTexture("background", Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/background.jpg"), false));
+        _assets.verbose = Capabilities.isDebugger;
+        _assets.enqueue([
+            Assets.getPath ("assets/textures/1x/background.jpg"),
+            Assets.getPath ("assets/textures/1x/atlas.png"),
+            Assets.getPath ("assets/textures/1x/atlas.xml"),
+            Assets.getPath ("assets/textures/1x/compressed_texture.atf"),
+            Assets.getPath ("assets/fonts/1x/desyrel.png"),
+            Assets.getPath ("assets/fonts/1x/desyrel.fnt"),
             #if flash
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.mp3"));
+            Assets.getPath ("assets/audio/wing_flap.mp3")
             #else
-            assets.addSound("wing_flap", Assets.getSound("assets/audio/wing_flap.ogg"));
+            Assets.getPath ("assets/audio/wing_flap.ogg")
             #end
-            var compressedTexture:ByteArray = Assets.getBytes("assets/textures/1x/compressed_texture.atf");
-            assets.addByteArray("compressed_texture", compressedTexture);
-            
-            onComplete(assets);
-        }, 0);
+        ]);
+        _assets.loadQueue(onComplete);
     }
 
-    private function startGame(assets:AssetManager):Void
+    private function startGame():Void
     {
         var game:Game = cast(_starling.root, Game);
-        game.start(assets);
+        game.start(_assets);
         Timer.delay(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
 
@@ -116,7 +108,10 @@ class Demo extends Sprite
     {
         // Add background image.
 
-        _background = new Bitmap(Assets.getBitmapData("assets/textures/1x/background.jpg"));
+        _background = new Bitmap();
+        Assets.loadBitmapData("assets/textures/1x/background.jpg").onComplete (function (bitmapData) {
+            _background.bitmapData = bitmapData;
+        });
         _background.smoothing = true;
         addChild(_background);
 

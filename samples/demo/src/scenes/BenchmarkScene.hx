@@ -11,7 +11,6 @@ import starling.text.BitmapFont;
 import starling.text.TextField;
 import starling.text.TextFormat;
 import starling.textures.Texture;
-import starling.utils.ArrayUtil;
 import starling.utils.StringUtil;
 
 import utils.MenuButton;
@@ -218,7 +217,7 @@ import utils.MenuButton;
         addChild(_resultText);
 
         _container.scale = 1.0;
-        ArrayUtil.clear(_frameTimes);
+        _frameTimes.splice(0, _frameTimes.length);
         _statusText.text = "";
 
         var i:Int = numChildren - 1;

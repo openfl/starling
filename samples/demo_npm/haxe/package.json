@@ -9,7 +9,7 @@
     "copy-webpack-plugin": "^4.3.1",
     "haxe": "^4.1.0",
     "haxe-loader": "^0.5.0",
-    "openfl": "^7.1.0",
+    "openfl": "^7.1.2",
     "starling-framework": "*",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0",
