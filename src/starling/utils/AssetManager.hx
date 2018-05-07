@@ -1072,7 +1072,7 @@ class AssetManager extends EventDispatcher
      * <p>When overriding this method, you can call 'onProgress' with a number between 0 and 1
      * to update the total queue loading progress.</p>
      */
-    private function loadRawAsset(rawAsset:Dynamic, onProgress:Float->Void, onComplete:Array<Dynamic>->Void):Void
+    private function loadRawAsset(rawAsset:Dynamic, onProgress:Float->Void, onComplete:Dynamic->Void):Void
     {
         var extension:String = null;
         var loaderInfo:LoaderInfo = null;
@@ -1188,7 +1188,7 @@ class AssetManager extends EventDispatcher
             if (SystemUtil.isDesktop)
                 onComplete(asset);
             else
-                SystemUtil.executeWhenApplicationIsActive(onComplete, asset);
+                SystemUtil.executeWhenApplicationIsActive(onComplete, [asset]);
             #else
             onComplete(asset);
             #end
