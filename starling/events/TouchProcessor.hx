@@ -14,6 +14,7 @@ import flash.errors.Error;
 import flash.geom.Point;
 import flash.Lib;
 
+import openfl.utils.Object;
 import openfl.Vector;
 
 import starling.display.DisplayObject;
@@ -73,7 +74,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
-    private static var sHoveringTouchData:Vector<Dynamic> = new Vector<Dynamic>();
+    private static var sHoveringTouchData:Vector<Object> = new Vector<Object>();
     private static var sHelperPoint:Point = new Point();
     
     /** Creates a new TouchProcessor that will dispatch events to the given stage. */
