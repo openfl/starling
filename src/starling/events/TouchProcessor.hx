@@ -83,7 +83,7 @@ class TouchProcessor
     #if commonjs
     private static function __init__ () {
         
-        untyped Object.defineProperties (TouchProcessor.prototype, {
+        untyped global.Object.defineProperties (TouchProcessor.prototype, {
             "simulateMultitouch": { get: untyped __js__ ("function () { return this.get_simulateMultitouch (); }"), set: untyped __js__ ("function (v) { return this.set_simulateMultitouch (v); }") },
             "multitapTime": { get: untyped __js__ ("function () { return this.get_multitapTime (); }"), set: untyped __js__ ("function (v) { return this.set_multitapTime (v); }") },
             "multitapDistance": { get: untyped __js__ ("function () { return this.get_multitapDistance (); }"), set: untyped __js__ ("function (v) { return this.set_multitapDistance (v); }") },

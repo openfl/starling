@@ -102,7 +102,7 @@ class TextureAtlas
         __atlasTexture = texture;
         
         if (data != null)
-            parseAtlasXml(data);
+            parseAtlasData(data);
     }
     
     /** Disposes the atlas texture. */
