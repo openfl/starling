@@ -975,6 +975,11 @@ class AssetManager extends EventDispatcher
         if (Std.is(asset, ByteArray)) cast(asset, ByteArray).clear();
         //if (Std.is(asset, Xml)) cast (asset, Xml) - no need to do any special disposing of Xml in Haxe, no cross-platform equivalent of AS3's System.disposeXML();
         //if (Reflect.hasField(asset, "dispose")) cast(Reflect.field(asset, "dispose"), Function)();	- cast to Function is not allowed. How should we call dispose()?
+        if (Reflect.hasField(asset, "dispose"))
++       {
++           var disposeMethod = Reflect.field(asset, "dispose");
++           Reflect.callMethod(asset, disposeMethod, []);
++       }
     }
 
     /** This method is called during loading of assets when 'verbose' is activated. Per
