@@ -46,12 +46,8 @@
     "start": "npm run watch",
     "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts  ./node_modules/openfl/src"
   },
-  "config": {
-    "haxe": "3.4.4",
-    "haxelib_version": "3.2.0-rc.3"
-  },
   "devDependencies": {
-    "haxe": "^4.1.0",
+    "haxe": "^4.1.10",
     "hxgenjs": "kevinresol/hxgenjs",
     "typedoc": "^0.9.0",
     "typescript": "^2.7.1",
@@ -61,6 +57,9 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
-    "openfl": "^7.1.2"
+    "openfl": "^8.0.1"
+  },
+  "haxeDependencies": {
+    "haxe": "3.4.4"
   }
 }
