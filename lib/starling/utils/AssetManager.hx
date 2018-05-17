@@ -27,7 +27,7 @@ import starling.textures.TextureOptions;
 	var isLoading(get,never) : Bool;
 	var keepAtlasXmls(get,set) : Bool;
 	var keepFontXmls(get,set) : Bool;
-	var nu__queuedAssets(get,never) : Int;
+	var numQueuedAssets(get,never) : Int;
 	var numConnections(get,set) : Int;
 	var scaleFactor(get,set) : Float;
 	var textureFormat(get,set) : openfl.display3D.Context3DTextureFormat;
