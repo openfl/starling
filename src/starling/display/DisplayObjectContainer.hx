@@ -524,6 +524,7 @@ class DisplayObjectContainer extends DisplayObject
                                              listeners:Vector<DisplayObject>):Void
     {
         var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
+        if (object == null) return;
         
         if (object.hasEventListener(eventType))
             listeners[listeners.length] = object; // avoiding 'push'                
