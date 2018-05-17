@@ -12,5 +12,18 @@ module.exports = {
 		alias: {
 			"openfl": path.resolve (__dirname, "node_modules/openfl/lib/openfl")
 		}
-	}
+	},
+	externals: [
+		function (context, request, callback) {
+			if (/^openfl\//.test (request)) {
+				return callback (null, {
+					amd: request,
+					root: request.split ("/"),
+					commonjs: request,
+					commonjs2: request
+				});
+			}
+			callback ();
+		}
+	]
 };
