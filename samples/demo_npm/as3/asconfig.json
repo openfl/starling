@@ -1,0 +1,22 @@
+{
+    "config": "js",
+    "type": "app",
+    "compilerOptions": {
+        "output": "./",
+        "html-template": "template.html",
+        "source-path": [
+            "src"
+        ],
+        "external-library-path": [
+            "node_modules/openfl/dist/openfl.swc",
+            "node_modules/starling-framework/dist/starling.swc"
+        ],
+        "targets": [
+            "js"
+        ]
+    },
+    "files":
+    [
+        "src/Main.as"
+    ]
+}
