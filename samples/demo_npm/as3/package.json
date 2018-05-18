@@ -1,5 +1,5 @@
 {
-  "name": "org.openfl.samples.displayingabitmap-as3",
+  "name": "com.gamua.starling.demo-as3",
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
@@ -8,7 +8,7 @@
     "asconfigc": "^0.6.9",
     "cpx": "^1.5.0",
     "howler": "^2.0.12",
-    "openfl": "^8.1.0",
+    "openfl": "^8.1.1",
     "pako": "^1.0.6"
   },
   "scripts": {
