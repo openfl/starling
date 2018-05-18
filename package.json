@@ -1,6 +1,6 @@
 {
   "name": "starling-framework",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "starling",
@@ -59,7 +59,7 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
-    "openfl": "^8.0.1"
+    "openfl": "^8.1.1"
   },
   "haxeDependencies": {
     "haxe": "3.4.4"
