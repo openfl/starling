@@ -40,7 +40,7 @@
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint starling --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,samples}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
     "build-lib": "cd scripts && haxe build.hxml",
-    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -source-path=node_modules/openfl/lib -output=dist/starling.swc",
+    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -external-library-path+=node_modules/openfl/dist/openfl.swc -output=dist/starling.swc",
     "dev-link": "npm link openfl && npm link hxgenjs",
     "prepublishOnly": "npm run build",
     "serve": "http-server -c-1 --cors",
