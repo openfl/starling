@@ -9,7 +9,8 @@
     "cpx": "^1.5.0",
     "howler": "^2.0.12",
     "openfl": "^8.1.1",
-    "pako": "^1.0.6"
+    "pako": "^1.0.6",
+    "starling-framework": "^2.3.3",
   },
   "scripts": {
     "build": "npm run build:dev",
