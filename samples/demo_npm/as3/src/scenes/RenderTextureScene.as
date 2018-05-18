@@ -25,12 +25,12 @@ package scenes
         private var _canvas:Image;
         private var _brush:Image;
         private var _button:Button;
-        private var _colors:Map;
+        private var _colors:Object;
         
         public function RenderTextureScene()
         {
             super();
-            _colors = new Map();
+            _colors = new Object();
             _renderTexture = new RenderTexture(320, 435);
             
             _canvas = new Image(_renderTexture);
@@ -69,8 +69,9 @@ package scenes
             
                 for each (var touch:Touch in touches)
                 {
-                    if (touch.phase == TouchPhase.BEGAN)
-                        _colors[touch.id] = int(Math.random() * Max.UINT_MAX_VALUE);
+                    if (touch.phase == TouchPhase.BEGAN) {
+                        _colors[touch.id] = uint(Math.random() * int.MAX_VALUE);
+                    }
                     
                     if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED)
                         continue;
