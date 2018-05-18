@@ -5,7 +5,7 @@
   "devDependencies": {
     "@types/core-js": "0.9.36",
     "copy-webpack-plugin": "^4.3.1",
-    "openfl": "^7.1.2",
+    "openfl": "^8.1.1",
     "starling-framework": "*",
     "ts-loader": "^3.2.0",
     "typescript": "^2.6.2",
