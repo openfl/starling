@@ -637,7 +637,7 @@ class AssetManager extends EventDispatcher
         log("Adding " + type + " '" + name + "'");
 
         var prevAsset:Dynamic = store[name];
-        if (prevAsset && prevAsset != asset)
+        if (prevAsset != null && prevAsset != asset)
         {
             log("Warning: name was already in use; disposing the previous " + type);
             disposeAsset(prevAsset);
