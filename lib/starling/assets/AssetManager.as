@@ -18,7 +18,7 @@ package starling.assets {
 	import openfl.net.URLRequest;
 	import openfl.system.System;
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 	//import openfl.utils.describeType;
 	//import openfl.utils.getQualifiedClassName;
 	//import openfl.utils.setTimeout;
@@ -249,7 +249,7 @@ package starling.assets {
 		 *  start with the given prefix. If 'recursive' is true, the method will traverse included
 		 *  texture atlases and asset managers. */
 		public function getAssetNames(assetType:String, prefix:String="", recursive:Boolean=true,
-									out:openfl.Vector=null):openfl.Vector { return null; }
+									out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Removes the asset with the given name and type, and will optionally dispose it. */
 		public function removeAsset(assetType:String, name:String, dispose:Boolean=true):void {}
@@ -261,25 +261,25 @@ package starling.assets {
 
 		/** Returns all textures that start with a certain string, sorted alphabetically
 		 *  (especially useful for "MovieClip"). Includes textures stored inside atlases. */
-		public function getTextures(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getTextures(prefix:String="", out:Vector.<Texture>=null):Vector.<Texture> { return null; }
 
 		/** Returns all texture names that start with a certain string, sorted alphabetically.
 		 *  Includes textures stored inside atlases. */
-		public function getTextureNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getTextureNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns a texture atlas with a certain name, or null if it's not found. */
 		public function getTextureAtlas(name:String):TextureAtlas { return null; }
 
 		/** Returns all texture atlas names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getTextureAtlasNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getTextureAtlasNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns a sound with a certain name, or null if it's not found. */
 		public function getSound(name:String):Sound { return null; }
 
 		/** Returns all sound names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getSoundNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getSoundNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Generates a new SoundChannel object to play back the sound. This method returns a
 		 *  SoundChannel object, which you can access to stop the sound and to control volume. */
@@ -291,7 +291,7 @@ package starling.assets {
 
 		/** Returns all XML names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getXmlNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getXmlNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns an object with a certain name, or null if it's not found. Enqueued JSON
 		 *  data is parsed and can be accessed with this method. */
@@ -299,28 +299,28 @@ package starling.assets {
 
 		/** Returns all object names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getObjectNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getObjectNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns a byte array with a certain name, or null if it's not found. */
 		public function getByteArray(name:String):ByteArray { return null; }
 
 		/** Returns all byte array names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getByteArrayNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getByteArrayNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns a bitmap font with a certain name, or null if it's not found. */
 		public function getBitmapFont(name:String):BitmapFont { return null; }
 
 		/** Returns all bitmap font names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getBitmapFontNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getBitmapFontNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns an asset manager with a certain name, or null if it's not found. */
 		public function getAssetManager(name:String):AssetManager { return null; }
 
 		/** Returns all asset manager names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-		public function getAssetManagerNames(prefix:String="", out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getAssetManagerNames(prefix:String="", out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Removes a certain texture, optionally disposing it. */
 		public function removeTexture(name:String, dispose:Boolean=true):void {}

@@ -7,7 +7,7 @@ package starling.core {
 	import openfl.display.Stage;
 	import openfl.display.Stage3D;
 	import openfl.geom.Rectangle;
-	import openfl.Vector;
+	// import openfl.Vector;
 	import starling.animation.Juggler;
 	import starling.display.DisplayObject;
 	import starling.display.Sprite;
@@ -48,7 +48,7 @@ package starling.core {
 		public function get frameID():uint { return 0; }
 		public function get contextValid():Boolean { return false; }
 		public static function get current():Starling { return null; }
-		public static function get all():openfl.Vector { return null; }
+		public static function get all():Vector.<Starling> { return null; }
 		public static var multitouchEnabled:Boolean;
 		
 		public function Starling(rootClass:Class, stage:openfl.display.Stage, 

@@ -13,7 +13,7 @@ package
     import openfl.utils.AssetManifest;
     import openfl.utils.Assets;
     import openfl.utils.ByteArray;
-    import openfl.Vector;
+    // import openfl.Vector;
 
     import starling.core.Starling;
     import starling.display.Stage;

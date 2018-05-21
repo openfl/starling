@@ -3,7 +3,7 @@ package starling.utils {
 	import openfl.media.Sound;
 	import openfl.media.SoundTransform;
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 	import starling.events.EventDispatcher;
 	// import starling.utils.ArrayUtil;
 	import starling.core.Starling;
@@ -43,18 +43,18 @@ package starling.utils {
 		public function enqueue(rawAssets:Array):void {}
 		public function enqueueWithName(asset:Object, name:String = null, options:starling.textures.TextureOptions = null):String { return null; }
 		public function getByteArray(name:String):openfl.utils.ByteArray { return null; }
-		public function getByteArrayNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
+		public function getByteArrayNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
 		public function getObject(name:String):Object { return null; }
-		public function getObjectNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
+		public function getObjectNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
 		public function getSound(name:String):openfl.media.Sound { return null; }
-		public function getSoundNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
+		public function getSoundNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
 		public function getTexture(name:String):starling.textures.Texture { return null; }
 		public function getTextureAtlas(name:String):starling.textures.TextureAtlas { return null; }
-		public function getTextureAtlasNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
-		public function getTextureNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
-		public function getTextures(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
+		public function getTextureAtlasNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
+		public function getTextureNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
+		public function getTextures(prefix:String = null, out:Vector.<Texture> = null):Vector.<Texture> { return null; }
 		public function getXml(name:String):Object { return null; }
-		public function getXmlNames(prefix:String = null, out:openfl.Vector = null):openfl.Vector { return null; }
+		public function getXmlNames(prefix:String = null, out:Vector.<String> = null):Vector.<String> { return null; }
 		public function loadQueue(onProgress:Function):void {}
 		public function playSound(name:String, startTime:Number = 0, loops:int = 0, transform:openfl.media.SoundTransform = null):openfl.media.SoundChannel { return null; }
 		public function purge():void {}

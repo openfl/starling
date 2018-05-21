@@ -3,7 +3,7 @@ package scenes
     import openfl.geom.Matrix;
     import openfl.geom.Point;
     // import openfl.utils.Dictionary;
-    import openfl.Vector;
+    // import openfl.Vector;
 
     import starling.display.BlendMode;
     import starling.display.Button;
@@ -65,7 +65,7 @@ package scenes
             
             _renderTexture.drawBundled(function():void
             {
-                var touches:openfl.Vector = event.getTouches(_canvas);
+                var touches:Vector.<Touch> = event.getTouches(_canvas) as Vector.<Touch>;
             
                 for each (var touch:Touch in touches)
                 {

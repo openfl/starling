@@ -7,7 +7,7 @@ package utils
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import openfl.Vector;
+	// import openfl.Vector;
 
 	public class TouchSheet extends Sprite
 	{
@@ -27,7 +27,7 @@ package utils
 		
 		private function onTouch(event:TouchEvent):void
 		{
-			var touches:openfl.Vector = event.getTouches(this, TouchPhase.MOVED);
+			var touches:Vector.<Touch> = event.getTouches(this, TouchPhase.MOVED) as Vector.<Touch>;
 			
 			if (touches.length == 1)
 			{

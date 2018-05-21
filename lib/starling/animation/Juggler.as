@@ -1,7 +1,7 @@
 package starling.animation {
 	
 	
-	import openfl.Vector;
+	// import openfl.Vector;
 	
 	
 	/**
@@ -11,7 +11,7 @@ package starling.animation {
 		
 		
 		public function get elapsedTime ():Number { return 0; }
-		public function get objects ():openfl.Vector { return null; }
+		public function get objects ():Vector.<IAnimatable> { return null; }
 		public var timeScale:Number;
 		
 		public function Juggler () {}

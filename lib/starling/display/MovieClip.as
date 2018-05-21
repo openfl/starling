@@ -2,7 +2,7 @@ package starling.display {
 	
 	import openfl.media.Sound;
 	import openfl.media.SoundTransform;
-	import openfl.Vector;
+	// import openfl.Vector;
 	import starling.animation.IAnimatable;
 	import starling.display.Image;
 	import starling.textures.Texture;
@@ -23,7 +23,7 @@ package starling.display {
 		public function get numFrames():int { return 0; }
 		public var soundTransform:openfl.media.SoundTransform;
 		public function get totalTime():Number { return 0; }
-		public function MovieClip(textures:openfl.Vector, fps:Number = 0):void { super (null); }
+		public function MovieClip(textures:Vector.<starling.textures.Texture>, fps:Number = 0):void { super (null); }
 		public function addFrame(texture:starling.textures.Texture, sound:openfl.media.Sound = null, duration:Number = 0):void {}
 		public function addFrameAt(frameID:int, texture:starling.textures.Texture, sound:openfl.media.Sound = null, duration:Number = 0):void {}
 		public function advanceTime(passedTime:Number):void {}

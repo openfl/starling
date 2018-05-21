@@ -11,7 +11,7 @@
 package starling.assets {
 
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 
 	/** 
 	 * @externs
@@ -60,10 +60,10 @@ package starling.assets {
 		public function addExtensions(args:Array):void {}
 
 		/** Returns the mime types this factory supports. */
-		public function getMimeTypes(out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getMimeTypes(out:Vector.<String>=null):Vector.<String> { return null; }
 
 		/** Returns the file extensions this factory supports. */
-		public function getExtensions(out:openfl.Vector=null):openfl.Vector { return null; }
+		public function getExtensions(out:Vector.<String>=null):Vector.<String> { return null; }
 
 		public var priority:int;	//with private + @:allow I get a runtime error in AssetManager.comparePriorities
 		protected function get_priority():int { return 0; }

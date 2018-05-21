@@ -2,7 +2,7 @@ package starling.rendering {
 
 	import openfl.display3D.IndexBuffer3D;
 	import openfl.utils.ByteArray;
-	import openfl.Vector;
+	// import openfl.Vector;
 	import starling.utils.StringUtil;
 	import starling.core.Starling;
 	import starling.errors.MissingContextError;
@@ -28,7 +28,7 @@ package starling.rendering {
 		public function offsetIndices(offset:int, indexID:int = 0, numIndices:int = 0):void {}
 		public function setIndex(indexID:int, index:uint):void {}
 		public function toString():String { return null; }
-		public function toVector(out:openfl.Vector = null):openfl.Vector { return null; }
+		public function toVector(out:Vector.<uint> = null):Vector.<uint> { return null; }
 		public function trim():void {}
 		public function uploadToIndexBuffer(buffer:openfl.display3D.IndexBuffer3D, indexID:int = 0, numIndices:int = 0):void {}
 	}

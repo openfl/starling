@@ -1,6 +1,6 @@
 package starling.text {
 
-	import openfl.Vector;
+	// import openfl.Vector;
 	import starling.text.ITextCompositor;
 	import starling.textures.Texture;
 	import starling.text.BitmapChar;
@@ -32,7 +32,7 @@ package starling.text {
 		public function dispose():void {}
 		public function fillMeshBatch(meshBatch:starling.display.MeshBatch, width:Number, height:Number, text:String, format:TextFormat, options:TextOptions = null):void {}
 		public function getChar(charID:int):BitmapChar { return null; }
-		public function getCharIDs(result:openfl.Vector = null):openfl.Vector { return null; }
+		public function getCharIDs(result:Vector.<int> = null):Vector.<int> { return null; }
 		public function hasChars(text:String):Boolean { return false; }
 		public static function get MINI ():String { return null; }
 		public static function get NATIVE_SIZE ():int { return 0; }

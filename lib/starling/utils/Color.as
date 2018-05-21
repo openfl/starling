@@ -1,6 +1,6 @@
 package starling.utils {
 
-	import openfl.Vector;
+	// import openfl.Vector;
 
 	/**
 	 * @externs
@@ -34,7 +34,7 @@ package starling.utils {
 		public static function setBlue(color:uint, blue:int):uint { return 0; }
 		public static function setGreen(color:uint, green:int):uint { return 0; }
 		public static function setRed(color:uint, red:int):uint { return 0; }
-		public static function toVector(color:uint, out:openfl.Vector = null):openfl.Vector { return null; }
+		public static function toVector(color:uint, out:Vector.<Number> = null):Vector.<Number> { return null; }
 	}
 
 }

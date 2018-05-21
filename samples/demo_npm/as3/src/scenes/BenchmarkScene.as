@@ -1,6 +1,6 @@
 package scenes
 {
-    import openfl.Vector;
+    // import openfl.Vector;
 
     import starling.core.Starling;
     import starling.display.Button;
@@ -27,13 +27,13 @@ package scenes
         private var _resultText:TextField;
         private var _statusText:TextField;
         private var _container:Sprite;
-        private var _objectPool:openfl.Vector;
+        private var _objectPool:Vector.<DisplayObject>;
         private var _objectTexture:Texture;
 
         private var _frameCount:int;
         private var _failCount:int;
         private var _started:Boolean;
-        private var _frameTimes:openfl.Vector;
+        private var _frameTimes:Vector.<Number>;
         private var _targetFps:int;
         private var _phase:int;
 
@@ -62,8 +62,8 @@ package scenes
             addChild(_startButton);
             
             _started = false;
-            _frameTimes = new openfl.Vector();
-            _objectPool = new openfl.Vector();
+            _frameTimes = new Vector.<Number>();
+            _objectPool = new Vector.<DisplayObject>();
             _objectTexture = Game.assets.getTexture("benchmark_object");
 
             addEventListener(Event.ENTER_FRAME, onEnterFrame);
