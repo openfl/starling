@@ -390,16 +390,15 @@ package starling.assets {
 		protected function set_registerBitmapFontsWithFontFace(value:Boolean):Boolean { return false; }
 	}
 	
-	/**
-	 * @externs
-	 */
-	public class AssetPostProcessor
-	{
-		public function AssetPostProcessor(callback:Function, priority:int) {}
-
-		public function get priority():int { return 0; }
-		protected function get_priority():int { return 0; }
-	}
-	
 }
 
+/**
+ * @externs
+ */
+public class AssetPostProcessor
+{
+	public function AssetPostProcessor(callback:Function, priority:int) {}
+
+	public function get priority():int { return 0; }
+	protected function get_priority():int { return 0; }
+}
