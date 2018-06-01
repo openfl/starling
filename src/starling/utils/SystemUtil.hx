@@ -295,10 +295,12 @@ class SystemUtil
         // TODO: It appears this is used as a "not mobile" define, but there should be
         // a way to know whether something is HTML5 as well. For now, returning true in this
         // case seems like the right behavior for Starling
-        
-        #if !mobile
+        #if flash
+        return platform == "WIN" || platform == "MAC" || platform == "LNX";
+        #elseif !mobile
         return true;
+        #else
+        return false;
         #end
-        //return platform == "WIN" || platform == "MAC" || platform == "LNX";
     }
 }
