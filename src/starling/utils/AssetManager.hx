@@ -35,6 +35,7 @@ import flash.system.ImageDecodingPolicy;
 #end
 import openfl.system.LoaderContext;
 import openfl.system.System;
+import openfl.utils.ByteArray;
 
 import haxe.Json;
 import haxe.Timer;
