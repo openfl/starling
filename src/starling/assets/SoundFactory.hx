@@ -43,7 +43,7 @@ class SoundFactory extends AssetFactory
                 sound = cast(reference.data, Sound);
             else
             {
-                var bytes:ByteArray = cast(reference.data, ByteArray);
+                var bytes:ByteArray = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
 
                 if (bytes != null)
                 {

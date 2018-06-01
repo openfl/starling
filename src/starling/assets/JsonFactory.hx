@@ -31,7 +31,7 @@ class JsonFactory extends AssetFactory
     override public function canHandle(reference:AssetReference):Bool
     {
         return super.canHandle(reference) || (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) &&
-            ByteArrayUtil.startsWithString(cast(reference.data, ByteArray), "{"));
+            ByteArrayUtil.startsWithString(cast reference.data, "{"));
     }
 
     /** @inheritDoc */
@@ -40,7 +40,7 @@ class JsonFactory extends AssetFactory
     {
         try
         {
-            var bytes:ByteArray = cast(reference.data, ByteArray);
+            var bytes:ByteArray = cast reference.data;
             var object:Dynamic = Json.parse(bytes.readUTFBytes(bytes.length));
             onComplete(reference.name, object);
         }

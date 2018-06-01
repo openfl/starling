@@ -1122,7 +1122,7 @@ class AssetManager extends EventDispatcher
         
         onUrlLoaderComplete = function(event:Dynamic):Void
         {
-            var bytes:ByteArray = transformData(cast(urlLoader.data, ByteArray), url);
+            var bytes:ByteArray = transformData(Std.is(urlLoader.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast urlLoader.data : null, url);
             var sound:Sound;
 
             if (bytes == null)

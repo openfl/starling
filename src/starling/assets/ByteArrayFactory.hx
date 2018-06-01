@@ -35,6 +35,7 @@ class ByteArrayFactory extends AssetFactory
     override public function create(reference:AssetReference, helper:AssetFactoryHelper,
                                     onComplete:String->Dynamic->Void, onError:String->Void):Void
     {
-        onComplete(reference.name, cast(reference.data, ByteArray));
+        var byteArray:ByteArray = cast reference.data;
+        onComplete(reference.name, byteArray);
     }
 }
