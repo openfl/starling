@@ -4,8 +4,8 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "2.3.3",
-	"releasenote": "Improved NPM support, added AS3 support on HTML5",
+	"version": "2.3.4",
+	"releasenote": "Minor fixes and improvements",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {},
 	"classPath": "src"
