@@ -601,7 +601,11 @@ class AssetManager extends EventDispatcher
     {
         for (rawAsset in rawAssets)
         {
-            if (Std.is(rawAsset, Array))
+            if (rawAsset == null)
+            {
+                continue;
+            }
+            else if (Std.is(rawAsset, Array))
             {
                 enqueue(rawAsset);
             }
