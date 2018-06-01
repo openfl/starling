@@ -23,6 +23,8 @@ import starling.display.Sprite;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
 import starling.text.TextField;
+import starling.text.TextFieldAutoSize;
+import starling.text.TextFormat;
 import starling.utils.Align;
 
 import utils.MenuButton;
@@ -33,6 +35,9 @@ class MainMenu extends Sprite
     {
         super();
         init();
+        var txt:TextField = new TextField(10, 10, "some text", new TextFormat("Ubuntu", 25, 0xFFFFFF));
+txt.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
+addChild(txt);
     }
     
     private function init():Void
