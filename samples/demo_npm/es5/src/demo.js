@@ -69,6 +69,8 @@ Demo.prototype.start = function()
     this._starling.stage.stageHeight = Constants.GameHeight;
     this._starling.enableErrorChecking = Capabilities.isDebugger;
     this._starling.skipUnchangedFrames = true;
+    this._starling.supportBrowserZoom = true;
+    this._starling.supportHighResolutions = true;
     this._starling.simulateMultitouch = true;
     this._starling.addEventListener(Event.ROOT_CREATED, function ()
     {

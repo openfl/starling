@@ -64,6 +64,8 @@ class Demo extends Sprite
         _starling.stage.stageHeight = Constants.GameHeight;
         _starling.enableErrorChecking = Capabilities.isDebugger;
         _starling.skipUnchangedFrames = true;
+        _starling.supportBrowserZoom = true;
+        _starling.supportHighResolutions = true;
         _starling.simulateMultitouch = true;
         _starling.addEventListener(Event.ROOT_CREATED, function():Void
         {
