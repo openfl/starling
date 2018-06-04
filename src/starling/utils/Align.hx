@@ -16,7 +16,7 @@ import starling.errors.AbstractClassError;
 class Align
 {
     /** @private */
-    public function Align() { throw new AbstractClassError(); }
+    // public function new() { throw new AbstractClassError(); }
     
     /** Horizontal left alignment. */
     public static inline var LEFT:String   = "left";

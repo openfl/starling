@@ -208,7 +208,7 @@ import starling.utils.SystemUtil;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    public static inline var VERSION:String = "2.3.1";
+    public static inline var VERSION:String = "2.4.0";
     
     // members
     
@@ -226,8 +226,10 @@ class Starling extends EventDispatcher
     private var __started:Bool;
     private var __rendering:Bool;
     private var __supportHighResolutions:Bool;
+    private var __supportBrowserZoom:Bool;
     private var __skipUnchangedFrames:Bool;
     private var __showStats:Bool;
+    private var __supportsCursor:Bool;
     
     private var __viewPort:Rectangle;
     private var __previousViewPort:Rectangle;
@@ -336,6 +338,7 @@ class Starling extends EventDispatcher
         __painter = new Painter(stage3D, sharedContext);
         __frameTimestamp = Lib.getTimer() / 1000.0;
         __frameID = 1;
+        __supportsCursor = Mouse.supportsCursor || Capabilities.os.indexOf("Windows") == 0;
         
         // all other modes are problematic in Starling, so we force those here
         stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -351,7 +354,7 @@ class Starling extends EventDispatcher
         stage.addEventListener(KeyboardEvent.KEY_UP, onKey, false, 0, true);
         stage.addEventListener(Event.RESIZE, onResize, false, 0, true);
         stage.addEventListener(Event.MOUSE_LEAVE, onMouseLeave, false, 0, true);
-        
+
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
         stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 10, true);
 
@@ -385,6 +388,9 @@ class Starling extends EventDispatcher
         __nativeStage.removeEventListener(KeyboardEvent.KEY_UP, onKey, false);
         __nativeStage.removeEventListener(Event.RESIZE, onResize, false);
         __nativeStage.removeEventListener(Event.MOUSE_LEAVE, onMouseLeave, false);
+        #if air
+        __nativeStage.removeEventListener(Event.BROWSER_ZOOM_CHANGE, onBrowserZoomChange, false);
+        #end
         __nativeStage.removeChild(__nativeOverlay);
         
         stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false);
@@ -534,8 +540,12 @@ class Starling extends EventDispatcher
             var contentScaleFactor:Float = 
                     __supportHighResolutions ? __nativeStage.contentsScaleFactor : 1.0;
 
+            #if air
+            if (__supportBrowserZoom) contentScaleFactor *= __nativeStage.browserZoomFactor;
+            #end
+
             __painter.configureBackBuffer(__clippedViewPort, contentScaleFactor,
-                 __antiAliasing, true);
+                 __antiAliasing, true, __supportBrowserZoom);
 
             setRequiresRedraw();
         }
@@ -708,6 +718,14 @@ class Starling extends EventDispatcher
         else
             addEventListener(Event.CONTEXT3D_CREATE, dispatchResizeEvent);
     }
+    
+    private function onBrowserZoomChange(event:Event):Void
+    {
+        #if air
+        __painter.refreshBackBufferSize(
+            __nativeStage.contentsScaleFactor * __nativeStage.browserZoomFactor);
+        #end
+    }
 
     private function onMouseLeave(event:Event):Void
     {
@@ -748,7 +766,7 @@ class Starling extends EventDispatcher
             // is dispatched as mouse event as well. Since we don't want to listen to that
             // event twice, we ignore the primary touch in that case.
 
-            if (Mouse.supportsCursor && touchEvent.isPrimaryTouchPoint) return;
+            if (__supportsCursor && touchEvent.isPrimaryTouchPoint) return;
             else
             {
                 globalX  = touchEvent.stageX;
@@ -780,7 +798,7 @@ class Starling extends EventDispatcher
         __touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
         
         // allow objects that depend on mouse-over state to be updated immediately
-        if (event.type == MouseEvent.MOUSE_UP && Mouse.supportsCursor)
+        if (event.type == MouseEvent.MOUSE_UP && __supportsCursor)
             __touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
 
@@ -796,7 +814,7 @@ class Starling extends EventDispatcher
             types.push(TouchEvent.TOUCH_END);
         }
         
-        if (!multitouchEnabled || Mouse.supportsCursor)
+        if (!multitouchEnabled || __supportsCursor)
         {
             types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
@@ -1040,6 +1058,29 @@ class Starling extends EventDispatcher
         {
             __supportHighResolutions = value;
             if (contextValid) updateViewPort(true);
+        }
+        return value;
+    }
+
+    /** If enabled, the Stage3D back buffer will change its size according to the browser zoom
+     *  value - similar to what's done when "supportHighResolutions" is enabled. The resolution
+     *  is updated on the fly when the zoom factor changes. Only relevant for the browser plugin.
+     *  @default false */
+    public var supportBrowserZoom(get, set):Bool;
+    private function get_supportBrowserZoom():Bool { return __supportBrowserZoom; }
+    private function set_supportBrowserZoom(value:Bool):Bool
+    {
+        if (__supportBrowserZoom != value)
+        {
+            __supportBrowserZoom = value;
+            #if air
+            if (contextValid) updateViewPort(true);
+
+            if (value) __nativeStage.addEventListener(
+                Event.BROWSER_ZOOM_CHANGE, onBrowserZoomChange, false, 0, true);
+            else __nativeStage.removeEventListener(
+                Event.BROWSER_ZOOM_CHANGE, onBrowserZoomChange, false);
+            #end
         }
         return value;
     }

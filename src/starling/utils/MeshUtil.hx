@@ -31,7 +31,7 @@ class MeshUtil
     private static var sMatrix3D:Matrix3D = new Matrix3D();
 
     /** @private */
-    public function MeshUtil() { throw new AbstractClassError(); }
+    // public function MeshUtil() { throw new AbstractClassError(); }
 
     /** Determines if a point is inside a mesh that is spawned up by the given
         *  vertex- and index-data. */

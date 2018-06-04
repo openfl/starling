@@ -40,7 +40,7 @@ class AssetFactory
     #end
 
     /** Creates a new instance. */
-    public function new()
+    private function new()
     {
         _mimeTypes = new Vector<String>();
         _extensions = new Vector<String>();

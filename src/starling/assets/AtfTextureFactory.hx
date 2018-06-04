@@ -61,7 +61,7 @@ class AtfTextureFactory extends AssetFactory
                 texture.root.onRestore = function(_):Void
                 {
                     helper.onBeginRestore();
-                    helper.loadDataFromUrl(url, function(data:ByteArray, ?mimeType:String):Void
+                    helper.loadDataFromUrl(url, function(?data:ByteArray, ?mimeType:String, ?name:String, ?extension:String):Void
                     {
                         helper.executeWhenContextReady(function():Void
                         {

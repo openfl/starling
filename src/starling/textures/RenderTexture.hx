@@ -16,6 +16,7 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
 
 import starling.core.Starling;
 import starling.display.BlendMode;
@@ -175,16 +176,19 @@ class RenderTexture extends SubTexture
      *  @param antiAliasing Values range from 0 (no antialiasing) to 4 (best quality).
      *                      Beginning with AIR 22, this feature is supported on all platforms
      *                      (except for software rendering mode).
+     *  @param cameraPos    When drawing a 3D object, you can optionally pass in a custom
+     *                      camera position. If left empty, the camera will be placed with
+     *                      its default settings (centered over the texture, fov = 1.0).
      */
     public function draw(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0,
-                         antiAliasing:Int=0):Void
+                         antiAliasing:Int=0, cameraPos:Vector3D=null):Void
     {
         if (object == null) return;
         
         if (_drawing)
             __render(object, matrix, alpha);
         else
-            __renderBundled(__render, object, matrix, alpha, antiAliasing);
+            __renderBundled(__render, object, matrix, alpha, antiAliasing, cameraPos);
     }
     
     /** Bundles several calls to <code>draw</code> together in a block. This avoids buffer 
@@ -196,11 +200,15 @@ class RenderTexture extends SubTexture
      *  @param antiAliasing  Values range from 0 (no antialiasing) to 4 (best quality).
      *                       Beginning with AIR 22, this feature is supported on all platforms
      *                       (except for software rendering mode).
+     *  @param cameraPos     When drawing a 3D object, you can optionally pass in a custom
+     *                       camera position. If left empty, the camera will be placed with
+     *                       its default settings (centered over the texture, fov = 1.0).
      */
-    public function drawBundled(drawingBlock:Void->Void, antiAliasing:Int=0):Void
+    public function drawBundled(drawingBlock:Void->Void, antiAliasing:Int=0,
+                                cameraPos:Vector3D=null):Void
     {
         var renderBlockFunc = function(object:DisplayObject, matrix:Matrix, alpha:Float):Void {drawingBlock();};
-        __renderBundled(renderBlockFunc, null, null, 1.0, antiAliasing);
+        __renderBundled(renderBlockFunc, null, null, 1.0, antiAliasing, cameraPos);
     }
     
     private function __render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
@@ -235,7 +243,7 @@ class RenderTexture extends SubTexture
     
     private function __renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
                                      matrix:Matrix=null, alpha:Float=1.0,
-                                     antiAliasing:Int=0):Void
+                                     antiAliasing:Int=0, cameraPos:Vector3D=null):Void
     {
         var painter:Painter = Starling.current.painter;
         var state:RenderState = painter.state;
@@ -254,7 +262,8 @@ class RenderTexture extends SubTexture
         painter.pushState();
 
         var rootTexture:Texture = _activeTexture.root;
-        state.setProjectionMatrix(0, 0, rootTexture.width, rootTexture.height, width, height);
+        state.setProjectionMatrix(0, 0, rootTexture.width, rootTexture.height,
+            width, height, cameraPos);
 
         // limit drawing to relevant area
         sClipRect.setTo(0, 0, _activeTexture.width, _activeTexture.height);

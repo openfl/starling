@@ -93,6 +93,7 @@ class Painter
     private var _stencilReferenceValues:Dictionary<Object, UInt>;
     private var _clipRectStack:Vector<Rectangle>;
     private var _batchCacheExclusions:Vector<DisplayObject>;
+    private var _batchTrimInterval:Int = 250;
 
     private var _batchProcessor:BatchProcessor;
     private var _batchProcessorCurr:BatchProcessor; // current  processor
@@ -244,9 +245,12 @@ class Painter
      *                                be enabled. Note that on AIR, you also have to enable
      *                                this setting in the app-xml (application descriptor);
      *                                otherwise, this setting will be silently ignored.
+     * @param supportBrowserZoom      if enabled, zooming a website will adapt the size of
+     *                                the back buffer.
      */
     public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Float,
-                                        antiAlias:Int, enableDepthAndStencil:Bool):Void
+                                        antiAlias:Int, enableDepthAndStencil:Bool,
+                                        supportBrowserZoom:Bool=false):Void
     {
         if (!_shareContext)
         {
@@ -270,8 +274,8 @@ class Painter
             _stage3D.x = viewPort.x;
             _stage3D.y = viewPort.y;
 
-            _context.configureBackBuffer(Std.int(viewPort.width), Std.int(viewPort.height),
-                antiAlias, enableDepthAndStencil, contentScaleFactor != 1.0);
+            _context.configureBackBuffer(Std.int(viewPort.width), Std.int(viewPort.height), antiAlias,
+                enableDepthAndStencil, contentScaleFactor != 1.0 #if air, supportBrowserZoom #end);
         }
 
         _backBufferWidth  = Std.int(viewPort.width);
@@ -598,12 +602,32 @@ class Painter
     {
         _batchProcessor.finishBatch();
     }
+    
+    /** Indicate how often the internally used batches are being trimmed to save memory.
+     *
+     *  <p>While rendering, the internally used MeshBatches are used in a different way in each
+     *  frame. To save memory, they should be trimmed every once in a while. This method defines
+     *  how often that happens, if at all. (Default: enabled = true, interval = 250)</p>
+     *
+     *  @param enabled   If trimming happens at all. Only disable temporarily!
+     *  @param interval  The number of frames between each trim operation.
+     */
+    public function enableBatchTrimming(enabled:Bool=true, interval:Int=250):Void
+    {
+        _batchTrimInterval = enabled ? interval : 0;
+    }
 
     /** Completes all unfinished batches, cleanup procedures. */
     public function finishFrame():Void
     {
-        if (_frameID %  99 == 0) _batchProcessorCurr.trim(); // odd number -> alternating processors
-        if (_frameID % 150 == 0) _batchProcessorSpec.trim();
+        if (_batchTrimInterval > 0)
+        {
+            var baseInterval:Int = _batchTrimInterval | 0x1; // odd number -> alternating processors
+            var specInterval:Int = Std.int(_batchTrimInterval * 1.5);
+
+            if (_frameID % baseInterval == 0) _batchProcessorCurr.trim();
+            if (_frameID % specInterval == 0) _batchProcessorSpec.trim();
+        }
 
         _batchProcessor.finishBatch();
         _batchProcessor = _batchProcessorSpec; // no cache between frames
@@ -856,6 +880,18 @@ class Painter
         {
             _context.setScissorRectangle(null);
         }
+    }
+
+    /** Refreshes the values of "backBufferWidth" and "backBufferHeight" from the current
+     *  context dimensions and stores the given "backBufferScaleFactor". This method is
+     *  called by Starling when the browser zoom factor changes (in case "supportBrowserZoom"
+     *  is enabled).
+     */
+    public function refreshBackBufferSize(scaleFactor:Float):Void
+    {
+        _backBufferWidth = _context.backBufferWidth;
+        _backBufferHeight = _context.backBufferHeight;
+        _backBufferScaleFactor = scaleFactor;
     }
 
     // properties

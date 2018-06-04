@@ -803,16 +803,23 @@ class Texture
     public var transformationMatrixToRoot(get, never):Matrix;
     private function get_transformationMatrixToRoot():Matrix { return null; }
 
-    /** Returns the maximum size constraint (for both width and height) for textures in the
-     * current Context3D profile. */
+    /** Returns the maximum size constraint (for both width and height) for uncompressed
+     *  textures in the current Context3D profile. */
     public static var maxSize(get, never):Int;
-    private static function get_maxSize():Int
+    private static function get_maxSize():Int { return getMaxSize(); }
+
+    public static function getMaxSize(textureFormat:Context3DTextureFormat=BGRA):Int
     {
         var target:Starling = Starling.current;
+        var context:Context3D = target.context;
         var profile:Context3DProfile = target != null ? target.profile : Context3DProfile.BASELINE;
+        var isCompressed:Bool = (textureFormat == Context3DTextureFormat.COMPRESSED ||
+                                 textureFormat == Context3DTextureFormat.COMPRESSED_ALPHA);
 
         if (profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_CONSTRAINED)
             return 2048;
+        else if (!isCompressed && context != null && Reflect.hasField(context, "supports8kTexture"))
+            return 8192;
         else
             return 4096;
     }

@@ -23,7 +23,7 @@ import starling.textures.TextureAtlas;
 class AssetType
 {
     /** @private */
-    public function new() { throw new AbstractClassError(); }
+    // public function new() { throw new AbstractClassError(); }
 
     public static var TEXTURE:String = "texture";
     public static var TEXTURE_ATLAS:String = "textureAtlas";

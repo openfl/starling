@@ -481,7 +481,12 @@ class DisplayObject extends EventDispatcher
             painter.backBufferWidth / scaleX, painter.backBufferHeight / scaleY,
             stageWidth, stageHeight, stage.cameraPosition);
 
-        render(painter);
+        if (__mask != null)   painter.drawMask(mask, this);
+
+        if (__filter != null) __filter.render(painter);
+        else         render(painter);
+
+        if (__mask != null)   painter.eraseMask(mask, this);
 
         painter.finishMeshBatch();
         painter.context.drawToBitmapData(out);

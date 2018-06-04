@@ -10,8 +10,6 @@
 
 package starling.display;
 
-import openfl.display.BitmapData;
-import openfl.display3D.Context3D;
 import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
@@ -24,8 +22,6 @@ import starling.core.Starling;
 import starling.events.EnterFrameEvent;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
-import starling.rendering.Painter;
-import starling.rendering.RenderState;
 import starling.utils.MatrixUtil;
 import starling.utils.RectangleUtil;
 

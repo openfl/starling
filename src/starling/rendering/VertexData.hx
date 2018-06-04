@@ -378,7 +378,7 @@ class VertexData
         _rawData.length = numBytes;
         _rawData.writeBytes(sBytes);
 
-        sBytes.clear();
+        sBytes.length = 0;
     }
 
     /** Returns a string representation of the VertexData object,
@@ -1106,10 +1106,13 @@ class VertexData
             }
         }
 
-        _rawData.clear();
+        if (value.vertexSize > _format.vertexSize)
+            _rawData.clear(); // avoid 4k blowup
+
+        _rawData.position = 0;
         _rawData.length = sBytes.length;
         _rawData.writeBytes(sBytes);
-        sBytes.clear();
+        sBytes.length = 0;
 
         _format = value;
         _attributes = _format.attributes;

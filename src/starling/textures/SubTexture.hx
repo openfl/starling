@@ -14,6 +14,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
 
 /** A SubTexture represents a section of another texture. This is achieved solely by
  *  manipulation of texture coordinates, making the class very efficient. 
@@ -32,6 +33,8 @@ class SubTexture extends Texture
     private var _scale:Float;
     private var _transformationMatrix:Matrix;
     private var _transformationMatrixToRoot:Matrix;
+
+    private static inline var E:Float = 0.000001;
 
     #if commonjs
     private static function __init__ () {
@@ -97,8 +100,8 @@ class SubTexture extends Texture
         _height = (rotated ? _region.width  : _region.height) / scaleModifier;
         _scale = _parent.scale * scaleModifier;
 
-        if (_frame != null && (_frame.x > 0 || _frame.y > 0 ||
-            _frame.right < _width || _frame.bottom < _height))
+        if (Capabilities.isDebugger && _frame != null && (_frame.x > 0 || _frame.y > 0 ||
+            _frame.right + E < _width || _frame.bottom + E < _height))
         {
             trace("[Starling] Warning: frames inside the texture's region are unsupported.");
         }

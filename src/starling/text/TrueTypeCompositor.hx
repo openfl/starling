@@ -136,7 +136,7 @@ class TrueTypeCompositor implements ITextCompositor
             autoScaleNativeTextField(sNativeTextField, text, options.isHtmlText);
 
         var minTextureSize:Int = 1;
-        var maxTextureSize:Int = Texture.maxSize;
+        var maxTextureSize:Int = Texture.getMaxSize(options.textureFormat);
         var paddingX:Float = options.padding * scale;
         var paddingY:Float = options.padding * scale;
         var textWidth:Float  = sNativeTextField.textWidth  + 4;
