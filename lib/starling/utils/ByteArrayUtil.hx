@@ -19,6 +19,9 @@ import starling.errors.AbstractClassError;
 
 extern class ByteArrayUtil
 {
+    /** @private */
+    // public function new() { throw new AbstractClassError(); }
+
     /** Figures out if a byte array starts with the UTF bytes of a certain string. If the
      *  array starts with a 'BOM', it is ignored; so are leading zeros and whitespace. */
     public static function startsWithString(bytes:ByteArray, string:String):Bool;

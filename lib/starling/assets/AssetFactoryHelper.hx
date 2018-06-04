@@ -30,12 +30,11 @@ extern class AssetFactoryHelper
     /** Accesses a URL (local or remote) and passes the loaded ByteArray to the
      *  'onComplete' callback - or executes 'onError' when the data can't be loaded.
      *
-     *  @param url         Either a String or an URLRequest, or an arbitrary object containing
-     *                     an 'url' property.
+     *  @param url         a string containing an URL.
      *  @param onComplete  function(data:ByteArray, mimeType:String):void;
      *  @param onError     function(error:String):void;
      */
-    public function loadDataFromUrl(url:Dynamic, onComplete:ByteArray->?String->Void, onError:String->Void):Void;
+    public function loadDataFromUrl(url:String, onComplete:?ByteArray->?String->?String->?String->Void, onError:String->Void):Void;
 
     /** Adds a method to be called by the AssetManager when the queue has finished processing.
      *  Useful e.g. if assets depend on other assets (like an atlas XML depending on the atlas

@@ -1,20 +1,35 @@
+// =================================================================================================
+//
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
+//
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
+//
+// =================================================================================================
+
 package starling.events;
 
-import starling.display.Sprite;
+import openfl.display.BitmapData;
+import openfl.display.Shape;
+import openfl.geom.Point;
+
 import starling.core.Starling;
-import Std;
-import starling.textures.Texture;
-import js.Boot;
 import starling.display.Image;
+import starling.display.Sprite;
+import starling.textures.Texture;
+
+/** The TouchMarker is used internally to mark touches created through "simulateMultitouch". */
 
 @:jsRequire("starling/events/TouchMarker", "default")
 
-extern class TouchMarker extends starling.display.Sprite {
-	var mockX(get,never) : Float;
-	var mockY(get,never) : Float;
-	var realX(get,never) : Float;
-	var realY(get,never) : Float;
-	function new() : Void;
-	function moveCenter(x : Float, y : Float) : Void;
-	function moveMarker(x : Float, y : Float, withCenter : Bool = false) : Void;
+extern class TouchMarker extends Sprite
+{
+    public function new();
+    
+    public override function dispose():Void;
+    
+    public function moveMarker(x:Float, y:Float, withCenter:Bool=false):Void;
+    
+    public function moveCenter(x:Float, y:Float):Void;
 }

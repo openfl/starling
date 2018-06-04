@@ -45,7 +45,7 @@ import starling.utils.Execute;
  *
  *  <p>The class can deal with the following media types:
  *  <ul>
- *    <li>Textures (either from Bitmaps or ATF data)</li>
+ *    <li>Texture, either from Bitmaps or ATF data</li>
  *    <li>Texture atlases</li>
  *    <li>Bitmap Fonts</li>
  *    <li>Sounds</li>
@@ -144,7 +144,7 @@ import starling.utils.Execute;
 
 @:jsRequire("starling/assets/AssetManager", "default")
 
-class AssetManager extends EventDispatcher
+extern class AssetManager extends EventDispatcher
 {
     /** Create a new instance with the given scale factor. */
     public function new(scaleFactor:Float= 1);
@@ -217,9 +217,9 @@ class AssetManager extends EventDispatcher
      *  if you are working with more than one Starling instance, be sure to call
      *  "makeCurrent()" on the appropriate instance before processing the queue.</p>
      *
-     *  @param onComplete   function():Void;
-     *  @param onError      function(error:String):Void;
-     *  @param onProgress   function(ratio:Float):Void;
+     *  @param onComplete   <code>function(manager:AssetManager):void;</code> - parameter is optional!
+     *  @param onError      <code>function(error:String):void;</code>
+     *  @param onProgress   <code>function(ratio:Number):void;</code>
      */
     public function loadQueue(onComplete:Void->Void,
                               onError:String->Void=null, onProgress:Float->Void=null):Void;
@@ -355,6 +355,7 @@ class AssetManager extends EventDispatcher
      *  be called before the default factories. The final factory to be invoked is the
      *  'ByteArrayFactory', which is using a priority of '-100'. */
     public function registerFactory(factory:AssetFactory, priority:Int=0):Void;
+
     // properties
 
     /** When activated, the class will trace information about added/enqueued assets.

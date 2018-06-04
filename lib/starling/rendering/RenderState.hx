@@ -1,35 +1,255 @@
+// =================================================================================================
+//
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
+//
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
+//
+// =================================================================================================
+
 package starling.rendering;
 
-import starling.utils.RectangleUtil;
+import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DTriangleFace;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.ArgumentError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.Vector;
+
+import starling.display.BlendMode;
+import starling.textures.Texture;
+import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.Pool;
-import Std;
-import starling.utils.MathUtil;
+import starling.utils.RectangleUtil;
+
+/** The RenderState stores a combination of settings that are currently used for rendering.
+ *  This includes modelview and transformation matrices as well as context3D related settings.
+ *
+ *  <p>Starling's Painter instance stores a reference to the current RenderState.
+ *  Via a stack mechanism, you can always save a specific state and restore it later.
+ *  That makes it easy to write rendering code that doesn't have any side effects.</p>
+ *
+ *  <p>Beware that any context-related settings are not applied on the context
+ *  right away, but only after calling <code>painter.prepareToDraw()</code>.
+ *  However, the Painter recognizes changes to those settings and will finish the current
+ *  batch right away if necessary.</p>
+ *
+ *  <strong>Matrix Magic</strong>
+ *
+ *  <p>On rendering, Starling traverses the display tree, constantly moving from one
+ *  coordinate system to the next. Each display object stores its vertex coordinates
+ *  in its local coordinate system; on rendering, they must be moved to a global,
+ *  2D coordinate space (the so-called "clip-space"). To handle these calculations,
+ *  the RenderState contains a set of matrices.</p>
+ *
+ *  <p>By multiplying vertex coordinates with the <code>modelviewMatrix</code>, you'll get the
+ *  coordinates in "screen-space", or in other words: in stage coordinates. (Optionally,
+ *  there's also a 3D version of this matrix. It comes into play when you're working with
+ *  <code>Sprite3D</code> containers.)</p>
+ *
+ *  <p>By feeding the result of the previous transformation into the
+ *  <code>projectionMatrix</code>, you'll end up with so-called "clipping coordinates",
+ *  which are in the range <code>[-1, 1]</code> (just as needed by the graphics pipeline).
+ *  If you've got vertices in the 3D space, this matrix will also execute a perspective
+ *  projection.</p>
+ *
+ *  <p>Finally, there's the <code>mvpMatrix</code>, which is short for
+ *  "modelviewProjectionMatrix". This is simply a combination of <code>modelview-</code> and
+ *  <code>projectionMatrix</code>, combining the effects of both. Pass this matrix
+ *  to the vertex shader and all your vertices will automatically end up at the right
+ *  position.</p>
+ *
+ *  @see Painter
+ *  @see starling.display.Sprite3D
+ */
 
 @:jsRequire("starling/rendering/RenderState", "default")
 
-extern class RenderState {
-	var alpha(get,set) : Float;
-	var blendMode(get,set) : String;
-	var clipRect(get,set) : openfl.geom.Rectangle;
-	var culling(get,set) : String;
-	var depthMask(get,set) : Bool;
-	var depthTest(get,set) : String;
-	var is3D(get,never) : Bool;
-	var modelviewMatrix(get,set) : openfl.geom.Matrix;
-	var modelviewMatrix3D(get,set) : openfl.geom.Matrix3D;
-	var mvpMatrix3D(get,never) : openfl.geom.Matrix3D;
-	var projectionMatrix3D(get,set) : openfl.geom.Matrix3D;
-	var renderTarget(get,set) : starling.textures.Texture;
-	var renderTargetAntiAlias(get,never) : Int;
-	var renderTargetSupportsDepthAndStencil(get,never) : Bool;
-	function new() : Void;
-	function copyFrom(renderState : RenderState) : Void;
-	function reset() : Void;
-	function setModelviewMatricesToIdentity() : Void;
-	function setProjectionMatrix(x : Float, y : Float, width : Float, height : Float, stageWidth : Float = 0, stageHeight : Float = 0, ?cameraPos : openfl.geom.Vector3D) : Void;
-	function setProjectionMatrixChanged() : Void;
-	function setRenderTarget(target : starling.textures.Texture, enableDepthAndStencil : Bool = false, antiAlias : Int = 0) : Void;
-	function transformModelviewMatrix(matrix : openfl.geom.Matrix) : Void;
-	function transformModelviewMatrix3D(matrix : openfl.geom.Matrix3D) : Void;
+extern class RenderState
+{
+    /** Creates a new render state with the default settings. */
+    public function new();
+
+    /** Duplicates all properties of another instance on the current instance. */
+    public function copyFrom(renderState:RenderState):Void;
+
+    /** Resets the RenderState to the default settings.
+     *  (Check each property documentation for its default value.) */
+    public function reset():Void;
+
+    // matrix methods / properties
+
+    /** Prepends the given matrix to the 2D modelview matrix. */
+    public function transformModelviewMatrix(matrix:Matrix):Void;
+
+    /** Prepends the given matrix to the 3D modelview matrix.
+     *  The current contents of the 2D modelview matrix is stored in the 3D modelview matrix
+     *  before doing so; the 2D modelview matrix is then reset to the identity matrix.
+     */
+    public function transformModelviewMatrix3D(matrix:Matrix3D):Void;
+
+    /** Creates a perspective projection matrix suitable for 2D and 3D rendering.
+     *
+     *  <p>The first 4 parameters define which area of the stage you want to view (the camera
+     *  will 'zoom' to exactly this region). The final 3 parameters determine the perspective
+     *  in which you're looking at the stage.</p>
+     *
+     *  <p>The stage is always on the rectangle that is spawned up between x- and y-axis (with
+     *  the given size). All objects that are exactly on that rectangle (z equals zero) will be
+     *  rendered in their true size, without any distortion.</p>
+     *
+     *  <p>If you pass only the first 4 parameters, the camera will be set up above the center
+     *  of the stage, with a field of view of 1.0 rad.</p>
+     */
+    public function setProjectionMatrix(x:Float, y:Float, width:Float, height:Float,
+                                        stageWidth:Float=0, stageHeight:Float=0,
+                                        cameraPos:Vector3D=null):Void;
+
+    /** This method needs to be called whenever <code>projectionMatrix3D</code> was changed
+     *  other than via <code>setProjectionMatrix</code>.
+     */
+    public function setProjectionMatrixChanged():Void;
+
+    /** Changes the modelview matrices (2D and, if available, 3D) to identity matrices.
+     *  An object transformed an identity matrix performs no transformation.
+     */
+    public function setModelviewMatricesToIdentity():Void;
+
+    /** Returns the current 2D modelview matrix.
+     *  CAUTION: Use with care! Each call returns the same instance.
+     *  @default identity matrix */
+    public var modelviewMatrix(get, set):Matrix;
+    private function get_modelviewMatrix():Matrix;
+    private function set_modelviewMatrix(value:Matrix):Matrix;
+
+    /** Returns the current 3D modelview matrix, if there have been 3D transformations.
+     *  CAUTION: Use with care! Each call returns the same instance.
+     *  @default null */
+    public var modelviewMatrix3D(get, set):Matrix3D;
+    private function get_modelviewMatrix3D():Matrix3D;
+    private function set_modelviewMatrix3D(value:Matrix3D):Matrix3D;
+
+    /** Returns the current projection matrix. You can use the method 'setProjectionMatrix3D'
+     *  to set it up in an intuitive way.
+     *  CAUTION: Use with care! Each call returns the same instance. If you modify the matrix
+     *           in place, you have to call <code>setProjectionMatrixChanged</code>.
+     *  @default identity matrix */
+    public var projectionMatrix3D(get, set):Matrix3D;
+    private function get_projectionMatrix3D():Matrix3D;
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D;
+
+    /** Calculates the product of modelview and projection matrix and stores it in a 3D matrix.
+     *  CAUTION: Use with care! Each call returns the same instance. */
+    public var mvpMatrix3D(get, never):Matrix3D;
+    private function get_mvpMatrix3D():Matrix3D;
+
+    // other methods
+
+    /** Changes the the current render target.
+     *
+     *  @param target     Either a texture or <code>null</code> to render into the back buffer.
+     *  @param enableDepthAndStencil  Indicates if depth and stencil testing will be available.
+     *                    This parameter affects only texture targets.
+     *  @param antiAlias  The anti-aliasing quality (range: <code>0 - 4</code>).
+     *                    This parameter affects only texture targets. Note that at the time
+     *                    of this writing, AIR supports anti-aliasing only on Desktop.
+     */
+    public function setRenderTarget(target:Texture, enableDepthAndStencil:Bool=true,
+                                    antiAlias:Int=0):Void;
+
+    // other properties
+
+    /** The current, cumulated alpha value. Beware that, in a standard 'render' method,
+     *  this already includes the current object! The value is the product of current object's
+     *  alpha value and all its parents. @default 1.0
+     */
+    public var alpha(get, set):Float;
+    private function get_alpha():Float;
+    private function set_alpha(value:Float):Float;
+
+    /** The blend mode to be used on rendering. A value of "auto" is ignored, since it
+     *  means that the mode should remain unchanged.
+     *
+     *  @default BlendMode.NORMAL
+     *  @see starling.display.BlendMode
+     */
+    public var blendMode(get, set):String;
+    private function get_blendMode():String;
+    private function set_blendMode(value:String):String;
+
+    /** The texture that is currently being rendered into, or <code>null</code>
+     *  to render into the back buffer. On assignment, calls <code>setRenderTarget</code>
+     *  with its default parameters. */
+    public var renderTarget(get, set):Texture;
+    private function get_renderTarget():Texture;
+    private function set_renderTarget(value:Texture):Texture;
+
+    /** @private */
+    @:allow(starling) private var renderTargetBase(get, never):TextureBase;
+    private function get_renderTargetBase():TextureBase;
+
+    /** @private */
+    @:allow(starling) private var renderTargetOptions:UInt;
+    private function get_renderTargetOptions():UInt;
+
+    /** Sets the triangle culling mode. Allows to exclude triangles from rendering based on
+     *  their orientation relative to the view plane.
+     *  @default Context3DTriangleFace.NONE
+     */
+    public var culling(get, set):String;
+    private function get_culling():String;
+    private function set_culling(value:String):String;
+
+    /** Enables or disables depth buffer writes.
+        *  @default false
+        */
+    public var depthMask(get, set):Bool;
+    private function get_depthMask():Bool;
+    private function set_depthMask(value:Bool):Bool;
+
+    /** Sets type of comparison used for depth testing.
+        *  @default Context3DCompareMode.ALWAYS
+        */
+    public var depthTest(get, set):String;
+    private function get_depthTest():String;
+    private function set_depthTest(value:String):String;
+
+    /** The clipping rectangle can be used to limit rendering in the current render target to
+     *  a certain area. This method expects the rectangle in stage coordinates. To prevent
+     *  any clipping, assign <code>null</code>.
+     *
+     *  @default null
+     */
+    public var clipRect(get, set):Rectangle;
+    private function get_clipRect():Rectangle;
+    private function set_clipRect(value:Rectangle):Rectangle;
+
+    /** The anti-alias setting used when setting the current render target
+     *  via <code>setRenderTarget</code>. */
+    public var renderTargetAntiAlias(get, never):Int;
+    private function get_renderTargetAntiAlias():Int;
+
+    /** Indicates if the render target (set via <code>setRenderTarget</code>)
+     *  has its depth and stencil buffers enabled. */
+    public var renderTargetSupportsDepthAndStencil(get, never):Bool;
+    private function get_renderTargetSupportsDepthAndStencil():Bool;
+
+    /** Indicates if there have been any 3D transformations.
+     *  Returns <code>true</code> if the 3D modelview matrix contains a value. */
+    public var is3D(get, never):Bool;
+    private function get_is3D():Bool;
+
+    /** @private
+     *
+     *  This callback is executed whenever a state change requires a draw operation.
+     *  This is the case if blend mode, render target, culling or clipping rectangle
+     *  are changing. */
+    @:allow(starling) private var onDrawRequired(get, set):Void->Void;
+    private function get_onDrawRequired():Void->Void;
+    private function set_onDrawRequired(value:Void->Void):Void->Void;
 }

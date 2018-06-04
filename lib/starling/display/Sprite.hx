@@ -1,9 +1,26 @@
+// =================================================================================================
+//
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
+//
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
+//
+// =================================================================================================
+
 package starling.display;
 
-import starling.display.DisplayObjectContainer;
+/** A Sprite is the most lightweight, non-abstract container class.
+ *  Use it as a simple means of grouping objects together in one coordinate system.
+ *
+ *  @see DisplayObject
+ *  @see DisplayObjectContainer
+ */
 
 @:jsRequire("starling/display/Sprite", "default")
 
-extern class Sprite extends DisplayObjectContainer {
-	function new() : Void;
+extern class Sprite extends DisplayObjectContainer
+{
+    /** Creates an empty sprite. */
+    public function new();
 }

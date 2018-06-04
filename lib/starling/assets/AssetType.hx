@@ -25,17 +25,14 @@ import starling.textures.TextureAtlas;
 
 extern class AssetType
 {
-    /** @private */
-    public function new() { throw new AbstractClassError(); }
-
-    public static var TEXTURE:String = "texture";
-    public static var TEXTURE_ATLAS:String = "textureAtlas";
-    public static var SOUND:String = "sound";
-    public static var XML_DOCUMENT:String = "xml";
-    public static var OBJECT:String = "object";
-    public static var BYTE_ARRAY:String = "byteArray";
-    public static var BITMAP_FONT:String = "bitmapFont";
-    public static var ASSET_MANAGER:String = "assetManager";
+    public static var TEXTURE:String;
+    public static var TEXTURE_ATLAS:String;
+    public static var SOUND:String;
+    public static var XML_DOCUMENT:String;
+    public static var OBJECT:String;
+    public static var BYTE_ARRAY:String;
+    public static var BITMAP_FONT:String;
+    public static var ASSET_MANAGER:String;
 
     /** Figures out the asset type string from the type of the given instance. */
     public static function fromAsset(asset:Dynamic):String;
