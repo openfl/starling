@@ -41,7 +41,7 @@ package starling.rendering {
 		public function Painter(stage3D:openfl.display.Stage3D):void {}
 		public function batchMesh(mesh:starling.display.Mesh, subset:starling.utils.MeshSubset = null):void {}
 		public function clear(rgb:uint = 0, alpha:Number = 0):void {}
-		public function configureBackBuffer(viewPort:openfl.geom.Rectangle, contentScaleFactor:Number, antiAlias:int, enableDepthAndStencil:Boolean):void {}
+		public function configureBackBuffer(viewPort:openfl.geom.Rectangle, contentScaleFactor:Number, antiAlias:int, enableDepthAndStencil:Boolean, supportBrowserZoom:Boolean=false):void {}
 		public function deleteProgram(name:String):void {}
 		public function dispose():void {}
 		public function drawFromCache(startToken:BatchToken, endToken:BatchToken):void {}
@@ -49,6 +49,7 @@ package starling.rendering {
 		public function eraseMask(mask:starling.display.DisplayObject, maskee:starling.display.DisplayObject = null):void {}
 		public function excludeFromCache(object:starling.display.DisplayObject):void {}
 		public function fillToken(token:BatchToken):void {}
+		public function enableBatchTrimming(enabled:Boolean=true, interval:int=250):void {}
 		public function finishFrame():void {}
 		public function finishMeshBatch():void {}
 		public function getProgram(name:String):Program { return null; }
@@ -63,6 +64,7 @@ package starling.rendering {
 		public function restoreState():void {}
 		public function setStateTo(transformationMatrix:openfl.geom.Matrix, alphaFactor:Number = 0, blendMode:String = null):void {}
 		public function setupContextDefaults():void {}
+		public function refreshBackBufferSize(scaleFactor:Number):void {}
 		public static function get DEFAULT_STENCIL_VALUE ():uint { return 0; }
 	}
 

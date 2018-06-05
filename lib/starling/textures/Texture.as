@@ -10,9 +10,6 @@ package starling.textures {
 	import openfl.utils.ByteArray;
 	import starling.utils.MatrixUtil;
 	import starling.textures.TextureOptions;
-	import starling.textures.ConcretePotTexture;
-	import starling.textures.ConcreteRectangleTexture;
-	import starling.textures.ConcreteVideoTexture;
 	import starling.core.Starling;
 	import starling.errors.MissingContextError;
 	import starling.textures.AtfData;
@@ -50,6 +47,7 @@ package starling.textures {
 		public function setupVertexPositions(vertexData:starling.rendering.VertexData, vertexID:int = 0, attrName:String = null, bounds:openfl.geom.Rectangle = null):void {}
 		public static var asyncBitmapUploadEnabled:Boolean;
 		public static function get maxSize():int { return 0; }
+		public static function getMaxSize(textureFormat:String = null):int { return 0; }
 		public static function empty(width:Number, height:Number, premultipliedAlpha:Boolean = false, mipMapping:Boolean = false, optimizeForRenderToTexture:Boolean = false, scale:Number = 0, format:String = null, forcePotTexture:Boolean = false):Texture { return null; }
 		public static function fromAtfData(data:openfl.utils.ByteArray, scale:Number = 0, useMipMaps:Boolean = false, async:Function = null, premultipliedAlpha:Boolean = false):Texture { return null; }
 		public static function fromBitmap(bitmap:openfl.display.Bitmap, generateMipMaps:Boolean = false, optimizeForRenderToTexture:Boolean = false, scale:Number = 0, format:String = null, forcePotTexture:Boolean = false, async:Function = null):Texture { return null; }

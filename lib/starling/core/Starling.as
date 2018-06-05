@@ -43,6 +43,7 @@ package starling.core {
 		public var shareContext:Boolean;
 		public function get profile():String { return null; }
 		public var supportHighResolutions:Boolean;
+		public var supportBrowserZoom:Boolean;
 		public var skipUnchangedFrames:Boolean;
 		public var touchProcessor:TouchProcessor;
 		public function get frameID():uint { return 0; }

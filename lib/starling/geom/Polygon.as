@@ -5,8 +5,6 @@ package starling.geom {
 	import starling.rendering.VertexData;
 	import starling.utils.Pool;
 	import starling.utils.MathUtil;
-	import starling.geom.Ellipse;
-	import starling.geom.Rectangle;
 
 	/**
 	 * @externs
