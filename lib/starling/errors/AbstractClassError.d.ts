@@ -1,14 +1,14 @@
-import openfl_errors_Error from "openfl/errors/Error";
+import Error from "openfl/errors/Error";
 
-declare namespace starling.errors {
-
-export class AbstractClassError extends openfl_errors_Error {
-
-	constructor(message?:any, id?:any);
-
-
-}
-
+declare namespace starling.errors
+{
+	/** An AbstractClassError is thrown when you attempt to create an instance of an abstract 
+	 *  class. */
+	export class AbstractClassError extends Error
+	{
+		/** Creates a new AbstractClassError object. */
+		public constructor(message?:string, id?:number);
+	}
 }
 
 export default starling.errors.AbstractClassError;

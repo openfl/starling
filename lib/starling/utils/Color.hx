@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.utils;
+
 import openfl.Vector;
 
 /** A utility class containing predefined colors and methods converting between different

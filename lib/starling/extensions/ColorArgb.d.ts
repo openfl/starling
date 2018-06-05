@@ -1,25 +1,20 @@
-import Std from "./../../Std";
-
-declare namespace starling.extensions {
-
-export class ColorArgb {
-
-	constructor(red?:any, green?:any, blue?:any, alpha?:any);
-	red:any;
-	green:any;
-	blue:any;
-	alpha:any;
-	toRgb():any;
-	toArgb():any;
-	_fromRgb(color:any):any;
-	_fromArgb(color:any):any;
-	copyFrom(argb:any):any;
-	static fromRgb(color:any):any;
-	static fromArgb(color:any):any;
-
-
-}
-
+declare namespace starling.extensions
+{
+	export class ColorArgb
+	{
+		alpha:number;
+		blue:number;
+		green:number;
+		red:number;
+		constructor(red?:number, green?:number, blue?:number, alpha?:number);
+		_fromArgb(color:number):void;
+		_fromRgb(color:number):void;
+		copyFrom(argb:ColorArgb):void;
+		toArgb():number;
+		toRgb():number;
+		static fromArgb(color:number):ColorArgb;
+		static fromRgb(color:number):ColorArgb;
+	}
 }
 
 export default starling.extensions.ColorArgb;

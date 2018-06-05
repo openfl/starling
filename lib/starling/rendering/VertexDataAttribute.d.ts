@@ -1,22 +1,15 @@
-import haxe_ds_StringMap from "./../../haxe/ds/StringMap";
-import js__$Boot_HaxeError from "./../../js/_Boot/HaxeError";
-import openfl_errors_ArgumentError from "openfl/errors/ArgumentError";
+import ArgumentError from "openfl/errors/ArgumentError";
 
-declare namespace starling.rendering {
-
-export class VertexDataAttribute {
-
-	constructor(name:any, format:any, offset:any);
-	name:any;
-	format:any;
-	isColor:any;
-	offset:any;
-	size:any;
-	static FORMAT_SIZES:any;
-
-
-}
-
+declare namespace starling.rendering
+{
+	/** Holds the properties of a single attribute in a VertexDataFormat instance.
+	 *  The member variables must never be changed; they are only <code>public</code>
+	 *  for performance reasons. */
+	export class VertexDataAttribute
+	{
+		/** Creates a new instance with the given properties. */
+		public constructor(name:string, format:string, offset:number);
+	}
 }
 
 export default starling.rendering.VertexDataAttribute;

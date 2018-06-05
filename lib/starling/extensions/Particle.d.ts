@@ -1,22 +1,16 @@
-
-
-declare namespace starling.extensions {
-
-export class Particle {
-
-	constructor();
-	x:any;
-	y:any;
-	scale:any;
-	rotation:any;
-	color:any;
-	alpha:any;
-	currentTime:any;
-	totalTime:any;
-
-
-}
-
+declare namespace starling.extensions
+{
+	export class Particle {
+		alpha:number;
+		color:number;
+		currentTime:number;
+		rotation:number;
+		scale:number;
+		totalTime:number;
+		x:number;
+		y:number;
+		constructor();
+	}
 }
 
 export default starling.extensions.Particle;

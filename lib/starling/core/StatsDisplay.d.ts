@@ -1,56 +1,50 @@
-import starling_display_Sprite from "./../../starling/display/Sprite";
-import js_Boot from "./../../js/Boot";
-import starling_events_EnterFrameEvent from "./../../starling/events/EnterFrameEvent";
-import openfl_system_System from "openfl/system/System";
-import Reflect from "./../../Reflect";
-import starling_core_Starling from "./../../starling/core/Starling";
-import starling_utils_MathUtil from "./../../starling/utils/MathUtil";
-import Std from "./../../Std";
-import starling_text_TextField from "./../../starling/text/TextField";
-import starling_display_Quad from "./../../starling/display/Quad";
-import starling_styles_MeshStyle from "./../../starling/styles/MeshStyle";
+// =================================================================================================
+//
+//	Starling Framework
+//	Copyright Gamua GmbH. All Rights Reserved.
+//
+//	This program is free software. You can redistribute and/or modify it
+//	in accordance with the terms of the accompanying license agreement.
+//
+// =================================================================================================
 
-declare namespace starling.core {
+import Sprite from "./../display/Sprite";
 
-export class StatsDisplay extends starling_display_Sprite {
+declare namespace starling.core
+{
+	/** A small, lightweight box that displays the current framerate, memory consumption and
+	 *  the number of draw calls per frame. The display is updated automatically once per frame. */
+	export class StatsDisplay extends Sprite
+	{
+		/** Creates a new Statistics Box. */
+		public constructor();
+		
+		/** Updates the displayed values. */
+		public update():void;
 
-	constructor();
-	__background:any;
-	__labels:any;
-	__values:any;
-	__frameCount:any;
-	__totalTime:any;
-	__fps:any;
-	__memory:any;
-	__gpuMemory:any;
-	__drawCount:any;
-	__skipCount:any;
-	onAddedToStage(e:any):any;
-	onRemovedFromStage(e:any):any;
-	onEnterFrame(e:any):any;
-	update():any;
-	markFrameAsSkipped():any;
-	render(painter:any):any;
-	supportsGpuMem:any;
-	get_supportsGpuMem():any;
-	drawCount:any;
-	get_drawCount():any;
-	set_drawCount(value:any):any;
-	fps:any;
-	get_fps():any;
-	set_fps(value:any):any;
-	memory:any;
-	get_memory():any;
-	set_memory(value:any):any;
-	gpuMemory:any;
-	get_gpuMemory():any;
-	set_gpuMemory(value:any):any;
-	static UPDATE_INTERVAL:any;
-	static B_TO_MB:any;
-
-
-}
-
+		/** Call this once in every frame that can skip rendering because nothing changed. */
+		public markFrameAsSkipped():void;
+		
+		/** The number of Stage3D draw calls per second. */
+		public drawCount:number;
+		protected get_drawCount():number;
+		protected set_drawCount(value:number):number;
+		
+		/** The current frames per second (updated twice per second). */
+		public fps:number;
+		protected get_fps():number;
+		protected set_fps(value:number):number;
+		
+		/** The currently required system memory in MB. */
+		public memory:number;
+		protected get_memory():number;
+		protected set_memory(value:number):number;
+		
+		/** The currently used graphics memory in MB. */
+		public gpuMemory:number;
+		protected get_gpuMemory():number;
+		protected set_gpuMemory(value:number):number;
+	}
 }
 
 export default starling.core.StatsDisplay;

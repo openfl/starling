@@ -395,10 +395,10 @@ package starling.assets {
 /**
  * @externs
  */
-public class AssetPostProcessor
-{
-	public function AssetPostProcessor(callback:Function, priority:int) {}
+// public class AssetPostProcessor
+// {
+// 	public function AssetPostProcessor(callback:Function, priority:int) {}
 
-	public function get priority():int { return 0; }
-	protected function get_priority():int { return 0; }
-}
+// 	public function get priority():int { return 0; }
+// 	protected function get_priority():int { return 0; }
+// }

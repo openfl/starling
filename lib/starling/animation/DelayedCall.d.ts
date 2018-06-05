@@ -1,41 +1,61 @@
-import starling_animation_IAnimatable from "./../../starling/animation/IAnimatable";
-import starling_events_EventDispatcher from "./../../starling/events/EventDispatcher";
-import Reflect from "./../../Reflect";
-import openfl_Vector from "openfl/Vector";
+import IAnimatable from "./../../starling/animation/IAnimatable";
+import EventDispatcher from "./../../starling/events/EventDispatcher";
+import Vector from "openfl/Vector";
 
-declare namespace starling.animation {
+declare namespace starling.animation
+{
+	/** A DelayedCall allows you to execute a method after a certain time has passed. Since it 
+	 *  implements the IAnimatable interface, it can be added to a juggler. In most cases, you 
+	 *  do not have to use this class directly; the juggler class contains a method to delay
+	 *  calls directly. 
+	 * 
+	 *  <p>DelayedCall dispatches an Event of type 'Event.REMOVE_FROM_JUGGLER' when it is finished,
+	 *  so that the juggler automatically removes it when its no longer needed.</p>
+	 * 
+	 *  @see Juggler
+	 */
+	export class DelayedCall extends EventDispatcher implements IAnimatable
+	{
+		/** Creates a delayed call. */
+		public constructor(callback:Function, delay:number, args:Array<any>=null)
+		
+		/** Resets the delayed call to its default values, which is useful for pooling. */
+		public reset(callback:Function, delay:number, args:Array<any>=null):DelayedCall
+		
+		/** @inheritDoc */
+		public advanceTime(time:number):void
 
-export class DelayedCall extends starling_events_EventDispatcher {
-
-	constructor(callback:any, delay:any, args?:any);
-	__currentTime:any;
-	__totalTime:any;
-	__callback:any;
-	__args:any;
-	__repeatCount:any;
-	reset(callback:any, delay:any, args?:any):any;
-	advanceTime(time:any):any;
-	complete():any;
-	isComplete:any;
-	get_isComplete():any;
-	totalTime:any;
-	get_totalTime():any;
-	currentTime:any;
-	get_currentTime():any;
-	repeatCount:any;
-	get_repeatCount():any;
-	set_repeatCount(value:any):any;
-	callback:any;
-	get_callback():any;
-	arguments:any;
-	get_arguments():any;
-	static sPool:any;
-	static fromPool(call:any, delay:any, args?:any):any;
-	static toPool(delayedCall:any):any;
-
-
-}
-
+		/** Advances the delayed call so that it is executed right away. If 'repeatCount' is
+		 * anything else than '1', this method will complete only the current iteration. */
+		public complete():void
+		
+		/** Indicates if enough time has passed, and the call has already been executed. */
+		public readonly isComplete:boolean;
+		protected get_isComplete():boolean;
+		
+		/** The time for which calls will be delayed (in seconds). */
+		public readonly totalTime:number;
+		protected get_totalTime():number;
+		
+		/** The time that has already passed (in seconds). */
+		public readonly currentTime:number;
+		protected get_currentTime():number;
+		
+		/** The number of times the call will be repeated. 
+		 * Set to '0' to repeat indefinitely. @default 1 */
+		public repeatCount:number;
+		protected get_repeatCount():number { return __repeatCount; }
+		protected set_repeatCount(value:number):number;
+		
+		/** The callback that will be executed when the time is up. */
+		public readonly callback:Function;
+		protected get_callback():Function;
+	
+		/** The arguments that the callback will be executed with.
+			*  Beware: not a copy, but the actual object! */
+		public readonly arguments:Array<any>;
+		protected get_arguments():Array<any>;
+	}
 }
 
 export default starling.animation.DelayedCall;

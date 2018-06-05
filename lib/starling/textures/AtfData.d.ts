@@ -1,38 +1,41 @@
-import _$UInt_UInt_$Impl_$ from "./../../_UInt/UInt_Impl_";
-import js__$Boot_HaxeError from "./../../js/_Boot/HaxeError";
-import openfl_errors_ArgumentError from "openfl/errors/ArgumentError";
-import openfl_display3D__$Context3DTextureFormat_Context3DTextureFormat_$Impl_$ from "./../../openfl/display3D/_Context3DTextureFormat/Context3DTextureFormat_Impl_";
-import openfl_errors_Error from "openfl/errors/Error";
-import Std from "./../../Std";
+import ArgumentError from "openfl/errors/ArgumentError";
+import Error from "openfl/errors/Error";
 
-declare namespace starling.textures {
-
-export class AtfData {
-
-	constructor(data:any);
-	_format:any;
-	_width:any;
-	_height:any;
-	_numTextures:any;
-	_isCubeMap:any;
-	_data:any;
-	format:any;
-	get_format():any;
-	width:any;
-	get_width():any;
-	height:any;
-	get_height():any;
-	numTextures:any;
-	get_numTextures():any;
-	isCubeMap:any;
-	get_isCubeMap():any;
-	data:any;
-	get_data():any;
-	static isAtfData(data:any):any;
-
-
-}
-
+declare namespace starling.textures
+{
+	/** A parser for the ATF data format. */
+	export class AtfData
+	{
+		/** Create a new instance by parsing the given byte array. */
+		public constructor(data:ByteArray);
+	
+		/** Checks the first 3 bytes of the data for the 'ATF' signature. */
+		public static isAtfData(data:ByteArray):boolean;
+	
+		/** The texture format. @see flash.display3D.textures.Context3DTextureFormat */
+		public readonly format:string;
+		protected get_format():string;
+	
+		/** The width of the texture in pixels. */
+		public readonly width:number;
+		protected get_width():number;
+	
+		/** The height of the texture in pixels. */
+		public readonly height:number;
+		protected get_height():number;
+	
+		/** The number of encoded textures. '1' means that there are no mip maps. */
+		public readonly numTextures:number;
+		protected get_numTextures():number;
+	
+		/** Indicates if the ATF data encodes a cube map. Not supported by Starling! */
+		public readonly isCubeMap:boolean;
+		protected get_isCubeMap():boolean;
+	
+		/** The actual byte data, including header. */
+		public readonly data:ByteArray;
+		protected get_data():ByteArray;
+	}
 }
 
 export default starling.textures.AtfData;

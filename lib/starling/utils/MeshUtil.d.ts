@@ -1,26 +1,28 @@
-import js__$Boot_HaxeError from "./../../js/_Boot/HaxeError";
-import starling_errors_AbstractClassError from "./../../starling/errors/AbstractClassError";
-import openfl_geom_Vector3D from "openfl/geom/Vector3D";
-import openfl_geom_Matrix from "openfl/geom/Matrix";
-import openfl_geom_Matrix3D from "openfl/geom/Matrix3D";
-import starling_utils_Pool from "./../../starling/utils/Pool";
-import starling_utils_MathUtil from "./../../starling/utils/MathUtil";
-import openfl_geom_Rectangle from "openfl/geom/Rectangle";
 
-declare namespace starling.utils {
+import AbstractClassError from "./../../starling/errors/AbstractClassError";
+import Vector3D from "openfl/geom/Vector3D";
+import Matrix from "openfl/geom/Matrix";
+import Matrix3D from "openfl/geom/Matrix3D";
+import Pool from "./../../starling/utils/Pool";
+import MathUtil from "./../../starling/utils/MathUtil";
+import Rectangle from "openfl/geom/Rectangle";
 
-export class MeshUtil {
-
-	MeshUtil():any;
-	static sPoint3D:any;
-	static sMatrix:any;
-	static sMatrix3D:any;
-	static containsPoint(vertexData:any, indexData:any, point:any):any;
-	static calculateBounds(vertexData:any, sourceSpace:any, targetSpace:any, out?:any):any;
-
-
-}
-
+declare namespace starling.utils
+{
+	/** A utility class that helps with tasks that are common when working with meshes. */
+	export class MeshUtil
+	{
+		/** Determines if a point is inside a mesh that is spawned up by the given
+			*  vertex- and index-data. */
+		public static containsPoint(vertexData:VertexData, indexData:IndexData,
+												point:Point):boolean;
+	
+		/** Calculates the bounds of the given vertices in the target coordinate system. */
+		public static calculateBounds(vertexData:VertexData,
+												sourceSpace:DisplayObject,
+												targetSpace:DisplayObject,
+												out?:Rectangle):Rectangle;
+	}
 }
 
 export default starling.utils.MeshUtil;

@@ -1,29 +1,25 @@
-import starling_extensions_Particle from "./../../starling/extensions/Particle";
-import starling_extensions_ColorArgb from "./../../starling/extensions/ColorArgb";
+import Particle from "./../../starling/extensions/Particle";
+import ColorArgb from "./../../starling/extensions/ColorArgb";
 
-declare namespace starling.extensions {
-
-export class PDParticle extends starling_extensions_Particle {
-
-	constructor();
-	colorArgb:any;
-	colorArgbDelta:any;
-	startX:any;
-	startY:any;
-	velocityX:any;
-	velocityY:any;
-	radialAcceleration:any;
-	tangentialAcceleration:any;
-	emitRadius:any;
-	emitRadiusDelta:any;
-	emitRotation:any;
-	emitRotationDelta:any;
-	rotationDelta:any;
-	scaleDelta:any;
-
-
-}
-
+declare namespace starling.extensions
+{
+	export class PDParticle extends Particle {
+		colorArgb:ColorArgb;
+		colorArgbDelta:ColorArgb;
+		emitRadius:number;
+		emitRadiusDelta:number;
+		emitRotation:number;
+		emitRotationDelta:number;
+		radialAcceleration:number;
+		rotationDelta:number;
+		scaleDelta:number;
+		startX:number;
+		startY:number;
+		tangentialAcceleration:number;
+		velocityX:number;
+		velocityY:number;
+		constructor();
+	}
 }
 
 export default starling.extensions.PDParticle;
