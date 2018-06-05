@@ -35,9 +35,6 @@ class MainMenu extends Sprite
     {
         super();
         init();
-        var txt:TextField = new TextField(10, 10, "some text", new TextFormat("Ubuntu", 25, 0xFFFFFF));
-txt.autoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
-addChild(txt);
     }
     
     private function init():Void
