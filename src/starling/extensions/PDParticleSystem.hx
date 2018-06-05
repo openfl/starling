@@ -382,7 +382,7 @@ class PDParticleSystem extends ParticleSystem
         return color;
     }
 
-    private function getBlendFunc(element:Fast):String
+    private function getBlendFunc(element:Fast):Context3DBlendFactor
     {
         var value:Int = getIntValue(element);
         switch (value)

@@ -10,7 +10,7 @@
 
 package starling.assets;
 
-import flash.media.Sound;
+import openfl.media.Sound;
 import openfl.errors.Error;
 import openfl.utils.ByteArray;
 

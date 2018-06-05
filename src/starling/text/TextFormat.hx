@@ -115,9 +115,9 @@ class TextFormat extends EventDispatcher
     }
 
     /** Converts the Starling TextFormat instance to a Flash TextFormat. */
-    public function toNativeFormat(out:flash.text.TextFormat=null):flash.text.TextFormat
+    public function toNativeFormat(out:openfl.text.TextFormat=null):openfl.text.TextFormat
     {
-        if (out == null) out = new flash.text.TextFormat();
+        if (out == null) out = new openfl.text.TextFormat();
 
         out.font = __font;
         out.size = Std.int(__size);

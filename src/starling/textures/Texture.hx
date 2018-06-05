@@ -401,7 +401,7 @@ class Texture
         if (context == null) throw new MissingContextError();
 
         var atfData:AtfData = new AtfData(data);
-        var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
+        var nativeTexture:openfl.display3D.textures.Texture = context.createTexture(
             atfData.width, atfData.height, atfData.format, false);
         var concreteTexture:ConcreteTexture = new ConcretePotTexture(nativeTexture,
             atfData.format, atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1,

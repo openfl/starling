@@ -32,6 +32,7 @@ class ByteArrayUtil
 
         // recognize BOMs
 
+        #if commonjs
         if (length >= 4 &&
             (bytes.get(0) == 0x00 && bytes.get(1) == 0x00 && bytes.get(2) == 0xfe && bytes.get(3) == 0xff) ||
             (bytes.get(0) == 0xff && bytes.get(1) == 0xfe && bytes.get(2) == 0x00 && bytes.get(3) == 0x00))
@@ -54,6 +55,30 @@ class ByteArrayUtil
             if (byte != 0 && byte != 10 && byte != 13 && byte != 32) // null, \n, \r, space
                 return compareByteArrays(bytes, i, wantedBytes, 0, wantedBytes.length);
         }
+        #else
+        if (length >= 4 &&
+            (bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xfe && bytes[3] == 0xff) ||
+            (bytes[0] == 0xff && bytes[1] == 0xfe && bytes[2] == 0x00 && bytes[3] == 0x00))
+        {
+            start = 4; // UTF-32
+        }
+        else if (length >= 3 && bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf)
+        {
+            start = 3; // UTF-8
+        }
+        else if (length >= 2 &&
+            (bytes[0] == 0xfe && bytes[1] == 0xff) || (bytes[0] == 0xff && bytes[1] == 0xfe))
+        {
+            start = 2; // UTF-16
+        }
+
+        for (i in start...length)
+        {
+            var byte:Int = bytes[i];
+            if (byte != 0 && byte != 10 && byte != 13 && byte != 32) // null, \n, \r, space
+                return compareByteArrays(bytes, i, wantedBytes, 0, wantedBytes.length);
+        }
+        #end
 
         return false;
     }
@@ -71,8 +96,13 @@ class ByteArrayUtil
         else if (b1 > 0 || b2 > 0 )
             throw new RangeError();
 
+        #if commonjs
         for (i in 0...numBytes)
             if (a.get(indexA + i) != b.get(indexB + i)) return false;
+        #else
+        for (i in 0...numBytes)
+            if (a[indexA + i] != b[indexB + i]) return false;
+        #end
 
         return true;
     }
