@@ -17,6 +17,9 @@ import LoaderContext from "openfl/system/LoaderContext";
 import Loader from "openfl/display/Loader";
 import URLLoader from "openfl/net/URLLoader";
 import TextureOptions from "./../../starling/textures/TextureOptions";
+import SoundTransform from "openfl/media/SoundTransform";
+import SoundChannel from "openfl/media/SoundChannel";
+import Context3DTextureFormat from "openfl/display3D/Context3DTextureFormat";
 
 declare namespace starling.utils
 {
@@ -139,7 +142,7 @@ declare namespace starling.utils
 								  transform?:SoundTransform):SoundChannel;
 		
 		/** Returns an XML with a certain name, or null if it's not found. */
-		public getXml(name:string):Xml;
+		public getXml(name:string):any /*Xml*/;
 		
 		/** Returns all XML names that start with a certain string, sorted alphabetically. 
 		 * If you pass an <code>out</code>-vector, the names will be added to that vector. */

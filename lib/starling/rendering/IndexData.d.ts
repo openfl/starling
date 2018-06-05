@@ -6,6 +6,7 @@ import StringUtil from "./../../starling/utils/StringUtil";
 import ByteArray from "openfl/utils/ByteArray";
 import Starling from "./../../starling/core/Starling";
 import MissingContextError from "./../../starling/errors/MissingContextError";
+import IndexBuffer3D from "openfl/display3D/IndexBuffer3D";
 
 declare namespace starling.rendering
 {

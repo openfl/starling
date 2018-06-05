@@ -3,6 +3,9 @@ import DisplacementMapEffect from "./../../starling/filters/DisplacementMapEffec
 import Rectangle from "openfl/geom/Rectangle";
 import FilterEffect from "./../rendering/FilterEffect";
 import Texture from "./../textures/Texture";
+import Painter from "./../rendering/Painter";
+import IFilterHelper from "./IFilterHelper";
+import VertexDataFormat from "./../rendering/VertexDataFormat";
 
 declare namespace starling.filters
 {

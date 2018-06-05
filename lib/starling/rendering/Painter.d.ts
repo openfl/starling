@@ -19,6 +19,9 @@ import BatchProcessor from "./../../starling/rendering/BatchProcessor";
 import Stage3D from "openfl/display/Stage3D";
 import Program from "openfl/display3D/Program";
 import BatchToken from "./BatchToken";
+import Context3D from "openfl/display3D/Context3D";
+import DisplayObject from "./../display/DisplayObject";
+import Mesh from "./../display/Mesh";
 
 declare namespace starling.rendering
 {
@@ -369,11 +372,11 @@ declare namespace starling.rendering
 		 *  If you need to share data that is bound to the render context (e.g. textures), use
 		 *  this dictionary instead of creating a static class variable. That way, the data will
 		 *  be available for all Starling instances that use this stage3D / context. */
-		public readonly sharedData:Map<String, any>;
-		protected get_sharedData():Map<String, any>;
+		public readonly sharedData:Map<string, any>;
+		protected get_sharedData():Map<string, any>;
 	
-		protected readonly programs:Map<String, Program>;
-		protected get_programs():Map<String, Program>;
+		protected readonly programs:Map<string, Program>;
+		protected get_programs():Map<string, Program>;
 	}
 }
 

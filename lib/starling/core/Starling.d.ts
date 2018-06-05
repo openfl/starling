@@ -21,6 +21,7 @@ import Stage from "./../display/Stage";
 import EventDispatcher from "./../events/EventDispatcher";
 import TouchProcessor from "./../events/TouchProcessor";
 import Painter from "./../rendering/Painter";
+import Stage3D from "openfl/display/Stage3D";
 
 declare namespace starling.core
 {
@@ -200,7 +201,7 @@ declare namespace starling.core
 		 *                       profile automatically.</li>
 		 *                   </ul>
 		 */
-		public constructor(rootClass:Class, stage:OpenFLStage, 
+		public constructor(rootClass:any, stage:OpenFLStage, 
 								viewPort?:Rectangle, stage3D?:Stage3D,
 								renderMode?:Context3DRenderMode, profile?:any, sharedContext?:null | boolean);
 		
@@ -357,9 +358,9 @@ declare namespace starling.core
 		 * <p>Beware: you cannot change the root class once the root object has been
 		 * instantiated.</p>
 		 */
-		public rootClass:Class;
-		protected get_rootClass():Class;
-		protected set_rootClass(value:Class):Class;
+		public rootClass:any;
+		protected get_rootClass():any;
+		protected set_rootClass(value:any):any;
 
 		/** Indicates if another Starling instance (or another Stage3D framework altogether)
 		 * uses the same render context. If enabled, Starling will not execute any destructive

@@ -3,6 +3,7 @@ import DisplayObjectContainer from "./../display/DisplayObjectContainer";
 import MeshStyle from "./../styles/MeshStyle";
 import TextFormat from "./../text/TextFormat";
 import Texture from "./Texture";
+import Sprite from "./Sprite";
 
 declare namespace starling.display
 {

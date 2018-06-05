@@ -8,6 +8,8 @@
 //
 // =================================================================================================
 
+import AssetFactory from "./AssetFactory";
+
 declare namespace starling.assets
 {
 	/** This AssetFactory creates XML assets, texture atlases and bitmap fonts. */

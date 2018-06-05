@@ -2,6 +2,9 @@ import FragmentFilter from "./../../starling/filters/FragmentFilter";
 import CompositeFilter from "./../../starling/filters/CompositeFilter";
 import BlurFilter from "./../../starling/filters/BlurFilter";
 import FilterEffect from "./../rendering/FilterEffect";
+import Painter from "./../rendering/Painter";
+import Texture from "./../textures/Texture";
+import IFilterHelper from "./IFilterHelper";
 
 declare namespace starling.filters
 {
@@ -21,7 +24,7 @@ declare namespace starling.filters
 		 *                   values will cause the number of render passes to grow.
 		 * @param quality 	 the quality of the shadow blur, '1' being the best (range 0.1 - 1.0)
 		 */
-		public constructor(distance:number=4.0, angle?:number,
+		public constructor(distance?:number, angle?:number,
 							color?:number, alpha?:number, blur?:number,
 							quality?:number);
 	

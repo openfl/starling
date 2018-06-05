@@ -2,6 +2,9 @@ import MeshSubset from "./../../starling/utils/MeshSubset";
 import Vector from "openfl/Vector";
 import BatchPool from "./../../starling/rendering/BatchPool";
 import BatchToken from "./../../starling/rendering/BatchToken";
+import Mesh from "./../display/Mesh";
+import MeshBatch from "./../display/MeshBatch";
+import RenderState from "./RenderState";
 
 declare namespace starling.rendering
 {
@@ -67,7 +70,7 @@ declare namespace starling.rendering
 	
 		public purge():void;
 	
-		public get(styleType:Class):MeshBatch;
+		public get(styleType:any):MeshBatch;
 	
 		public put(meshBatch:MeshBatch):void;
 	}

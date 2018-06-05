@@ -10,6 +10,9 @@ import TextOptions from "./../../starling/text/TextOptions";
 import MiniBitmapFont from "./../../starling/text/MiniBitmapFont";
 import ArgumentError from "openfl/errors/ArgumentError";
 import Image from "./../../starling/display/Image";
+import TextFormat from "./TextFormat";
+import MeshBatch from "./../display/MeshBatch";
+import MeshStyle from "./../styles/MeshStyle";
 
 declare namespace starling.text
 {

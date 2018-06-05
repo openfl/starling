@@ -46,7 +46,7 @@ extern class TextFormat extends EventDispatcher
                           horizontalAlign:String="center", verticalAlign:String="center"):Void;
 
     /** Converts the Starling TextFormat instance to a Flash TextFormat. */
-    public function toNativeFormat(out:flash.text.TextFormat=null):flash.text.TextFormat;
+    public function toNativeFormat(out:openfl.text.TextFormat=null):openfl.text.TextFormat;
 
     /** The name of the font. TrueType fonts will be looked up from embedded fonts and
      *  system fonts; bitmap fonts must be registered at the TextField class first.

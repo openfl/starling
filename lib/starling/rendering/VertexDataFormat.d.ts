@@ -3,6 +3,7 @@ import ArgumentError from "openfl/errors/ArgumentError";
 import StringUtil from "./../../starling/utils/StringUtil";
 import VertexDataAttribute from "./../../starling/rendering/VertexDataAttribute";
 import Vector from "openfl/Vector";
+import VertexBuffer3D from "openfl/display3D/VertexBuffer3D";
 
 declare namespace starling.rendering
 {

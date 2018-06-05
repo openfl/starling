@@ -6,6 +6,8 @@ import ScaleMode from "./../../starling/utils/ScaleMode";
 import ArgumentError from "openfl/errors/ArgumentError";
 import MatrixUtil from "./../../starling/utils/MatrixUtil";
 import MathUtil from "./../../starling/utils/MathUtil";
+import Matrix from "openfl/geom/Matrix";
+import Matrix3D from "openfl/geom/Matrix3D";
 
 declare namespace starling.utils
 {

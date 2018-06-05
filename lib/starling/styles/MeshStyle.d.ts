@@ -1,6 +1,13 @@
 import EventDispatcher from "./../../starling/events/EventDispatcher";
 import MeshEffect from "./../../starling/rendering/MeshEffect";
 import Point from "openfl/geom/Point";
+import VertexDataFormat from "./../rendering/VertexDataFormat";
+import IndexData from "./../rendering/IndexData";
+import VertexData from "./../rendering/VertexData";
+import RenderState from "./../rendering/RenderState";
+import Matrix from "openfl/geom/Matrix";
+import Texture from "./../textures/Texture";
+import Mesh from "./../display/Mesh";
 
 declare namespace starling.styles
 {
@@ -134,9 +141,9 @@ declare namespace starling.styles
 	
 		// enter frame event
 	
-		/*override*/ public addEventListener(type:string, listener:any):void;
+		/*override*/ public addEventListener(type:string, listener:Function):void;
 	
-		/*override*/ public removeEventListener(type:string, listener:any):void;
+		/*override*/ public removeEventListener(type:string, listener:Function):void;
 	
 		// vertex manipulation
 	
@@ -166,7 +173,7 @@ declare namespace starling.styles
 		public setVertexColor(vertexID:number, color:number):void;
 	
 		/** Returns the texture coordinates of the vertex at the specified index. */
-		public getTexCoords(vertexID:number, out:Point = null):Point;
+		public getTexCoords(vertexID:number, out?:Point):Point;
 	
 		/** Sets the texture coordinates of the vertex at the specified index to the given values. */
 		public setTexCoords(vertexID:number, u:number, v:number):void;
@@ -186,8 +193,8 @@ declare namespace starling.styles
 		protected get_indexData():IndexData;
 	
 		/** The actual class of this style. */
-		public readonly type:Class;
-		protected get_type():Class;
+		public readonly type:any;
+		protected get_type():any;
 	
 		/** Changes the color of all vertices to the same value.
 		 *  The getter simply returns the color of the first vertex. */

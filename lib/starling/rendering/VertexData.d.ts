@@ -12,6 +12,9 @@ import MissingContextError from "./../../starling/errors/MissingContextError";
 import ByteArray from "openfl/utils/ByteArray";
 import MeshStyle from "./../../starling/styles/MeshStyle";
 import VertexDataFormat from "./../../starling/rendering/VertexDataFormat";
+import VertexBuffer3D from "openfl/display3D/VertexBuffer3D";
+import Matrix from "openfl/geom/Matrix";
+import Matrix3D from "openfl/geom/Matrix3D";
 
 declare namespace starling.rendering
 {

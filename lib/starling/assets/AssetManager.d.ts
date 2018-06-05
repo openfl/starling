@@ -18,6 +18,8 @@ import BitmapFont from "./../text/BitmapFont";
 import Texture from "./../textures/Texture";
 import TextureAtlas from "./../textures/TextureAtlas";
 import TextureOptions from "./../textures/TextureOptions";
+import AssetFactory from "./AssetFactory";
+import DataLoader from "./DataLoader";
 
 declare namespace starling.assets
 {
@@ -131,7 +133,7 @@ declare namespace starling.assets
 	export class AssetManager extends EventDispatcher
 	{
 		/** Create a new instance with the given scale factor. */
-		public constructor(scaleFactor?:number=);
+		public constructor(scaleFactor?:number);
 
 		/** Disposes all assets and purges the queue.
 		 *
@@ -274,7 +276,7 @@ declare namespace starling.assets
 								transform?:SoundTransform):SoundChannel;
 
 		/** Returns an XML with a certain name, or null if it's not found. */
-		public getXml(name:string):Xml;
+		public getXml(name:string):any/*Xml*/;
 
 		/** Returns all XML names that start with a certain string, sorted alphabetically.
 		 *  If you pass an <code>out</code>-vector, the names will be added to that vector. */

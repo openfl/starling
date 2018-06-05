@@ -83,7 +83,7 @@ class TouchSheet extends Sprite
     
     public dispose():void
     {
-        removeEventListener(TouchEvent.TOUCH, this.onTouch);
+        this.removeEventListener(TouchEvent.TOUCH, this.onTouch);
         super.dispose();
     }
 }

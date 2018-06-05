@@ -100,7 +100,7 @@ declare namespace starling.animation
 		 *  @return Unique numeric identifier for the delayed call. This identifier may be used
 		 *          to remove the object via <code>removeByID()</code>.
 		 */
-		public repeatCall(call:Function, interval:number, repeatCount?:Int, args?:Array<any>):number;
+		public repeatCall(call:Function, interval:number, repeatCount?:number, args?:Array<any>):number;
 		
 		/** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
 		 *  this method uses a tween instance (taken from an object pool) that is added to the

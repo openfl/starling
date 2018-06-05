@@ -4,6 +4,10 @@ import AbstractMethodError from "./../../starling/errors/AbstractMethodError";
 import Color from "./../../starling/utils/Color";
 import Starling from "./../../starling/core/Starling";
 import Error from "openfl/errors/Error";
+import Bitmap from "openfl/display/Bitmap";
+import BitmapData from "openfl/display/BitmapData";
+import ByteArray from "openfl/utils/ByteArray";
+import NetStream from "openfl/net/NetStream";
 
 declare namespace starling.textures
 {

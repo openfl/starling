@@ -6,6 +6,10 @@ import Matrix from "openfl/geom/Matrix";
 import Quad from "./../../starling/display/Quad";
 import TextField from "openfl/text/TextField";
 import TextFormat from "openfl/text/TextFormat";
+import MeshBatch from "./../display/MeshBatch";
+import MeshStyle from "./../styles/MeshStyle";
+import BitmapData from "openfl/display/BitmapData";
+import TextOptions from "./TextOptions";
 
 declare namespace starling.text
 {
@@ -25,7 +29,7 @@ declare namespace starling.text
 	
 		/** @inheritDoc */
 		public fillMeshBatch(meshBatch:MeshBatch, width:number, height:number, text:string,
-									  format:TextFormat, options:TextOptions=null):void;
+									  format:TextFormat, options?:TextOptions):void;
 	
 		/** @inheritDoc */
 		public clearMeshBatch(meshBatch:MeshBatch):void;

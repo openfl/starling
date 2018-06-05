@@ -1,6 +1,8 @@
 import Starling from "./../../starling/core/Starling";
 import MissingContextError from "./../../starling/errors/MissingContextError";
 import AGALMiniAssembler from "openfl/utils/AGALMiniAssembler";
+import ByteArray from "openfl/utils/ByteArray";
+import Context3D from "openfl/display3D/Context3D";
 
 declare namespace starling.rendering
 {
@@ -30,7 +32,7 @@ declare namespace starling.rendering
 	
 		/** Activates the program on the given context. If you don't pass a context, the current
 		 *  Starling context will be used. */
-		public activate(context:Context3D=null):void;
+		public activate(context?:Context3D):void;
 	}
 }
 

@@ -1,5 +1,6 @@
 import ArgumentError from "openfl/errors/ArgumentError";
 import Error from "openfl/errors/Error";
+import ByteArray from "openfl/utils/ByteArray";
 
 declare namespace starling.textures
 {

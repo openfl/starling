@@ -16,6 +16,10 @@ import Matrix3D from "openfl/geom/Matrix3D";
 import FilterEffect from "./../rendering/FilterEffect";
 import Mesh from "./../display/Mesh";
 import Texture from "./../textures/Texture";
+import Painter from "./../rendering/Painter";
+import IFilterHelper from "./IFilterHelper";
+import DisplayObject from "./../display/DisplayObject";
+import Rectangle from "openfl/geom/Rectangle";
 
 declare namespace starling.filters
 {

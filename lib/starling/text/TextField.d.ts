@@ -12,6 +12,11 @@ import Rectangle from "openfl/geom/Rectangle";
 import TextFormat from "./../../starling/text/TextFormat";
 import TextOptions from "./../../starling/text/TextOptions";
 import MeshBatch from "./../../starling/display/MeshBatch";
+import Painter from "./../rendering/Painter";
+import DisplayObject from "./../display/DisplayObject";
+import Point from "openfl/geom/Point";
+import MeshStyle from "./../styles/MeshStyle";
+import ITextCompositor from "./ITextCompositor";
 
 declare namespace starling.text
 {

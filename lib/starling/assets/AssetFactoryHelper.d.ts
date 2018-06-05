@@ -31,7 +31,7 @@ declare namespace starling.assets
 		 *  @param onComplete  function(data:ByteArray, mimeType:string):void;
 		 *  @param onError     function(error:string):void;
 		 */
-		public loadDataFromUrl(url:string, onComplete:(ByteArray?, string?, string?, string?)=>void, onError:(string)=>void):void;
+		public loadDataFromUrl(url:string, onComplete:(data?:ByteArray, mimeType?:string, name?:string, extension?:string)=>void, onError:(string)=>void):void;
 	
 		/** Adds a method to be called by the AssetManager when the queue has finished processing.
 		 *  Useful e.g. if assets depend on other assets (like an atlas XML depending on the atlas

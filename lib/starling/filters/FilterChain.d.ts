@@ -2,6 +2,9 @@ import FragmentFilter from "./../../starling/filters/FragmentFilter";
 import Padding from "./../../starling/utils/Padding";
 import Vector from "openfl/Vector";
 import ArgumentError from "openfl/errors/ArgumentError";
+import Painter from "./../rendering/Painter";
+import IFilterHelper from "./IFilterHelper";
+import Texture from "./../textures/Texture";
 
 declare namespace starling.filters
 {

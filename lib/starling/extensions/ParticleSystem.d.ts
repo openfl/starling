@@ -11,6 +11,7 @@ import MeshSubset from "./../../starling/utils/MeshSubset";
 import IndexData from "./../../starling/rendering/IndexData";
 import Vector from "openfl/Vector";
 import Texture from "./../textures/Texture";
+import Context3DBlendFactor from "openfl/display3D/Context3DBlendFactor";
 
 declare namespace starling.extensions
 {

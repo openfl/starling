@@ -3,6 +3,8 @@ import Color from "./../../starling/utils/Color";
 import ArgumentError from "openfl/errors/ArgumentError";
 import Execute from "./../../starling/utils/Execute";
 import Error from "openfl/errors/Error";
+import Texture from "./../textures/Texture";
+import Stage3D from "openfl/display/Stage3D";
 
 declare namespace starling.utils
 {

@@ -6,7 +6,7 @@ import TextOptions from "./TextOptions";
 declare namespace starling.text
 {
 	/** A text compositor arranges letters for Starling's TextField. */
-	interface ITextCompositor
+	export class ITextCompositor
 	{
 		/** Draws the given text into a MeshBatch, using the supplied format and options. */
 		public fillMeshBatch(meshBatch:MeshBatch, width:number, height:number, text:string,

@@ -2,6 +2,7 @@ import Event from "./../../starling/events/Event";
 import Vector from "openfl/Vector";
 import EventDispatcher from "./../../starling/events/EventDispatcher";
 import DisplayObject from "./../display/DisplayObject";
+import Touch from "./Touch";
 
 declare namespace starling.events
 {

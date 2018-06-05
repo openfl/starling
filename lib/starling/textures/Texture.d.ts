@@ -21,6 +21,11 @@ import SystemUtil from "./../../starling/utils/SystemUtil";
 import NotSupportedError from "./../../starling/errors/NotSupportedError";
 import MathUtil from "./../../starling/utils/MathUtil";
 import SubTexture from "./../../starling/textures/SubTexture";
+import TextureBase from "openfl/display3D/textures/TextureBase";
+import ConcreteTexture from "./ConcreteTexture";
+import Context3DTextureFormat from "openfl/display3D/Context3DTextureFormat";
+import NetStream from "openfl/net/NetStream";
+import VertexData from "./../rendering/VertexData";
 
 declare namespace starling.textures
 {
@@ -155,7 +160,7 @@ declare namespace starling.textures
 		 *                     efficient "RectangleTexture". (Only applicable to bitmaps; ATF
 		 *                     textures are always POT-textures, anyway.)
 		 */
-		public static fromEmbeddedAsset(assetClass:Class, mipMapping?:boolean,
+		public static fromEmbeddedAsset(assetClass:any, mipMapping?:boolean,
 												 optimizeForRenderToTexture?:boolean,
 												 scale?:number, format?:Context3DTextureFormat,
 												 forcePotTexture?:boolean):Texture;
@@ -476,7 +481,7 @@ declare namespace starling.textures
 		public static readonly maxSize:number;
 		protected static get_maxSize():number;
 	
-		public static getMaxSize(textureFormat:Context3DTextureFormat=BGRA):number;
+		public static getMaxSize(textureFormat?:Context3DTextureFormat):number;
 	
 		/** Indicates if it should be attempted to upload bitmaps asynchronously when the <code>async</code> parameter
 			*  is supplied to supported methods. Since this feature is still not 100% reliable in AIR 26 (especially on

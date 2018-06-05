@@ -8,6 +8,8 @@
 //
 // =================================================================================================
 
+import AssetFactory from "./AssetFactory";
+
 declare namespace starling.assets
 {
 	/** This AssetFactory forwards ByteArrays to the AssetManager. It's the fallback when

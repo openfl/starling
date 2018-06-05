@@ -45,7 +45,7 @@ declare namespace starling.assets
 		 * @param onProgress   will be called multiple times with the current load ratio (0-1).
 		 *                     <code>function(ratio:Number):void</code>
 		 */
-		public load(url:string, onComplete:(ByteArray?, string?, string?, string?)=>void,
+		public load(url:string, onComplete:(data?:ByteArray, mimeType?:string, name?:string, extension?:string)=>void,
 							onError:(string)=>void, onProgress?:(number)=>void):void;
 
 		/** Aborts all current load operations. The loader can still be used, though. */

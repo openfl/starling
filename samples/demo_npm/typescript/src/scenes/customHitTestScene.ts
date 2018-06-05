@@ -11,7 +11,7 @@ class CustomHitTestScene extends Scene
     public constructor()
     {
         super();
-        var description:String = 
+        var description:string = 
             "Pushing the bird only works when the touch occurs within a circle." + 
             "This can be accomplished by overriding the method 'hitTest'.";
         

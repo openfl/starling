@@ -2,6 +2,10 @@ import MeshStyle from "./../../starling/styles/MeshStyle";
 import DistanceFieldEffect from "./../../starling/styles/DistanceFieldEffect";
 import Color from "./../../starling/utils/Color";
 import MathUtil from "./../../starling/utils/MathUtil";
+import VertexDataFormat from "./../rendering/VertexDataFormat";
+import MeshEffect from "./../rendering/MeshEffect";
+import Matrix from "openfl/geom/Matrix";
+import RenderState from "./../rendering/RenderState";
 
 declare namespace starling.styles
 {

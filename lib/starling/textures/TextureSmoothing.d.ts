@@ -15,10 +15,7 @@ declare namespace starling.textures
         public static TRILINEAR:string;
         
         /** Determines whether a smoothing value is valid. */
-        public static isValid(smoothing:string):boolean
-        {
-            return smoothing == NONE || smoothing == BILINEAR || smoothing == TRILINEAR;
-        }
+        public static isValid(smoothing:string):boolean;
     }
 }
 

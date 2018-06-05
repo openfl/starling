@@ -1,11 +1,11 @@
 import Point from "openfl/geom/Point";
 import ArgumentError from "openfl/errors/ArgumentError";
-
 import RangeError from "openfl/errors/RangeError";
 import IndexData from "./../../starling/rendering/IndexData";
 import Pool from "./../../starling/utils/Pool";
 import MathUtil from "./../../starling/utils/MathUtil";
 import Vector from "openfl/Vector";
+import VertexData from "./../rendering/VertexData";
 
 declare namespace starling.geom
 {
@@ -23,7 +23,7 @@ declare namespace starling.geom
 		 * @param vertices an array that contains either 'Point' instances or
 		 *                 alternating 'x' and 'y' coordinates.
 		 */
-		public constructor(vertices:Array<any>=null);
+		public constructor(vertices?:Array<any>);
 	
 		/** Creates a clone of this polygon. */
 		public clone():Polygon;
@@ -54,7 +54,7 @@ declare namespace starling.geom
 		 *
 		 *  <p>If you pass an indexData object, the new indices will be appended to it.
 		 *  Otherwise, a new instance will be created.</p> */
-		public triangulate(indexData:IndexData=null, offset?:number):IndexData;
+		public triangulate(indexData?:IndexData, offset?:number):IndexData;
 	
 		/** Copies all vertices to a 'VertexData' instance, beginning at a certain target index. */
 		public copyToVertexData(target:VertexData, targetVertexID?:number,

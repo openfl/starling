@@ -1,6 +1,8 @@
 import Effect from "./../../starling/rendering/Effect";
 import RenderUtil from "./../../starling/utils/RenderUtil";
 import Program from "./../../starling/rendering/Program";
+import VertexDataFormat from "./VertexDataFormat";
+import Texture from "./../textures/Texture";
 
 declare namespace starling.rendering
 {

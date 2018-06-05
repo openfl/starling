@@ -10,8 +10,8 @@
 
 package starling.assets;
 
-import flash.media.Sound;
-import flash.utils.ByteArray;
+import openfl.media.Sound;
+import openfl.utils.ByteArray;
 import openfl.errors.Error;
 
 /** This AssetFactory creates sound assets. */

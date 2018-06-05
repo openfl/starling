@@ -89,7 +89,7 @@ declare namespace starling.display
 		
 		/** Sorts the children according to a given (that works just like the sort function
 		 * of the Vector class). */
-		public sortChildren(compareFunction:(DisplayObject, DisplayObject)=>number):void;
+		public sortChildren(compareFunction:(a:DisplayObject, b:DisplayObject)=>number):void;
 		
 		/** Determines if a certain object is a child of the container (recursively). */
 		public contains(child:DisplayObject):boolean;

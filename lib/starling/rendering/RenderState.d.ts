@@ -6,6 +6,10 @@ import Pool from "./../../starling/utils/Pool";
 import MathUtil from "./../../starling/utils/MathUtil";
 import ArgumentError from "openfl/errors/ArgumentError";
 import Vector from "openfl/Vector";
+import Vector3D from "openfl/geom/Vector3D";
+import Texture from "./../textures/Texture";
+import TextureBase from "openfl/display3D/textures/TextureBase";
+import Rectangle from "openfl/geom/Rectangle";
 
 declare namespace starling.rendering
 {

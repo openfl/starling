@@ -8,6 +8,7 @@ import FragmentFilter from "./../filters/FragmentFilter";
 import Painter from "./../rendering/Painter";
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import Stage from "./Stage";
+import EventDispatcher from "./../events/EventDispatcher";
 
 declare namespace starling.display
 {
@@ -201,7 +202,7 @@ declare namespace starling.display
 		// stage event handling
 	
 		/** @protected */
-		public /*override*/ dispatchEvent(event:Event):void;
+		// public /*override*/ dispatchEvent(event:Event):void;
 		
 		// enter frame event optimization
 		

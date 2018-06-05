@@ -10,7 +10,7 @@
 
 package starling.utils;
 
-import flash.utils.ByteArray;
+import openfl.utils.ByteArray;
 import openfl.errors.RangeError;
 
 import starling.errors.AbstractClassError;

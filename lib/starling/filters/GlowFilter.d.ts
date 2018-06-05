@@ -2,6 +2,9 @@ import FragmentFilter from "./../../starling/filters/FragmentFilter";
 import BlurFilter from "./../../starling/filters/BlurFilter";
 import CompositeFilter from "./../../starling/filters/CompositeFilter";
 import FilterEffect from "./../rendering/FilterEffect";
+import Painter from "./../rendering/Painter";
+import IFilterHelper from "./IFilterHelper";
+import Texture from "./../textures/Texture";
 
 declare namespace starling.filters
 {

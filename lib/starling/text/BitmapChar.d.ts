@@ -1,4 +1,5 @@
 import Image from "./../../starling/display/Image";
+import Texture from "./../textures/Texture";
 
 declare namespace starling.text
 {

@@ -8,6 +8,8 @@
 //
 // =================================================================================================
 
+import ByteArray from "openfl/utils/ByteArray";
+
 declare namespace starling.utils
 {
     export class ByteArrayUtil

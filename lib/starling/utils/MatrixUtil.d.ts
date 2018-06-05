@@ -79,10 +79,10 @@ declare namespace starling.utils
 		/** Converts a Matrix3D instance to a String, which is useful when debugging. Per default,
 			*  the raw data is displayed transposed, so that the columns are displayed vertically. */
 		public static toString3D(matrix:Matrix3D, transpose?:boolean,
-											precision:Int=3):string;
+											precision?:number):string;
 	
 		/** Converts a Matrix instance to a String, which is useful when debugging. */
-		public static toString(matrix:Matrix, precision:Int=3):string;
+		public static toString(matrix:Matrix, precision?:number):string;
 	
 		/** Updates the given matrix so that it points exactly to pixel boundaries. This works
 			*  only if the object is unscaled and rotated by a multiple of 90 degrees.

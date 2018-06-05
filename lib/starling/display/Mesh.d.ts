@@ -1,11 +1,13 @@
 import Point from "openfl/geom/Point";
 import Rectangle from "openfl/geom/Rectangle";
-import IndexData from "./../geom/Polygon";
+import Polygon from "./../geom/Polygon";
 import IndexData from "./../rendering/IndexData";
 import Painter from "./../rendering/Painter";
 import VertexData from "./../rendering/VertexData";
 import MeshStyle from "./../styles/MeshStyle";
 import DisplayObject from "./DisplayObject";
+import Texture from "./../textures/Texture";
+import VertexDataFormat from "./../rendering/VertexDataFormat";
 
 declare namespace starling.display
 {
@@ -99,7 +101,7 @@ declare namespace starling.display
 		public setVertexColor(vertexID:number, color:number):void;
 	
 		/** Returns the texture coordinates of the vertex at the specified index. */
-		public getTexCoords(vertexID:number, out:Point = null):Point;
+		public getTexCoords(vertexID:number, out?:Point):Point;
 	
 		/** Sets the texture coordinates of the vertex at the specified index to the given values. */
 		public setTexCoords(vertexID:number, u:number, v:number):void;
@@ -181,9 +183,9 @@ declare namespace starling.display
 		/** The default style used for meshes if no specific style is provided. The default is
 		 *  <code>starling.rendering.MeshStyle</code>, and any assigned class must be a subclass
 		 *  of the same. */
-		public static defaultStyle:Class;
-		protected static get_defaultStyle():Class;
-		protected static set_defaultStyle(value:Class):Class;
+		public static defaultStyle:any;
+		protected static get_defaultStyle():any;
+		protected static set_defaultStyle(value:any):any;
 	
 		/** A factory method that is used to create the 'MeshStyle' for a mesh if no specific
 		 *  style is provided. That's useful if you are creating a hierarchy of objects, all
@@ -199,9 +201,9 @@ declare namespace starling.display
 		 *      return new ColorizeMeshStyle(Math.random() * 0xffffff);
 		 *  }</listing>
 		 */
-		public static defaultStyleFactory:?(Mesh)=>MeshStyle;
-		protected static get_defaultStyleFactory():?(Mesh)=>MeshStyle;
-		protected static set_defaultStyleFactory(value:?(Mesh)=>MeshStyle):?(Mesh)=>MeshStyle;
+		public static defaultStyleFactory:(mesh:Mesh)=>MeshStyle;
+		protected static get_defaultStyleFactory():(mesh:Mesh)=>MeshStyle;
+		protected static set_defaultStyleFactory(value:(mesh:Mesh)=>MeshStyle):(mesh:Mesh)=>MeshStyle;
 	
 		// static methods
 	

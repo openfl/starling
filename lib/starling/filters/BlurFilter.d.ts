@@ -3,6 +3,8 @@ import BlurEffect from "./../../starling/filters/BlurEffect";
 import Starling from "./../../starling/core/Starling";
 import Texture from "./../textures/Texture";
 import FilterEffect from "./../rendering/FilterEffect";
+import Painter from "./../rendering/Painter";
+import IFilterHelper from "./IFilterHelper";
 
 declare namespace starling.filters
 {

@@ -12,9 +12,6 @@ declare namespace starling.animation
 	 *   @see Juggler
 	 *   @see Tween
 	 */
-
-	@:jsRequire("starling/animation/IAnimatable", "default")
-
 	export class IAnimatable
 	{
 		/** Advance the time by a number of seconds. @param time in seconds. */

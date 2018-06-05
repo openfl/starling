@@ -2,6 +2,7 @@
 import Rectangle from "openfl/geom/Rectangle";
 import Vector from "openfl/Vector";
 import SubTexture from "./../../starling/textures/SubTexture";
+import Texture from "./../textures/Texture";
 
 declare namespace starling.textures
 {

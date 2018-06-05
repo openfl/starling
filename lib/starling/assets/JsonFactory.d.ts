@@ -8,6 +8,8 @@
 //
 // =================================================================================================
 
+import AssetFactory from "./AssetFactory";
+
 declare namespace starling.assets
 {
 	/** This AssetFactory creates objects from JSON data. */

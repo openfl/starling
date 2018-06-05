@@ -4,6 +4,9 @@ import Rectangle from "openfl/geom/Rectangle";
 import IllegalOperationError from "openfl/errors/IllegalOperationError";
 import Texture from "./../../starling/textures/Texture";
 import Image from "./../../starling/display/Image";
+import DisplayObject from "./../display/DisplayObject";
+import Vector3D from "openfl/geom/Vector3D";
+import Matrix from "openfl/geom/Matrix";
 
 declare namespace starling.textures
 {

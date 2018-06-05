@@ -2,10 +2,12 @@ import Starling from "./../../starling/core/Starling";
 import Error from "openfl/errors/Error";
 import MissingContextError from "./../../starling/errors/MissingContextError";
 import Program from "./../../starling/rendering/Program";
-import StringTools from "./../../StringTools";
 import VertexDataFormat from "./../../starling/rendering/VertexDataFormat";
 import Matrix3D from "openfl/geom/Matrix3D";
-
+import IndexData from "./IndexData";
+import VertexData from "./VertexData";
+import IndexBuffer3D from "openfl/display3D/IndexBuffer3D";
+import VertexBuffer3D from "openfl/display3D/VertexBuffer3D";
 
 declare namespace starling.rendering
 {
@@ -162,9 +164,9 @@ declare namespace starling.rendering
 		/** The that you provide here will be called after a context loss.
 		 *  Call both "upload..." methods from within the callback to restore any vertex or
 		 *  index buffers. The callback will be executed with the effect as its sole parameter. */
-		public onRestore:(Effect)=>Void;
-		protected get_onRestore():(Effect)=>Void;
-		protected set_onRestore(value:(Effect)=>Void):(Effect)=>Void;
+		public onRestore:(Effect)=>void;
+		protected get_onRestore():(Effect)=>void;
+		protected set_onRestore(value:(Effect)=>void):(Effect)=>void;
 	
 		/** The data format that this effect requires from the VertexData that it renders:
 		 *  <code>"position:number2"</code> */

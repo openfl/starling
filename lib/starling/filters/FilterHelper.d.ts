@@ -7,10 +7,12 @@ import Starling from "./../../starling/core/Starling";
 import Rectangle from "openfl/geom/Rectangle";
 import Vector from "openfl/Vector";
 import Matrix3D from "openfl/geom/Matrix3D";
+import DisplayObject from "./../DisplayObject";
 
 declare namespace starling.filters
 {
-	export class FilterHelper implements IFilterHelper {
+	export class FilterHelper implements IFilterHelper
+	{
 		clipRect:Rectangle;
 		projectionMatrix3D:Matrix3D;
 		renderTarget:Texture;
@@ -18,7 +20,7 @@ declare namespace starling.filters
 		targetBounds:Rectangle;
 		textureFormat:string;
 		textureScale:number;
-		constructor(textureFormat?:String):void;
+		constructor(textureFormat?:string);
 		dispose():void;
 		getTexture(resolution?:number):Texture;
 		purge():void;

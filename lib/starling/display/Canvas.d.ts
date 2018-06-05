@@ -1,6 +1,7 @@
 import DisplayObject from "./DisplayObject";
 import DisplayObjectContainer from "./DisplayObjectContainer";
 import Polygon from "./../geom/Polygon";
+import Point from "openfl/geom/Point";
 
 declare namespace starling.display
 {

@@ -17,10 +17,10 @@ declare namespace starling.animation
 	export class DelayedCall extends EventDispatcher implements IAnimatable
 	{
 		/** Creates a delayed call. */
-		public constructor(callback:Function, delay:number, args:Array<any>=null)
+		public constructor(callback:Function, delay:number, args?:Array<any>)
 		
 		/** Resets the delayed call to its default values, which is useful for pooling. */
-		public reset(callback:Function, delay:number, args:Array<any>=null):DelayedCall
+		public reset(callback:Function, delay:number, args?:Array<any>):DelayedCall
 		
 		/** @inheritDoc */
 		public advanceTime(time:number):void
@@ -44,7 +44,7 @@ declare namespace starling.animation
 		/** The number of times the call will be repeated. 
 		 * Set to '0' to repeat indefinitely. @default 1 */
 		public repeatCount:number;
-		protected get_repeatCount():number { return __repeatCount; }
+		protected get_repeatCount():number;
 		protected set_repeatCount(value:number):number;
 		
 		/** The callback that will be executed when the time is up. */

@@ -6,6 +6,10 @@ import Matrix3D from "openfl/geom/Matrix3D";
 import Pool from "./../../starling/utils/Pool";
 import MathUtil from "./../../starling/utils/MathUtil";
 import Rectangle from "openfl/geom/Rectangle";
+import VertexData from "./../rendering/VertexData";
+import IndexData from "./../rendering/IndexData";
+import Point from "openfl/geom/Point";
+import DisplayObject from "./../display/DisplayObject";
 
 declare namespace starling.utils
 {

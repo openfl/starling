@@ -34,7 +34,7 @@ declare namespace starling.utils
 		public static putPoint3D(point:Vector3D):void;
 	
 		/** Retrieves a Matrix instance from the pool. */
-		public static getMatrix(a:number = 1, b?:number, c?:number, d:number = 1,
+		public static getMatrix(a?:number, b?:number, c?:number, d?:number,
 										 tx?:number, ty?:number):Matrix;
 	
 		/** Stores a Matrix instance in the pool.
@@ -46,7 +46,7 @@ declare namespace starling.utils
 		 *  @param identity   If enabled, the matrix will be reset to the identity.
 		 *                    Otherwise, its contents is undefined.
 		 */
-		public static getMatrix3D(identity:boolean = true):Matrix3D;
+		public static getMatrix3D(identity?:boolean):Matrix3D;
 	
 		/** Stores a Matrix3D instance in the pool.
 		 *  Don't keep any references to the object after moving it to the pool! */

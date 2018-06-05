@@ -1,6 +1,7 @@
 import FilterEffect from "./../../starling/rendering/FilterEffect";
 import Program from "./../../starling/rendering/Program";
 import Vector from "openfl/Vector";
+import VertexDataFormat from "./VertexDataFormat";
 
 declare namespace starling.rendering
 {

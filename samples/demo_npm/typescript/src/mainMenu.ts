@@ -67,7 +67,7 @@ class MainMenu extends Sprite
             button.readjustSize();
             button.x = count % 2 == 0 ? 28 : 167;
             button.y = /* 145 */ 155 + Math.floor(count / 2) * 46;
-            button.name = this.sceneClasses.length;
+            button.name = String(this.sceneClasses.length);
             this.sceneClasses.push(sceneClass);
             this.addChild(button);
             
