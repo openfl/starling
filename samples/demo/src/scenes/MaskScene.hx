@@ -39,7 +39,7 @@ import starling.text.TextField;
         // just to prove it works, use a filter on the image.
         var cm:ColorMatrixFilter = new ColorMatrixFilter();
         cm.adjustHue(-0.5);
-        // image.filter = cm;
+        image.filter = cm;
         
         var maskText:TextField = new TextField(256, 128,
             "Move the mouse (or a finger) over the screen to move the mask.");
