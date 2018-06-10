@@ -204,7 +204,10 @@ import starling.utils.SystemUtil;
  *  @see starling.utils.AssetManager
  *  @see starling.textures.Texture
  *
- */ 
+ */
+
+@:access(starling.display.Stage)
+
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
