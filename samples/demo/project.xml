@@ -27,6 +27,4 @@
 		
 	</section>
 	
-	<define name="AIR_SDK" value="${AIR_SDK}"></define>
-	
 </project>
