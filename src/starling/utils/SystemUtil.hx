@@ -23,7 +23,6 @@ import openfl.Lib;
 
 #if lime
 import lime.app.Application;
-import lime.app.Config.WindowConfig;
 #end
 
 /** A utility class with methods related to the current platform and runtime. */
@@ -90,8 +89,11 @@ class SystemUtil
 
             sSupportsDepthAndStencil = (ds == "true");
             #elseif flash
+            #elseif (lime >= "7.0.0")
+            var attributes = Application.current.window.context.attributes;
+            sSupportsDepthAndStencil = (attributes.depth && attributes.stencil);
             #elseif lime
-            var windowConfig:WindowConfig = Application.current.window.config;
+            var windowConfig = Application.current.window.config;
             sSupportsDepthAndStencil = windowConfig.depthBuffer && windowConfig.stencilBuffer;
             #else
             sSupportsDepthAndStencil = true;
