@@ -69,6 +69,7 @@ class Stage extends DisplayObjectContainer
     private static var sHelperMatrix:Matrix3D = new Matrix3D();
 
     /** @private */
+	@:allow(starling.core.Starling)
     private function new(width:Int, height:Int, color:UInt=0)
     {
         super();
