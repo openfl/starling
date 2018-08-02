@@ -1,10 +1,10 @@
 // =================================================================================================
 //
-//	Starling Framework
-//	Copyright Gamua GmbH. All Rights Reserved.
+//    Starling Framework
+//    Copyright Gamua GmbH. All Rights Reserved.
 //
-//	This program is free software. You can redistribute and/or modify it
-//	in accordance with the terms of the accompanying license agreement.
+//    This program is free software. You can redistribute and/or modify it
+//    in accordance with the terms of the accompanying license agreement.
 //
 // =================================================================================================
 
@@ -215,11 +215,13 @@ class Starling extends EventDispatcher
     private var mStatsDisplay:StatsDisplay;
     private var mShareContext:Bool;
     private var mProfile:Context3DProfile;
+    private var mProfileType:Dynamic;
     private var mContext:Context3D;
     private var mStarted:Bool;
     private var mRendering:Bool;
     private var mSupportHighResolutions:Bool;
     private var mBroadcastKeyboardEvents:Bool;
+    private var mRenderMode:Context3DRenderMode;
     
     private var mViewPort:Rectangle;
     private var mPreviousViewPort:Rectangle;
@@ -292,6 +294,8 @@ class Starling extends EventDispatcher
         mBroadcastKeyboardEvents = true;
         mLastFrameTimestamp = Lib.getTimer() / 1000.0;
         mSupport  = new RenderSupport();
+        mRenderMode = renderMode;
+        mProfileType = profile;
         
         // for context data, we actually reference by stage3D, since it survives a context loss
         sContextData[stage3D] = new Map<String, Dynamic>();
@@ -315,18 +319,24 @@ class Starling extends EventDispatcher
         mStage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
         mStage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 10, true);
         
+        attemptInitialize();
+    }
+    
+    function attemptInitialize() 
+    {
+        
         if (mStage3D.context3D != null && mStage3D.context3D.driverInfo != "Disposed")
         {
             #if flash
-            if (profile == "auto" || Std.is(profile, Array))
-                throw new ArgumentError("When sharing the context3D, " +
-                    "the actual profile has to be supplied");
-            else
-                mProfile = cast(profile, Context3DProfile);
-            mShareContext = true;
+                if (mProfileType == "auto" || Std.is(mProfileType, Array))
+                    throw new ArgumentError("When sharing the context3D, " +
+                        "the actual profile has to be supplied");
+                else
+                    mProfile = cast(mProfileType, Context3DProfile);
+                mShareContext = true;
             #else
-            mProfile = mStage3D.context3D.profile;
-            //mShareContext = true;
+                mProfile = mStage3D.context3D.profile;
+                //mShareContext = true;
             #end
             if (stage3D.context3D != null) Timer.delay(initialize, 1);
         }
@@ -337,7 +347,7 @@ class Starling extends EventDispatcher
                       " in the application descriptor.");
 
             mShareContext = false;
-            requestContext3D(stage3D, renderMode, profile);
+            requestContext3D(stage3D, mRenderMode, mProfileType);
         }
     }
     
@@ -445,6 +455,11 @@ class Starling extends EventDispatcher
     
     private function initialize():Void
     {
+        if (mStage3D.context3D == null || mStage3D.context3D.driverInfo == "Disposed"){
+            attemptInitialize();
+            return;
+        }
+        
         makeCurrent();
         
         initializeGraphicsAPI();
@@ -847,7 +862,7 @@ class Starling extends EventDispatcher
         
         if (!multitouchEnabled || Mouse.supportsCursor)
         {
-			types.push(MouseEvent.MOUSE_DOWN);
+            types.push(MouseEvent.MOUSE_DOWN);
             types.push(MouseEvent.MOUSE_MOVE);
             types.push(MouseEvent.MOUSE_UP);
         }
