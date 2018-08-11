@@ -878,7 +878,10 @@ class AssetManager extends EventDispatcher
                     });
                 };
 
-                asset.bitmapData.dispose();
+                if (asset != null && asset.bitmapData != null)
+                {
+                    asset.bitmapData.dispose();
+                }
                 addTexture(name, texture);
                 onComplete();
             }
