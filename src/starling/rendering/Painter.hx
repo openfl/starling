@@ -26,6 +26,7 @@ import openfl.utils.Dictionary;
 import openfl.utils.Object;
 import openfl.Vector;
 
+import starling.core.Starling;
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
 import starling.display.Mesh;
@@ -163,10 +164,15 @@ class Painter
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-		
-		if (sharedContext != null) _shareContext = sharedContext;
-		else _shareContext = #if !flash false #else _context != null && _context.driverInfo != "Disposed" #end;
-		
+        
+        if (sharedContext != null) _shareContext = sharedContext;
+        else _shareContext = _context != null && _context.driverInfo != "Disposed";
+        
+        #if !flash
+        if (!Reflect.hasField (@:privateAccess Starling.current.__nativeStage, "context3D") || Reflect.field (@:privateAccess Starling.current.__nativeStage, "context3D") == _context)
+            _shareContext = false; // starling.mustAlwaysRender will also be forced to true
+        #end
+        
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
