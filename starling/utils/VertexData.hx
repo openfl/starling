@@ -560,6 +560,7 @@ class VertexData
         #else
         if (value == 0) {
             mRawData = null;
+			mNumVertices = 0;
             return 0;
         }
         __resizeRawData(value);

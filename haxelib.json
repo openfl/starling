@@ -4,10 +4,10 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "1.8.12",
-	"releasenote": "tweak to multitouchEnabled and AssetManager fix",
+	"version": "1.8.15",
+	"releasenote": "Logic to deal with unavailable Context3D at startup",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {
-		
+
 	}
 }
