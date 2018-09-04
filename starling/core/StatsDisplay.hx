@@ -43,7 +43,7 @@ class StatsDisplay extends Sprite
     {
         super();
         mBackground = new Quad(70, 45, 0x0);
-        mTextField = new TextField(68, 45, "", "_sans", 12, 0xffffff);
+        mTextField = new TextField(68, 45, "", "_sans", 10, 0xffffff);
         mTextField.x = 2;
         mTextField.hAlign = HAlign.LEFT;
         mTextField.vAlign = VAlign.TOP;
@@ -88,8 +88,8 @@ class StatsDisplay extends Sprite
         mFps = mTotalTime > 0 ? mFrameCount / mTotalTime : 0;
         mMemory = System.totalMemory * 0.000000954; // 1.0 / (1024*1024) to convert to MB
         
-        mTextField.text = "FPS: " + (mFps < 100 ? (Math.round(mFps * 10) / 10) : mFps) + 
-                        "\nMEM: " + (mMemory < 100 ? (Math.round(mMemory * 10) / 10) : mMemory) +
+        mTextField.text = "FPS: " + (Math.round(mFps * 10) / 10) + 
+                        "\nMEM: " + (Math.round(mMemory * 10) / 10) +
                         "\nDRW: " + (mTotalTime > 0 ? mDrawCount-2 : mDrawCount); // ignore self 
     }
     
