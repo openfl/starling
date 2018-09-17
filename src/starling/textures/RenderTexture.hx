@@ -155,15 +155,11 @@ class RenderTexture extends SubTexture
     /** @inheritDoc */
     public override function dispose():Void
     {
-        _activeTexture.dispose();
+        if (_helperImage != null) _helperImage.dispose();
+        if ((parent != _bufferTexture) && (_bufferTexture != null)) _bufferTexture.dispose();
+        if (parent != _activeTexture) _activeTexture.dispose();
         
-        if (isDoubleBuffered)
-        {
-            _bufferTexture.dispose();
-            _helperImage.dispose();
-        }
-        
-        super.dispose();
+        super.dispose(); // will take care of parent (either _bufferTexture or _activeTexture)
     }
     
     /** Draws an object into the texture.
