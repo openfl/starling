@@ -19,7 +19,10 @@ import flash.Lib;
 import haxe.Constraints.Function;
 
 import lime.app.Application;
+
+#if (lime < "7.0.0")
 import lime.app.Config.WindowConfig;
+#end
 
 import openfl.errors.Error;
 
@@ -58,11 +61,19 @@ class SystemUtil
 
             sSupportsDepthAndStencil = (ds == "true");
             #elseif flash
+            #elseif (lime >= "7.0.0")
+            var attributes = Application.current.window.context.attributes;
+            sSupportsDepthAndStencil = (attributes.depth && attributes.stencil);
+            #elseif lime
+            var windowConfig = Application.current.window.config;
+            sSupportsDepthAndStencil = windowConfig.depthBuffer && windowConfig.stencilBuffer;
             #else
-            var windowConfig:WindowConfig = Application.current.window.config;
-            sSupportsDepthAndStencil = windowConfig.depthBuffer || windowConfig.stencilBuffer;
+            sSupportsDepthAndStencil = true;
             #end
+            
+            #if air
             sAIR = true;
+            #end
         }
         catch (e:Error)
         {
