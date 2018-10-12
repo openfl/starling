@@ -20,9 +20,9 @@ class Execute
     {
         if (func != null)
         {
-			if (args == null) args = [];
-			
-            #if (flash || js)
+            if (args == null) args = [];
+            
+            #if flash
             var maxNumArgs:Int = untyped func.length;
             #elseif neko
             var maxNumArgs:Int = untyped ($nargs)(func);
@@ -48,7 +48,7 @@ class Execute
                 case 5:  func(args[0], args[1], args[2], args[3], args[4]);
                 case 6:  func(args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:  func(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-				case -1: Reflect.callMethod(func, func, args);
+                case -1: Reflect.callMethod(func, func, args);
                 default: Reflect.callMethod(func, func, args.slice(0, maxNumArgs));
             }
         }

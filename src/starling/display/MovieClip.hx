@@ -502,7 +502,7 @@ private class MovieClipFrame
     {
         if (action != null)
         {
-            #if (flash || js)
+            #if flash
             var numArgs:Int = untyped action.length;
             #elseif neko
             var numArgs:Int = untyped ($nargs)(action);

@@ -168,16 +168,7 @@ class Mesh extends DisplayObject
 
         if (sDefaultStyleFactory != null)
         {
-            #if (flash || js)
-            var numArgs:Int = untyped sDefaultStyleFactory.length;
-            #elseif neko
-            var numArgs:Int = untyped ($nargs)(sDefaultStyleFactory);
-            #elseif cpp
-            var numArgs:Int = untyped sDefaultStyleFactory.__ArgCount();
-            #else
-            var numArgs:Int = 1;
-            #end
-            if (numArgs == 0) meshStyle = sDefaultStyleFactory();
+            if (instance == null) meshStyle = sDefaultStyleFactory();
             else meshStyle = sDefaultStyleFactory(instance);
         }
 
