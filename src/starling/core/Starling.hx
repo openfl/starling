@@ -624,10 +624,7 @@ class Starling extends EventDispatcher
     public function stop(suspendRendering:Bool=false):Void
     { 
         __started = false;
-        // TODO: Enable this code when Stage3D in OpenFL does not require rendering
-        #if flash
         __rendering = !suspendRendering;
-        #end
     }
 
     /** Makes sure that the next frame is actually rendered.
