@@ -437,6 +437,7 @@ class BitmapFont implements ITextCompositor
                             currentX += char.getKerning(lastCharID);
                         
                         charLocation = BitmapCharLocation.instanceFromPool(char);
+                        charLocation.index = i;
                         charLocation.x = currentX + char.xOffset;
                         charLocation.y = currentY + char.yOffset;
                         currentLine[currentLine.length] = charLocation; // push
