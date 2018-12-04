@@ -61,7 +61,7 @@ class EventDispatcher
         if (__eventListeners == null)
             __eventListeners = new Map<String, Vector<Function>>();
         
-        var listeners:Vector<Dynamic> = __eventListeners[type];
+        var listeners:Vector<Function> = __eventListeners[type];
         if (listeners == null)
         {
             __eventListeners[type] = new Vector<Function>();
