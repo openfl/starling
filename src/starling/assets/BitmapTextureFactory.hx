@@ -101,7 +101,7 @@ class BitmapTextureFactory extends AssetFactory
             }
         }
         
-        if (Std.is(data, Bitmap))
+        if (Std.is(data, Bitmap) && cast(data, Bitmap).bitmapData != null)
         {
             onBitmapDataCreated(cast(data, Bitmap).bitmapData);
         }

@@ -5,7 +5,7 @@
 	<app main="Demo" file="Demo" path="bin" swf-version="19" />
 	
 	<window width="320" height="480" orientation="portrait" background="0xffffff" />
-	<window resizable="false" unless="mobile" />
+	<window resizable="false" unless="mobile || console" />
 	<window depth-buffer="true" stencil-buffer="true" />
 	
 	<source path="src" />
