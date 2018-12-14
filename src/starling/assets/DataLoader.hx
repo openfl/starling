@@ -69,7 +69,7 @@ class DataLoader
     public function load(url:String, onComplete:?ByteArray->?String->?String->?String->Void,
                          onError:String->Void, onProgress:Float->Void=null):Void
     {
-        var loader:URLLoader;
+        var loader:URLLoader = null;
         var message:String;
         var mimeType:String = null;
         var httpStatus:Int = 0;

@@ -220,9 +220,9 @@ class BlurEffect extends FilterEffect
     private var _direction:String;
     private var _quality:Float;
 
-    private static var sTmpWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
-    private static var sWeights:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
-    private static var sOffsets:Vector<Float> = Vector.ofArray([0, 0, 0, 0.]);
+    private static var sTmpWeights:Vector<Float> = new Vector<Float>([0, 0, 0, 0.]);
+    private static var sWeights:Vector<Float> = new Vector<Float>([0, 0, 0, 0.]);
+    private static var sOffsets:Vector<Float> = new Vector<Float>([0, 0, 0, 0.]);
 
     #if commonjs
     private static function __init__ () {

@@ -45,7 +45,7 @@ class BitmapTextureFactory extends AssetFactory
     override public function create(reference:AssetReference, helper:AssetFactoryHelper,
                                     onComplete:String->Dynamic->Void, onError:String->Void):Void
     {
-        var texture:Texture;
+        var texture:Texture = null;
         var url:String = reference.url;
         var data:Dynamic = reference.data;
         
@@ -128,7 +128,7 @@ class BitmapTextureFactory extends AssetFactory
                                                    onComplete:BitmapData->Void, onError:String->Void):Void
     {
         var loader:Loader;
-        var loaderInfo:LoaderInfo;
+        var loaderInfo:LoaderInfo = null;
         
         var onIoError:IOErrorEvent->Void = null;
         var onLoaderComplete:Dynamic->Void = null;

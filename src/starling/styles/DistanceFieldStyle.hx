@@ -587,7 +587,7 @@ class DistanceFieldEffect extends MeshEffect
 
             /// *** VERTEX SHADER ***
 
-            var vertexShader:Vector<String> = Vector.ofArray([
+            var vertexShader:Vector<String> = new Vector<String>([
                 "m44 op, va0, vc0",       // 4x4 matrix transform to output clip-space
                 "mov v0, va1",            // pass texture coordinates to fragment program
                 "mul vt4, va3.yyyy, vc4", // multiply inner alpha (va3.y) with state alpha (vc4)
@@ -636,7 +636,7 @@ class DistanceFieldEffect extends MeshEffect
 
             /// *** FRAGMENT SHADER ***
 
-            var fragmentShader:Vector<String> = Vector.ofArray([
+            var fragmentShader:Vector<String> = new Vector<String>([
                 // create basic inner area
                 FilterEffect.tex("ft0", "v0", 0, texture),     // ft0 = texture color
                 _multiChannel ? median("ft0") : "mov ft0, ft0.xxxx",
@@ -690,7 +690,7 @@ class DistanceFieldEffect extends MeshEffect
     private static function step(inOutReg:String, minReg:String, maxReg:String,
                                 tmpReg:String="ft6"):String
     {
-        var ops:Vector<String> = Vector.ofArray([
+        var ops:Vector<String> = new Vector<String>([
             StringUtil.format("sub {0}, {1}, {2}", [tmpReg, maxReg, minReg]), // tmpReg = range
             StringUtil.format("rcp {0}, {0}", [tmpReg]),                      // tmpReg = scale
             StringUtil.format("sub {0}, {0}, {1}", [inOutReg, minReg]),       // inOut -= minimum

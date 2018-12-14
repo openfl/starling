@@ -25,7 +25,7 @@ class RectangleUtil
     private static var sPoint:Point = new Point();
     private static var sPoint3D:Vector3D = new Vector3D();
     private static var sPositions:Vector<Point> =
-        Vector.ofArray([new Point(), new Point(), new Point(), new Point()]);
+        new Vector<Point>([new Point(), new Point(), new Point(), new Point()]);
     
     /** Calculates the intersection between two Rectangles. If the rectangles do not intersect,
      *  this method returns an empty Rectangle object with its properties set to 0. */

@@ -73,11 +73,11 @@ class RenderState
     /** @private */ @:allow(starling) private var _blendMode:String;
     /** @private */ @:allow(starling) private var _modelviewMatrix:Matrix;
 
-    private static var CULLING_VALUES:Vector<Context3DTriangleFace> = Vector.ofArray(
+    private static var CULLING_VALUES:Vector<Context3DTriangleFace> = new Vector<Context3DTriangleFace>(
         [Context3DTriangleFace.NONE, Context3DTriangleFace.FRONT,
          Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK]);
 
-   private static var COMPARE_VALUES:Vector<Context3DCompareMode> = Vector.ofArray(
+   private static var COMPARE_VALUES:Vector<Context3DCompareMode> = new Vector<Context3DCompareMode>(
         [Context3DCompareMode.ALWAYS,  Context3DCompareMode.NEVER,
             Context3DCompareMode.LESS,    Context3DCompareMode.LESS_EQUAL,
             Context3DCompareMode.EQUAL,   Context3DCompareMode.GREATER_EQUAL,

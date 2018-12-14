@@ -21,11 +21,11 @@ import openfl.Vector;
 class MatrixUtil
 {
     /** Helper object. */
-    private static var sRawData:Vector<Float> = Vector.ofArray(
+    private static var sRawData:Vector<Float> = new Vector<Float>(
         [1.0, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]);
     private static var sRawData2:Vector<Float> = new Vector<Float>(16, true);
     private static var sPoint3D:Vector3D = new Vector3D();
-    private static var sMatrixData:Vector<Float> = Vector.ofArray(
+    private static var sMatrixData:Vector<Float> = new Vector<Float>(
         [0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     /** Converts a 2D matrix to a 3D matrix. If you pass an <code>out</code>-matrix,

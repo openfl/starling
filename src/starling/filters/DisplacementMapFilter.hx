@@ -259,11 +259,11 @@ class DisplacementMapEffect extends FilterEffect
     private var _scaleY:Float;
 
     // helper objects
-    private static var sOffset:Vector<Float>  = Vector.ofArray([0.5, 0.5, 0.0, 0.0]);
-    private static var sClampUV:Vector<Float> = Vector.ofArray([0.0, 0.0, 0.0, 0.0]);
+    private static var sOffset:Vector<Float>  = new Vector<Float>([0.5, 0.5, 0.0, 0.0]);
+    private static var sClampUV:Vector<Float> = new Vector<Float>([0.0, 0.0, 0.0, 0.0]);
     private static var sMatrix:Matrix3D = new Matrix3D();
     private static var sMatrixData:Vector<Float> =
-        Vector.ofArray([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
+        new Vector<Float>([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0.]);
 
     #if commonjs
     private static function __init__ () {
