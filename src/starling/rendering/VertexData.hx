@@ -1014,8 +1014,8 @@ class VertexData
     {
         if (value > _numVertices)
         {
-            var oldLength:Int = _numVertices * vertexSize;
-            var newLength:Int = value * _vertexSize;
+            var oldLength:UInt = _numVertices * vertexSize;
+            var newLength:UInt = value * _vertexSize;
 
             if (_rawData.length > oldLength)
             {
