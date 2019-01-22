@@ -4,8 +4,8 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "2.4.2",
-	"releasenote": "Minor runtime and OpenFL fixes",
+	"version": "2.4.3",
+	"releasenote": "Minor fixes",
 	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
 	"dependencies": {},
 	"classPath": "src"
