@@ -253,10 +253,12 @@ class Juggler implements IAnimatable
         while (i >= 0)
         {
             object = __objects[i];
-            dispatcher = Std.is(object, EventDispatcher) ? cast object : null;
-            if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            __objects[i] = null;
-            __objectIDs.remove(object);
+            if (object != null) {
+                dispatcher = Std.is(object, EventDispatcher) ? cast object : null;
+                if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+                __objects[i] = null;
+                __objectIDs.remove(object);
+            }
             --i;
         }
     }
