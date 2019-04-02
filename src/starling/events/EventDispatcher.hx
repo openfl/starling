@@ -185,7 +185,10 @@ class EventDispatcher
                 else listener(event, event.data);
                 
                 if (event.stopsImmediatePropagation)
+                {
+                    __eventStack.pop();
                     return true;
+                }
             }
 
             __eventStack.pop();

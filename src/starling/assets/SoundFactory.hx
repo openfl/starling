@@ -14,9 +14,14 @@ import openfl.media.Sound;
 import openfl.errors.Error;
 import openfl.utils.ByteArray;
 
+import starling.utils.ByteArrayUtil;
+
 /** This AssetFactory creates sound assets. */
 class SoundFactory extends AssetFactory
 {
+    private static var MAGIC_NUMBERS_A:Array<Int> = [0xFF, 0xFB];
+    private static var MAGIC_NUMBERS_B:Array<Int> = [0x49, 0x44, 0x33];
+
     /** Creates a new instance. */
     public function new()
     {
@@ -28,7 +33,15 @@ class SoundFactory extends AssetFactory
     /** @inheritDoc */
     override public function canHandle(reference:AssetReference):Bool
     {
-        return Std.is(reference.data, Sound) || super.canHandle(reference);
+        if (Std.is(reference.data, Sound) || super.canHandle(reference))
+            return true;
+        else if (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
+        {
+            var byteData:ByteArray = cast reference.data;
+            return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_A) ||
+                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_B);
+        }
+        else return false;
     }
 
     /** @inheritDoc */

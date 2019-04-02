@@ -111,11 +111,13 @@ import starling.utils.Execute;
  *  var appDir:File = File.applicationDirectory;
  *  
  *  var redAssets:AssetManager = new AssetManager();
- *  manager.enqueueSingle(appDir.resolvePath("textures/red/", "redAssets");
+ *  redAssets.enqueueSingle(appDir.resolvePath("textures/red/", "redAssets"));
  *  
  *  var greenAssets:AssetManager = new AssetManager();
- *  manager.enqueueSingle(appDir.resolvePath("textures/green/", "greenAssets");
+ *  greenAssets.enqueueSingle(appDir.resolvePath("textures/green/", "greenAssets"));
  *  
+ *  manager.enqueueSingle(redAssets, "redAssets");
+ *  manager.enqueueSingle(greenAssets, "greenAssets");
  *  manager.loadQueue(...); // loads both "red" and "green" assets
  *  
  *  // ... later, remove all "red" assets together
@@ -156,7 +158,7 @@ class AssetManager extends EventDispatcher
     private var _numLostTextures:Int;
 
     // Regex for name / extension extraction from URLs.
-    private static var NAME_REGEX:EReg = ~/([^?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
+    private static var NAME_REGEX:EReg = ~/(([^?\/\\]+?)(?:\.([\w\-]+))?)(?:\?.*)?$/;
 
     // fallback for unnamed assets
     private static var NO_NAME:String = "unnamed";
@@ -329,7 +331,9 @@ class AssetManager extends EventDispatcher
         var assetReference:AssetReference = new AssetReference(asset);
         
         if (name != null)
+        {
             assetReference.name = name;
+        }
         else
         {
             var nameFromUrl:String = getNameFromUrl(assetReference.url);
@@ -346,8 +350,11 @@ class AssetManager extends EventDispatcher
         else
             assetReference.textureOptions = _textureOptions;
         
+        var logName:String = getFilenameFromUrl(assetReference.url);
+        if (logName == null) logName = assetReference.name;
+        
         _queue.push(assetReference);
-        log("Enqueuing '" + assetReference.filename + "'");
+        log("Enqueuing '" + logName + "'");
         return assetReference.name;
     }
 
@@ -362,15 +369,16 @@ class AssetManager extends EventDispatcher
     /** Loads all enqueued assets asynchronously. The 'onComplete' callback will be executed
      *  once all assets have been loaded - even when there have been errors, which are
      *  forwarded to the optional 'onError' callback. The 'onProgress' function will be called
-     *  with a 'ratio' between '0.0' and '1.0' and is also optional.
+     *  with a 'ratio' between '0.0' and '1.0' and is also optional. Furthermore, all
+     *  parameters of all the callbacks are optional.
      *
      *  <p>When you call this method, the manager will save a reference to "Starling.current";
      *  all textures that are loaded will be accessible only from within this instance. Thus,
      *  if you are working with more than one Starling instance, be sure to call
      *  "makeCurrent()" on the appropriate instance before processing the queue.</p>
      *
-     *  @param onComplete   <code>function(manager:AssetManager):void;</code> - parameter is optional!
-     *  @param onError      <code>function(error:String):void;</code>
+     *  @param onComplete   <code>function(manager:AssetManager):void;</code>
+     *  @param onError      <code>function(error:String, asset:AssetReference):void;</code>
      *  @param onProgress   <code>function(ratio:Number):void;</code>
      */
     public function loadQueue(onComplete:Void->Void,
@@ -387,8 +395,8 @@ class AssetManager extends EventDispatcher
         var factoryHelper:AssetFactoryHelper = null;
         
         var loadNextAsset:Void->Void = null;
-        var onAssetLoaded:?String->?Dynamic->Void = null;
-        var onAssetLoadError:String->Void = null;
+        var onAssetLoaded:?String->?Dynamic->/*?String->*/Void = null;
+        var onAssetLoadError:String->/*AssetReference->*/Void = null;
         var onAssetProgress:Float->Void = null;
         var addPostProcessor:(AssetManager->Void)->Int->Void = null;
         var runPostProcessors:Void->Void = null;
@@ -412,12 +420,14 @@ class AssetManager extends EventDispatcher
             }
         }
 
-        onAssetLoaded = function (name:String=null, asset:Dynamic=null):Void
+        onAssetLoaded = function (name:String=null, asset:Dynamic=null /*, type:String=null*/):Void
         {
+            var type = null;
+            
             if (canceled && asset != null) disposeAsset(asset);
             else
             {
-                if (name != null && asset != null) addAsset(name, asset);
+                if (name != null && asset != null) addAsset(name, asset, type);
                 numComplete++;
 
                 if (numComplete == numAssets)
@@ -429,11 +439,11 @@ class AssetManager extends EventDispatcher
             }
         }
 
-        onAssetLoadError = function (error:String):Void
+        onAssetLoadError = function (error:String /*, asset:AssetReference*/):Void
         {
             if (!canceled)
             {
-                Execute.execute(onError, [error]);
+                Execute.execute(onError, [error /*, asset*/]);
                 onAssetLoaded();
             }
         }
@@ -510,14 +520,14 @@ class AssetManager extends EventDispatcher
         helper:AssetFactoryHelper, onComplete:String->Dynamic->Void, onProgress:Float->Void,
         onError:String->Void, onIntermediateError:String->Void):Void
     {
-        var assetCount:Int = queue.length;
-        var asset:AssetReference = queue[index];
+        var referenceCount:Int = queue.length;
+        var reference:AssetReference = queue[index];
         progressRatios[index] = 0;
         
         var onLoadComplete:?ByteArray->?String->?String->?String->Void = null;
         var onLoadProgress:Float->Void = null;
         var onLoadError:String->Void = null;
-        var onCreateError:String->Void = null;
+        var onFactoryError:String->Void = null;
         var onAnyError:String->Void = null;
         var onManagerComplete:Void->Void = null;
         
@@ -528,16 +538,16 @@ class AssetManager extends EventDispatcher
 
             onLoadProgress(1.0);
 
-            if (data != null)      asset.data = data;
-            if (name != null)      asset.name = name;
-            if (extension != null) asset.extension = extension;
-            if (mimeType != null)  asset.mimeType = mimeType;
+            if (data != null)      reference.data = data;
+            if (name != null)      reference.name = name;
+            if (extension != null) reference.extension = extension;
+            if (mimeType != null)  reference.mimeType = mimeType;
 
-            var assetFactory:AssetFactory = getFactoryFor(asset);
+            var assetFactory:AssetFactory = getFactoryFor(reference);
             if (assetFactory == null)
-                Execute.execute(onAnyError, ["Warning: no suitable factory found for '" + asset.name + "'"]);
+                Execute.execute(onAnyError, ["Warning: no suitable factory found for '" + reference.name + "'"]);
             else
-                assetFactory.create(asset, helper, onComplete, onCreateError);
+                assetFactory.create(reference, helper, onComplete, onFactoryError);
         }
 
         onLoadProgress = function (ratio:Float):Void
@@ -545,9 +555,9 @@ class AssetManager extends EventDispatcher
             progressRatios[index] = ratio;
 
             var totalRatio:Float = 0;
-            var multiplier:Float = 1.0 / assetCount;
+            var multiplier:Float = 1.0 / referenceCount;
 
-            for (k in 0...assetCount)
+            for (k in 0...referenceCount)
             {
                 var r:Float = progressRatios[k];
                 if (r > 0) totalRatio += multiplier * r;
@@ -559,31 +569,31 @@ class AssetManager extends EventDispatcher
         onLoadError = function (error:String):Void
         {
             onLoadProgress(1.0);
-            Execute.execute(onAnyError, ["Error loading " + asset.name + ": " + error]);
+            Execute.execute(onAnyError, ["Error loading " + reference.name + ": " + error]);
         }
-
-        onCreateError = function (error:String):Void
-        {
-            Execute.execute(onAnyError, ["Error creating " + asset.name + ": " + error]);
-        }
-
+        
         onAnyError = function (error:String):Void
         {
             log(error);
-            Execute.execute(onError, [error]);
+            Execute.execute(onError, [error, reference]);
         }
-
+        
+        onFactoryError = function (error:String):Void
+        {
+            Execute.execute(onAnyError, ["Error creating " + reference.name + ": " + error]);
+        }
+        
         onManagerComplete = function ():Void
         {
-            Execute.execute(onComplete, [asset.name, asset.data]);
+            onComplete(reference.name, reference.data);
         }
 
-        if (asset.url != null)
-            _dataLoader.load(asset.url, onLoadComplete, onLoadError, onLoadProgress);
-        else if (Std.is(asset.data, AssetManager))
-            (cast(asset.data, AssetManager)).loadQueue(onManagerComplete, onIntermediateError, onLoadProgress);
+        if (reference.url != null)
+            _dataLoader.load(reference.url, onLoadComplete, onLoadError, onLoadProgress);
+        else if (Std.is(reference.data, AssetManager))
+            (cast(reference.data, AssetManager)).loadQueue(onManagerComplete, onIntermediateError, onLoadProgress);
         else
-            Timer.delay(function():Void { onLoadComplete(asset.data); }, 1);
+            Timer.delay(function():Void { onLoadComplete(reference.data); }, 1);
     }
 
     private function getFactoryFor(asset:AssetReference):AssetFactory
@@ -947,6 +957,16 @@ class AssetManager extends EventDispatcher
     }
 
     // helpers
+    
+    private function getFilenameFromUrl(url:String):String
+    {
+        if (url != null)
+        {
+            if (NAME_REGEX.match(StringTools.urlDecode(url)))
+                return NAME_REGEX.matched(1);
+        }
+        return null;
+    }
 
     /** This method is called internally to determine the name under which an asset will be
      *  accessible; override it if you need a custom naming scheme.
@@ -957,7 +977,7 @@ class AssetManager extends EventDispatcher
         if (url != null)
         {
             if (NAME_REGEX.match(StringTools.urlDecode(url)))
-                return NAME_REGEX.matched(1);
+                return NAME_REGEX.matched(2);
         }
         return null;
     }
@@ -973,8 +993,8 @@ class AssetManager extends EventDispatcher
         if (url != null)
         {
             if (NAME_REGEX.match(StringTools.urlDecode(url)))
-                if(NAME_REGEX.matched(2) != null)	//will this throw an exception if no extension is present?
-                    return NAME_REGEX.matched(2);
+                if (NAME_REGEX.matched(3) != null) //will this throw an exception if no extension is present?
+                    return NAME_REGEX.matched(3);
         }
         return "";
     }

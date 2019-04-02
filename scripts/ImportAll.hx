@@ -1,3 +1,4 @@
+import starling.animation.BezierEasing;
 import starling.animation.DelayedCall;
 import starling.animation.IAnimatable;
 import starling.animation.Juggler;
@@ -41,6 +42,7 @@ import starling.events.EventDispatcher;
 import starling.events.KeyboardEvent;
 import starling.events.ResizeEvent;
 import starling.events.Touch;
+import starling.events.TouchData;
 import starling.events.TouchEvent;
 import starling.events.TouchMarker;
 import starling.events.TouchPhase;

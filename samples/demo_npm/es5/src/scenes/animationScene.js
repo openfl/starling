@@ -1,4 +1,5 @@
 'use strict';
+var BezierEasing = require ("starling/animation/BezierEasing").default;
 var Transitions = require ("starling/animation/Transitions").default;
 var Tween = require ("starling/animation/Tween").default;
 var Starling = require ("starling/core/Starling").default;
@@ -23,9 +24,21 @@ var AnimationScene = function()
     this.onDelayButtonTriggered = this.onDelayButtonTriggered.bind(this);
     this.colorizeEgg = this.colorizeEgg.bind(this);
     
+    // some standard Starling transitions:
+        
     this._transitions = [Transitions.LINEAR, Transitions.EASE_IN_OUT,
-                    Transitions.EASE_OUT_BACK, Transitions.EASE_OUT_BOUNCE,
-                    Transitions.EASE_OUT_ELASTIC];
+        Transitions.EASE_OUT_BACK, Transitions.EASE_OUT_BOUNCE,
+        Transitions.EASE_OUT_ELASTIC];
+
+    // you can easily add the easing functions recommended for Material Design like this:
+    // see: https://material.io/design/motion/speed.html#easing
+    // see: http://cubic-bezier.com
+
+    Transitions.register("materialStandard",   BezierEasing.create(0.4, 0.0, 0.2, 1.0));
+    Transitions.register("materialDecelerate", BezierEasing.create(0.0, 0.0, 0.2, 1.0));
+    Transitions.register("materialAccelerate", BezierEasing.create(0.4, 0.0, 1.0, 1.0));
+
+    this._transitions.push("materialStandard", "materialDecelerate", "materialAccelerate");
     
     // create a button that starts the tween
     this._startButton = new MenuButton("Start animation");

@@ -53,10 +53,13 @@ class AtfTextureFactory extends AssetFactory
                 onComplete(reference.name, texture);
             };
             
-            texture = Texture.fromData(reference.data, reference.textureOptions);
+            var texture:Texture = null;
             var url:String = reference.url;
-            
-            if (url != null)
+
+            try { texture = Texture.fromData(reference.data, reference.textureOptions); }
+            catch (e:Dynamic) { onError(e); }
+
+            if (url != null && texture != null)
             {
                 texture.root.onRestore = function(_):Void
                 {
@@ -65,12 +68,16 @@ class AtfTextureFactory extends AssetFactory
                     {
                         helper.executeWhenContextReady(function():Void
                         {
-                            texture.root.uploadAtfData(data);
+                            try { texture.root.uploadAtfData(data); }
+                            catch (e:Dynamic) { helper.log("Texture restoration failed: " + e); }
+
                             helper.onEndRestore();
                         });
                     }, onReloadError);
                 };
             }
+        
+            reference.data = null; // prevent closures from keeping reference
         }
 
         helper.executeWhenContextReady(createTexture);

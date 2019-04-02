@@ -82,6 +82,24 @@ class ByteArrayUtil
 
         return false;
     }
+    
+    /** Figures out if a byte array starts with the given bytes.
+     *  Pass an array that contains integers in the range 0-255. */
+    public static function startsWithBytes(byteArray:ByteArray, firstBytes:Array<Int>):Bool
+    {
+        if (firstBytes.length > byteArray.length) return false;
+
+        var len = firstBytes.length;
+        #if commonjs
+         for (i in 0...len)
+            if (byteArray.get(i) != firstBytes[i]) return false;
+        #else
+        for (i in 0...len)
+            if (byteArray[i] != firstBytes[i]) return false;
+        #end
+
+        return true;
+    }
 
     /** Compares the range of bytes within two byte arrays. */
     public static function compareByteArrays(a:ByteArray, indexA:Int,

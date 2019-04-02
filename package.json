@@ -1,6 +1,6 @@
 {
   "name": "starling-framework",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "starling",
@@ -40,7 +40,7 @@
     "build-dist:prod": "webpack --config webpack.prod.js",
     "build-docs": "typedoc --out docs scripts/importAll.ts --allowJs --entryPoint starling --mode file --target es5 --module commonjs --plugins none --exclude \"**/{node_modules,samples}/**/*.ts\" --readme none --theme default --includeDeclarations --disableOutputCheck --ignoreCompilerErrors",
     "build-lib": "cd scripts && haxe build.hxml",
-    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -external-library-path+=node_modules/openfl/dist/openfl.swc -output=dist/starling.swc",
+    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF,JS -warnings=false -external-library-path+=node_modules/openfl/dist/openfl.swc -output=dist/starling.swc",
     "dev-link": "npm link openfl && npm link hxgenjs",
     "prepublishOnly": "npm run build",
     "serve": "http-server -c-1 --cors",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@apache-royale/royale-js": "^0.9.3",
-    "haxe": "^4.1.10",
+    "haxe": "^5.0.10",
     "hxgenjs": "kevinresol/hxgenjs",
     "typedoc": "^0.9.0",
     "typescript": "^2.7.1",
@@ -62,6 +62,6 @@
     "openfl": "^8.1.1"
   },
   "haxeDependencies": {
-    "haxe": "3.4.4"
+    "haxe": "3.4.7"
   }
 }

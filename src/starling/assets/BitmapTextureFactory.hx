@@ -20,12 +20,19 @@ import openfl.events.IOErrorEvent;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
+import starling.textures.ConcreteTexture;
 import starling.textures.Texture;
+import starling.textures.TextureOptions;
+import starling.utils.ByteArrayUtil;
 import starling.utils.Execute;
 
 /** This AssetFactory creates texture assets from bitmaps and image files. */
 class BitmapTextureFactory extends AssetFactory
 {
+    private static var MAGIC_NUMBERS_JPG:Array<Int> = [0xff, 0xd8];
+    private static var MAGIC_NUMBERS_PNG:Array<Int> = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+    private static var MAGIC_NUMBERS_GIF:Array<Int> = [0x47, 0x49, 0x46, 0x38];
+
     /** Creates a new instance. */
     public function new()
     {
@@ -37,8 +44,19 @@ class BitmapTextureFactory extends AssetFactory
     /** @inheritDoc */
     override public function canHandle(reference:AssetReference):Bool
     {
-        return Std.is(reference.data, Bitmap) || Std.is(reference.data, BitmapData) ||
-            super.canHandle(reference);
+        if (super.canHandle(reference) ||
+            Std.is(reference.data, Bitmap) || Std.is(reference.data, BitmapData))
+        {
+            return true;
+        }
+        else if (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
+        {
+            var byteData:ByteArray = cast reference.data;
+            return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_PNG) ||
+                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_JPG) ||
+                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF);
+        }
+        else return false;
     }
 
     /** @inheritDoc */
@@ -48,20 +66,53 @@ class BitmapTextureFactory extends AssetFactory
         var texture:Texture = null;
         var url:String = reference.url;
         var data:Dynamic = reference.data;
+        var name:String = reference.name;
+        var options:TextureOptions = reference.textureOptions;
         
-        var onReloadError:String->Void = null;
-        var reload:String->(BitmapData->Void)->Void = null;
         var onBitmapDataCreated:BitmapData->Void = null;
         var createFromBitmapData:BitmapData->Void = null;
-        var onLoadComplete:Bitmap->Void = null;
+        var complete:Texture->Void = null;
+        var restoreTexture:ConcreteTexture->Void = null;
+        var reload:String->(BitmapData->Void)->Void = null;
+        var onReloadError:String->Void = null;
         
-        onReloadError = function (error:String):Void
+        onBitmapDataCreated = function(bitmapData:BitmapData):Void
         {
-            helper.log("Texture restoration failed for " + url + ". " + error);
-            helper.onEndRestore();
+            helper.executeWhenContextReady(createFromBitmapData, [bitmapData]);
         }
         
-        reload = function (url:String, onComplete:BitmapData->Void):Void
+        createFromBitmapData = function(bitmapData:BitmapData):Void
+        {
+            options.onReady = complete;
+
+            try { texture = Texture.fromData(bitmapData, options); }
+            catch (e:Dynamic) { onError(e); }
+
+            if (texture != null && url != null) texture.root.onRestore = restoreTexture;
+        }
+
+        complete = function(_):Void
+        {
+            onComplete(name, texture);
+        }
+
+        restoreTexture = function(_):Void
+        {
+            helper.onBeginRestore();
+
+            reload(url, function(bitmapData:BitmapData):Void
+            {
+                helper.executeWhenContextReady(function():Void
+                {
+                    try { texture.root.uploadBitmapData(bitmapData); }
+                    catch (e:Dynamic) { helper.log("Texture restoration failed: " + e); }
+
+                    helper.onEndRestore();
+                });
+            });
+        }
+        
+        reload = function(url:String, onComplete:BitmapData->Void):Void
         {
             helper.loadDataFromUrl(url, function(?data:ByteArray, ?mimeType:String, ?name:String, ?extension:String):Void
             {
@@ -69,36 +120,10 @@ class BitmapTextureFactory extends AssetFactory
             }, onReloadError);
         }
         
-        onBitmapDataCreated = function (bitmapData:BitmapData):Void
+        onReloadError = function(error:String):Void
         {
-            helper.executeWhenContextReady(createFromBitmapData, [bitmapData]);
-        }
-
-        createFromBitmapData = function (bitmapData:BitmapData):Void
-        {
-            reference.textureOptions.onReady = function(_):Void
-            {
-                onComplete(reference.name, texture);
-            };
-
-            texture = Texture.fromData(bitmapData, reference.textureOptions);
-
-            if (url != null)
-            {
-                texture.root.onRestore = function(_):Void
-                {
-                    helper.onBeginRestore();
-
-                    reload(url, function(bitmapData:BitmapData):Void
-                    {
-                        helper.executeWhenContextReady(function():Void
-                        {
-                            texture.root.uploadBitmapData(bitmapData);
-                            helper.onEndRestore();
-                        });
-                    });
-                };
-            }
+            helper.log("Texture restoration failed for " + url + ". " + error);
+            helper.onEndRestore();
         }
         
         if (Std.is(data, Bitmap) && cast(data, Bitmap).bitmapData != null)
@@ -113,6 +138,9 @@ class BitmapTextureFactory extends AssetFactory
         {
             createBitmapDataFromByteArray(cast data, onBitmapDataCreated, onError);
         }
+        
+        // prevent closures from keeping references
+        reference.data = data = null;
     }
 
     /** Called by 'create' to convert a ByteArray to a BitmapData.

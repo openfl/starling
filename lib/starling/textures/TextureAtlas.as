@@ -2,7 +2,6 @@ package starling.textures {
 
 	import openfl.geom.Rectangle;
 	// import openfl.Vector;
-	import starling.textures.SubTexture;
 
 	/**
 	 * @externs

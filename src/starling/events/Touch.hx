@@ -15,6 +15,7 @@ import openfl.geom.Point;
 import openfl.Vector;
 
 import starling.display.DisplayObject;
+import starling.utils.Pool;
 import starling.utils.StringUtil;
 
 /** A Touch object contains information about the presence or movement of a finger
@@ -42,6 +43,9 @@ class Touch
     private var __globalY:Float;
     private var __previousGlobalX:Float;
     private var __previousGlobalY:Float;
+    private var __startGlobalX:Float;
+    private var __startGlobalY:Float;
+    private var __startTimestamp:Float;
     private var __tapCount:Int;
     private var __phase:String;
     private var __target:DisplayObject;
@@ -62,6 +66,8 @@ class Touch
             "id": { get: untyped __js__ ("function () { return this.get_id (); }") },
             "previousGlobalX": { get: untyped __js__ ("function () { return this.get_previousGlobalX (); }") },
             "previousGlobalY": { get: untyped __js__ ("function () { return this.get_previousGlobalY (); }") },
+            "startGlobalX": { get: untyped __js__ ("function () { return this.get_startGlobalX (); }") },
+            "startGlobalY": { get: untyped __js__ ("function () { return this.get_startGlobalY (); }") },
             "globalX": { get: untyped __js__ ("function () { return this.get_globalX (); }"), set: untyped __js__ ("function (v) { return this.set_globalX (v); }") },
             "globalY": { get: untyped __js__ ("function () { return this.get_globalY (); }"), set: untyped __js__ ("function (v) { return this.set_globalY (v); }") },
             "tapCount": { get: untyped __js__ ("function () { return this.get_tapCount (); }"), set: untyped __js__ ("function (v) { return this.set_tapCount (v); }") },
@@ -72,6 +78,7 @@ class Touch
             "width": { get: untyped __js__ ("function () { return this.get_width (); }"), set: untyped __js__ ("function (v) { return this.set_width (v); }") },
             "height": { get: untyped __js__ ("function () { return this.get_height (); }"), set: untyped __js__ ("function (v) { return this.set_height (v); }") },
             "cancelled": { get: untyped __js__ ("function () { return this.get_cancelled (); }"), set: untyped __js__ ("function (v) { return this.set_cancelled (v); }") },
+            "duration": { get: untyped __js__ ("function () { return this.get_duration (); }") },
             "bubbleChain": { get: untyped __js__ ("function () { return this.get_bubbleChain (); }") },
         });
         
@@ -86,6 +93,7 @@ class Touch
         __phase = TouchPhase.HOVER;
         __pressure = __width = __height = 1.0;
         __bubbleChain = new Vector<EventDispatcher>();
+        __timestamp = __startTimestamp = -1;
     }
     
     /** Converts the current location of a touch to the local coordinate system of a display 
@@ -106,18 +114,31 @@ class Touch
         return space.globalToLocal(sHelperPoint, out);
     }
     
+    /** Converts the start location of a touch (i.e. when it entered 'TouchPhase.BEGAN') to
+     *  the local coordinate system of a display object. If you pass an <code>out</code>-point,
+     *  the result will be stored in this point instead of creating a new object.*/
+    public function getStartLocation(space:DisplayObject, out:Point=null):Point
+    {
+        sHelperPoint.setTo(__startGlobalX, __startGlobalY);
+        return space.globalToLocal(sHelperPoint, out);
+    }
+    
     /** Returns the movement of the touch between the current and previous location. 
      * If you pass an <code>out</code>-point, the result will be stored in this point instead
      * of creating a new object. */ 
     public function getMovement(space:DisplayObject, out:Point=null):Point
     {
-        if (out == null) out = new Point();
-        getLocation(space, out);
-        var x:Float = out.x;
-        var y:Float = out.y;
-        getPreviousLocation(space, out);
-        out.setTo(x - out.x, y - out.y);
-        return out;
+        return getMovementBetween(__previousGlobalX, __previousGlobalY,
+                                    __globalX, __globalY, space, out);
+    }
+
+    /** Returns the movement of the touch between the current and the start location.
+        *  If you pass an <code>out</code>-point, the result will be stored in this point instead
+        *  of creating a new object. */
+    public function getMovementSinceStart(space:DisplayObject, out:Point=null):Point
+    {
+        return getMovementBetween(__startGlobalX, __startGlobalY,
+                                    __globalX, __globalY, space, out);
     }
     
     /** Indicates if the target or one of its children is touched. */ 
@@ -141,6 +162,9 @@ class Touch
         clone.__globalY = __globalY;
         clone.__previousGlobalX = __previousGlobalX;
         clone.__previousGlobalY = __previousGlobalY;
+        clone.__startGlobalX = __startGlobalX;
+        clone.__startGlobalY = __startGlobalY;
+        clone.__startTimestamp = __startTimestamp;
         clone.__phase = __phase;
         clone.__tapCount = __tapCount;
         clone.__timestamp = __timestamp;
@@ -153,6 +177,25 @@ class Touch
     }
     
     // helper methods
+    
+    /** Input parameters in global coordinates. */
+    private static function getMovementBetween(startX:Float, startY:Float, endX:Float, endY:Float,
+                                                space:DisplayObject, out:Point=null):Point
+    {
+        if (out == null) out = new Point();
+
+        var startPos:Point = Pool.getPoint(startX, startY);
+        var endPos:Point = Pool.getPoint(endX, endY);
+
+        space.globalToLocal(startPos, startPos);
+        space.globalToLocal(endPos, endPos);
+        out.setTo(endPos.x - startPos.x, endPos.y - startPos.y);
+
+        Pool.putPoint(startPos);
+        Pool.putPoint(endPos);
+
+        return out;
+    }
     
     private function updateBubbleChain():Void
     {
@@ -187,13 +230,27 @@ class Touch
     public var previousGlobalY(get, never):Float;
     private function get_previousGlobalY():Float { return __previousGlobalY; }
 
+    /** The x-position of the touch when it was in 'TouchPhase.BEGAN', in stage coordinates.
+     *  (Or, if the touch is in phase 'HOVER', the x-position when it first appeared.) */
+    public var startGlobalX(get, never):Float;
+    private function get_startGlobalX():Float { return __startGlobalX; }
+
+    /** The y-position of the touch when it was in 'TouchPhase.BEGAN', in stage coordinates.
+     *  (Or, if the touch is in phase 'HOVER', the y-position when it first appeared.) */
+    public var startGlobalY(get, never):Float;
+    private function get_startGlobalY():Float { return __startGlobalY; }
+
     /** The x-position of the touch in stage coordinates. If you change this value,
      * the previous one will be moved to "previousGlobalX". */
     public var globalX(get, set):Float;
     private function get_globalX():Float { return __globalX; }
     private function set_globalX(value:Float):Float
     {
-        __previousGlobalX = __globalX != __globalX ? value : __globalX; // isNaN check
+        if (__globalX != __globalX) // isNaN
+            __previousGlobalX = __startGlobalX = value;
+        else
+            __previousGlobalX = __globalX;
+        
         return __globalX = value;
     }
 
@@ -203,7 +260,11 @@ class Touch
     private function get_globalY():Float { return __globalY; }
     private function set_globalY(value:Float):Float
     {
-        __previousGlobalY = __globalY != __globalY ? value : __globalY; // isNaN check
+        if (__globalY != __globalY) // isNaN
+            __previousGlobalY = __startGlobalY = value;
+        else
+            __previousGlobalY = __globalY;
+        
         return __globalY = value;
     }
     
@@ -216,7 +277,19 @@ class Touch
     /** The current phase the touch is in. @see TouchPhase */
     public var phase(get, set):String;
     private function get_phase():String { return __phase; }
-    private function set_phase(value:String):String { return __phase = value; }
+    private function set_phase(value:String):String
+    {
+        __phase = value;
+        
+        if (value == TouchPhase.BEGAN)
+        {
+            __startGlobalX = __globalX;
+            __startGlobalY = __globalY;
+            __startTimestamp = __timestamp;
+        }
+        
+        return value;
+    }
     
     /** The display object at which the touch occurred. */
     public var target(get, set):DisplayObject;
@@ -234,7 +307,11 @@ class Touch
     /** The moment the touch occurred (in seconds since application start). */
     public var timestamp(get, set):Float;
     private function get_timestamp():Float { return __timestamp; }
-    private function set_timestamp(value:Float):Float { return __timestamp = value; }
+    private function set_timestamp(value:Float):Float
+    {
+        if (__startTimestamp < 0) __startTimestamp = value;
+        return __timestamp = value;
+    }
     
     /** A value between 0.0 and 1.0 indicating force of the contact with the device. 
      * If the device does not support detecting the pressure, the value is 1.0. */ 
@@ -260,7 +337,30 @@ class Touch
     private function get_cancelled():Bool { return __cancelled; }
     private function set_cancelled(value:Bool):Bool { return __cancelled = value; }
 
+    /** If the touch is hovering, returns the time (in seconds) since the touch was created;
+     *  afterwards, the time since the touch was in phase 'BEGAN'. */
+    public var duration(get, never):Float;
+    private function get_duration():Float
+    {
+        if (__timestamp < 0 || __startTimestamp < 0 || __startTimestamp > __timestamp) return -1.0;
+        else return __timestamp - __startTimestamp;
+    }
+
     // internal methods
+    
+    /** @private
+     *  Updates all important properties at once. */
+    @:allow(starling) private function update(timestamp:Float, phase:String, globalX:Float, globalY:Float,
+                                pressure:Float=1.0, width:Float=1.0, height:Float=1.0):Void
+    {
+        __pressure = pressure;
+        __width = width;
+        __height = height;
+        this.timestamp = timestamp;
+        this.globalX = globalX;
+        this.globalY = globalY;
+        this.phase = phase; // must be the last property to be updated! (yikes)
+    }
     
     /** @private 
      * Dispatches a touch event along the current bubble chain (which is updated each time

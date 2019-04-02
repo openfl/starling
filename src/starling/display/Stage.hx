@@ -135,6 +135,28 @@ class Stage extends DisplayObjectContainer
 
         return RectangleUtil.getBounds(out, sMatrix, out);
     }
+    
+    /** Returns the bounds of the screen (or application window, on Desktop) relative to
+     *  a certain coordinate system. In most cases, that's identical to the stage bounds;
+     *  however, this changes if the viewPort is customized. */
+    public function getScreenBounds(targetSpace:DisplayObject, out:Rectangle=null):Rectangle
+    {
+        var target:Starling = this.starling;
+        if (target == null) return getStageBounds(targetSpace, out);
+        if (out == null) out = new Rectangle();
+
+        var nativeStage:Dynamic = target.nativeStage;
+        var viewPort:Rectangle = target.viewPort;
+        var scaleX:Float = __width  / viewPort.width;
+        var scaleY:Float = __height / viewPort.height;
+        var x:Float = -viewPort.x * scaleX;
+        var y:Float = -viewPort.y * scaleY;
+
+        out.setTo(x, y, nativeStage.stageWidth * scaleX, nativeStage.stageHeight * scaleY);
+        getTransformationMatrix(targetSpace, sMatrix);
+
+        return RectangleUtil.getBounds(out, sMatrix, out);
+    }
 
     // camera positioning
 
@@ -257,7 +279,15 @@ class Stage extends DisplayObjectContainer
     /** The background color of the stage. */
     public var color(get, set):UInt;
     private function get_color():UInt { return __color; }
-    private function set_color(value:UInt):UInt { return __color = value; }
+    private function set_color(value:UInt):UInt
+    {
+        if (__color != value)
+        {
+            __color = value;
+            setRequiresRedraw();
+        }
+        return value;
+    }
     
     /** The width of the stage coordinate system. Change it to scale its contents relative
      * to the <code>viewPort</code> property of the Starling object. */ 
@@ -265,8 +295,11 @@ class Stage extends DisplayObjectContainer
     private function get_stageWidth():Int { return __width; }
     private function set_stageWidth(value:Int):Int
     {
-        __width = value;
-        setRequiresRedraw();
+        if (__width != value)
+        {
+            __width = value;
+            setRequiresRedraw();
+        }
         return value;
     }
     
@@ -276,8 +309,11 @@ class Stage extends DisplayObjectContainer
     private function get_stageHeight():Int { return __height; }
     private function set_stageHeight(value:Int):Int
     {
-        __height = value;
-        setRequiresRedraw();
+        if (__height != value)
+        {
+            __height = value;
+            setRequiresRedraw();
+        }
         return value;
     }
 

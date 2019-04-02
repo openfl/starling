@@ -12,7 +12,12 @@ package starling.utils;
 import openfl.Vector;
 
 /** A utility class containing predefined colors and methods converting between different
- *  color representations. */
+ *  color representations.
+ *
+ *  <p>The HSL and HSV calculations conform to theory and implementation found on
+ *  <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">Wikipedia</a> and
+ *  <a href="https://www.rapidtables.com/convert/color/">rapidtables.com</a>.</p>
+ */
 class Color
 {
     public static inline var WHITE:UInt   = 0xffffff;

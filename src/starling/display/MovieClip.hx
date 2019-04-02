@@ -312,15 +312,16 @@ class MovieClip extends Image implements IAnimatable
         }
 
         var finalFrameID:Int = __frames.length - 1;
-        var restTimeInFrame:Float = frame.duration - __currentTime + frame.startTime;
         var dispatchCompleteEvent:Bool = false;
         var frameAction:Function = null;
         var previousFrameID:Int = __currentFrameID;
+        var restTimeInFrame:Float = 0;
         var changedFrame:Bool;
 
-        while (passedTime >= restTimeInFrame)
+        while (__currentTime + passedTime >= frame.endTime)
         {
             changedFrame = false;
+            restTimeInFrame = frame.duration - __currentTime + frame.startTime;
             passedTime -= restTimeInFrame;
             __currentTime = frame.startTime + frame.duration;
 
@@ -364,12 +365,6 @@ class MovieClip extends Image implements IAnimatable
                 advanceTime(passedTime);
                 return;
             }
-
-            restTimeInFrame = frame.duration;
-
-            // prevent a mean floating point problem (issue #851)
-            if (passedTime + 0.0001 > restTimeInFrame && passedTime - 0.0001 < restTimeInFrame)
-                passedTime = restTimeInFrame;
         }
 
         if (previousFrameID != __currentFrameID)
@@ -519,4 +514,7 @@ private class MovieClipFrame
                     "movie:MovieClip, frameID:int");
         }
     }
+    
+    public var endTime(get, never):Float;
+    private function get_endTime():Float { return startTime + duration; }
 }

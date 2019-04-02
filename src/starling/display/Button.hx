@@ -122,6 +122,8 @@ class Button extends DisplayObjectContainer
         __contents = new Sprite();
         __contents.addChild(__body);
         addChild(__contents);
+        
+        __setStateTexture(upState);
         addEventListener(TouchEvent.TOUCH, __onTouch);
         
         this.touchGroup = true;
@@ -240,17 +242,13 @@ class Button extends DisplayObjectContainer
         {
             case ButtonState.DOWN:
                 __setStateTexture(__downState);
+                __setContentScale(__scaleWhenDown);
                 __contents.alpha = __alphaWhenDown;
-                __contents.scaleX = __contents.scaleY = __scaleWhenDown;
-                __contents.x = (1.0 - __scaleWhenDown) / 2.0 * __body.width;
-                __contents.y = (1.0 - __scaleWhenDown) / 2.0 * __body.height;
             case ButtonState.UP:
                 __setStateTexture(__upState);
             case ButtonState.OVER:
                 __setStateTexture(__overState);
-                __contents.scaleX = __contents.scaleY = __scaleWhenOver;
-                __contents.x = (1.0 - __scaleWhenOver) / 2.0 * __body.width;
-                __contents.y = (1.0 - __scaleWhenOver) / 2.0 * __body.height;
+                __setContentScale(__scaleWhenOver);
             case ButtonState.DISABLED:
                 __setStateTexture(__disabledState);
                 __contents.alpha = __alphaWhenDisabled;
@@ -260,10 +258,30 @@ class Button extends DisplayObjectContainer
         
         return value;
     }
+    
+    private function __setContentScale(scale:Float):Void
+    {
+        __contents.scaleX = __contents.scaleY = scale;
+        __contents.x = (1.0 - scale) / 2.0 * __body.width;
+        __contents.y = (1.0 - scale) / 2.0 * __body.height;
+    }
 
     private function __setStateTexture(texture:Texture):Void
     {
         __body.texture = texture != null ? texture : __upState;
+        
+        if (__body.pivotX != 0 || __body.pivotY != 0)
+        {
+            // The texture might force a custom pivot point on the image. We better use
+            // this pivot point on the button itself, because that's easier to access.
+            // (Plus, it simplifies internal object placement.)
+
+            pivotX = __body.pivotX;
+            pivotY = __body.pivotY;
+
+            __body.pivotX = 0;
+            __body.pivotY = 0;
+        }
     }
 
     /** The scale factor of the button on touch. Per default, a button without a down state

@@ -283,6 +283,17 @@ class TextureAtlas
         __subTextureNames = null;
     }
     
+    /** Removes all regions with names that start with the given prefix.
+     *  If no arguments are given, all regions will be removed. */
+    public function removeRegions(prefix:String=""):Void
+    {
+        for (name in __subTextures.keys())
+        {
+            if (prefix == "" || name.indexOf(prefix) == 0)
+                removeRegion(name);
+        }
+    }
+    
     /** The base texture that makes up the atlas. */
     public var texture(get, never):Texture;
     private function get_texture():Texture { return __atlasTexture; }

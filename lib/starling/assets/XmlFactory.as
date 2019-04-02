@@ -10,15 +10,6 @@
 
 package starling.assets {
 
-	import openfl.utils.ByteArray;
-	import openfl.errors.Error;
-
-	import starling.text.BitmapFont;
-	import starling.text.TextField;
-	import starling.textures.Texture;
-	import starling.textures.TextureAtlas;
-	import starling.utils.ByteArrayUtil;
-
 	/**
 	 * @externs
 	 * This AssetFactory creates XML assets, texture atlases and bitmap fonts.

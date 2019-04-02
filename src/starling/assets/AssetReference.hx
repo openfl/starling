@@ -90,13 +90,4 @@ class AssetReference
         _textureOptions.copyFrom(value);
         return _textureOptions;
     }
-
-    /** @private */
-    @:allow(starling) private var filename(get, never):String;
-    private function get_filename():String
-    {
-        if (name != null && extension != null && extension != "") return name + "." + extension;
-        else if (name != null ) return name;
-        else return null;
-    }
 }

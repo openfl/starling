@@ -34,6 +34,7 @@ class Pool
     private static var sMatrices:Vector<Matrix> = new Vector<Matrix>();
     private static var sMatrices3D:Vector<Matrix3D> = new Vector<Matrix3D>();
     private static var sRectangles:Vector<Rectangle> = new Vector<Rectangle>();
+    private static var sArrays:Vector<Array<Dynamic>> = new Vector<Array<Dynamic>>();
 
     /** @private */
     private function new() {}

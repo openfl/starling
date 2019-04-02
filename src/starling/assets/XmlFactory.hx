@@ -72,13 +72,15 @@ class XmlFactory extends AssetFactory
             else helper.log("Cannot create bitmap font: texture '" + textureName + "' is missing.");
         }
         
+        var bytes:ByteArray = null;
+        
         try
         {
             if(Std.is(reference.data, Xml))
                 xml = cast(reference.data, Xml);
             else
             {
-                var bytes:ByteArray = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
+                bytes = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
                 if (bytes != null)
                     xml = Xml.parse(bytes.toString());
             }
@@ -91,10 +93,15 @@ class XmlFactory extends AssetFactory
                 helper.addPostProcessor(bitmapFontPostProcessor);
                 
             onComplete(reference.name, xml);
-        
+            
+            // prevent closures from keeping references
+            reference.data = bytes = null;
         }
         catch (e:Error)
         {
+            // prevent closures from keeping references
+            reference.data = bytes = null;
+            
             onError("Could not parse XML: " + e.message);
             return;
         }

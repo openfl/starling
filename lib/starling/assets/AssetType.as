@@ -10,15 +10,6 @@
 
 package starling.assets {
 
-	import openfl.media.Sound;
-	import openfl.media.Video;
-	import openfl.utils.ByteArray;
-
-	import starling.errors.AbstractClassError;
-	import starling.text.BitmapFont;
-	import starling.textures.Texture;
-	import starling.textures.TextureAtlas;
-
 	/**
 	 * @externs
 	 * An enumeration class containing all the asset types supported by the AssetManager.

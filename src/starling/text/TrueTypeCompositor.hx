@@ -78,6 +78,9 @@ class TrueTypeCompositor implements ITextCompositor
         if (format.verticalAlign == Align.TOP) sHelperQuad.y = 0;
         else if (format.verticalAlign == Align.CENTER) sHelperQuad.y = Std.int((height - texture.height) / 2);
         else sHelperQuad.y = height - texture.height;
+        
+        sHelperQuad.x = snapToPixels(sHelperQuad.x, options.textureScale);
+        sHelperQuad.y = snapToPixels(sHelperQuad.y, options.textureScale);
 
         meshBatch.addMesh(sHelperQuad);
 
@@ -188,7 +191,7 @@ class TrueTypeCompositor implements ITextCompositor
         }
     }
 
-    private function autoScaleNativeTextField(textField:openfl.text.TextField,
+    private static function autoScaleNativeTextField(textField:openfl.text.TextField,
                                               text:String, isHtmlText:Bool):Void
     {
         var textFormat:openfl.text.TextFormat = textField.defaultTextFormat;
@@ -205,6 +208,16 @@ class TrueTypeCompositor implements ITextCompositor
 
             if (isHtmlText) textField.htmlText = text;
             else            textField.text     = text;
+        }
+    }
+
+    private static function snapToPixels(coordinate:Float, scaleFactor:Float):Float
+    {
+        if (coordinate == 0.0 || scaleFactor == 0.0) return coordinate;
+        else
+        {
+            var pixelSize:Float = 1.0 / scaleFactor;
+            return Math.round(coordinate / pixelSize) * pixelSize;
         }
     }
 }

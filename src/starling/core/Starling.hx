@@ -10,6 +10,7 @@
 
 package starling.core;
 
+import haxe.macro.Compiler;
 import haxe.Timer;
 
 import openfl.display.DisplayObjectContainer;
@@ -27,12 +28,13 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
-import openfl.errors.IllegalOperationError;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.text.TextField;
@@ -57,6 +59,8 @@ import starling.events.TouchProcessor;
 import starling.rendering.Painter;
 import starling.utils.Align;
 import starling.utils.Color;
+import starling.utils.MatrixUtil;
+import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 import starling.utils.SystemUtil;
 
@@ -211,7 +215,7 @@ import starling.utils.SystemUtil;
 class Starling extends EventDispatcher
 {
     /** The version of the Starling framework. */
-    public static inline var VERSION:String = "2.4.0";
+    public static var VERSION:String = Compiler.getDefine("starling");
     
     // members
     
@@ -226,6 +230,7 @@ class Starling extends EventDispatcher
     private var __frameID:UInt;
     private var __leftMouseDown:Bool;
     private var __statsDisplay:StatsDisplay;
+    private var __statsDisplayAlign:openfl.utils.Object;
     private var __started:Bool;
     private var __rendering:Bool;
     private var __supportHighResolutions:Bool;
@@ -233,6 +238,7 @@ class Starling extends EventDispatcher
     private var __skipUnchangedFrames:Bool;
     private var __showStats:Bool;
     private var __supportsCursor:Bool;
+    private var __multitouchEnabled:Bool;
     
     private var __viewPort:Rectangle;
     private var __previousViewPort:Rectangle;
@@ -241,6 +247,7 @@ class Starling extends EventDispatcher
     private var __nativeStage:OpenFLStage;
     private var __nativeStageEmpty:Bool;
     private var __nativeOverlay:Sprite;
+    private var __nativeOverlayBlocksTouches:Bool;
 
     private static var sCurrent:Starling;
     private static var sAll:Vector<Starling> = new Vector<Starling>();
@@ -260,6 +267,7 @@ class Starling extends EventDispatcher
             "viewPort": { get: untyped __js__ ("function () { return this.get_viewPort (); }"), set: untyped __js__ ("function (v) { return this.set_viewPort (v); }") },
             "contentScaleFactor": { get: untyped __js__ ("function () { return this.get_contentScaleFactor (); }") },
             "nativeOverlay": { get: untyped __js__ ("function () { return this.get_nativeOverlay (); }") },
+            "nativeOverlayBlocksTouches": { get: untyped __js__ ("function () { return this.get_nativeOverlayBlocksTouches (); }"), set: untyped __js__ ("function (v) { return this.set_nativeOverlayBlocksTouches (v); }") },
             "showStats": { get: untyped __js__ ("function () { return this.get_showStats (); }"), set: untyped __js__ ("function (v) { return this.set_showStats (v); }") },
             "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
             "stage3D": { get: untyped __js__ ("function () { return this.get_stage3D (); }") },
@@ -271,6 +279,7 @@ class Starling extends EventDispatcher
             "supportHighResolutions": { get: untyped __js__ ("function () { return this.get_supportHighResolutions (); }"), set: untyped __js__ ("function (v) { return this.set_supportHighResolutions (v); }") },
             "skipUnchangedFrames": { get: untyped __js__ ("function () { return this.get_skipUnchangedFrames (); }"), set: untyped __js__ ("function (v) { return this.set_skipUnchangedFrames (v); }") },
             "touchProcessor": { get: untyped __js__ ("function () { return this.get_touchProcessor (); }"), set: untyped __js__ ("function (v) { return this.set_touchProcessor (v); }") },
+            "discardSystemGestures": { get: untyped __js__ ("function () { return this.get_discardSystemGestures (); }"), set: untyped __js__ ("function (v) { return this.set_discardSystemGestures (v); }") },
             "frameID": { get: untyped __js__ ("function () { return this.get_frameID (); }") },
             "contextValid": { get: untyped __js__ ("function () { return this.get_contextValid (); }") },
         });
@@ -335,6 +344,7 @@ class Starling extends EventDispatcher
         __nativeStage = stage;
         __nativeStage.addChild(__nativeOverlay);
         __touchProcessor = new TouchProcessor(__stage);
+        __touchProcessor.discardSystemGestures = !SystemUtil.isDesktop;
         __juggler = new Juggler();
         __antiAliasing = 0;
         __supportHighResolutions = false;
@@ -342,14 +352,17 @@ class Starling extends EventDispatcher
         __frameTimestamp = Lib.getTimer() / 1000.0;
         __frameID = 1;
         __supportsCursor = Mouse.supportsCursor || Capabilities.os.indexOf("Windows") == 0;
+        __statsDisplayAlign = {};
+
+        // register appropriate touch/mouse event handlers
+        setMultitouchEnabled(Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT, true);
+
+        // make the native overlay behave just like one would expect intuitively
+        __nativeOverlayBlocksTouches = true;
         
         // all other modes are problematic in Starling, so we force those here
         stage.scaleMode = StageScaleMode.NO_SCALE;
         stage.align = StageAlign.TOP_LEFT;
-        
-        // register touch/mouse event handlers            
-        for (touchEventType in touchEventTypes)
-            stage.addEventListener(touchEventType, onTouch, false, 0, true);
         
         // register other event handlers
         stage.addEventListener(Event.ENTER_FRAME, onEnterFrame, false, 0, true);
@@ -357,6 +370,7 @@ class Starling extends EventDispatcher
         stage.addEventListener(KeyboardEvent.KEY_UP, onKey, false, 0, true);
         stage.addEventListener(Event.RESIZE, onResize, false, 0, true);
         stage.addEventListener(Event.MOUSE_LEAVE, onMouseLeave, false, 0, true);
+        stage.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
 
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
         stage3D.addEventListener(ErrorEvent.ERROR, onStage3DError, false, 10, true);
@@ -400,7 +414,7 @@ class Starling extends EventDispatcher
         stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextRestored, false);
         stage3D.removeEventListener(ErrorEvent.ERROR, onStage3DError, false);
         
-        for (touchEventType in touchEventTypes)
+        for (touchEventType in getTouchEventTypes(__multitouchEnabled))
             __nativeStage.removeEventListener(touchEventType, onTouch, false);
 
         if (__touchProcessor != null) __touchProcessor.dispose();
@@ -534,12 +548,9 @@ class Starling extends EventDispatcher
             // thus, we use a clipped viewport when configuring the back buffer. (In baseline
             // mode, that's not necessary, but it does not hurt either.)
 
-            __clippedViewPort = __viewPort.intersection(
-                new Rectangle(0, 0, __nativeStage.stageWidth, __nativeStage.stageHeight));
-
-            if (__clippedViewPort.width  < 32) __clippedViewPort.width  = 32;
-            if (__clippedViewPort.height < 32) __clippedViewPort.height = 32;
-
+            updateClippedViewPort();
+            updateStatsDisplayPosition();
+            
             var contentScaleFactor:Float = 
                     __supportHighResolutions ? __nativeStage.contentsScaleFactor : 1.0;
 
@@ -552,6 +563,19 @@ class Starling extends EventDispatcher
 
             setRequiresRedraw();
         }
+    }
+    
+    private function updateClippedViewPort():Void
+    {
+        var stageBounds:Rectangle = Pool.getRectangle(0, 0,
+            __nativeStage.stageWidth, __nativeStage.stageHeight);
+
+        __clippedViewPort = RectangleUtil.intersect(__viewPort, stageBounds, __clippedViewPort);
+
+        if (__clippedViewPort.width  < 32) __clippedViewPort.width  = 32;
+        if (__clippedViewPort.height < 32) __clippedViewPort.height = 32;
+
+        Pool.putRectangle(stageBounds);
     }
     
     private function updateNativeOverlay():Void
@@ -607,9 +631,6 @@ class Starling extends EventDispatcher
     { 
         __started = __rendering = true;
         __frameTimestamp = Lib.getTimer() / 1000.0;
-
-        // mainly for Android: force redraw when app moves into foreground
-        Timer.delay(setRequiresRedraw, 100);
     }
     
     /** Stops all logic and input processing, effectively freezing the app in its current state.
@@ -681,6 +702,15 @@ class Starling extends EventDispatcher
         }
 
         updateNativeOverlay();
+    }
+    
+    private function onActivate(event:Event):Void
+    {
+        // with 'skipUnchangedFrames' enabled, a forced redraw is required when the app
+        // is restored on some platforms (namely Windows with BASELINE_CONSTRAINED profile
+        // and some Android versions).
+
+        Timer.delay(setRequiresRedraw, 100);
     }
     
     private function onKey(event:KeyboardEvent):Void
@@ -801,9 +831,43 @@ class Starling extends EventDispatcher
         if (event.type == MouseEvent.MOUSE_UP && __supportsCursor)
             __touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
     }
+    
+    private function hitTestNativeOverlay(localX:Float, localY:Float):Bool
+    {
+        if (__nativeOverlay.numChildren > 0)
+        {
+            var globalPos:Point = Pool.getPoint();
+            var matrix:Matrix   = Pool.getMatrix(
+                __nativeOverlay.scaleX, 0, 0, __nativeOverlay.scaleY,
+                __nativeOverlay.x, __nativeOverlay.y);
+            MatrixUtil.transformCoords(matrix, localX, localY, globalPos);
+            var result:Bool = __nativeOverlay.hitTestPoint(globalPos.x, globalPos.y, true);
+            Pool.putPoint(globalPos);
+            Pool.putMatrix(matrix);
+            return result;
+        }
+        return false;
+    }
 
-    private var touchEventTypes(get, never):Array<String>;
-    private function get_touchEventTypes():Array<String>
+    private function setMultitouchEnabled(value:Bool, forceUpdate:Bool=false):Void
+    {
+        if (forceUpdate || value != __multitouchEnabled)
+        {
+            var oldEventTypes:Array<String> = getTouchEventTypes(__multitouchEnabled);
+            var newEventTypes:Array<String> = getTouchEventTypes(value);
+
+            for (oldEventType in oldEventTypes)
+                __nativeStage.removeEventListener(oldEventType, onTouch);
+
+            for (newEventType in newEventTypes)
+                __nativeStage.addEventListener(newEventType, onTouch, false, 0, true);
+
+            __touchProcessor.cancelTouches();
+            __multitouchEnabled = value;
+        }
+    }
+
+    private function getTouchEventTypes(multitouchEnabled:Bool):Array<String>
     {
         var types = new Array<String>();
 
@@ -923,6 +987,21 @@ class Starling extends EventDispatcher
     public var nativeOverlay(get, never):Sprite;
     private function get_nativeOverlay():Sprite { return __nativeOverlay; }
     
+    /** If enabled, touches or mouse events on the native overlay won't be propagated to
+     *  Starling. @default false */
+    public var nativeOverlayBlocksTouches(get, set):Bool;
+    private function get_nativeOverlayBlocksTouches():Bool
+    {
+        return __touchProcessor.occlusionTest != null;
+    }
+
+    private function set_nativeOverlayBlocksTouches(value:Bool):Bool
+    {
+        if (value != __nativeOverlayBlocksTouches)
+            __touchProcessor.occlusionTest = value ? hitTestNativeOverlay : null;
+        return value;
+    }
+    
     /** Indicates if a small statistics box (with FPS, memory usage and draw count) is
      * displayed.
      *
@@ -939,8 +1018,9 @@ class Starling extends EventDispatcher
         
         if (value)
         {
-            if (__statsDisplay != null) __stage.addChild(__statsDisplay);
-            else                        showStatsAt();
+            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") != null ? __statsDisplayAlign.horizontal : null;
+            var v = Reflect.hasField(__statsDisplayAlign, "vertical") != null ? __statsDisplayAlign.vertical : null;
+            showStatsAt(h != null ? h : "left", v != null ? v : "top");
         }
         else if (__statsDisplay != null)
         {
@@ -961,6 +1041,8 @@ class Starling extends EventDispatcher
         }
         
         __showStats = true;
+        __statsDisplayAlign.horizontal = horizontalAlign;
+        __statsDisplayAlign.vertical = verticalAlign;
         
         if (context == null)
         {
@@ -969,9 +1051,6 @@ class Starling extends EventDispatcher
         }
         else
         {
-            var stageWidth:Int  = __stage.stageWidth;
-            var stageHeight:Int = __stage.stageHeight;
-
             if (__statsDisplay == null)
             {
                 __statsDisplay = new StatsDisplay();
@@ -980,17 +1059,40 @@ class Starling extends EventDispatcher
 
             __stage.addChild(__statsDisplay);
             __statsDisplay.scaleX = __statsDisplay.scaleY = scale;
-
-            if (horizontalAlign == Align.LEFT) __statsDisplay.x = 0;
-            else if (horizontalAlign == Align.RIGHT) __statsDisplay.x  = stageWidth - __statsDisplay.width; 
-            else if (horizontalAlign == Align.CENTER) __statsDisplay.x = (stageWidth - __statsDisplay.width); 
-            else throw new ArgumentError("Invalid horizontal alignment: " + horizontalAlign);
             
-            if (verticalAlign == Align.TOP) __statsDisplay.y = 0;
-            else if (verticalAlign == Align.BOTTOM) __statsDisplay.y = stageHeight - __statsDisplay.height;
-            else if (verticalAlign == Align.CENTER) __statsDisplay.y = (stageHeight - __statsDisplay.height);
-            else throw new ArgumentError("Invalid vertical alignment: " + verticalAlign);
+            updateClippedViewPort();
+            updateStatsDisplayPosition();
         }
+    }
+    
+    private function updateStatsDisplayPosition():Void
+    {
+        if (!__showStats) return;
+
+        // The stats display must always be visible, i.e. inside the clipped viewPort.
+        // So we take viewPort clipping into account when calculating its position.
+
+        var horizontalAlign:String = __statsDisplayAlign.horizontal;
+        var verticalAlign:String = __statsDisplayAlign.vertical;
+        var scaleX:Float = __viewPort.width  / __stage.stageWidth;
+        var scaleY:Float = __viewPort.height / __stage.stageHeight;
+        var clipping:Rectangle = Pool.getRectangle(
+            __viewPort.x < 0 ? -__viewPort.x / scaleX : 0.0,
+            __viewPort.y < 0 ? -__viewPort.y / scaleY : 0.0,
+            __clippedViewPort.width  / scaleX,
+            __clippedViewPort.height / scaleY);
+
+        if (horizontalAlign == Align.LEFT) __statsDisplay.x = clipping.x;
+        else if (horizontalAlign == Align.RIGHT)  __statsDisplay.x =  clipping.right - __statsDisplay.width;
+        else if (horizontalAlign == Align.CENTER) __statsDisplay.x = (clipping.right - __statsDisplay.width) / 2;
+        else throw new ArgumentError("Invalid horizontal alignment: " + horizontalAlign);
+
+        if (verticalAlign == Align.TOP) __statsDisplay.y = clipping.y;
+        else if (verticalAlign == Align.BOTTOM) __statsDisplay.y =  clipping.bottom - __statsDisplay.height;
+        else if (verticalAlign == Align.CENTER) __statsDisplay.y = (clipping.bottom - __statsDisplay.height) / 2;
+        else throw new ArgumentError("Invalid vertical alignment: " + verticalAlign);
+
+        Pool.putRectangle(clipping);
     }
     
     /** The Starling stage object, which is the root of the display tree that is rendered. */
@@ -1125,6 +1227,24 @@ class Starling extends EventDispatcher
         }
         return value;
     }
+    
+    /** When enabled, all touches that start very close to the window edges are discarded.
+     *  On mobile, such touches often indicate swipes that are meant to open OS menus.
+     *  Per default, margins of 10 points at the very top and bottom of the screen are checked.
+     *  Call <code>starling.touchProcessor.setSystemGestureMargins()</code> to adapt the margins
+     *  in each direction. @default true on mobile, false on desktop
+     */
+    public var discardSystemGestures(get, set):Bool;
+    private function get_discardSystemGestures():Bool
+    {
+        return __touchProcessor.discardSystemGestures;
+    }
+
+    private function set_discardSystemGestures(value:Bool):Bool
+    {
+        __touchProcessor.discardSystemGestures = value;
+        return value;
+    }
 
     /** The number of frames that have been rendered since this instance was created. */
     public var frameID(get, never):UInt;
@@ -1160,20 +1280,40 @@ class Starling extends EventDispatcher
     //     return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
     // }
     
-    /** Indicates if multitouch input should be supported. */
+    /** Indicates if multitouch input should be supported. You can enable or disable
+     *  multitouch at any time; just beware that any current touches will be cancelled. */
     public static var multitouchEnabled(get, set):Bool;
-    private static function get_multitouchEnabled():Bool 
-    { 
-        return Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+    private static function get_multitouchEnabled():Bool
+    {
+        var enabled:Bool = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+        var outOfSync:Bool = false;
+
+        for (star in sAll)
+            if (star.__multitouchEnabled != enabled)
+                outOfSync = true;
+
+        if (outOfSync)
+            trace("[Starling] Warning: multitouch settings are out of sync. Always set " +
+                    "'Starling.multitouchEnabled' instead of 'Multitouch.inputMode'.");
+
+        return enabled;
     }
     
     private static function set_multitouchEnabled(value:Bool):Bool
     {
-        if (sCurrent != null) throw new IllegalOperationError(
-            "'multitouchEnabled' must be set before Starling instance is created");
-        else 
-            Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
-                                            MultitouchInputMode.NONE;
+        var wasEnabled:Bool = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+
+        Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT :
+            MultitouchInputMode.NONE;
+
+        var isEnabled:Bool = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
+
+        if (wasEnabled != isEnabled)
+        {
+            for (star in sAll)
+                star.setMultitouchEnabled(isEnabled);
+        }
+        
         return value;
     }
 

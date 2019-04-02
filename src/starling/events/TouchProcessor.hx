@@ -12,6 +12,7 @@ package starling.events;
 
 import openfl.errors.Error;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.utils.Object;
 import openfl.Lib;
 import openfl.Vector;
@@ -20,6 +21,7 @@ import starling.core.Starling;
 import starling.display.DisplayObject;
 import starling.display.Stage;
 import starling.utils.MathUtil;
+import starling.utils.Pool;
 
 /** The TouchProcessor is used to convert mouse and touch events of the conventional
  *  Flash stage to Starling's TouchEvents.
@@ -64,13 +66,21 @@ class TouchProcessor
     private var __multitapTime:Float = 0.3;
     private var __multitapDistance:Float = 25;
     private var __touchEvent:TouchEvent;
+    private var __isProcessing:Bool;
+    private var __cancelRequested:Bool;
 
     private var __touchMarker:TouchMarker;
     private var __simulateMultitouch:Bool;
+    private var __occlusionTest:Float->Float->Bool;
+
+    // system gesture detection
+    private var __discardSystemGestures:Bool;
+    private var __systemGestureTouchID:Int = -1;
+    private var __systemGestureMargins:Array<Float> = [10, 10, 0, 0];
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
      * method (the oldest being at the end of the vector). */
-    private var __queue:Vector<Array<Dynamic>>;
+    private var __queue:Vector<TouchData>;
     
     /** The list of all currently active touches. */
     private var __currentTouches:Vector<Touch>;
@@ -79,6 +89,11 @@ class TouchProcessor
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
     private static var sHoveringTouchData:Vector<Object> = new Vector<Object>();
     private static var sHelperPoint:Point = new Point();
+    
+    private static inline var TOP:Int = 0;
+    private static inline var BOTTOM:Int = 1;
+    private static inline var LEFT:Int = 2;
+    private static inline var RIGHT:Int = 3;
     
     #if commonjs
     private static function __init__ () {
@@ -90,6 +105,8 @@ class TouchProcessor
             "root": { get: untyped __js__ ("function () { return this.get_root (); }"), set: untyped __js__ ("function (v) { return this.set_root (v); }") },
             "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
             "numCurrentTouches": { get: untyped __js__ ("function () { return this.get_numCurrentTouches (); }") },
+            "occlusionTest": { get: untyped __js__ ("function () { return this.get_occlusionTest (); }"), set: untyped __js__ ("function (v) { return this.set_occlusionTest (v); }") },
+            "discardSystemGestures": { get: untyped __js__ ("function () { return this.get_discardSystemGestures (); }"), set: untyped __js__ ("function (v) { return this.set_discardSystemGestures (v); }") },
         });
         
     }
@@ -101,7 +118,7 @@ class TouchProcessor
         __root = __stage = stage;
         __elapsedTime = 0.0;
         __currentTouches = new Vector<Touch>();
-        __queue = new Vector<Array<Dynamic>>();
+        __queue = new Vector<TouchData>();
         __lastTaps = new Vector<Touch>();
         __touchEvent = new TouchEvent(TouchEvent.TOUCH);
 
@@ -123,9 +140,13 @@ class TouchProcessor
      * the queue while doing so. This method is called by Starling once per frame. */
     public function advanceTime(passedTime:Float):Void
     {
+        if (__isProcessing) return;
+        else __isProcessing = true;
+
         var i:Int;
         var touch:Touch;
         var numIterations:Int = 0;
+        var touchData:TouchData;
         
         __elapsedTime += passedTime;
         sUpdatedTouches.length = 0;
@@ -153,14 +174,12 @@ class TouchProcessor
 
             // analyze new touches, but each ID only once
             while (__queue.length > 0 &&
-                  !containsTouchWithID(sUpdatedTouches, __queue[__queue.length-1][0]))
+                  !containsTouchWithID(sUpdatedTouches, __queue[__queue.length-1].id))
             {
-                var touchArgs:Array<Dynamic> = __queue.pop();
-                touch = createOrUpdateTouch(
-                            touchArgs[0], touchArgs[1], touchArgs[2], touchArgs[3],
-                            touchArgs[4], touchArgs[5], touchArgs[6]);
-                
+                touchData = __queue.pop();
+                touch = createOrUpdateTouch(touchData);
                 sUpdatedTouches[sUpdatedTouches.length] = touch; // avoiding 'push'
+                TouchData.toPool(touchData);
             }
 
             // Find any hovering touches that did not move.
@@ -192,6 +211,9 @@ class TouchProcessor
 
             sUpdatedTouches.length = 0;
         }
+        
+        __isProcessing = false;
+        if (__cancelRequested) cancelTouches();
     }
     
     /** Dispatches TouchEvents to the display objects that are affected by the list of
@@ -226,7 +248,14 @@ class TouchProcessor
             if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.BEGAN)
             {
                 sHelperPoint.setTo(touch.globalX, touch.globalY);
-                touch.target = __root.hitTest(sHelperPoint);
+                
+                // If an occlusion test is supplied and turns out positive, the touch
+                // isn't supposed to happen. In this case, the target is set to null.
+
+                if (__occlusionTest != null && __occlusionTest(touch.globalX, touch.globalY))
+                    touch.target = null;
+                else
+                    touch.target = __root.hitTest(sHelperPoint);
             }
         }
         
@@ -244,18 +273,63 @@ class TouchProcessor
         __touchEvent.resetTo(TouchEvent.TOUCH);
     }
     
-    /** Enqueues a new touch our mouse event with the given properties. */
+    private function checkForSystemGesture(touchID:Int, phase:String,
+                                            globalX:Float, globalY:Float):Bool
+    {
+        if (!__discardSystemGestures || phase == TouchPhase.HOVER)
+            return false;
+
+        if (__systemGestureTouchID == touchID)
+        {
+            if (phase == TouchPhase.ENDED)
+                __systemGestureTouchID = -1;
+
+            return true;
+        }
+        else if (__systemGestureTouchID >= 0)
+        {
+            return false; // there can always only be one system gesture active
+        }
+        else if (phase == TouchPhase.BEGAN) // also: _systemGestureTouchID < 0
+        {
+            var isGesture:Bool;
+            var screenBounds:Rectangle = __stage.getScreenBounds(__stage, Pool.getRectangle());
+
+            isGesture =
+                globalX < screenBounds.left   + __systemGestureMargins[LEFT]  ||
+                globalX > screenBounds.right  - __systemGestureMargins[RIGHT] ||
+                globalY < screenBounds.top    + __systemGestureMargins[TOP]   ||
+                globalY > screenBounds.bottom - __systemGestureMargins[BOTTOM];
+
+            Pool.putRectangle(screenBounds);
+
+            if (isGesture) __systemGestureTouchID = touchID;
+            return isGesture;
+        }
+        else return false;
+    }
+
+    /** Enqueues a new touch or mouse event with the given properties. */
     public function enqueue(touchID:Int, phase:String, globalX:Float, globalY:Float,
                             pressure:Float=1.0, width:Float=1.0, height:Float=1.0):Void
     {
-        __queue.unshift([touchID, phase, globalX, globalY, pressure, width, height]);
+        if (checkForSystemGesture(touchID, phase, globalX, globalY))
+            return;
+
+        queue_unshift(touchID, phase, globalX, globalY, pressure, width, height);
         
         // multitouch simulation (only with mouse)
-        if (__ctrlDown && __touchMarker != null && touchID == 0) 
+        if (__ctrlDown && __touchMarker != null && touchID == 0)
         {
             __touchMarker.moveMarker(globalX, globalY, __shiftDown);
-            __queue.unshift([1, phase, __touchMarker.mockX, __touchMarker.mockY]);
+            queue_unshift(1, phase, __touchMarker.mockX, __touchMarker.mockY);
         }
+    }
+    
+    private function queue_unshift(touchID:Int, phase:String, globalX:Float, globalY:Float,
+                                    pressure:Float=1.0, width:Float=1.0, height:Float=1.0):Void
+    {
+        __queue.unshift(TouchData.fromPool(touchID, phase, globalX, globalY, pressure, width, height));
     }
     
     /** Enqueues an artificial touch that represents the mouse leaving the stage.
@@ -294,6 +368,12 @@ class TouchProcessor
      * when the app receives a 'DEACTIVATE' event. */
     public function cancelTouches():Void
     {
+        // This method could be called from within a touch event handler. In that case,
+        // we wait until the current 'advanceTime' method is finished before we do anything.
+
+        if (__isProcessing) { __cancelRequested = true; return; }
+        else __cancelRequested = false;
+        
         if (__currentTouches.length > 0)
         {
             // abort touches
@@ -313,31 +393,25 @@ class TouchProcessor
 
         // purge touches
         __currentTouches.length = 0;
-        __queue.length = 0;
+        
+        while (__queue.length > 0)
+            TouchData.toPool(__queue.pop());
     }
     
-    private function createOrUpdateTouch(touchID:Int, phase:String,
-                                            globalX:Float, globalY:Float,
-                                            pressure:Float=1.0,
-                                            width:Float=1.0, height:Float=1.0):Touch
+    private function createOrUpdateTouch(touchData:TouchData):Touch
     {
-        var touch:Touch = getCurrentTouch(touchID);
+        var touch:Touch = getCurrentTouch(touchData.id);
         
         if (touch == null)
         {
-            touch = new Touch(touchID);
+            touch = new Touch(touchData.id);
             addCurrentTouch(touch);
         }
-        
-        touch.globalX = globalX;
-        touch.globalY = globalY;
-        touch.phase = phase;
-        touch.timestamp = __elapsedTime;
-        touch.pressure = pressure;
-        touch.width  = width;
-        touch.height = height;
 
-        if (phase == TouchPhase.BEGAN)
+        touch.update(__elapsedTime, touchData.phase, touchData.globalX, touchData.globalY,
+            touchData.pressure, touchData.width, touchData.height);
+
+        if (touchData.phase == TouchPhase.BEGAN)
             updateTapCount(touch);
 
         return touch;
@@ -401,6 +475,18 @@ class TouchProcessor
         return false;
     }
     
+    /** Configures the margins within which, when a touch is starting, it's considered to be
+     *  a system gesture (in points). Note that you also need to enable 'ignoreSystemGestures'.
+     */
+    public function setSystemGestureMargins(topMargin:Float=10, bottomMargin:Float=10,
+                                            leftMargin:Float=0, rightMargin:Float=0):Void
+    {
+        __systemGestureMargins[TOP] = topMargin;
+        __systemGestureMargins[BOTTOM] = bottomMargin;
+        __systemGestureMargins[LEFT] = leftMargin;
+        __systemGestureMargins[RIGHT] = rightMargin;
+    }
+    
     /** Indicates if it multitouch simulation should be activated. When the user presses
      * ctrl/cmd (and optionally shift), he'll see a second touch curser that mimics the first.
      * That's an easy way to develop and test multitouch when there's only a mouse available.
@@ -435,7 +521,7 @@ class TouchProcessor
                 target.addEventListener(Event.CONTEXT3D_CREATE, createTouchMarker);
         }
         else if (!value && __touchMarker != null)
-        {                
+        {
             __touchMarker.removeFromParent(true);
             __touchMarker = null;
         }
@@ -469,6 +555,33 @@ class TouchProcessor
     public var numCurrentTouches(get, never):Int;
     private function get_numCurrentTouches():Int { return __currentTouches.length; }
 
+     /** If this callback returns <code>false</code>, the corresponding touch will have its
+     *  target set to <code>null</code>, which will prevent the original target from being
+     *  notified of the touch. In other words: the touch is being blocked. Callback format:
+     *  <pre>function(stageX:Number, stageY:Number):Boolean;</pre>
+     *  @default null
+     */
+    public var occlusionTest(get, set):Float->Float->Bool;
+    private function set_occlusionTest(value:Float->Float->Bool):Float->Float->Bool { return __occlusionTest = value; }
+    private function get_occlusionTest():Float->Float->Bool { return __occlusionTest; }
+
+    /** When enabled, all touches that start very close to the window edges are discarded.
+     *  On mobile, such touches often indicate swipes that are meant to open OS menus.
+     *  Per default, margins of 10 points at the very top and bottom of the screen are checked.
+     *  Call 'setSystemGestureMargins()' to adapt the margins in each direction.
+     *  @default true on mobile, false on desktop */
+    public var discardSystemGestures(get, set):Bool;
+    private function get_discardSystemGestures():Bool { return __discardSystemGestures; }
+    private function set_discardSystemGestures(value:Bool):Bool
+    {
+        if (__discardSystemGestures != value)
+        {
+            __discardSystemGestures = value;
+            __systemGestureTouchID = -1;
+        }
+        return value;
+    }
+
     // keyboard handling
     
     private function onKey(event:KeyboardEvent):Void
@@ -492,15 +605,15 @@ class TouchProcessor
                 if (wasCtrlDown && mockedTouch != null && mockedTouch.phase != TouchPhase.ENDED)
                 {
                     // end active touch ...
-                    __queue.unshift([1, TouchPhase.ENDED, mockedTouch.globalX, mockedTouch.globalY]);
+                    queue_unshift(1, TouchPhase.ENDED, mockedTouch.globalX, mockedTouch.globalY);
                 }
                 else if (__ctrlDown && mouseTouch != null)
                 {
                     // ... or start new one
                     if (mouseTouch.phase == TouchPhase.HOVER || mouseTouch.phase == TouchPhase.ENDED)
-                        __queue.unshift([1, TouchPhase.HOVER, __touchMarker.mockX, __touchMarker.mockY]);
+                        queue_unshift(1, TouchPhase.HOVER, __touchMarker.mockX, __touchMarker.mockY);
                     else
-                        __queue.unshift([1, TouchPhase.BEGAN, __touchMarker.mockX, __touchMarker.mockY]);
+                        queue_unshift(1, TouchPhase.BEGAN, __touchMarker.mockX, __touchMarker.mockY);
                 }
             }
         }

@@ -10,8 +10,10 @@
 
 package starling.core;
 
+import openfl.geom.Rectangle;
 import openfl.system.System;
 
+import starling.display.DisplayObject;
 import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.EnterFrameEvent;
@@ -143,7 +145,8 @@ class StatsDisplay extends Sprite
         __skipCount += 1;
     }
     
-    public override function render(painter:Painter):Void
+    /** @private */
+    @:noCompletion public override function render(painter:Painter):Void
     {
         // By calling 'finishQuadBatch' and 'excludeFromCache', we can make sure that the stats
         // display is always rendered with exactly two draw calls. That is taken into account
@@ -152,6 +155,12 @@ class StatsDisplay extends Sprite
         painter.excludeFromCache(this);
         painter.finishMeshBatch();
         super.render(painter);
+    }
+    
+    /** @private */
+    override public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
+    {
+        return __background.getBounds(targetSpace, out);
     }
 
     /** Indicates if the current runtime supports the 'totalGPUMemory' API. */

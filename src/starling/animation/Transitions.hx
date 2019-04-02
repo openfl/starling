@@ -25,6 +25,13 @@ package starling.animation;
  *  in the range 0-1:</p>
  *  
  *  <pre>function myTransition(ratio:Float):Float</pre>
+ *  
+ *  <p>Also have a look at the "BezierEasing" class, which provides a very easy way of
+ *  adding custom transitions.</p>
+ * 
+ *  @see starling.animation.BezierEasing
+ *  @see starling.animation.Juggler
+ *  @see starling.animation.Tween
  */
 class Transitions
 {        
