@@ -1018,8 +1018,8 @@ class Starling extends EventDispatcher
         
         if (value)
         {
-            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") != null ? __statsDisplayAlign.horizontal : null;
-            var v = Reflect.hasField(__statsDisplayAlign, "vertical") != null ? __statsDisplayAlign.vertical : null;
+            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") ? __statsDisplayAlign.horizontal : null;
+            var v = Reflect.hasField(__statsDisplayAlign, "vertical") ? __statsDisplayAlign.vertical : null;
             showStatsAt(h != null ? h : "left", v != null ? v : "top");
         }
         else if (__statsDisplay != null)
