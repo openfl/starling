@@ -1067,7 +1067,7 @@ class Starling extends EventDispatcher
     
     private function updateStatsDisplayPosition():Void
     {
-        if (!__showStats) return;
+        if (!__showStats || __statsDisplay == null) return;
 
         // The stats display must always be visible, i.e. inside the clipped viewPort.
         // So we take viewPort clipping into account when calculating its position.
