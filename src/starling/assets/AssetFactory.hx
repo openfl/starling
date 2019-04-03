@@ -32,7 +32,7 @@ class AssetFactory
     #if commonjs
     private static function __init__ () {
         
-        untyped Object.defineProperties (TextureAtlas.prototype, {
+        untyped Object.defineProperties (AssetFactory.prototype, {
             "priority": { get: untyped __js__ ("function () { return this.get_priority (); }"), set: untyped __js__ ("function (v) { return this.set_priority (v); }") },
         });
         

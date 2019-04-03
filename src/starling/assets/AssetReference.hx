@@ -25,7 +25,7 @@ class AssetReference
     #if commonjs
     private static function __init__ () {
         
-        untyped Object.defineProperties (AssetManager.prototype, {
+        untyped Object.defineProperties (AssetReference.prototype, {
             "name": { get: untyped __js__ ("function () { return this.get_name (); }"), set: untyped __js__ ("function (v) { return this.set_name (v); }") },
             "url": { get: untyped __js__ ("function () { return this.get_url (); }"), set: untyped __js__ ("function (v) { return this.set_url (v); }") },
             "data": { get: untyped __js__ ("function () { return this.get_data (); }"), set: untyped __js__ ("function (v) { return this.set_data (v); }") },
