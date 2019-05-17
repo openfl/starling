@@ -87,7 +87,7 @@ class ByteArrayUtil
      *  Pass an array that contains integers in the range 0-255. */
     public static function startsWithBytes(byteArray:ByteArray, firstBytes:Array<Int>):Bool
     {
-        if (firstBytes.length > byteArray.length) return false;
+        if ((firstBytes.length : UInt) > byteArray.length) return false;
 
         var len = firstBytes.length;
         #if commonjs
