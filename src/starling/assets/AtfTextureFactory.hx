@@ -53,7 +53,6 @@ class AtfTextureFactory extends AssetFactory
                 onComplete(reference.name, texture);
             };
             
-            var texture:Texture = null;
             var url:String = reference.url;
 
             try { texture = Texture.fromData(reference.data, reference.textureOptions); }
