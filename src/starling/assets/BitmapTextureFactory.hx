@@ -32,13 +32,14 @@ class BitmapTextureFactory extends AssetFactory
     private static var MAGIC_NUMBERS_JPG:Array<Int> = [0xff, 0xd8];
     private static var MAGIC_NUMBERS_PNG:Array<Int> = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
     private static var MAGIC_NUMBERS_GIF:Array<Int> = [0x47, 0x49, 0x46, 0x38];
+    private static var MAGIC_NUMBERS_WEBP:Array<Int> = [0x52, 0x49, 0x46, 0x46];
 
     /** Creates a new instance. */
     public function new()
     {
         super();
-        addMimeTypes(["image/png", "image/jpg", "image/jpeg", "image/gif"]);
-        addExtensions(["png", "jpg", "jpeg", "gif"]);
+        addMimeTypes(["image/png", "image/jpg", "image/jpeg", "image/gif" #if html5 , "image/webp" #end ]);
+        addExtensions(["png", "jpg", "jpeg", "gif" #if html5 , "webp" #end ]);
     }
 
     /** @inheritDoc */
@@ -54,7 +55,8 @@ class BitmapTextureFactory extends AssetFactory
             var byteData:ByteArray = cast reference.data;
             return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_PNG) ||
                     ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_JPG) ||
-                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF);
+                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF)
+                    #if html5 || ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_WEBP #end );
         }
         else return false;
     }
