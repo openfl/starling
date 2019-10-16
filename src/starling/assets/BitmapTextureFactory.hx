@@ -38,8 +38,8 @@ class BitmapTextureFactory extends AssetFactory
     public function new()
     {
         super();
-        addMimeTypes(["image/png", "image/jpg", "image/jpeg", "image/gif", "image/webp"]);
-        addExtensions(["png", "jpg", "jpeg", "gif", "webp"]);
+        addMimeTypes(["image/png", "image/jpg", "image/jpeg", "image/gif" #if html5 , "image/webp" #end ]);
+        addExtensions(["png", "jpg", "jpeg", "gif" #if html5 , "webp" #end ]);
     }
 
     /** @inheritDoc */
@@ -55,8 +55,8 @@ class BitmapTextureFactory extends AssetFactory
             var byteData:ByteArray = cast reference.data;
             return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_PNG) ||
                     ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_JPG) ||
-                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF) ||
-                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_WEBP);
+                    ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF)
+                    #if html5 || ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_WEBP #end );
         }
         else return false;
     }
