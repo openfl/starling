@@ -128,7 +128,11 @@ class StatsDisplay extends Sprite
         __background.color = __skipCount > __frameCount / 2 ? 0x003F00 : 0x0;
         __fps = __totalTime > 0 ? __frameCount / __totalTime : 0;
         __memory = System.totalMemory * B_TO_MB;
+        #if flash
         __gpuMemory = supportsGpuMem ? Reflect.field(Starling.current.context, "totalGPUMemory") * B_TO_MB : -1;
+        #else
+        __gpuMemory = supportsGpuMem ? Starling.current.context.totalGPUMemory * B_TO_MB : -1;
+        #end
 
         var fpsText:String = MathUtil.toFixed(__fps, __fps < 100 ? 1 : 0);
         var memText:String = MathUtil.toFixed(__memory, __memory < 100 ? 1 : 0);
