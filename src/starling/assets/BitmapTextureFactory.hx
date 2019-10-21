@@ -56,7 +56,7 @@ class BitmapTextureFactory extends AssetFactory
             return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_PNG) ||
                     ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_JPG) ||
                     ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_GIF)
-                    #if html5 || ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_WEBP #end );
+                    #if html5 || ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_WEBP) #end;
         }
         else return false;
     }
