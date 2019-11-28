@@ -961,8 +961,8 @@ class DisplayObject extends EventDispatcher
      * Note that for objects in a 3D space (connected to a Sprite3D), this value might not
      * be accurate until the object is part of the display list. */
     public var width(get, set):Float;
-    private function get_width():Float { return getBounds(__parent, sHelperRect).width; }
-    private function set_width(value:Float):Float
+    @:keep private function get_width():Float { return getBounds(__parent, sHelperRect).width; }
+    @:keep private function set_width(value:Float):Float
     {
         // this method calls 'this.scaleX' instead of changing _scaleX directly.
         // that way, subclasses reacting on size changes need to override only the scaleX method.
@@ -983,8 +983,8 @@ class DisplayObject extends EventDispatcher
      * Note that for objects in a 3D space (connected to a Sprite3D), this value might not
      * be accurate until the object is part of the display list. */
     public var height(get, set):Float;
-    private function get_height():Float { return getBounds(__parent, sHelperRect).height; }
-    private function set_height(value:Float):Float
+    @:keep private function get_height():Float { return getBounds(__parent, sHelperRect).height; }
+    @:keep private function set_height(value:Float):Float
     {
         var actualHeight:Float;
         var scaleIsNaN:Bool = __scaleY != __scaleY; // avoid 'isNaN' call
@@ -1000,8 +1000,8 @@ class DisplayObject extends EventDispatcher
     
     /** The x coordinate of the object relative to the local coordinates of the parent. */
     public var x(get, set):Float;
-    private function get_x():Float { return __x; }
-    private function set_x(value:Float):Float 
+    @:keep private function get_x():Float { return __x; }
+    @:keep private function set_x(value:Float):Float
     { 
         if (__x != value)
         {
@@ -1013,8 +1013,8 @@ class DisplayObject extends EventDispatcher
     
     /** The y coordinate of the object relative to the local coordinates of the parent. */
     public var y(get, set):Float;
-    private function get_y():Float { return __y; }
-    private function set_y(value:Float):Float 
+    @:keep private function get_y():Float { return __y; }
+    @:keep private function set_y(value:Float):Float
     {
         if (__y != value)
         {
@@ -1026,8 +1026,8 @@ class DisplayObject extends EventDispatcher
     
     /** The x coordinate of the object's origin in its own coordinate space (default: 0). */
     public var pivotX(get, set):Float;
-    private function get_pivotX():Float { return __pivotX; }
-    private function set_pivotX(value:Float):Float 
+    @:keep private function get_pivotX():Float { return __pivotX; }
+    @:keep private function set_pivotX(value:Float):Float
     {
         if (__pivotX != value)
         {
@@ -1039,8 +1039,8 @@ class DisplayObject extends EventDispatcher
     
     /** The y coordinate of the object's origin in its own coordinate space (default: 0). */
     public var pivotY(get, set):Float;
-    private function get_pivotY():Float { return __pivotY; }
-    private function set_pivotY(value:Float):Float 
+    @:keep private function get_pivotY():Float { return __pivotY; }
+    @:keep private function set_pivotY(value:Float):Float
     { 
         if (__pivotY != value)
         {
@@ -1053,8 +1053,8 @@ class DisplayObject extends EventDispatcher
     /** The horizontal scale factor. '1' means no scale, negative values flip the object.
      * @default 1 */
     public var scaleX(get, set):Float;
-    private function get_scaleX():Float { return __scaleX; }
-    private function set_scaleX(value:Float):Float 
+    @:keep private function get_scaleX():Float { return __scaleX; }
+    @:keep private function set_scaleX(value:Float):Float
     { 
         if (__scaleX != value)
         {
@@ -1067,8 +1067,8 @@ class DisplayObject extends EventDispatcher
     /** The vertical scale factor. '1' means no scale, negative values flip the object.
      * @default 1 */
     public var scaleY(get, set):Float;
-    private function get_scaleY():Float { return __scaleY; }
-    private function set_scaleY(value:Float):Float 
+    @:keep private function get_scaleY():Float { return __scaleY; }
+    @:keep private function set_scaleY(value:Float):Float
     { 
         if (__scaleY != value)
         {
@@ -1081,13 +1081,13 @@ class DisplayObject extends EventDispatcher
     /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
      * value of 'scaleX' (even if the scaling values are different). @default 1 */
     public var scale(get, set):Float;
-    private function get_scale():Float { return scaleX; }
-    private function set_scale(value:Float):Float { return scaleX = scaleY = value; }
+    @:keep private function get_scale():Float { return scaleX; }
+    @:keep private function set_scale(value:Float):Float { return scaleX = scaleY = value; }
     
     /** The horizontal skew angle in radians. */
     public var skewX(get, set):Float;
-    private function get_skewX():Float { return __skewX; }
-    private function set_skewX(value:Float):Float 
+    @:keep private function get_skewX():Float { return __skewX; }
+    @:keep private function set_skewX(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
         
@@ -1101,8 +1101,8 @@ class DisplayObject extends EventDispatcher
     
     /** The vertical skew angle in radians. */
     public var skewY(get, set):Float;
-    private function get_skewY():Float { return __skewY; }
-    private function set_skewY(value:Float):Float 
+    @:keep private function get_skewY():Float { return __skewY; }
+    @:keep private function set_skewY(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
         
@@ -1117,8 +1117,8 @@ class DisplayObject extends EventDispatcher
     /** The rotation of the object in radians. (In Starling, all angles are measured 
      * in radians.) */
     public var rotation(get, set):Float;
-    private function get_rotation():Float { return __rotation; }
-    private function set_rotation(value:Float):Float 
+    @:keep private function get_rotation():Float { return __rotation; }
+    @:keep private function set_rotation(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
 
