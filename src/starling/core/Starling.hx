@@ -773,6 +773,7 @@ class Starling extends EventDispatcher
         var pressure:Float = 1.0;
         var width:Float = 1.0;
         var height:Float = 1.0;
+        var hitStage:Bool = event.target == event.currentTarget;
 
         // figure out general touch properties
         if (Std.is(event, MouseEvent))
@@ -785,7 +786,7 @@ class Starling extends EventDispatcher
             // MouseEvent.buttonDown returns true for both left and right button (AIR supports
             // the right mouse button). We only want to react on the left button for now,
             // so we have to save the state for the left button manually.
-            if (event.type == MouseEvent.MOUSE_DOWN)    __leftMouseDown = true;
+            if (event.type == MouseEvent.MOUSE_DOWN && hitStage)    __leftMouseDown = true;
             else if (event.type == MouseEvent.MOUSE_UP) __leftMouseDown = false;
         }
         else
@@ -818,6 +819,11 @@ class Starling extends EventDispatcher
             case MouseEvent.MOUSE_UP:    phase = TouchPhase.ENDED;
             case MouseEvent.MOUSE_MOVE:
                 phase = (__leftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
+        }
+
+        // If the touch hit an OpenFL DisplayObject, treat it as a hover/move event intead
+        if(!hitStage && phase == TouchPhase.BEGAN){
+            phase = (__leftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
         }
 
         // move position into viewport bounds
@@ -1018,8 +1024,8 @@ class Starling extends EventDispatcher
         
         if (value)
         {
-            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") ? Reflect.field(__statsDisplayAlign, "horizontal") : null;
-            var v = Reflect.hasField(__statsDisplayAlign, "vertical") ? Reflect.field(__statsDisplayAlign, "vertical") : null;
+            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") ? __statsDisplayAlign.horizontal : null;
+            var v = Reflect.hasField(__statsDisplayAlign, "vertical") ? __statsDisplayAlign.vertical : null;
             showStatsAt(h != null ? h : "left", v != null ? v : "top");
         }
         else if (__statsDisplay != null)
@@ -1041,8 +1047,8 @@ class Starling extends EventDispatcher
         }
         
         __showStats = true;
-        Reflect.setField(__statsDisplayAlign, "horizontal", horizontalAlign);
-        Reflect.setField(__statsDisplayAlign, "vertical", verticalAlign);
+        __statsDisplayAlign.horizontal = horizontalAlign;
+        __statsDisplayAlign.vertical = verticalAlign;
         
         if (context == null)
         {
@@ -1072,8 +1078,8 @@ class Starling extends EventDispatcher
         // The stats display must always be visible, i.e. inside the clipped viewPort.
         // So we take viewPort clipping into account when calculating its position.
 
-        var horizontalAlign:String = Reflect.hasField(__statsDisplayAlign, "horizontal") ? Reflect.field(__statsDisplayAlign, "horizontal") : null;
-        var verticalAlign:String = Reflect.hasField(__statsDisplayAlign, "vertical") ? Reflect.field(__statsDisplayAlign, "vertical") : null;
+        var horizontalAlign:String = __statsDisplayAlign.horizontal;
+        var verticalAlign:String = __statsDisplayAlign.vertical;
         var scaleX:Float = __viewPort.width  / __stage.stageWidth;
         var scaleY:Float = __viewPort.height / __stage.stageHeight;
         var clipping:Rectangle = Pool.getRectangle(
