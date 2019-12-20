@@ -988,7 +988,7 @@ class Starling extends EventDispatcher
     private function get_nativeOverlay():Sprite { return __nativeOverlay; }
     
     /** If enabled, touches or mouse events on the native overlay won't be propagated to
-     *  Starling. @default false */
+     *  Starling. @default true */
     public var nativeOverlayBlocksTouches(get, set):Bool;
     private function get_nativeOverlayBlocksTouches():Bool
     {

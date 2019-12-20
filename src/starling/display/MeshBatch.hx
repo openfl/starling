@@ -129,39 +129,24 @@ class MeshBatch extends Mesh
 
     /** Adds a mesh to the batch by appending its vertices and indices.
      *
+     *  Note that the first time you add a mesh to the batch, the batch will duplicate its
+     *  MeshStyle. All subsequently added meshes will then be converted to that same style.
+      
      *  @param mesh      the mesh to add to the batch.
      *  @param matrix    transform all vertex positions with a certain matrix. If this
-     *                   parameter is omitted, <code>mesh.transformationMatrix</code>
+     *                   parameter is omitted, `mesh.transformationMatrix`
      *                   will be used instead (except if the last parameter is enabled).
      *  @param alpha     will be multiplied with each vertex' alpha value.
-     *  @param subset    the subset of the mesh you want to add, or <code>null</code> for
+     *  @param subset    the subset of the mesh you want to add, or `null` for
      *                   the complete mesh.
      *  @param ignoreTransformations   when enabled, the mesh's vertices will be added
      *                   without transforming them in any way (no matter the value of the
-     *                   <code>matrix</code> parameter).
+     *                   `matrix` parameter).
      */
     public function addMesh(mesh:Mesh, matrix:Matrix=null, alpha:Float=1.0,
                             subset:MeshSubset=null, ignoreTransformations:Bool=false):Void
     {
-        if (ignoreTransformations) matrix = null;
-        else if (matrix == null) matrix = mesh.transformationMatrix;
-        if (subset == null) subset = sFullMeshSubset;
-
-        var targetVertexID:Int = __vertexData.numVertices;
-        var targetIndexID:Int  = __indexData.numIndices;
-        var meshStyle:MeshStyle = mesh.__style;
-
-        if (targetVertexID == 0)
-            __setupFor(mesh);
-
-        meshStyle.batchVertexData(__style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
-        meshStyle.batchIndexData(__style, targetIndexID, targetVertexID - subset.vertexID,
-            subset.indexID, subset.numIndices);
-
-        if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
-        if (__parent != null) setRequiresRedraw();
-
-        __indexSyncRequired = __vertexSyncRequired = true;
+        addMeshAt(mesh, -1, -1, matrix, alpha, subset, ignoreTransformations);
     }
 
     /** Adds a mesh to the batch by copying its vertices and indices to the given positions.
@@ -169,24 +154,49 @@ class MeshBatch extends Mesh
      *  you need to make sure that they are aligned within the 3-indices groups making up
      *  the mesh's triangles.
      *
-     *  <p>It's easiest to only add objects with an identical setup, e.g. only quads.
+     *  It's easiest to only add objects with an identical setup, e.g. only quads.
      *  For the latter, indices are aligned in groups of 6 (one quad requires six indices),
-     *  and the vertices in groups of 4 (one vertex for every corner).</p>
+     *  and the vertices in groups of 4 (one vertex for every corner).
+     *
+     *  Note that the first time you add a mesh to the batch, the batch will duplicate its
+     *  MeshStyle. All subsequently added meshes will then be converted to that same style.
+     *
+     *  @param mesh      the mesh to add to the batch.
+     *  @param indexID   the position at which the mesh's indices should be added to the batch.
+     *                   If negative, they will be added at the very end.
+     *  @param vertexID  the position at which the mesh's vertices should be added to the batch.
+     *                   If negative, they will be added at the very end.
+     *  @param matrix    transform all vertex positions with a certain matrix. If this
+     *                   parameter is omitted, `mesh.transformationMatrix`
+     *                   will be used instead (except if the last parameter is enabled).
+     *  @param alpha     will be multiplied with each vertex' alpha value.
+     *  @param subset    the subset of the mesh you want to add, or `null` for
+     *                   the complete mesh.
+     *  @param ignoreTransformations   when enabled, the mesh's vertices will be added
+     *                   without transforming them in any way (no matter the value of the
+     *                   `matrix` parameter).
      */
-    public function addMeshAt(mesh:Mesh, indexID:Int, vertexID:Int):Void
+    public function addMeshAt(mesh:Mesh, indexID:Int=-1, vertexID:Int=-1,
+                            matrix:Matrix=null, alpha:Float=1.0,
+                            subset:MeshSubset=null, ignoreTransformations:Bool=false):Void
     {
-        var numIndices:Int = mesh.numIndices;
-        var numVertices:Int = mesh.numVertices;
-        var matrix:Matrix = mesh.transformationMatrix;
+        if (ignoreTransformations) matrix = null;
+        else if (matrix == null) matrix = mesh.transformationMatrix;
+        if (subset == null) subset = sFullMeshSubset;
+        
+        var oldNumVertices:Int = __vertexData.numVertices;
+        var targetVertexID:Int = vertexID >= 0 ? vertexID : oldNumVertices;
+        var targetIndexID:Int = indexID >= 0 ? indexID : __indexData.numIndices;
         var meshStyle:MeshStyle = mesh.__style;
 
-        if (__vertexData.numVertices == 0)
+        if (oldNumVertices == 0)
             __setupFor(mesh);
 
-        meshStyle.batchVertexData(__style, vertexID, matrix, 0, numVertices);
-        meshStyle.batchIndexData(__style, indexID, vertexID, 0, numIndices);
-
-        if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, vertexID, numVertices);
+        meshStyle.batchVertexData(__style, targetVertexID, matrix, subset.vertexID, subset.numVertices);
+        meshStyle.batchIndexData(__style, targetIndexID, targetVertexID - subset.vertexID,
+                subset.indexID, subset.numIndices);
+        
+        if (alpha != 1.0) __vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
         if (__parent != null) setRequiresRedraw();
 
         __indexSyncRequired = __vertexSyncRequired = true;

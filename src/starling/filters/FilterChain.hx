@@ -82,18 +82,26 @@ class FilterChain extends FragmentFilter
                                      input2:Texture = null, input3:Texture = null):Texture
     {
         var numFilters:Int = _filters.length;
-        var outTexture:Texture = input0;
-        var inTexture:Texture;
-
-        for (i in 0...numFilters)
+        
+        if (numFilters > 0)
         {
-            inTexture = outTexture;
-            outTexture = _filters[i].process(painter, helper, inTexture);
+            var outTexture:Texture = input0;
+            var inTexture:Texture;
 
-            if (i != 0) helper.putTexture(inTexture);
+            for (i in 0...numFilters)
+            {
+                inTexture = outTexture;
+                outTexture = _filters[i].process(painter, helper, inTexture);
+
+                if (i != 0) helper.putTexture(inTexture);
+            }
+
+            return outTexture;
         }
-
-        return outTexture;
+        else
+        {
+            return super.process(painter, helper, input0, input1, input2, input3);
+        }
     }
 
     /** @private */
@@ -105,7 +113,7 @@ class FilterChain extends FragmentFilter
         for (i in 0...numFilters)
             numPasses += _filters[i].numPasses;
 
-        return numPasses;
+        return (numPasses != 0 ? numPasses : 1);
     }
 
     /** Returns the filter at a certain index. If you pass a negative index,
