@@ -988,7 +988,7 @@ class Starling extends EventDispatcher
     private function get_nativeOverlay():Sprite { return __nativeOverlay; }
     
     /** If enabled, touches or mouse events on the native overlay won't be propagated to
-     *  Starling. @default false */
+     *  Starling. @default true */
     public var nativeOverlayBlocksTouches(get, set):Bool;
     private function get_nativeOverlayBlocksTouches():Bool
     {
@@ -1018,8 +1018,8 @@ class Starling extends EventDispatcher
         
         if (value)
         {
-            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") ? __statsDisplayAlign.horizontal : null;
-            var v = Reflect.hasField(__statsDisplayAlign, "vertical") ? __statsDisplayAlign.vertical : null;
+            var h = Reflect.hasField(__statsDisplayAlign, "horizontal") ? Reflect.field(__statsDisplayAlign, "horizontal") : null;
+            var v = Reflect.hasField(__statsDisplayAlign, "vertical") ? Reflect.field(__statsDisplayAlign, "vertical") : null;
             showStatsAt(h != null ? h : "left", v != null ? v : "top");
         }
         else if (__statsDisplay != null)
@@ -1041,8 +1041,8 @@ class Starling extends EventDispatcher
         }
         
         __showStats = true;
-        __statsDisplayAlign.horizontal = horizontalAlign;
-        __statsDisplayAlign.vertical = verticalAlign;
+        Reflect.setField(__statsDisplayAlign, "horizontal", horizontalAlign);
+        Reflect.setField(__statsDisplayAlign, "vertical", verticalAlign);
         
         if (context == null)
         {
@@ -1072,8 +1072,8 @@ class Starling extends EventDispatcher
         // The stats display must always be visible, i.e. inside the clipped viewPort.
         // So we take viewPort clipping into account when calculating its position.
 
-        var horizontalAlign:String = __statsDisplayAlign.horizontal;
-        var verticalAlign:String = __statsDisplayAlign.vertical;
+        var horizontalAlign:String = Reflect.hasField(__statsDisplayAlign, "horizontal") ? Reflect.field(__statsDisplayAlign, "horizontal") : null;
+        var verticalAlign:String = Reflect.hasField(__statsDisplayAlign, "vertical") ? Reflect.field(__statsDisplayAlign, "vertical") : null;
         var scaleX:Float = __viewPort.width  / __stage.stageWidth;
         var scaleY:Float = __viewPort.height / __stage.stageHeight;
         var clipping:Rectangle = Pool.getRectangle(

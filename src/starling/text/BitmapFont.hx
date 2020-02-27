@@ -326,7 +326,7 @@ class BitmapFont implements ITextCompositor
             __helperImage.x = charLocation.x;
             __helperImage.y = charLocation.y;
             __helperImage.scale = charLocation.scale;
-            meshBatch.addMesh(__helperImage);
+            meshBatch.addMeshAt(__helperImage);
         }
 
         BitmapCharLocation.rechargePool();
