@@ -5,6 +5,8 @@ import openfl.events.NetStatusEvent;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
 import starling.display.Image;
+import starling.events.EnterFrameEvent;
+import starling.events.Event;
 import starling.text.TextField;
 import starling.textures.Texture;
 import starling.utils.SystemUtil;
@@ -34,10 +36,10 @@ import starling.utils.SystemUtil;
 			ns.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
 			
 			ns.client = { onMetaData:function(info:MetaInfo) {
-				trace(info.duration);
+				// trace(info.duration);
 			}};
 			
-			texture = Texture.fromNetStream(ns, 1, function():Void
+			texture = Texture.fromNetStream(ns, 1, function(texture:Texture):Void
 			{
 				image = new Image(texture);
 				addChild(image);
@@ -56,20 +58,37 @@ import starling.utils.SystemUtil;
 				var errorMessage:String = "Video texture is not supported on this platform";
 			#end
 			
-			var textField:TextField = new TextField(220, 128, errorMessage, "DejaVu Sans", 14);
+            var textField:TextField = new TextField(220, 128, errorMessage);
+            textField.format.font = "DejaVu Sans";
 			textField.x = Constants.CenterX - textField.width / 2;
 			textField.y = Constants.CenterY - textField.height / 2;
 			addChild(textField);
 		}
 	}
-	
-	static private function onNetStatus(e:NetStatusEvent):Void 
+
+	private function onEnterFrame(event:EnterFrameEvent, passedTime:Float):Void
 	{
-		trace(e.info.code);
+		setRequiresRedraw();
+	}
+	
+	private function onNetStatus(e:NetStatusEvent):Void 
+	{
+		// trace(e.info.code);
+		switch(e.info.code)
+		{
+			case "NetStream.Play.Start":
+				addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			
+			case "NetStream.Play.Stop", "NetStream.Play.Complete":
+                removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+            
+            default:
+		}
 	}
 	
 	override public function dispose():Void
 	{
+		removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 		if (ns != null) {
 			ns.close();
 		}
