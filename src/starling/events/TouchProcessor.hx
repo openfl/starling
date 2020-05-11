@@ -146,6 +146,9 @@ class TouchProcessor
         var i:Int;
         var touch:Touch;
         var numIterations:Int = 0;
+        #if flash
+        var touchData:Dynamic;
+        #else
         var touchData:TouchData;
         
         __elapsedTime += passedTime;
