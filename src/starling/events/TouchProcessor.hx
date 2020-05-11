@@ -150,7 +150,7 @@ class TouchProcessor
         var touchData:Dynamic;
         #else
         var touchData:TouchData;
-        
+        #end
         __elapsedTime += passedTime;
         sUpdatedTouches.length = 0;
         
