@@ -230,7 +230,11 @@ class Starling extends EventDispatcher
     private var __frameID:UInt;
     private var __leftMouseDown:Bool;
     private var __statsDisplay:StatsDisplay;
+    #if flash
+    private var __statsDisplayAlign:Dynamic;
+    #else
     private var __statsDisplayAlign:openfl.utils.Object;
+    #end
     private var __started:Bool;
     private var __rendering:Bool;
     private var __supportHighResolutions:Bool;
