@@ -10,7 +10,11 @@
 
 package starling.extensions;
 
-import haxe.xml.Fast;
+#if haxe4
+import haxe.xml.Access;
+#else
+import haxe.xml.Fast in Access;
+#end
 
 import flash.display3D.Context3DBlendFactor;
 import flash.errors.ArgumentError;
@@ -254,7 +258,7 @@ class PDParticleSystem extends ParticleSystem
     
     private function parseConfig(config:String):Void
     {
-        var xml = new Fast(Xml.parse(config).firstElement());
+        var xml = new Access(Xml.parse(config).firstElement());
         var config = xml.node;
         mEmitterXVariance = Std.parseFloat(config.sourcePositionVariance.att.x);
         mEmitterYVariance = Std.parseFloat(config.sourcePositionVariance.att.y);
@@ -310,17 +314,17 @@ class PDParticleSystem extends ParticleSystem
             mMinRadiusVariance = 0.0;
     }
     
-    private function getIntValue(element:Fast):Int
+    private function getIntValue(element:Access):Int
     {
         return Std.parseInt(element.att.value);
     }
     
-    private function getFloatValue(element:Fast):Float
+    private function getFloatValue(element:Access):Float
     {
         return Std.parseFloat(element.att.value);
     }
 
-    private function getColor(element:Fast):ColorArgb
+    private function getColor(element:Access):ColorArgb
     {
         var color:ColorArgb = new ColorArgb();
         color.red   = Std.parseFloat(element.att.red);
@@ -330,7 +334,7 @@ class PDParticleSystem extends ParticleSystem
         return color;
     }
 
-    private function getBlendFunc(element:Fast):String
+    private function getBlendFunc(element:Access):String
     {
         var value:Int = getIntValue(element);
         switch (value)
