@@ -14,12 +14,17 @@ import flash.errors.Error;
 import flash.geom.Point;
 import flash.Lib;
 
-import openfl.utils.Object;
 import openfl.Vector;
 
 import starling.display.DisplayObject;
 import starling.display.Stage;
 import starling.utils.MathUtil;
+
+#if flash
+typedef Object = Dynamic;
+#else
+import openfl.utils.Object;
+#end
 
 /** The TouchProcessor is used to convert mouse and touch events of the conventional
  *  Flash stage to Starling's TouchEvents.
