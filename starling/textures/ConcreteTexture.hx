@@ -327,7 +327,8 @@ class ConcreteTexture extends Texture
     private function get_onRestore():Function { return mOnRestore; }
     private function set_onRestore(value:Function):Function
     {
-        Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+        if (Starling.current != null)
+            Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
         if (Starling.handleLostContext && value != null)
         {
