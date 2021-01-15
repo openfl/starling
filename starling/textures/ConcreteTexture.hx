@@ -371,4 +371,4 @@ class ConcreteTexture extends Texture
     
     /** @inheritDoc */
     private override function get_repeat():Bool { return mRepeat; }
-}
+} 
