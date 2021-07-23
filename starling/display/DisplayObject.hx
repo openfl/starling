@@ -1033,7 +1033,7 @@ class DisplayObject extends EventDispatcher
         var currentObject:DisplayObject = this;
         while (currentObject.mParent != null)
         {
-            if (Std.is(currentObject.mParent, Stage)) return currentObject;
+            if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(currentObject.mParent, Stage)) return currentObject;
             else currentObject = currentObject.parent;
         }
         
@@ -1043,5 +1043,5 @@ class DisplayObject extends EventDispatcher
     /** The stage the display object is connected to, or null if it is not connected 
      * to the stage. */
     public var stage(get, never):Stage;
-    private function get_stage():Stage { return Std.is(this.base, Stage) ? cast this.base : null; }
+    private function get_stage():Stage { return #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this.base, Stage) ? cast this.base : null; }
 }

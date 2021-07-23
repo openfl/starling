@@ -525,12 +525,12 @@ class AssetManager extends EventDispatcher
     {
         for (rawAsset in rawAssets)
         {
-            if (Std.is(rawAsset, Array))
+            if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, Array))
             {
                 enqueue(rawAsset);
             }
             #if 0
-            else if (Std.is(rawAsset, Class))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, Class))
             {
                 var typeXml:XML = describeType(rawAsset);
                 var childNode:XML;
@@ -560,7 +560,7 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
-            else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, String) || #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, URLRequest))
             {
                 enqueueWithName(rawAsset);
             }
@@ -829,12 +829,12 @@ class AssetManager extends EventDispatcher
             {
                 onComplete();
             }
-            else if (Std.is(asset, Sound))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, Sound))
             {
                 addSound(name, cast asset);
                 onComplete();
             }
-            else if (Std.is(asset, Xml))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, Xml))
             {
                 xml = cast asset;
                 xml = xml.firstElement();
@@ -852,7 +852,7 @@ class AssetManager extends EventDispatcher
                 Timer.delay(function():Void{ process(asset); }, 1);
                 return; // to keep CANCEL event listener intact
             }
-            else if (Std.is(asset, Bitmap))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, Bitmap))
             {
                 texture = Texture.fromData(asset, options);
                 texture.root.onRestore = function():Void
@@ -885,7 +885,7 @@ class AssetManager extends EventDispatcher
                 addTexture(name, texture);
                 onComplete();
             }
-            else if (Std.is(asset, ByteArrayData))
+            else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, ByteArrayData))
             {
                 bytes = cast asset;
                 
@@ -1119,13 +1119,13 @@ class AssetManager extends EventDispatcher
             #end
         }
         
-        if (Std.is(rawAsset, Class))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, Class))
         {
             Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
         }
-        else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, String) || #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, URLRequest))
         {
-            urlRequest = Std.is(rawAsset, URLRequest) ? cast rawAsset : null;
+            urlRequest = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, URLRequest) ? cast rawAsset : null;
             if (urlRequest == null)
                 urlRequest = new URLRequest(cast(rawAsset, String));
             url = urlRequest.url;
@@ -1154,10 +1154,10 @@ class AssetManager extends EventDispatcher
     {
         var name:String = null;
 
-        if      (Std.is(rawAsset, String))        name =  cast(rawAsset, String);
-        else if (Std.is(rawAsset, URLRequest))    name = cast(rawAsset, URLRequest).url;
+        if      (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, String))        name =  cast(rawAsset, String);
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, URLRequest))    name = cast(rawAsset, URLRequest).url;
         #if flash
-        else if (Std.is(rawAsset, FileReference)) name = cast(rawAsset, FileReference).name;
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(rawAsset, FileReference)) name = cast(rawAsset, FileReference).name;
         #end
 
         if (name != null)

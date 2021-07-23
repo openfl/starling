@@ -412,7 +412,7 @@ class FragmentFilter
         var marginX:Float = mMarginX;
         var marginY:Float = mMarginY;
         
-        if (Std.is(targetSpace, Stage))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(targetSpace, Stage))
         {
             stage = cast targetSpace;
 

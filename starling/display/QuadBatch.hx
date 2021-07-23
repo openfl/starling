@@ -565,7 +565,7 @@ class QuadBatch extends DisplayObject
                                           blendMode:String=null,
                                           ignoreCurrentFilter:Bool=false):Int
     {
-        if (Std.is(object, Sprite3D))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, Sprite3D))
             throw new IllegalOperationError("Sprite3D objects cannot be flattened");
 
         var i:Int;
@@ -573,9 +573,9 @@ class QuadBatch extends DisplayObject
         var isRootObject:Bool = false;
         var objectAlpha:Float = object.alpha;
         
-        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
-        var quad:Quad = Std.is(object, Quad) ? cast object : null;
-        var batch:QuadBatch = Std.is(object, QuadBatch) ? cast object : null;
+        var container:DisplayObjectContainer = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, DisplayObjectContainer) ? cast object : null;
+        var quad:Quad = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, Quad) ? cast object : null;
+        var batch:QuadBatch = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, QuadBatch) ? cast object : null;
         var filter:FragmentFilter = object.filter;
 
         if (quadBatchID == -1)
@@ -593,7 +593,7 @@ class QuadBatch extends DisplayObject
             if (object.mask != null)
                 trace("[Starling] Masks are ignored on children of a flattened sprite.");
 
-            if (Std.is(object, Sprite) && cast(object, Sprite).clipRect != null)
+            if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, Sprite) && cast(object, Sprite).clipRect != null)
                 trace("[Starling] ClipRects are ignored on children of a flattened sprite.");
         }
         
@@ -645,7 +645,7 @@ class QuadBatch extends DisplayObject
             
             if (quad != null)
             {
-                var image:Image = Std.is(quad, Image) ? cast quad : null;
+                var image:Image = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(quad, Image) ? cast quad : null;
                 texture = image != null ? image.texture : null;
                 smoothing = image != null ? image.smoothing : null;
                 tinted = quad.tinted;

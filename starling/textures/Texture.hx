@@ -146,22 +146,22 @@ class Texture
     {
         var texture:Texture = null;
 
-        if (Std.is(data, Bitmap))  data = cast(data, Bitmap).bitmapData;
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(data, Bitmap))  data = cast(data, Bitmap).bitmapData;
         if (options == null) options = new TextureOptions();
 
-        if (Std.is(data, Class))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(data, Class))
         {
             texture = fromEmbeddedAsset(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
-        else if (Std.is(data, BitmapData))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(data, BitmapData))
         {
             texture = fromBitmapData(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture, options.scale,
                 options.format, options.repeat);
         }
-        else if (Std.is(data, ByteArrayData))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(data, ByteArrayData))
         {
             texture = fromAtfData(cast data,
                 options.scale, options.mipMapping, options.onReady, options.repeat);
@@ -193,7 +193,7 @@ class Texture
         var texture:Texture;
         var asset = Type.createEmptyInstance(assetClass);
 
-        if (Std.is(asset, Bitmap))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, Bitmap))
         {
             texture = Texture.fromBitmap(cast asset, mipMapping,
                                          optimizeForRenderToTexture, scale, format, repeat);
@@ -202,7 +202,7 @@ class Texture
                 texture.root.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
-        else if (Std.is(asset, ByteArrayData))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(asset, ByteArrayData))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null, repeat);
             texture.root.onRestore = function():Void

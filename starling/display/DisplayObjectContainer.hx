@@ -131,7 +131,7 @@ class DisplayObjectContainer extends DisplayObject
                 
                 if (stage != null)
                 {
-                    var container:DisplayObjectContainer = Std.is(child, DisplayObjectContainer) ? cast child : null;
+                    var container:DisplayObjectContainer = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(child, DisplayObjectContainer) ? cast child : null;
                     if (container != null) container.broadcastEventWith(Event.ADDED_TO_STAGE);
                     else           child.dispatchEventWith(Event.ADDED_TO_STAGE);
                 }
@@ -165,7 +165,7 @@ class DisplayObjectContainer extends DisplayObject
             
             if (stage != null)
             {
-                var container:DisplayObjectContainer = Std.is(child, DisplayObjectContainer) ? cast child : null;
+                var container:DisplayObjectContainer = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(child, DisplayObjectContainer) ? cast child : null;
                 if (container != null) container.broadcastEventWith(Event.REMOVED_FROM_STAGE);
                 else           child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
             }
@@ -522,7 +522,7 @@ class DisplayObjectContainer extends DisplayObject
     private function __getChildEventListeners(object:DisplayObject, eventType:String, 
                                              listeners:Vector<DisplayObject>):Void
     {
-        var container:DisplayObjectContainer = Std.is(object, DisplayObjectContainer) ? cast object : null;
+        var container:DisplayObjectContainer = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, DisplayObjectContainer) ? cast object : null;
         
         if (object.hasEventListener(eventType))
             listeners[listeners.length] = object; // avoiding 'push'                

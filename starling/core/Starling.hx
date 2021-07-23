@@ -328,7 +328,7 @@ class Starling extends EventDispatcher
         if (mStage3D.context3D != null && mStage3D.context3D.driverInfo != "Disposed")
         {
             #if flash
-                if (mProfileType == "auto" || Std.is(mProfileType, Array))
+                if (mProfileType == "auto" || #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mProfileType, Array))
                     throw new ArgumentError("When sharing the context3D, " +
                         "the actual profile has to be supplied");
                 else
@@ -394,9 +394,9 @@ class Starling extends EventDispatcher
         
         if (profile == "auto")
             profiles = [ /*Context3DProfile.STANDARD_EXTENDED, Context3DProfile.STANDARD,*/ Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED];
-        else if (Std.is(profile, #if flash String #else Int #end))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(profile, #if flash String #else Int #end))
             profiles = [cast profile];
-        else if (Std.is(profile, Array))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(profile, Array))
             profiles = cast profile;
         else
             throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array'");
@@ -791,7 +791,7 @@ class Starling extends EventDispatcher
         var height:Float = 1.0;
         
         // figure out general touch properties
-        if (Std.is(event, MouseEvent))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(event, MouseEvent))
         {
             var mouseEvent:MouseEvent = cast event;
             globalX = mouseEvent.stageX;

@@ -136,7 +136,7 @@ class ConcreteTexture extends Texture
             data = potData;
         }
         
-        if (Std.is(mBase, flash.display3D.textures.Texture))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.Texture))
         {
             var potTexture:flash.display3D.textures.Texture = 
                 cast mBase;
@@ -170,7 +170,7 @@ class ConcreteTexture extends Texture
                 canvas.dispose();
             }
         }
-        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.RectangleTexture))
         {
             var baseTexture:flash.display3D.textures.RectangleTexture = cast mBase;
             
@@ -203,7 +203,7 @@ class ConcreteTexture extends Texture
     {
         var isAsync:Bool = Reflect.isFunction(async) || async == true;
         var potTexture:flash.display3D.textures.Texture = 
-              Std.is(mBase, flash.display3D.textures.Texture) ? cast mBase : null;
+              #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.Texture) ? cast mBase : null;
         
         if (potTexture == null)
             throw new Error("This texture type does not support ATF data");
@@ -271,14 +271,14 @@ class ConcreteTexture extends Texture
     {
         var context:Context3D = Starling.current.context;
         
-        if (Std.is(mBase, flash.display3D.textures.Texture))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.Texture))
             mBase = context.createTexture(mWidth, mHeight, mFormat, 
                                           mOptimizedForRenderTexture);
-        else if (Std.is(mBase, flash.display3D.textures.RectangleTexture))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.RectangleTexture))
             mBase = context.createRectangleTexture (mWidth, mHeight, mFormat,
                                                       mOptimizedForRenderTexture);
         #if flash
-        else if (Std.is(mBase, flash.display3D.textures.VideoTexture))
+        else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(mBase, flash.display3D.textures.VideoTexture))
             mBase = Reflect.callMethod(context, Reflect.getProperty(context, "createVideoTexture"), []);
         #end
         else

@@ -143,7 +143,7 @@ class SubTexture extends Texture
         while (texture != null)
         {
             sMatrix.concat(texture.mTransformationMatrix);
-            texture = Std.is(texture.parent, SubTexture) ? cast texture.parent : null;
+            texture = #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(texture.parent, SubTexture) ? cast texture.parent : null;
         }
         
         var i:Int = startIndex;

@@ -152,10 +152,10 @@ class Sprite3D extends DisplayObjectContainer
 
     private function __recursivelySetIs3D(object:DisplayObject, value:Bool):Void
     {
-        if (Std.is(object, Sprite3D))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, Sprite3D))
             return;
 
-        if (Std.is(object, DisplayObjectContainer))
+        if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(object, DisplayObjectContainer))
         {
             var container:DisplayObjectContainer = cast object;
             var numChildren:Int = container.numChildren;
