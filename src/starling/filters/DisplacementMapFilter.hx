@@ -132,7 +132,7 @@ class DisplacementMapFilter extends FragmentFilter
         // To allow map textures from a texture atlas, we need to clamp the map
         // texture coordinates to the subTexture's region (in its root texture).
 
-        if (Std.is(mapTexture, SubTexture))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(mapTexture, SubTexture))
         {
             var bounds:Rectangle = Pool.getRectangle(0, 0, 1, 1);
             RectangleUtil.getBounds(bounds, mapTexture.transformationMatrixToRoot, bounds);

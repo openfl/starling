@@ -232,9 +232,9 @@ class RenderUtil
             profiles = ["enhanced",
                         "standardExtended", "standard", "standardConstrained",
                         "baselineExtended", "baseline", "baselineConstrained"];
-        else if (Std.is(profile, String))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, String))
             profiles = [Std.string(profile)];
-        else if (Std.is(profile, Array))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, Array))
             profiles = cast(profile, Array<Dynamic>);
         else
             throw new ArgumentError("Profile must be of type 'String' or 'Array'");

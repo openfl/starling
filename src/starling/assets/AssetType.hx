@@ -37,13 +37,13 @@ class AssetType
     /** Figures out the asset type string from the type of the given instance. */
     public static function fromAsset(asset:Dynamic):String
     {
-        if (Std.is(asset, Texture)) return TEXTURE;
-        else if (Std.is(asset, TextureAtlas)) return TEXTURE_ATLAS;
-        else if (Std.is(asset, Sound)) return SOUND;
-        else if (Std.is(asset, Xml)) return XML_DOCUMENT;
-        else if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end)) return BYTE_ARRAY;
-        else if (Std.is(asset, BitmapFont)) return BITMAP_FONT;
-        else if (Std.is(asset, AssetManager)) return ASSET_MANAGER;
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Texture)) return TEXTURE;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, TextureAtlas)) return TEXTURE_ATLAS;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Sound)) return SOUND;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Xml)) return XML_DOCUMENT;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, #if commonjs ByteArray #else ByteArrayData #end)) return BYTE_ARRAY;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, BitmapFont)) return BITMAP_FONT;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, AssetManager)) return ASSET_MANAGER;
         else return OBJECT;
     }
 }

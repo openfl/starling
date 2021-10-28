@@ -169,8 +169,8 @@ class VertexData
     public function new(format:Dynamic=null, initialCapacity:Int=32)
     {
         if (format == null) _format = MeshStyle.VERTEX_FORMAT;
-        else if (Std.is(format, VertexDataFormat)) _format = format;
-        else if (Std.is(format, String)) _format = VertexDataFormat.fromString(Std.string(format));
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(format, VertexDataFormat)) _format = format;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(format, String)) _format = VertexDataFormat.fromString(Std.string(format));
         else throw new ArgumentError("'format' must be String or VertexDataFormat");
 
         _attributes = _format.attributes;

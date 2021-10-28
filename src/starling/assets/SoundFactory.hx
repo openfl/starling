@@ -33,9 +33,9 @@ class SoundFactory extends AssetFactory
     /** @inheritDoc */
     override public function canHandle(reference:AssetReference):Bool
     {
-        if (Std.is(reference.data, Sound) || super.canHandle(reference))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, Sound) || super.canHandle(reference))
             return true;
-        else if (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
         {
             var byteData:ByteArray = cast reference.data;
             return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_A) ||
@@ -52,11 +52,11 @@ class SoundFactory extends AssetFactory
         
         try
         {
-            if(Std.is(reference.data, Sound))
+            if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, Sound))
                 sound = cast(reference.data, Sound);
             else
             {
-                var bytes:ByteArray = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
+                var bytes:ByteArray = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
 
                 if (bytes != null)
                 {

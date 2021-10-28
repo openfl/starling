@@ -46,11 +46,11 @@ class BitmapTextureFactory extends AssetFactory
     override public function canHandle(reference:AssetReference):Bool
     {
         if (super.canHandle(reference) ||
-            Std.is(reference.data, Bitmap) || Std.is(reference.data, BitmapData))
+            #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, Bitmap) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, BitmapData))
         {
             return true;
         }
-        else if (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end))
         {
             var byteData:ByteArray = cast reference.data;
             return ByteArrayUtil.startsWithBytes(byteData, MAGIC_NUMBERS_PNG) ||
@@ -128,15 +128,15 @@ class BitmapTextureFactory extends AssetFactory
             helper.onEndRestore();
         }
         
-        if (Std.is(data, Bitmap) && cast(data, Bitmap).bitmapData != null)
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Bitmap) && cast(data, Bitmap).bitmapData != null)
         {
             onBitmapDataCreated(cast(data, Bitmap).bitmapData);
         }
-        else if (Std.is(data, BitmapData))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, BitmapData))
         {
             onBitmapDataCreated(cast data);
         }
-        else if (Std.is(data, #if commonjs ByteArray #else ByteArrayData #end))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, #if commonjs ByteArray #else ByteArrayData #end))
         {
             createBitmapDataFromByteArray(cast data, onBitmapDataCreated, onError);
         }

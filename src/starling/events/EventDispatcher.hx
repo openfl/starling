@@ -140,7 +140,7 @@ class EventDispatcher
         var previousTarget:EventDispatcher = event.target;
         event.setTarget(this);
         
-        if (bubbles && Std.is(this, DisplayObject)) __bubbleEvent(event);
+        if (bubbles && #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(this, DisplayObject)) __bubbleEvent(event);
         else                                        __invokeEvent(event);
         
         if (previousTarget != null) event.setTarget(previousTarget);

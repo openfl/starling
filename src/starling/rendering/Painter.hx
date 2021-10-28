@@ -569,7 +569,7 @@ class Painter
      *  stage coordinates. */
     private function isRectangularMask(mask:DisplayObject, maskee:DisplayObject, out:Matrix):Bool
     {
-        var quad:Quad = Std.is(mask, Quad) ? cast mask : null;
+        var quad:Quad = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(mask, Quad) ? cast mask : null;
 		var isInverted:Bool = maskee != null && maskee.maskInverted;
         var is3D:Bool = mask.is3D || (maskee != null && maskee.is3D && mask.stage == null);
 

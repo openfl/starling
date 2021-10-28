@@ -93,7 +93,7 @@ class Juggler implements IAnimatable
     {
         if (object != null && !__objectIDs.exists(object)) 
         {
-            var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
+            var dispatcher:EventDispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
             if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 
             __objects[__objects.length] = object;
@@ -121,7 +121,7 @@ class Juggler implements IAnimatable
 
         if (object != null && __objectIDs.exists(object))
         {
-            var dispatcher:EventDispatcher = Std.is(object, EventDispatcher) ? cast object : null;
+            var dispatcher:EventDispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
             if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 
             var index:Int = __objects.indexOf(object);
@@ -173,7 +173,7 @@ class Juggler implements IAnimatable
         var i:Int = __objects.length - 1;
         while (i >= 0)
         {
-            var tween:Tween = Std.is(__objects[i], Tween) ? cast __objects[i] : null;
+            var tween:Tween = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], Tween) ? cast __objects[i] : null;
             if (tween != null && tween.target == target)
             {
                 tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
@@ -193,7 +193,7 @@ class Juggler implements IAnimatable
         var i = __objects.length - 1;
         while (i >= 0)
         {
-            delayedCall = Std.is(__objects[i], DelayedCall) ? cast __objects[i] : null;
+            delayedCall = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], DelayedCall) ? cast __objects[i] : null;
             if (delayedCall != null && delayedCall.__callback == callback)
             {
                 delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
@@ -213,7 +213,7 @@ class Juggler implements IAnimatable
             var i:Int = __objects.length - 1;
             while (i >= 0)
             {
-                tween = Std.is(__objects[i], Tween) ? cast __objects[i] : null;
+                tween = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], Tween) ? cast __objects[i] : null;
                 if (tween != null && tween.target == target) return true;
                 --i;
             }
@@ -231,7 +231,7 @@ class Juggler implements IAnimatable
             var i = __objects.length - 1;
             while (i >= 0)
             {
-                delayedCall = Std.is(__objects[i], DelayedCall) ? cast __objects[i] : null;
+                delayedCall = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], DelayedCall) ? cast __objects[i] : null;
                 if (delayedCall != null && delayedCall.__callback == callback) return true;
                 --i;
             }
@@ -254,7 +254,7 @@ class Juggler implements IAnimatable
         {
             object = __objects[i];
             if (object != null) {
-                dispatcher = Std.is(object, EventDispatcher) ? cast object : null;
+                dispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
                 if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
                 __objects[i] = null;
                 __objectIDs.remove(object);
@@ -416,7 +416,7 @@ class Juggler implements IAnimatable
 
         if (objectID != 0)
         {
-            var tween:Tween = Std.is(event.target, Tween) ? cast event.target : null;
+            var tween:Tween = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(event.target, Tween) ? cast event.target : null;
             if (tween != null && tween.isComplete)
                 addWithID(tween.nextTween, objectID);
         }
