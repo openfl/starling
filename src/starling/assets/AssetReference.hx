@@ -46,7 +46,7 @@ class AssetReference
         _data = data;
         _textureOptions = new TextureOptions();
 
-        if (Std.is(data, String)) _url = cast data;
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, String)) _url = cast data;
         else
         {
             var urlProp:Dynamic = Reflect.getProperty(data, "url");

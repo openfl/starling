@@ -103,7 +103,7 @@ class Polygon
 
         if (numArgs > 0)
         {
-            if (Std.is(args[0], Point))
+            if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(args[0], Point))
             {
                 for (i in 0...numArgs)
                 {
@@ -111,7 +111,7 @@ class Polygon
                     __coords[numCoords + i * 2 + 1] = cast(args[i], Point).y;
                 }
             }
-            else if (Std.is(args[0], Float))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(args[0], Float))
             {
                 for (i in 0...numArgs)
                     __coords[numCoords + i] = args[i];

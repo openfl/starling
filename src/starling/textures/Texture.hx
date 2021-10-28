@@ -185,23 +185,23 @@ class Texture
     {
         var texture:Texture = null;
 
-        if (Std.is(data, Bitmap))  data = cast(data, Bitmap).bitmapData;
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Bitmap))  data = cast(data, Bitmap).bitmapData;
         if (options == null) options = sDefaultOptions;
 
-        if (Std.is(data, Class))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Class))
         {
             return fromEmbeddedAsset(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture,
                 options.scale, options.format, options.forcePotTexture);
         }
-        else if (Std.is(data, BitmapData))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, BitmapData))
         {
             return fromBitmapData(cast data,
                 options.mipMapping, options.optimizeForRenderToTexture,
                 options.scale, options.format, options.forcePotTexture,
                 options.onReady);
         }
-        else if (Std.is(data, #if commonjs ByteArray #else ByteArrayData #end))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, #if commonjs ByteArray #else ByteArrayData #end))
         {
             return fromAtfData(cast data,
                 options.scale, options.mipMapping, options.onReady);
@@ -224,20 +224,20 @@ class Texture
     {
         if (options == null) options = sDefaultOptions;
 
-        if (Std.is(base, openfl.display3D.textures.Texture))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(base, openfl.display3D.textures.Texture))
         {
             return new ConcretePotTexture(cast(base, openfl.display3D.textures.Texture),
                     options.format, width, height, options.mipMapping,
                     options.premultipliedAlpha, options.optimizeForRenderToTexture,
                     options.scale);
         }
-        else if (Std.is(base, RectangleTexture))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(base, RectangleTexture))
         {
             return new ConcreteRectangleTexture(cast(base, RectangleTexture),
                     options.format, width, height, options.premultipliedAlpha,
                     options.optimizeForRenderToTexture, options.scale);
         }
-        else if (Std.is(base, VideoTexture))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(base, VideoTexture))
         {
             return new ConcreteVideoTexture(cast(base, VideoTexture), options.scale);
         }
@@ -269,7 +269,7 @@ class Texture
         var texture:Texture;
         var asset = Type.createEmptyInstance(assetClass);
 
-        if (Std.is(asset, Bitmap))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Bitmap))
         {
             texture = Texture.fromBitmap(cast asset, mipMapping,
                                 optimizeForRenderToTexture, scale, format, forcePotTexture);
@@ -278,7 +278,7 @@ class Texture
                 textureRoot.uploadBitmap(Type.createInstance(assetClass, []));
             };
         }
-        else if (Std.is(asset, BitmapData))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, BitmapData))
         {
             texture = Texture.fromBitmapData(cast asset, mipMapping,
                                 optimizeForRenderToTexture, scale, format, forcePotTexture);
@@ -287,7 +287,7 @@ class Texture
                 texture.root.uploadBitmapData(Type.createInstance(assetClass, []));
             };
         }
-        else if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, #if commonjs ByteArray #else ByteArrayData #end))
         {
             texture = Texture.fromAtfData(cast asset, scale, mipMapping, null);
             texture.root.onRestore = function(textureRoot:ConcreteTexture):Void

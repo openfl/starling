@@ -154,9 +154,9 @@ class BitmapFont implements ITextCompositor
         try
         {
             var fontXml:Xml = null;
-            if(Std.is(data, String))
+            if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, String))
                 fontXml = Xml.parse(data).firstElement();
-            else if(Std.is(data, Xml))
+            else if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Xml))
                 fontXml = cast data;
                 
             parseFontXml(fontXml);
@@ -348,7 +348,7 @@ class BitmapFont implements ITextCompositor
         {
             var dfStyle:DistanceFieldStyle;
             var fontSize:Float = format.size < 0 ? format.size * -__size : format.size;
-            dfStyle = Std.is(previousStyle, DistanceFieldStyle) ? cast previousStyle : new DistanceFieldStyle();
+            dfStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(previousStyle, DistanceFieldStyle) ? cast previousStyle : new DistanceFieldStyle();
             dfStyle.multiChannel = (__type == BitmapFontType.MULTI_CHANNEL_DISTANCE_FIELD);
             dfStyle.softness = __size / (fontSize * __distanceFieldSpread);
             return dfStyle;

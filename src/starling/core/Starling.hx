@@ -445,7 +445,7 @@ class Starling extends EventDispatcher
         if (__root == null && __rootClass != null)
         {
             __root = Type.createInstance(__rootClass, []);
-            if (__root == null || !Std.is(__root, DisplayObject)) throw new Error("Invalid root class: " + __rootClass);
+            if (__root == null || !#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__root, DisplayObject)) throw new Error("Invalid root class: " + __rootClass);
             __stage.addChildAt(__root, 0);
 
             dispatchEventWith(starling.events.Event.ROOT_CREATED, false, __root);
@@ -775,7 +775,7 @@ class Starling extends EventDispatcher
         var height:Float = 1.0;
 
         // figure out general touch properties
-        if (Std.is(event, MouseEvent))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(event, MouseEvent))
         {
             var mouseEvent:MouseEvent = cast event;
             globalX = mouseEvent.stageX;
@@ -1327,7 +1327,7 @@ class Starling extends EventDispatcher
     private function isNativeDisplayObjectEmpty(object:openfl.display.DisplayObject):Bool
     {
         if (object == null) return true;
-        else if (Std.is(object, DisplayObjectContainer))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, DisplayObjectContainer))
         {
             var container:DisplayObjectContainer = cast object;
             var numChildren:Int = container.numChildren;

@@ -266,12 +266,12 @@ class AssetManager extends EventDispatcher
             {
                 continue;
             }
-            else if (Std.is(asset, Array))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Array))
             {
                 enqueue(asset);
             }
             #if 0	//We don't support Embedded assets via static class variables that are read with describeType() in AS3
-            else if (Std.is(asset, Class))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Class))
             {
                 var typeXml:Xml = describeType(asset);
                 var childNode:Xml;
@@ -301,7 +301,7 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
-            else if (Std.is(asset, String) || Std.is(asset, URLRequest) || Std.is(asset, AssetManager))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, String) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, URLRequest) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, AssetManager))
             {
                 enqueueSingle(asset);
             }
@@ -325,7 +325,7 @@ class AssetManager extends EventDispatcher
     public function enqueueSingle(asset:Dynamic, name:String=null,
                                   options:TextureOptions=null):String
     {
-        if (Std.is(asset, Class))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Class))
             asset = Type.createInstance(asset, []);
 
         var assetReference:AssetReference = new AssetReference(asset);
@@ -590,7 +590,7 @@ class AssetManager extends EventDispatcher
 
         if (reference.url != null)
             _dataLoader.load(reference.url, onLoadComplete, onLoadError, onLoadProgress);
-        else if (Std.is(reference.data, AssetManager))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, AssetManager))
             (cast(reference.data, AssetManager)).loadQueue(onManagerComplete, onIntermediateError, onLoadProgress);
         else
             Timer.delay(function():Void { onLoadComplete(reference.data); }, 1);
@@ -764,7 +764,7 @@ class AssetManager extends EventDispatcher
     public function getTexture(name:String):Texture
     {
         var asset = getAsset(AssetType.TEXTURE, name);
-        return Std.is(asset, Texture) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Texture) ? cast asset : null;
     }
 
     /** Returns all textures that start with a certain string, sorted alphabetically
@@ -791,7 +791,7 @@ class AssetManager extends EventDispatcher
     public function getTextureAtlas(name:String):TextureAtlas
     {
         var asset = getAsset(AssetType.TEXTURE_ATLAS, name);
-        return Std.is(asset, TextureAtlas) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, TextureAtlas) ? cast asset : null;
     }
 
     /** Returns all texture atlas names that start with a certain string, sorted alphabetically.
@@ -805,7 +805,7 @@ class AssetManager extends EventDispatcher
     public function getSound(name:String):Sound
     {
         var asset = getAsset(AssetType.SOUND, name);
-        return Std.is(asset, Sound) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Sound) ? cast asset : null;
     }
 
     /** Returns all sound names that start with a certain string, sorted alphabetically.
@@ -829,7 +829,7 @@ class AssetManager extends EventDispatcher
     public function getXml(name:String):Xml
     {
         var asset = getAsset(AssetType.XML_DOCUMENT, name);
-        return Std.is(asset, Xml) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Xml) ? cast asset : null;
     }
 
     /** Returns all XML names that start with a certain string, sorted alphabetically.
@@ -857,7 +857,7 @@ class AssetManager extends EventDispatcher
     public function getByteArray(name:String):ByteArray
     {
         var asset = getAsset(AssetType.BYTE_ARRAY, name);
-        return Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, #if commonjs ByteArray #else ByteArrayData #end) ? cast asset : null;
     }
 
     /** Returns all byte array names that start with a certain string, sorted alphabetically.
@@ -871,7 +871,7 @@ class AssetManager extends EventDispatcher
     public function getBitmapFont(name:String):BitmapFont
     {
         var asset = getAsset(AssetType.BITMAP_FONT, name);
-        return Std.is(asset, BitmapFont) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, BitmapFont) ? cast asset : null;
     }
 
     /** Returns all bitmap font names that start with a certain string, sorted alphabetically.
@@ -885,7 +885,7 @@ class AssetManager extends EventDispatcher
     public function getAssetManager(name:String):AssetManager
     {
         var asset = getAsset(AssetType.ASSET_MANAGER, name);
-        return Std.is(asset, AssetManager) ? cast asset : null;
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, AssetManager) ? cast asset : null;
     }
 
     /** Returns all asset manager names that start with a certain string, sorted alphabetically.
@@ -1004,12 +1004,12 @@ class AssetManager extends EventDispatcher
      *  Override if you need to add custom cleanup code for a certain asset. */
     private function disposeAsset(asset:Dynamic):Void
     {
-        if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, #if commonjs ByteArray #else ByteArrayData #end))
         {
             var byteArray:ByteArray = cast asset;
             byteArray.clear();
         }
-        //if (Std.is(asset, Xml)) cast (asset, Xml) - no need to do any special disposing of Xml in Haxe, no cross-platform equivalent of AS3's System.disposeXML();
+        //if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Xml)) cast (asset, Xml) - no need to do any special disposing of Xml in Haxe, no cross-platform equivalent of AS3's System.disposeXML();
         //if (Reflect.hasField(asset, "dispose")) cast(Reflect.field(asset, "dispose"), Function)();	- cast to Function is not allowed. How should we call dispose()?
         if (Reflect.hasField(asset, "dispose"))
         {

@@ -118,9 +118,9 @@ class TextureAtlas
         try
         {
             var atlasXml:Xml = null;
-            if(Std.is(data, String))
+            if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, String))
                 atlasXml = Xml.parse(data).firstElement();
-            else if(Std.is(data, Xml))
+            else if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Xml))
                 atlasXml = cast data;
                 
             parseAtlasXml(atlasXml);
