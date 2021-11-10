@@ -358,7 +358,7 @@ class Starling extends EventDispatcher
         setMultitouchEnabled(Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT, true);
 
         // make the native overlay behave just like one would expect intuitively
-        __nativeOverlayBlocksTouches = true;
+        nativeOverlayBlocksTouches = true;
         
         // all other modes are problematic in Starling, so we force those here
         stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -999,7 +999,7 @@ class Starling extends EventDispatcher
     {
         if (value != __nativeOverlayBlocksTouches)
             __touchProcessor.occlusionTest = value ? hitTestNativeOverlay : null;
-        return value;
+        return __nativeOverlayBlocksTouches = value;
     }
     
     /** Indicates if a small statistics box (with FPS, memory usage and draw count) is
