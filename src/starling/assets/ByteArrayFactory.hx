@@ -28,7 +28,7 @@ class ByteArrayFactory extends AssetFactory
     /** @inheritDoc */
     override public function canHandle(reference:AssetReference):Bool
     {
-        return Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
+        return #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
     }
 
     /** @inheritDoc */

@@ -54,7 +54,7 @@ class AssetFactory
         var mimeType:String = reference.mimeType;
         var extension:String = reference.extension;
 
-        var isByteArray:Bool = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
+        var isByteArray:Bool = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end);
         var supportedMimeType:Bool = (mimeType != null && _mimeTypes.indexOf(reference.mimeType.toLowerCase()) != -1);
         var supportedExtension:Bool = (extension != null && _extensions.indexOf(reference.extension.toLowerCase()) != -1);
         

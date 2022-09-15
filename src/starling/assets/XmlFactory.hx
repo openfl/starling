@@ -34,7 +34,7 @@ class XmlFactory extends AssetFactory
      *  with a "&lt;" character. */
     override public function canHandle(reference:AssetReference):Bool
     {
-        return super.canHandle(reference) || (Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) &&
+        return super.canHandle(reference) || (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end) &&
             ByteArrayUtil.startsWithString(cast reference.data, "<"));
     }
 
@@ -76,11 +76,11 @@ class XmlFactory extends AssetFactory
         
         try
         {
-            if(Std.is(reference.data, Xml))
+            if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, Xml))
                 xml = cast(reference.data, Xml);
             else
             {
-                bytes = Std.is(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
+                bytes = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast reference.data : null;
                 if (bytes != null)
                     xml = Xml.parse(bytes.toString());
             }

@@ -170,7 +170,7 @@ class DistanceFieldStyle extends MeshStyle
     /** @private */
     override public function copyFrom(meshStyle:MeshStyle):Void
     {
-        var otherStyle:DistanceFieldStyle = Std.is(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
+        var otherStyle:DistanceFieldStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
         if (otherStyle != null)
         {
             _mode = otherStyle._mode;
@@ -307,7 +307,7 @@ class DistanceFieldStyle extends MeshStyle
     /** @private */
     override public function canBatchWith(meshStyle:MeshStyle):Bool
     {
-        var dfStyle:DistanceFieldStyle = Std.is(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
+        var dfStyle:DistanceFieldStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(meshStyle, DistanceFieldStyle) ? cast meshStyle : null;
         if (dfStyle != null && super.canBatchWith(meshStyle))
             return dfStyle._mode == _mode && dfStyle._multiChannel == _multiChannel;
         else

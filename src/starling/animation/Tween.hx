@@ -136,7 +136,7 @@ import starling.utils.Color;
         __currentCycle = -1;
         __nextTween = null;
         
-        if (Std.is(transition, String))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(transition, String))
             this.transition = cast transition;
         else if (Reflect.isFunction(transition))
             this.transitionFunc = transition;

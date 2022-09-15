@@ -416,7 +416,7 @@ class AssetManager extends EventDispatcher
             #end
         }
         
-        if (xml != null && Std.is(xml, String))
+        if (xml != null && #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(xml, String))
         {
             xml = Xml.parse(xml).firstElement();
         }
@@ -606,12 +606,12 @@ class AssetManager extends EventDispatcher
             {
                 continue;
             }
-            else if (Std.is(rawAsset, Array))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, Array))
             {
                 enqueue(rawAsset);
             }
             #if 0
-            else if (Std.is(rawAsset, Class))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, Class))
             {
                 var typeXml:XML = describeType(rawAsset);
                 var childNode:XML;
@@ -641,7 +641,7 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
-            else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, String) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, URLRequest))
             {
                 enqueueWithName(rawAsset);
             }
@@ -672,7 +672,7 @@ class AssetManager extends EventDispatcher
         log("Enqueuing '" + name + "'");
         
         #if air
-        if (Std.is(asset, flash.filesystem.File))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, flash.filesystem.File))
             asset = StringTools.urlDecode(Reflect.field(asset, "url"));
         #end
         
@@ -908,12 +908,12 @@ class AssetManager extends EventDispatcher
             {
                 onComplete();
             }
-            else if (Std.is(asset, Sound))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Sound))
             {
                 addSound(name, cast asset);
                 onComplete();
             }
-            else if (Std.is(asset, Xml))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Xml))
             {
                 xml = cast asset;
                 xml = xml.firstElement();
@@ -931,7 +931,7 @@ class AssetManager extends EventDispatcher
                 Timer.delay(function():Void{ process(asset); }, 1);
                 return; // to keep CANCEL event listener intact
             }
-            else if (Std.is(asset, Bitmap))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Bitmap))
             {
                 options.onReady = prependCallback(options.onReady, function(_):Void
                 {
@@ -964,7 +964,7 @@ class AssetManager extends EventDispatcher
                     });
                 };
             }
-            else if (Std.is(asset, #if commonjs ByteArray #else ByteArrayData #end))
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, #if commonjs ByteArray #else ByteArrayData #end))
             {
                 bytes = cast asset;
                 
@@ -1127,7 +1127,7 @@ class AssetManager extends EventDispatcher
         
         onUrlLoaderComplete = function(event:Dynamic):Void
         {
-            var bytes:ByteArray = transformData(Std.is(urlLoader.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast urlLoader.data : null, url);
+            var bytes:ByteArray = transformData(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(urlLoader.data, #if commonjs ByteArray #else ByteArrayData #end) ? cast urlLoader.data : null, url);
             var sound:Sound;
 
             if (bytes == null)
@@ -1199,13 +1199,13 @@ class AssetManager extends EventDispatcher
             #end
         }
         
-        if (Std.is(rawAsset, Class))
+        if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, Class))
         {
             Timer.delay(function() { Type.createInstance(rawAsset, []); }, 1);
         }
-        else if (Std.is(rawAsset, String) || Std.is(rawAsset, URLRequest))
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, String) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, URLRequest))
         {
-            urlRequest = Std.is(rawAsset, URLRequest) ? cast rawAsset : null;
+            urlRequest = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, URLRequest) ? cast rawAsset : null;
             if (urlRequest == null)
                 urlRequest = new URLRequest(cast(rawAsset, String));
             url = urlRequest.url;
@@ -1234,10 +1234,10 @@ class AssetManager extends EventDispatcher
     {
         var name:String = null;
 
-        if      (Std.is(rawAsset, String))        name =  cast(rawAsset, String);
-        else if (Std.is(rawAsset, URLRequest))    name = cast(rawAsset, URLRequest).url;
+        if      (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, String))        name =  cast(rawAsset, String);
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, URLRequest))    name = cast(rawAsset, URLRequest).url;
         #if flash
-        else if (Std.is(rawAsset, FileReference)) name = cast(rawAsset, FileReference).name;
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(rawAsset, FileReference)) name = cast(rawAsset, FileReference).name;
         #end
 
         if (name != null)

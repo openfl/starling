@@ -204,7 +204,7 @@ class FragmentFilter extends EventDispatcher
         var drawLastPassToBackBuffer:Bool = false;
         var origResolution:Float = _resolution;
         var renderSpace:DisplayObject = _target.stage != null ? _target.stage : _target.parent;
-        var isOnStage:Bool = Std.is(renderSpace, Stage);
+        var isOnStage:Bool = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(renderSpace, Stage);
         var stage:Stage = Starling.current.stage;
         var stageBounds:Rectangle;
 
