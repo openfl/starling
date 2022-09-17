@@ -213,13 +213,10 @@ class DropShadowFilter extends FragmentFilter
 	public function get_inner():Bool { return _inner; }
 	public function set_inner(value:Bool) :Bool
 	{
-		if (_inner != value)
-		{
-			_inner = value;
-			_compositeFilter.setModeAt(1, getMode(_inner, _knockout));
-			_compositeFilter.setInvertAlphaAt(1, _inner);
-			setRequiresRedraw();
-		}
+		_inner = value;
+		_compositeFilter.setModeAt(1, getMode(_inner, _knockout));
+		_compositeFilter.setInvertAlphaAt(1, _inner);
+		setRequiresRedraw();
 		return value;
 	}
 
@@ -229,12 +226,9 @@ class DropShadowFilter extends FragmentFilter
 	public function get_knockout():Bool { return _knockout; }
 	public function set_knockout(value:Bool):Bool
 	{
-		if (_knockout != value)
-		{
-			_knockout = value;
-			_compositeFilter.setModeAt(1, getMode(_inner, _knockout));
-			setRequiresRedraw();
-		}
+		_knockout = value;
+		_compositeFilter.setModeAt(1, getMode(_inner, _knockout));
+		setRequiresRedraw();
 		return value;
 	}
 
