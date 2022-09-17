@@ -104,7 +104,7 @@ class ButtonBehavior
 	 *                         is aborted.
 	 */
 	public function new(target:DisplayObject, onStateChange:Function,
-								   minHitAreaSize:Number = 44, abortDistance:Number = 50)
+								   minHitAreaSize:Float = 44, abortDistance:Float = 50)
 	{
 		if (target == null) throw new ArgumentError("target cannot be null");
 		if (onStateChange == null) throw new ArgumentError("onStateChange cannot be null");
@@ -140,7 +140,7 @@ class ButtonBehavior
 		{
 			state = ButtonState.OVER;
 		}
-		else if (touch.phase == TouchPhase.BEGAN && _state != ButtonState.DOWN)
+		else if (touch.phase == TouchPhase.BEGAN && __state != ButtonState.DOWN)
 		{
 			__triggerBounds = __target.getBounds(__target.stage, __triggerBounds);
 			__triggerBounds.inflate(__abortDistance, __abortDistance);
@@ -198,10 +198,11 @@ class ButtonBehavior
 			if (ButtonState.isValid(value))
 			{
 				__state = value;
-				Execute.execute(_onStateChange, value);
+				Execute.execute(__onStateChange, [value]);
 			}
 			else throw new ArgumentError("Invalid button state: " + value);
 		}
+		return value;
 	}
 
 	/** The target on which this behavior operates. */

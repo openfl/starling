@@ -142,19 +142,19 @@ class Button extends DisplayObjectContainer
 		switch (state)
 		{
 			case ButtonState.DOWN:
-				setStateTexture(__downState);
-				setContentScale(__scaleWhenDown);
-				_contents.alpha = __alphaWhenDown;
+				__setStateTexture(__downState);
+				__setContentScale(__scaleWhenDown);
+				__contents.alpha = __alphaWhenDown;
 				
 			case ButtonState.UP:
-				setStateTexture(__upState);
+				__setStateTexture(__upState);
 				
 			case ButtonState.OVER:
-				setStateTexture(__overState);
-				setContentScale(__scaleWhenOver);
+				__setStateTexture(__overState);
+				__setContentScale(__scaleWhenOver);
 				
 			case ButtonState.DISABLED:
-				setStateTexture(__disabledState);
+				__setStateTexture(__disabledState);
 				__contents.alpha = __alphaWhenDisabled;
 				
 		}
@@ -488,5 +488,5 @@ class Button extends DisplayObjectContainer
 	 *  @default 50 */
 	public var abortDistance(get, set):Float;
 	public function get_abortDistance():Float { return __behavior.abortDistance; }
-	public function set_abortDistance(value:Float):Void { return __behavior.abortDistance = value; }
+	public function set_abortDistance(value:Float):Float { return __behavior.abortDistance = value; }
 }

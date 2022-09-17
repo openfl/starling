@@ -136,7 +136,7 @@ class RenderTexture extends SubTexture
      */
     public function new(width:Int, height:Int, persistent:Bool=true,
                         scale:Float=-1, format:String="bgra",
-						forcePotTexture:Boolean=false)
+						forcePotTexture:Bool=false)
     {
         _isPersistent = persistent;
         _activeTexture = Texture.empty(width, height, true, false, true, scale, format, forcePotTexture);
