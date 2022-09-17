@@ -149,6 +149,7 @@ class Polygon
         // Algorithm & implementation thankfully taken from:
         // -> http://alienryderflex.com/polygon/
 
+		var numVertices:Int = this.numVertices;
         var i:Int, j:Int = numVertices - 1;
         var oddNodes:UInt = 0;
 

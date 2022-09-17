@@ -24,4 +24,10 @@ class ButtonState
 
     /** The button was disabled altogether. */
     public static inline var DISABLED:String = "disabled";
+	
+	/** Indicates whether the given state string is valid. */
+	public static function isValid(state:String):Bool
+	{
+		return state == UP || state == DOWN || state == OVER || state == DISABLED;
+	}
 }

@@ -59,19 +59,34 @@ class Canvas extends DisplayObjectContainer
         return null;
     }
 
-    /** Draws a circle. */
-    public function drawCircle(x:Float, y:Float, radius:Float):Void
+    /** Draws a circle.
+	 *
+	 * @param x         x-coordinate of center point
+	 * @param y         y-coordinate of center point
+	 * @param radius    radius of circle
+	 * @param numSides  the number of lines used to draw the circle.
+	 *                  If you don't pass anything, Starling will pick a reasonable value.
+	 */
+    public function drawCircle(x:Float, y:Float, radius:Float, numSides:Int = -1):Void
     {
-        __appendPolygon(Polygon.createCircle(x, y, radius));
+        __appendPolygon(Polygon.createCircle(x, y, radius, numSides));
     }
 
-    /** Draws an ellipse. */
-    public function drawEllipse(x:Float, y:Float, width:Float, height:Float):Void
+    /** Draws an ellipse.
+	 *
+	 * @param x         x-coordinate of bounding box
+	 * @param y         y-coordinate of bounding box
+	 * @param width     width of the ellipse
+	 * @param height    height of the ellipse
+	 * @param numSides  the number of lines used to draw the ellipse.
+	 *                  If you don't pass anything, Starling will pick a reasonable value.
+	 */
+    public function drawEllipse(x:Float, y:Float, width:Float, height:Float, numSides:Int = -1):Void
     {
         var radiusX:Float = width  / 2.0;
         var radiusY:Float = height / 2.0;
 
-        __appendPolygon(Polygon.createEllipse(x + radiusX, y + radiusY, radiusX, radiusY));
+        __appendPolygon(Polygon.createEllipse(x + radiusX, y + radiusY, radiusX, radiusY, numSides));
     }
 
     /** Draws a rectangle. */

@@ -427,18 +427,18 @@ class DisplayObject extends EventDispatcher
         else throw new ArgumentError("Invalid vertical alignment: " + verticalAlign);
     }
 
-    /** Draws the object into a BitmapData object.
-     * 
-     *  <p>This is achieved by drawing the object into the back buffer and then copying the
-     *  pixels of the back buffer into a texture. Beware: image sizes bigger than the back
-         *  buffer are only supported in AIR version 25 or higher and NOT in Flash Player.</p>
-     *
-     *  @param out   If you pass null, the object will be created for you.
-     *               If you pass a BitmapData object, it should have the size of the
-     *               object bounds, multiplied by the current contentScaleFactor.
-     *  @param color The RGB color value with which the bitmap will be initialized.
-     *  @param alpha The alpha value with which the bitmap will be initialized.
-     */
+	/** Draws the object into a BitmapData object.
+	 *
+	 *  <p>This is achieved by drawing the object into the back buffer and then copying the
+	 *  pixels of the back buffer into a texture. Beware: image sizes bigger than the back
+	 *  buffer are only supported in AIR version 25 or higher and NOT in Flash Player.</p>
+	 *
+	 *  @param out   If you pass null, the object will be created for you.
+	 *               If you pass a BitmapData object, it should have the size of the
+	 *               object bounds, multiplied by the current contentScaleFactor.
+	 *  @param color The RGB color value with which the bitmap will be initialized.
+	 *  @param alpha The alpha value with which the bitmap will be initialized.
+	 */
     public function drawToBitmapData(out:BitmapData=null,
                                        color:UInt=0x0, alpha:Float=0.0):BitmapData
     {

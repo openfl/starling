@@ -76,7 +76,7 @@ class TouchProcessor
     // system gesture detection
     private var __discardSystemGestures:Bool;
     private var __systemGestureTouchID:Int = -1;
-    private var __systemGestureMargins:Array<Float> = [10, 10, 0, 0];
+    private var __systemGestureMargins:Array<Float> = [15, 15, 15, 0];
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
      * method (the oldest being at the end of the vector). */

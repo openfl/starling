@@ -527,11 +527,14 @@ class Starling extends EventDispatcher
             if (!shareContext)
                 __painter.present();
         }
+		else
+		{
+			dispatchEventWith(starling.events.Event.SKIP_FRAME);
+		}
 
         if (__statsDisplay != null)
         {
             __statsDisplay.drawCount = __painter.drawCount;
-            if (!doRedraw) __statsDisplay.markFrameAsSkipped();
         }
     }
     
@@ -687,6 +690,7 @@ class Starling extends EventDispatcher
     {
         trace("[Starling] Context restored.");
         updateViewPort(true);
+		__painter.setupContextDefaults();
         dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
     }
     
@@ -988,7 +992,7 @@ class Starling extends EventDispatcher
     private function get_nativeOverlay():Sprite { return __nativeOverlay; }
     
     /** If enabled, touches or mouse events on the native overlay won't be propagated to
-     *  Starling. @default true */
+     *  Starling. @default false */
     public var nativeOverlayBlocksTouches(get, set):Bool;
     private function get_nativeOverlayBlocksTouches():Bool
     {
@@ -1059,6 +1063,7 @@ class Starling extends EventDispatcher
 
             __stage.addChild(__statsDisplay);
             __statsDisplay.scaleX = __statsDisplay.scaleY = scale;
+			__statsDisplay.showSkipped = __skipUnchangedFrames;
             
             updateClippedViewPort();
             updateStatsDisplayPosition();
@@ -1209,6 +1214,7 @@ class Starling extends EventDispatcher
     {
         __skipUnchangedFrames = value;
         __nativeStageEmpty = false; // required by 'mustAlwaysRender'
+		if (__statsDisplay != null) __statsDisplay.showSkipped = value;
         return value;
     }
     
@@ -1228,12 +1234,12 @@ class Starling extends EventDispatcher
         return value;
     }
     
-    /** When enabled, all touches that start very close to the window edges are discarded.
-     *  On mobile, such touches often indicate swipes that are meant to open OS menus.
-     *  Per default, margins of 10 points at the very top and bottom of the screen are checked.
-     *  Call <code>starling.touchProcessor.setSystemGestureMargins()</code> to adapt the margins
-     *  in each direction. @default true on mobile, false on desktop
-     */
+    /** When enabled, all touches that start very close to the screen edges are discarded.
+	 *  On mobile, such touches often indicate swipes that are meant to use OS features.
+	 *  Per default, margins of 15 points at the top, bottom, and left side of the screen are
+	 *  checked. Call <code>starling.touchProcessor.setSystemGestureMargins()</code> to adapt
+	 *  the margins in each direction. @default true on mobile, false on desktop
+	 */
     public var discardSystemGestures(get, set):Bool;
     private function get_discardSystemGestures():Bool
     {
