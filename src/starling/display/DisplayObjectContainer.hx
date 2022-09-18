@@ -185,7 +185,10 @@ class DisplayObjectContainer extends DisplayObject
             }
             
             child.__setParent(null);
-            index = __children.indexOf(child); // index might have changed by event handler
+			if (index >= __children.length || __children[index] != child)
+			{
+				index = __children.indexOf(child); // index might have changed by event handler
+			}
             if (index >= 0) __children.removeAt(index);
             if (dispose) child.dispose();
             

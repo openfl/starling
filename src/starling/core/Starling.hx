@@ -12,6 +12,7 @@ package starling.core;
 
 import haxe.macro.Compiler;
 import haxe.Timer;
+import starling.textures.TextureSmoothing;
 
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Shape;
@@ -225,6 +226,7 @@ class Starling extends EventDispatcher
     private var __juggler:Juggler;
     private var __painter:Painter;
     private var __touchProcessor:TouchProcessor;
+	private var __defaultTextureSmoothing:String;
     private var __antiAliasing:Int;
     private var __frameTimestamp:Float;
     private var __frameID:UInt;
@@ -264,6 +266,7 @@ class Starling extends EventDispatcher
             "simulateMultitouch": { get: untyped __js__ ("function () { return this.get_simulateMultitouch (); }"), set: untyped __js__ ("function (v) { return this.set_simulateMultitouch (v); }") },
             "enableErrorChecking": { get: untyped __js__ ("function () { return this.get_enableErrorChecking (); }"), set: untyped __js__ ("function (v) { return this.set_enableErrorChecking (v); }") },
             "antiAliasing": { get: untyped __js__ ("function () { return this.get_antiAliasing (); }"), set: untyped __js__ ("function (v) { return this.set_antiAliasing (v); }") },
+			"defaultTextureSmoothing": { get: untyped __js__ ("function () { return this.get_defaultTextureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_defaultTextureSmoothing (v); }") },
             "viewPort": { get: untyped __js__ ("function () { return this.get_viewPort (); }"), set: untyped __js__ ("function (v) { return this.set_viewPort (v); }") },
             "contentScaleFactor": { get: untyped __js__ ("function () { return this.get_contentScaleFactor (); }") },
             "nativeOverlay": { get: untyped __js__ ("function () { return this.get_nativeOverlay (); }") },
@@ -289,6 +292,7 @@ class Starling extends EventDispatcher
             "all": { get: untyped __js__ ("function () { return Starling.get_all (); }") },
             "contentScaleFactor": { get: untyped __js__ ("function () { return Starling.get_contentScaleFactor (); }") },
             "multitouchEnabled": { get: untyped __js__ ("function () { return Starling.get_multitouchEnabled (); }"), set: untyped __js__ ("function (v) { return Starling.set_multitouchEnabled (v); }") },
+			"DefaultTextureSmoothing": { get: untyped __js__ ("function () { return Starling.get_DefaultTextureSmoothing (); }") },
         });
         
     }
@@ -347,6 +351,7 @@ class Starling extends EventDispatcher
         __touchProcessor.discardSystemGestures = !SystemUtil.isDesktop;
         __juggler = new Juggler();
         __antiAliasing = 0;
+		__defaultTextureSmoothing = TextureSmoothing.BILINEAR;
         __supportHighResolutions = false;
         __painter = new Painter(stage3D, sharedContext);
         __frameTimestamp = Lib.getTimer() / 1000.0;
@@ -972,6 +977,20 @@ class Starling extends EventDispatcher
         }
         return value;
     }
+	
+	/** The default texture smoothing. This value will be used as the default value when
+	 *  creating 'MeshStyle', 'FragmentFilter' or 'FilterEffect'.
+	 *  Changing it won't have any impact on the existing meshes & filters.
+	 *  @default "bilinear" */
+	public var defaultTextureSmoothing(get, set):String;
+	private function get_defaultTextureSmoothing():String { return __defaultTextureSmoothing; }
+	private function set_defaultTextureSmoothing(value:String):String
+	{
+		if (!TextureSmoothing.isValid(value))
+			throw new ArgumentError("Invalid texture smoothing: " + value);
+
+		return __defaultTextureSmoothing = value;
+	}
     
     /** The viewport into which Starling contents will be rendered. */
     public var viewPort(get, set):Rectangle;
@@ -1325,10 +1344,18 @@ class Starling extends EventDispatcher
 
     /** The number of frames that have been rendered since the current instance was created. */
     // public static var frameID(get, never):UInt;
-    // public static function get_frameID():UInt
+    // private static function get_frameID():UInt
     // {
     //     return sCurrent != null ? sCurrent.__frameID : 0;
     // }
+	
+	/** The default texture smoothing value of 'Starling.current', or 'bilinear'.
+	 *  @default "bilinear" */
+	public static var DefaultTextureSmoothing(get, never):String;
+	private static function get_DefaultTextureSmoothing():String
+	{
+		return sCurrent != null ? sCurrent.__defaultTextureSmoothing : TextureSmoothing.BILINEAR;
+	}
     
     private function isNativeDisplayObjectEmpty(object:openfl.display.DisplayObject):Bool
     {

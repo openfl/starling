@@ -27,34 +27,33 @@ import starling.rendering.Painter;
 import starling.rendering.RenderState;
 
 /** A RenderTexture is a dynamic texture onto which you can draw any display object.
- * 
- *  <p>After creating a render texture, just call the <code>draw</code> method to render 
+ *
+ *  <p>After creating a render texture, just call the <code>draw</code> method to render
  *  an object directly onto the texture. The object will be drawn onto the texture at its current
- *  position, adhering its current rotation, scale and alpha properties.</p> 
- *  
- *  <p>Drawing is done very efficiently, as it is happening directly in graphics memory. After 
- *  you have drawn objects onto the texture, the performance will be just like that of a normal 
+ *  position, adhering its current rotation, scale and alpha properties.</p>
+ *
+ *  <p>Drawing is done very efficiently, as it is happening directly in graphics memory. After
+ *  you have drawn objects onto the texture, the performance will be just like that of a normal
  *  texture — no matter how many objects you have drawn.</p>
- *  
- *  <p>If you draw lots of objects at once, it is recommended to bundle the drawing calls in 
- *  a block via the <code>drawBundled</code> method, like shown below. That will speed it up 
+ *
+ *  <p>If you draw lots of objects at once, it is recommended to bundle the drawing calls in
+ *  a block via the <code>drawBundled</code> method, like shown below. That will speed it up
  *  immensely, allowing you to draw hundreds of objects very quickly.</p>
- *  
- * 	<pre>
+ *
+ *  <listing>
  *  renderTexture.drawBundled(function():void
  *  {
  *     for (var i:int=0; i&lt;numDrawings; ++i)
  *     {
  *         image.rotation = (2 &#42; Math.PI / numDrawings) &#42; i;
  *         renderTexture.draw(image);
- *     }   
- *  });
- *  </pre>
- *  
+ *     }
+ *  });</listing>
+ *
  *  <p>To erase parts of a render texture, you can use any display object like a "rubber" by
  *  setting its blending mode to <code>BlendMode.ERASE</code>. To wipe it completely clean,
  *  use the <code>clear</code> method.</p>
- * 
+ *
  *  <strong>Persistence</strong>
  *
  *  <p>Older devices may require double buffering to support persistent render textures. Thus,
@@ -96,6 +95,11 @@ import starling.rendering.RenderState;
  *  <p>[Note that this time, there is no need to call <code>clear</code>, because that's the
  *  default behavior of <code>onRestore</code>, anyway — and we didn't modify that.]</p>
  *
+ *  <strong>Required: clear or draw before first usage</strong>
+ *
+ *  <p>Directly after creating a render texture, it is still in an undefined state.
+ *  Before it can be used, you need to call <code>clear</code> or one of the
+ *  <code>draw</code>-methods; otherwise, you will run into a render error.</p>
  */
 class RenderTexture extends SubTexture
 {

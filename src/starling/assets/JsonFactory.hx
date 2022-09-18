@@ -31,7 +31,8 @@ class JsonFactory extends AssetFactory
     override public function canHandle(reference:AssetReference):Bool
     {
         return super.canHandle(reference) || (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(reference.data, #if commonjs ByteArray #else ByteArrayData #end) &&
-            ByteArrayUtil.startsWithString(cast reference.data, "{"));
+            (ByteArrayUtil.startsWithString(cast reference.data, "{")
+			|| ByteArrayUtil.startsWithString(cast reference.data, "[")));
     }
 
     /** @inheritDoc */

@@ -10,17 +10,16 @@
 
 package starling.styles;
 
-import openfl.display3D.textures.TextureBase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-
+import starling.core.Starling;
 import starling.display.Mesh;
 import starling.events.Event;
 import starling.events.EventDispatcher;
 import starling.rendering.*;
 import starling.textures.ConcreteTexture;
 import starling.textures.Texture;
-import starling.textures.TextureSmoothing;
+
 
 /** Dispatched every frame on styles assigned to display objects connected to the stage. */
 @:meta(Event(name="enterFrame", type="starling.events.EnterFrameEvent"))
@@ -130,7 +129,7 @@ class MeshStyle extends EventDispatcher
     @:keep public function new()
     {
         super();
-        _textureSmoothing = TextureSmoothing.BILINEAR;
+        _textureSmoothing = Starling.DefaultTextureSmoothing;
         _type = Type.getClass(this);
     }
     

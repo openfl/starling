@@ -393,6 +393,7 @@ class TouchProcessor
 
         // purge touches
         __currentTouches.length = 0;
+		__systemGestureTouchID = -1;
         
         while (__queue.length > 0)
             TouchData.toPool(__queue.pop());

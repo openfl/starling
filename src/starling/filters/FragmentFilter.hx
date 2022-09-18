@@ -11,7 +11,6 @@
 package starling.filters;
 
 import haxe.Constraints.Function;
-
 import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
@@ -19,7 +18,6 @@ import openfl.errors.IllegalOperationError;
 import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
-
 import starling.core.Starling;
 import starling.display.DisplayObject;
 import starling.display.Mesh;
@@ -31,11 +29,12 @@ import starling.rendering.IndexData;
 import starling.rendering.Painter;
 import starling.rendering.VertexData;
 import starling.textures.Texture;
-import starling.textures.TextureSmoothing;
 import starling.utils.MatrixUtil;
 import starling.utils.Padding;
 import starling.utils.Pool;
 import starling.utils.RectangleUtil;
+
+
 
 /** Dispatched when the settings change in a way that requires a redraw. */
 @:meta(Event(name="change", type="starling.events.Event"))
@@ -147,7 +146,7 @@ class FragmentFilter extends EventDispatcher
         
         _resolution = 1.0;
         _textureFormat = Context3DTextureFormat.BGRA;
-        _textureSmoothing = TextureSmoothing.BILINEAR;
+        _textureSmoothing = Starling.DefaultTextureSmoothing;
 
         // Handle lost context (using conventional Flash event for weak listener support)
         Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
