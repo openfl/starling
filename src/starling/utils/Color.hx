@@ -88,7 +88,7 @@ class Color
     }
 
     /** Converts a color to a vector containing the RGBA components (in this order) scaled
-        *  between 0 and 1. */
+	 *  between 0 and 1. */
     public static function toVector(color:UInt, out:Vector<Float>=null):Vector<Float>
     {
         if (out == null) out = new Vector<Float>(4, true);
@@ -123,15 +123,15 @@ class Color
         *  <code>ratio</code> is expected between 0 and 1. */
     public static function interpolate(startColor:UInt, endColor:UInt, ratio:Float):UInt
     {
-        var startA:UInt = (startColor >> 24) & 0xff;
-        var startR:UInt = (startColor >> 16) & 0xff;
-        var startG:UInt = (startColor >>  8) & 0xff;
-        var startB:UInt = (startColor      ) & 0xff;
+        var startA:Int = (startColor >> 24) & 0xff;
+        var startR:Int = (startColor >> 16) & 0xff;
+        var startG:Int = (startColor >>  8) & 0xff;
+        var startB:Int = (startColor      ) & 0xff;
 
-        var endA:UInt = (endColor >> 24) & 0xff;
-        var endR:UInt = (endColor >> 16) & 0xff;
-        var endG:UInt = (endColor >>  8) & 0xff;
-        var endB:UInt = (endColor      ) & 0xff;
+        var endA:Int = (endColor >> 24) & 0xff;
+        var endR:Int = (endColor >> 16) & 0xff;
+        var endG:Int = (endColor >>  8) & 0xff;
+        var endB:Int = (endColor      ) & 0xff;
 
         var newA:UInt = Std.int(startA + (endA - startA) * ratio);
         var newR:UInt = Std.int(startR + (endR - startR) * ratio);
