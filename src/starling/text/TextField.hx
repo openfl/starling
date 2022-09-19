@@ -139,7 +139,7 @@ class TextField extends DisplayObjectContainer
     #end
 
     /** Create a new text field with the given properties. */
-    public function new(width:Int, height:Int, text:String="", format:TextFormat=null)
+    public function new(width:Int, height:Int, text:String="", format:TextFormat=null, options:TextOptions=null)
     {
         super();
 
@@ -474,6 +474,13 @@ class TextField extends DisplayObjectContainer
     private function get_styleSheet():StyleSheet { return _options.styleSheet; }
     private function set_styleSheet(value:StyleSheet):StyleSheet { return _options.styleSheet = value; }
     #end
+	
+	/** The padding (in points) that's added to the sides of text that's rendered to a Bitmap.
+	 *  If your text is truncated on the sides (which may happen if the font returns incorrect
+	 *  bounds), padding can make up for that. Value must be positive. @default 0.0 */
+	public var padding(get, set):Float;
+	private function get_padding():Float { return _options.padding; }
+	private function set_padding(value:Float):Float { return _options.padding = value; }
 
     /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
      *  object from looking blurry when it's not exactly aligned with the pixels of the screen.

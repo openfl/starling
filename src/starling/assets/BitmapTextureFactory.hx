@@ -11,6 +11,7 @@
 
 package starling.assets;
 
+import haxe.Constraints.Function;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Loader;
@@ -70,6 +71,7 @@ class BitmapTextureFactory extends AssetFactory
         var data:Dynamic = reference.data;
         var name:String = reference.name;
         var options:TextureOptions = reference.textureOptions;
+		var onReady:Function = reference.textureOptions.onReady;
         
         var onBitmapDataCreated:BitmapData->Void = null;
         var createFromBitmapData:BitmapData->Void = null;
@@ -95,6 +97,7 @@ class BitmapTextureFactory extends AssetFactory
 
         complete = function(_):Void
         {
+			Execute.execute(onReady, [texture]);
             onComplete(name, texture);
         }
 

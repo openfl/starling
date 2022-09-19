@@ -357,6 +357,16 @@ class AssetManager extends EventDispatcher
         log("Enqueuing '" + logName + "'");
         return assetReference.name;
     }
+	
+	/** Removes the asset(s) with the given name(s) from the queue. Note that this won't work
+	 *  after loading has started, even if these specific assets have not yet been processed. */
+	public function dequeue(assetNames:Array<String>):Void
+	{
+		_queue = _queue.filter(function (asset:AssetReference):Bool
+		{
+			return assetNames.indexOf(asset.name) == -1;
+		});
+	}
 
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
@@ -955,6 +965,13 @@ class AssetManager extends EventDispatcher
         _assetFactories.push(factory);
         _assetFactories.sort(compareAssetFactoriesPriorities);
     }
+	
+	/** Unregisters the specified AssetFactory. */
+	public function unregisterFactory(factory:AssetFactory):Void
+	{
+		var index:Int = _assetFactories.indexOf(factory);
+		if (index != -1) _assetFactories.removeAt(index);
+	}
 
     // helpers
     

@@ -24,7 +24,6 @@ import starling.textures.Texture;
 import starling.utils.Color;
 import starling.utils.RenderUtil;
 import starling.utils.StringUtil;
-import starling.utils.MathUtil;
 
 /** The CompositeFilter class allows to combine several layers of textures into one texture.
  *  It's mainly used as a building block for more complex filters; e.g. the DropShadowFilter
@@ -97,6 +96,12 @@ class CompositeFilter extends FragmentFilter
     {
         return compositeEffect.getLayerAt(layerID).color;
     }
+	
+	/** Indicates if the color of the given layer is replaced (true) or tinted (false). */
+	public function getReplaceColorAt(layerID:Int):Bool
+	{
+		return compositeEffect.getLayerAt(layerID).replaceColor;
+	}
 
     /** Adjusts the RGB color with which a layer is tinted when it is being drawn.
      *  If <code>replace</code> is enabled, the pixels are not tinted, but instead
@@ -120,6 +125,33 @@ class CompositeFilter extends FragmentFilter
     {
         compositeEffect.getLayerAt(layerID).alpha = alpha;
     }
+	
+	/** The mode with which the layer is drawn. @see starling.filters.CompositeMode */
+	public function getModeAt(layerID:Int):String
+	{
+		return compositeEffect.getLayerAt(layerID).mode;
+	}
+
+	/** Sets the mode with which the layer is drawn. @see starling.filters.CompositeMode */
+	public function setModeAt(layerID:Int, mode:String):Void
+	{
+		compositeEffect.getLayerAt(layerID).mode = mode;
+	}
+
+	/** Indicates if the alpha value of the given layer's fragments should be inverted,
+	 *  effectively inverting the layer's silhouette. */
+	public function getInvertAlphaAt(layerID:Int):Bool
+	{
+		return compositeEffect.getLayerAt(layerID).invertAlpha;
+	}
+
+	/** Activate this setting to invert the alpha values of this layer's fragments, which will
+	 *  effectively invert the layer's silhouette. Note that this setting is only applied if
+	 *  color replacement is activated on this layer. */
+	public function setInvertAlphaAt(layerID:Int, value:Bool = true):Void
+	{
+		compositeEffect.getLayerAt(layerID).invertAlpha = value;
+	}
 
     public var compositeEffect(get, never):CompositeEffect;
     private function get_compositeEffect():CompositeEffect
@@ -204,6 +236,13 @@ class CompositeEffect extends FilterEffect
 
                 if (layer.replaceColor)
                 {
+					if (layer.invertAlpha)
+					{
+                        fragmentShader.push(
+                            "sub " + fti + ".w, ft5.w, " + fti + ".w"
+                        );
+					}
+					
                     fragmentShader.push("mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w");
                     fragmentShader.push("sat " + fti + ".w,   " + fti + ".w    "); // make sure alpha <= 1.0
                     fragmentShader.push("mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www");
@@ -215,10 +254,39 @@ class CompositeEffect extends FilterEffect
 
                 if (i != 0)
                 {
-                    // "normal" blending: src × ONE + dst × ONE_MINUS_SOURCE_ALPHA
-                    fragmentShader.push("sub ft4, ft5, " + fti + ".wwww"); // ft4 => 1 - src.alpha
-                    fragmentShader.push("mul ft0, ft0, ft4");              // ft0 => dst * (1 - src.alpha)
-                    fragmentShader.push("add ft0, ft0, " + fti);           // ft0 => src + (dst * 1 - src.alpha)
+                    switch (layer.mode)
+                    {
+                        case CompositeMode.NORMAL:
+                            // src × ONE + dst × ONE_MINUS_SOURCE_ALPHA
+                            fragmentShader.push("sub ft4, ft5, " + fti + ".wwww"); // ft4 = 1 - src.alpha
+                            fragmentShader.push("mul ft0, ft0, ft4");              // ft0 = dst * (1 - src.alpha)
+                            fragmentShader.push("add ft0, ft0, " + fti);           // ft0 = src + (dst * (1 - src.alpha))
+                            
+                        case CompositeMode.INSIDE:
+                            // src × DST_ALPHA + dst × ONE_MINUS_SOURCE_ALPHA
+                            fragmentShader.push("mul ft4, ft0.wwww, " + fti);      // ft4 = src * dst.alpha
+                            fragmentShader.push("sub ft6, ft5, " + fti + ".wwww"); // ft6 = 1 - src.alpha
+                            fragmentShader.push("mul ft6, ft6, ft0");              // ft6 = dst * (1 - src.alpha)
+                            fragmentShader.push("add ft0, ft6, ft4");              // ft0 = src * dst.alpha + dst * (1 - src.alpha)
+                            
+                        case CompositeMode.INSIDE_KNOCKOUT:
+                            // src × DST_ALPHA
+                            fragmentShader.push("mul ft0, ft0.wwww, " + fti);      // ft0 = src * dst.alpha
+                            
+                        case CompositeMode.OUTSIDE:
+                            // src × ONE_MINUS_DST_ALPHA + dst
+                            fragmentShader.push("sub ft4, ft5, ft0.wwww");   // ft4 = 1 - dst.alpha
+                            fragmentShader.push("mul ft4, ft4, " + fti);     // ft4 = src * (1 - dst.alpha)
+                            fragmentShader.push("add ft0, ft0, ft4");        // ft0 = src * (1 - dst.alpha) + dst
+                            
+                        case CompositeMode.OUTSIDE_KNOCKOUT:
+                            // src × ONE_MINUS_DST_ALPHA
+                            fragmentShader.push("sub ft4, ft5, ft0.wwww");   // ft4 = 1 - dst.alpha
+                            fragmentShader.push("mul ft0, ft4, " + fti);     // ft0 = src * (1 - dst.alpha)
+                            
+                        default:
+                            throw new ArgumentError("Invalid composite mode: " + layer.mode);
+                    }
                 }
             }
 
@@ -235,6 +303,10 @@ class CompositeEffect extends FilterEffect
     override private function get_programVariantName():UInt
     {
         var bits:UInt;
+		var modeBits:UInt;
+        var textureBits:UInt;
+        var invertAlphaBit:UInt;
+        var replaceColorBit:UInt;
         var totalBits:UInt = 0;
         var layer:CompositeLayer;
         var layers = getUsedLayers(sLayers);
@@ -243,9 +315,12 @@ class CompositeEffect extends FilterEffect
         for (i in 0...numLayers)
         {
             layer = layers[i];
-            var variantBits = RenderUtil.getTextureVariantBits(layer.texture);
-            bits = variantBits != 0 ? variantBits : ((layer.replaceColor ? 1 : 0) << 3);
-            totalBits |= bits << (i * 4);
+			textureBits = RenderUtil.getTextureVariantBits(layer.texture); // 3 bits
+            modeBits = CompositeMode.getIndex(layer.mode); // 3 bits
+            replaceColorBit = layer.replaceColor ? 1 : 0;
+            invertAlphaBit = layer.invertAlpha ? 1 : 0;
+            bits = textureBits | (modeBits << 3) | (replaceColorBit << 6) | (invertAlphaBit << 7);
+            totalBits |= bits << (i * 8);
         }
 
         return totalBits;
@@ -334,11 +409,14 @@ class CompositeLayer
     public var color:UInt;
     public var alpha:Float;
     public var replaceColor:Bool;
+	public var invertAlpha:Bool;
+    public var mode:String;
 
     public function new()
     {
         x = y = 0;
         alpha = 1.0;
         color = 0xffffff;
+		mode = CompositeMode.NORMAL;
     }
 }

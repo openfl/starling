@@ -142,6 +142,24 @@ class BlendMode
         register("mask", Context3DBlendFactor.ZERO, Context3DBlendFactor.SOURCE_ALPHA);
         register("below", Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA, Context3DBlendFactor.DESTINATION_ALPHA);
     }
+	
+	/** Returns an array with all currently registered blend modes. */
+	public static function getAll(out:Array<BlendMode>=null):Array<BlendMode>
+	{
+		if (out == null) out = [];
+		if (sBlendModes == null) registerDefaults();
+		for (blendMode in sBlendModes)
+		{
+			out.insert(0, blendMode);
+		}
+		return out;
+	}
+
+	/** Returns true if a blend mode with the given name is available. */
+	public static function isRegistered(modeName:String):Bool
+	{
+		return sBlendModes.exists(modeName);
+	}
 
     // instance methods / properties
 

@@ -11,9 +11,12 @@
 package starling.display;
 
 import openfl.errors.ArgumentError;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+import starling.utils.ButtonBehavior;
+import starling.utils.SystemUtil;
 
 import starling.events.Event;
 import starling.events.Touch;
@@ -42,8 +45,6 @@ import starling.textures.Texture;
  */
 class Button extends DisplayObjectContainer
 {
-    private static inline var MAX_DRAG_DIST:Float = 50;
-    
     private var __upState:Texture;
     private var __downState:Texture;
     private var __overState:Texture;
@@ -55,25 +56,20 @@ class Button extends DisplayObjectContainer
     private var __textBounds:Rectangle;
     private var __overlay:Sprite;
     
+	private var __behavior:ButtonBehavior;
     private var __scaleWhenDown:Float;
     private var __scaleWhenOver:Float;
     private var __alphaWhenDown:Float;
     private var __alphaWhenDisabled:Float;
-    //private var __useHandCursor:Bool;
-    private var __enabled:Bool;
-    private var __state:String;
-    private var __triggerBounds:Rectangle;
-
+    
     #if commonjs
     private static function __init__ () {
         
         untyped Object.defineProperties (Button.prototype, {
-            "state": { get: untyped __js__ ("function () { return this.get_state (); }"), set: untyped __js__ ("function (v) { return this.set_state (v); }") },
             "scaleWhenDown": { get: untyped __js__ ("function () { return this.get_scaleWhenDown (); }"), set: untyped __js__ ("function (v) { return this.set_scaleWhenDown (v); }") },
             "scaleWhenOver": { get: untyped __js__ ("function () { return this.get_scaleWhenOver (); }"), set: untyped __js__ ("function (v) { return this.set_scaleWhenOver (v); }") },
             "alphaWhenDown": { get: untyped __js__ ("function () { return this.get_alphaWhenDown (); }"), set: untyped __js__ ("function (v) { return this.set_alphaWhenDown (v); }") },
             "alphaWhenDisabled": { get: untyped __js__ ("function () { return this.get_alphaWhenDisabled (); }"), set: untyped __js__ ("function (v) { return this.set_alphaWhenDisabled (v); }") },
-            "enabled": { get: untyped __js__ ("function () { return this.get_enabled (); }"), set: untyped __js__ ("function (v) { return this.set_enabled (v); }") },
             "text": { get: untyped __js__ ("function () { return this.get_text (); }"), set: untyped __js__ ("function (v) { return this.set_text (v); }") },
             "textFormat": { get: untyped __js__ ("function () { return this.get_textFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textFormat (v); }") },
             "textStyle": { get: untyped __js__ ("function () { return this.get_textStyle (); }"), set: untyped __js__ ("function (v) { return this.set_textStyle (v); }") },
@@ -88,6 +84,8 @@ class Button extends DisplayObjectContainer
             "overlay": { get: untyped __js__ ("function () { return this.get_overlay (); }") },
             "pixelSnapping": { get: untyped __js__ ("function () { return this.get_pixelSnapping (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSnapping (v); }") },
             "scale9Grid": { get: untyped __js__ ("function () { return this.get_scale9Grid (); }"), set: untyped __js__ ("function (v) { return this.set_scale9Grid (v); }") },
+			"minHitAreaSize": { get: untyped __js__ ("function () { return this.get_minHitAreaSize (); }"), set: untyped __js__ ("function (v) { return this.set_minHitAreaSize (v); }") },
+			"abortDistance": { get: untyped __js__ ("function () { return this.get_abortDistance (); }"), set: untyped __js__ ("function (v) { return this.set_abortDistance (v); }") },
         });
         
     }
@@ -108,23 +106,19 @@ class Button extends DisplayObjectContainer
         __overState = overState;
         __disabledState = disabledState;
 
-        __state = ButtonState.UP;
+        __behavior = new ButtonBehavior(this, onStateChange, SystemUtil.isDesktop ? 16 : 44);
         __body = new Image(upState);
         __body.pixelSnapping = true;
         __scaleWhenDown = downState != null? 1.0 : 0.9;
         __scaleWhenOver = __alphaWhenDown = 1.0;
         __alphaWhenDisabled = disabledState != null ? 1.0: 0.5;
-        __enabled = true;
-        __useHandCursor = true;
         __textBounds = new Rectangle(0, 0, __body.width, __body.height);
-        __triggerBounds = new Rectangle();
         
         __contents = new Sprite();
         __contents.addChild(__body);
         addChild(__contents);
         
         __setStateTexture(upState);
-        addEventListener(TouchEvent.TOUCH, __onTouch);
         
         this.touchGroup = true;
         this.text = text;
@@ -139,6 +133,38 @@ class Button extends DisplayObjectContainer
         
         super.dispose();
     }
+	
+	private function onStateChange(state:String):Void
+	{
+		__contents.x = __contents.y = 0;
+		__contents.scaleX = __contents.scaleY = __contents.alpha = 1.0;
+
+		switch (state)
+		{
+			case ButtonState.DOWN:
+				__setStateTexture(__downState);
+				__setContentScale(__scaleWhenDown);
+				__contents.alpha = __alphaWhenDown;
+				
+			case ButtonState.UP:
+				__setStateTexture(__upState);
+				
+			case ButtonState.OVER:
+				__setStateTexture(__overState);
+				__setContentScale(__scaleWhenOver);
+				
+			case ButtonState.DISABLED:
+				__setStateTexture(__disabledState);
+				__contents.alpha = __alphaWhenDisabled;
+				
+		}
+	}
+
+	/** @private */
+	public override function hitTest(localPoint:Point):DisplayObject
+	{
+		return __behavior.hitTest(localPoint);
+	}
     
     /** Readjusts the dimensions of the button according to its current state texture.
      * Call this method to synchronize button and texture size after assigning a texture
@@ -179,85 +205,11 @@ class Button extends DisplayObjectContainer
         __textField.y = __textBounds.y;
     }
     
-    private override function __onTouch(event:TouchEvent):Void
-    {
-        Mouse.cursor = (__useHandCursor && __enabled && event.interactsWith(this)) ?
-            MouseCursor.BUTTON : MouseCursor.AUTO;
-        
-        var touch:Touch = event.getTouch(this);
-        var isWithinBounds:Bool;
-
-        if (!__enabled)
-        {
-            return;
-        }
-        else if (touch == null)
-        {
-            state = ButtonState.UP;
-        }
-        else if (touch.phase == TouchPhase.HOVER)
-        {
-            state = ButtonState.OVER;
-        }
-        else if (touch.phase == TouchPhase.BEGAN && __state != ButtonState.DOWN)
-        {
-            __triggerBounds = getBounds(stage, __triggerBounds);
-            __triggerBounds.inflate(MAX_DRAG_DIST, MAX_DRAG_DIST);
-
-            state = ButtonState.DOWN;
-        }
-        else if (touch.phase == TouchPhase.MOVED)
-        {
-            isWithinBounds = __triggerBounds.contains(touch.globalX, touch.globalY);
-
-            if (__state == ButtonState.DOWN && !isWithinBounds)
-            {
-                // reset button when finger is moved too far away ...
-                state = ButtonState.UP;
-            }
-            else if (__state == ButtonState.UP && isWithinBounds)
-            {
-                // ... and reactivate when the finger moves back into the bounds.
-                state = ButtonState.DOWN;
-            }
-        }
-        else if (touch.phase == TouchPhase.ENDED && __state == ButtonState.DOWN)
-        {
-            state = ButtonState.UP;
-            if (!touch.cancelled) dispatchEventWith(Event.TRIGGERED, true);
-        }
-    }
-    
     /** The current state of the button. The corresponding strings are found
      * in the ButtonState class. */
     public var state(get, set):String;
-    private function get_state():String { return __state; }
-    private function set_state(value:String):String
-    {
-        __state = value;
-        __contents.x = __contents.y = 0;
-        __contents.scaleX = __contents.scaleY = __contents.alpha = 1.0;
-
-        switch (__state)
-        {
-            case ButtonState.DOWN:
-                __setStateTexture(__downState);
-                __setContentScale(__scaleWhenDown);
-                __contents.alpha = __alphaWhenDown;
-            case ButtonState.UP:
-                __setStateTexture(__upState);
-            case ButtonState.OVER:
-                __setStateTexture(__overState);
-                __setContentScale(__scaleWhenOver);
-            case ButtonState.DISABLED:
-                __setStateTexture(__disabledState);
-                __contents.alpha = __alphaWhenDisabled;
-            default:
-                throw new ArgumentError("Invalid button state: " + __state);
-        }
-        
-        return value;
-    }
+    private function get_state():String { return __behavior.state; }
+    private function set_state(value:String):String { return __behavior.state = value; }
     
     private function __setContentScale(scale:Float):Void
     {
@@ -308,16 +260,8 @@ class Button extends DisplayObjectContainer
     
     /** Indicates if the button can be triggered. */
     public var enabled(get, set):Bool;
-    private function get_enabled():Bool { return __enabled; }
-    private function set_enabled(value:Bool):Bool
-    {
-        if (__enabled != value)
-        {
-            __enabled = value;
-            state = value ? ButtonState.UP : ButtonState.DISABLED;
-        }
-        return value;
-    }
+    private function get_enabled():Bool { return __behavior.enabled; }
+    private function set_enabled(value:Bool):Bool { return __behavior.enabled = value; }
     
     /** The text that is displayed on the button. */
     public var text(get, set):String;
@@ -388,10 +332,12 @@ class Button extends DisplayObjectContainer
         if (__upState != value)
         {
             __upState = value;
-            if ( __state == ButtonState.UP ||
-                (__state == ButtonState.DISABLED && __disabledState == null) ||
-                (__state == ButtonState.DOWN && __downState == null) ||
-                (__state == ButtonState.OVER && __overState == null))
+			var state:String = __behavior.state;
+			
+            if (state == ButtonState.UP ||
+               (state == ButtonState.DISABLED && __disabledState == null) ||
+               (state == ButtonState.DOWN && __downState == null) ||
+               (state == ButtonState.OVER && __overState == null))
             {
                 __setStateTexture(value);
             }
@@ -407,7 +353,7 @@ class Button extends DisplayObjectContainer
         if (__downState != value)
         {
             __downState = value;
-            if (__state == ButtonState.DOWN) __setStateTexture(value);
+            if (state == ButtonState.DOWN) __setStateTexture(value);
         }
         return value;
     }
@@ -420,7 +366,7 @@ class Button extends DisplayObjectContainer
         if (__overState != value)
         {
             __overState = value;
-            if (__state == ButtonState.OVER) __setStateTexture(value);
+            if (state == ButtonState.OVER) __setStateTexture(value);
         }
         return value;
     }
@@ -433,7 +379,7 @@ class Button extends DisplayObjectContainer
         if (__disabledState != value)
         {
             __disabledState = value;
-            if (__state == ButtonState.DISABLED) __setStateTexture(value);
+            if (state == ButtonState.DISABLED) __setStateTexture(value);
         }
         return value;
     }
@@ -473,8 +419,8 @@ class Button extends DisplayObjectContainer
 
     /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
      * @default true */
-    private override function get_useHandCursor():Bool { return __useHandCursor; }
-    private override function set_useHandCursor(value:Bool):Bool { return __useHandCursor = value; }
+    private override function get_useHandCursor():Bool { return __behavior.useHandCursor; }
+    private override function set_useHandCursor(value:Bool):Bool { return __behavior.useHandCursor = value; }
     
     /** Controls whether or not the instance snaps to the nearest pixel. This can prevent the
      *  object from looking blurry when it's not exactly aligned with the pixels of the screen.
@@ -531,4 +477,16 @@ class Button extends DisplayObjectContainer
     public var scale9Grid(get, set):Rectangle;
     private function get_scale9Grid():Rectangle { return __body.scale9Grid; }
     private function set_scale9Grid(value:Rectangle):Rectangle { return __body.scale9Grid = value; }
+	
+	/** The button's hit area will be extended to have at least this width / height.
+	 *  @default on Desktop: 16, on mobile: 44 */
+	public var minHitAreaSize(get, set):Float;
+	public function get_minHitAreaSize():Float { return __behavior.minHitAreaSize; }
+	public function set_minHitAreaSize(value:Float):Float { return __behavior.minHitAreaSize = value; }
+
+	/** The distance you can move away your finger before triggering is aborted.
+	 *  @default 50 */
+	public var abortDistance(get, set):Float;
+	public function get_abortDistance():Float { return __behavior.abortDistance; }
+	public function set_abortDistance(value:Float):Float { return __behavior.abortDistance = value; }
 }

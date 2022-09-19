@@ -86,9 +86,134 @@ class Color
     {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
+	
+	/** Creates an RGB color from hue, saturation and value (brightness).
+	 *  Assumes hue, saturation, and value are contained in the range [0, 1].
+	 */
+	public static function hsv(hue:Float, saturation:Float, value:Float):UInt
+	{
+		var r:Float = 0, g:Float = 0, b:Float = 0;
+		var i:Float = Math.ffloor(hue * 6);
+		var f:Float = hue * 6 - i;
+		var p:Float = value * (1 - saturation);
+		var q:Float = value * (1 - f * saturation);
+		var t:Float = value * (1 - (1 - f) * saturation);
+		
+		switch (Std.int(i % 6))
+		{
+			case 0: r = value; g = t; b = p;
+			case 1: r = q; g = value; b = p;
+			case 2: r = p; g = value; b = t;
+			case 3: r = p; g = q; b = value;
+			case 4: r = t; g = p; b = value;
+			case 5: r = value; g = p; b = q;
+		}
+		
+		return rgb(Math.ceil(r * 255), Math.ceil(g * 255), Math.ceil(b * 255));
+	}
+	
+	/** Creates an RGB color from hue, saturation and lightness.
+	 *  Assumes hue, saturation, and lightness are contained in the range [0, 1].
+	 */
+	public static function hsl(hue:Float, saturation:Float, lightness:Float):UInt
+	{
+		var r:Float = 0, g:Float = 0, b:Float = 0;
+		var c:Float = (1.0 - Math.abs(2.0 * lightness - 1.0)) * saturation;
+		var h2:Float = hue * 6.0;
+		var x:Float = c * (1.0 - Math.abs(h2 % 2 - 1.0));
+		var m:Float = lightness - c / 2.0;
+		
+		switch (Std.int(h2 % 6))
+		{
+			case 0: r = c + m; g = x + m; b = m;
+			case 1: r = x + m; g = c + m; b = m;
+			case 2: r = m; g = c + m; b = x + m;
+			case 3: r = m; g = x + m; b = c + m;
+			case 4: r = x + m; g = m; b = c + m;
+			case 5: r = c + m; g = m; b = x + m;
+		}
+		
+		return rgb(Math.ceil(r * 255), Math.ceil(g * 255), Math.ceil(b * 255));
+	}
+	
+	/** Converts an RGB color into a vector with HSV components.
+	 *
+	 *  @param rgb  the standard RGB color
+	 *  @param hsv  a vector to be used for the result; passing null will create a new one.
+	 *  @return     a vector containing hue, saturation, and value, in this order. Range: [0..1]
+	 */
+	public static function rgbToHsv(rgb:UInt, hsv:Vector<Float> = null):Vector<Float>
+	{
+		if (hsv == null) hsv = new Vector<Float>(3, true);
+		
+		var r:Float = Color.getRed(rgb) / 255.0;
+		var g:Float = Color.getGreen(rgb) / 255.0;
+		var b:Float = Color.getBlue(rgb) / 255.0;
+		var t:Float = Math.max(r, g);
+		var cMax:Float = Math.max(t, b);
+		t = Math.min(r, g);
+		var cMin:Float = Math.min(t, b);
+		var delta:Float = cMax - cMin;
+		
+		// hue
+		if (delta == 0)     hsv[0] = 0;
+		else if (cMax == r) hsv[0] = (((g - b) / delta) % 6) / 6.0;
+		else if (cMax == g) hsv[0] = ((b - r) / delta + 2) / 6.0;
+		else if (cMax == b) hsv[0] = ((r - g) / delta + 4) / 6.0;
+
+		// normalize [0..1]
+		while (hsv[0] <  0.0) hsv[0] += 1.0;
+		while (hsv[0] >= 1.0) hsv[0] -= 1.0;
+
+		// value / brightness
+		hsv[2] = cMax;
+
+		// saturation
+		hsv[1] = cMax == 0 ? 0 : delta / cMax;
+		
+		return hsv;
+	}
+	
+	/** Converts an RGB color into a vector with HSV components.
+	 *
+	 *  @param rgb  the standard RGB color
+	 *  @param hsl  a vector to be used for the result; passing null will create a new one.
+	 *  @return     a vector containing hue, saturation, and lightness, in this order. Range: [0..1]
+	 */
+	public static function rgbToHsl(rgb:UInt, hsl:Vector<Float> = null):Vector<Float>
+	{
+		if (hsl == null) hsl = new Vector<Float>(3, true);
+		
+		var r:Float = Color.getRed(rgb) / 255.0;
+		var g:Float = Color.getGreen(rgb) / 255.0;
+		var b:Float = Color.getBlue(rgb) / 255.0;
+		var t:Float = Math.max(r, g);
+		var cMax:Float = Math.max(t, b);
+		t = Math.min(r, g);
+		var cMin:Float = Math.min(t, b);
+		var delta:Float = cMax - cMin;
+		
+		// hue
+		if (delta == 0)     hsl[0] = 0;
+		else if (cMax == r) hsl[0] = (((g - b) / delta) % 6) / 6.0;
+		else if (cMax == g) hsl[0] = ((b - r) / delta + 2) / 6.0;
+		else if (cMax == b) hsl[0] = ((r - g) / delta + 4) / 6.0;
+
+		// normalize [0..1]
+		while (hsl[0] <  0.0) hsl[0] += 1.0;
+		while (hsl[0] >= 1.0) hsl[0] -= 1.0;
+
+		// lightness
+		hsl[2] = (cMax + cMin) * 0.5;
+
+		// saturation
+		hsl[1] = delta == 0 ? 0 : delta / (1.0 - Math.abs(2.0 * hsl[2] - 1.0));
+
+		return hsl;
+	}
 
     /** Converts a color to a vector containing the RGBA components (in this order) scaled
-        *  between 0 and 1. */
+	 *  between 0 and 1. */
     public static function toVector(color:UInt, out:Vector<Float>=null):Vector<Float>
     {
         if (out == null) out = new Vector<Float>(4, true);
@@ -123,15 +248,15 @@ class Color
         *  <code>ratio</code> is expected between 0 and 1. */
     public static function interpolate(startColor:UInt, endColor:UInt, ratio:Float):UInt
     {
-        var startA:UInt = (startColor >> 24) & 0xff;
-        var startR:UInt = (startColor >> 16) & 0xff;
-        var startG:UInt = (startColor >>  8) & 0xff;
-        var startB:UInt = (startColor      ) & 0xff;
+        var startA:Int = (startColor >> 24) & 0xff;
+        var startR:Int = (startColor >> 16) & 0xff;
+        var startG:Int = (startColor >>  8) & 0xff;
+        var startB:Int = (startColor      ) & 0xff;
 
-        var endA:UInt = (endColor >> 24) & 0xff;
-        var endR:UInt = (endColor >> 16) & 0xff;
-        var endG:UInt = (endColor >>  8) & 0xff;
-        var endB:UInt = (endColor      ) & 0xff;
+        var endA:Int = (endColor >> 24) & 0xff;
+        var endR:Int = (endColor >> 16) & 0xff;
+        var endG:Int = (endColor >>  8) & 0xff;
+        var endB:Int = (endColor      ) & 0xff;
 
         var newA:UInt = Std.int(startA + (endA - startA) * ratio);
         var newR:UInt = Std.int(startR + (endR - startR) * ratio);

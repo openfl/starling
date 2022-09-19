@@ -76,7 +76,7 @@ class TouchProcessor
     // system gesture detection
     private var __discardSystemGestures:Bool;
     private var __systemGestureTouchID:Int = -1;
-    private var __systemGestureMargins:Array<Float> = [10, 10, 0, 0];
+    private var __systemGestureMargins:Array<Float> = [15, 15, 15, 0];
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
      * method (the oldest being at the end of the vector). */
@@ -87,7 +87,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
-    private static var sHoveringTouchData:Vector<Object> = new Vector<Object>();
+    private static var sHoveringTouchData:Array<Object> = new Array<Object>();
     private static var sHelperPoint:Point = new Point();
     
     private static inline var TOP:Int = 0;
@@ -228,7 +228,7 @@ class TouchProcessor
                                     shiftDown:Bool, ctrlDown:Bool):Void
     {
         var touch:Touch;
-        sHoveringTouchData.length = 0;
+        sHoveringTouchData.resize(0);
 
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method makes sure each bubble target is visited only once.

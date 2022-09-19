@@ -399,6 +399,8 @@ class DisplacementMapEffect extends FilterEffect
             // vertex attribute 0:   vertex position (FLOAT_2)
             // vertex attribute 1:   texture coordinates (FLOAT_2)
             // texture 0:            input texture
+			
+			getMapMatrix(sMatrix);
 
             sInputClamp[0] = texture.width  / texture.root.width  - 0.5 / texture.root.nativeWidth;
             sInputClamp[1] = texture.height / texture.root.height - 0.5 / texture.root.nativeHeight;

@@ -135,17 +135,18 @@ class RenderTexture extends SubTexture
      *  documentation of the <code>useDoubleBuffering</code> property.</p>
      */
     public function new(width:Int, height:Int, persistent:Bool=true,
-                        scale:Float=-1, format:String="bgra")
+                        scale:Float=-1, format:String="bgra",
+						forcePotTexture:Bool=false)
     {
         _isPersistent = persistent;
-        _activeTexture = Texture.empty(width, height, true, false, true, scale, format);
+        _activeTexture = Texture.empty(width, height, true, false, true, scale, format, forcePotTexture);
         _activeTexture.root.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.clear();};
 
         super(_activeTexture, new Rectangle(0, 0, width, height), true, null, false);
 
         if (persistent && useDoubleBuffering)
         {
-            _bufferTexture = Texture.empty(width, height, true, false, true, scale, format);
+            _bufferTexture = Texture.empty(width, height, true, false, true, scale, format, forcePotTexture);
             _bufferTexture.root.onRestore = function(textureRoot:ConcreteTexture):Void {textureRoot.clear();};
             _helperImage = new Image(_bufferTexture);
             _helperImage.textureSmoothing = TextureSmoothing.NONE; // solves some aliasing-issues

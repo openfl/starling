@@ -10,7 +10,9 @@
 
 package starling.assets;
 
+import haxe.Constraints.Function;
 import openfl.utils.ByteArray;
+import starling.utils.Execute;
 
 import starling.textures.AtfData;
 import starling.textures.Texture;
@@ -48,8 +50,10 @@ class AtfTextureFactory extends AssetFactory
         {
             var texture:Texture = null;
             
+			var onReady:Function = reference.textureOptions.onReady;
             reference.textureOptions.onReady = function(_):Void
             {
+				Execute.execute(onReady, [texture]);
                 onComplete(reference.name, texture);
             };
             
