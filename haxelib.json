@@ -6,7 +6,13 @@
 	"description": "The Cross-Platform Game Engine",
 	"version": "2.5.1",
 	"releasenote": "Fix circular reference in NPM release, minor null fix",
-	"contributors": [ "p.j.shand", "singmajesty", "tbyrne" ],
+	"contributors": [
+		"p.j.shand",
+		"singmajesty",
+		"tbyrne",
+		"bowlerhat",
+		"Dimensionscape"
+	],
 	"dependencies": {},
 	"classPath": "src"
 }
