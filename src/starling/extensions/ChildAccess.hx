@@ -1401,4 +1401,14 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		return cast value;
 	}
 	
+	@:to private static inline function __toTextField(value:ChildAccess<Dynamic>):TextField
+	{
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, TextField))
+		{
+			throw new TypeError("Cannot cast object reference to TextField");
+		}
+		
+		return cast value;
+	}
+	
 }
