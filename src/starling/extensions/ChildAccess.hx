@@ -79,61 +79,76 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// Button
 	//################################################################################
+	/* Accesses the `abortDistance` property (for Button instances only). */
 	public var abortDistance(get, set):Float;
 	private inline function get_abortDistance():Float { return cast(this, Button).abortDistance; }
 	private inline function set_abortDistance(value:Float):Float { return cast(this, Button).abortDistance = value; }
 	
+	/* Accesses the `alphaWhenDisabled` property (for Button instances only). */
 	public var alphaWhenDisabled(get, set):Float;
 	private inline function get_alphaWhenDisabled():Float { return cast(this, Button).alphaWhenDisabled; }
 	private inline function set_alphaWhenDisabled(value:Float):Float { return cast(this, Button).alphaWhenDisabled = value; }
 	
+	/* Accesses the `alphaWhenDown` property (for Button instances only). */
 	public var alphaWhenDown(get, set):Float;
 	private inline function get_alphaWhenDown():Float { return cast(this, Button).alphaWhenDown; }
 	private inline function set_alphaWhenDown(value:Float):Float { return cast(this, Button).alphaWhenDown = value; }
 	
+	/* Accesses the `disabledState` property (for Button instances only). */
 	public var disabledState(get, set):Texture;
 	private inline function get_disabledState():Texture { return cast(this, Button).disabledState; }
 	private inline function set_disabledState(value:Texture):Texture { return cast(this, Button).disabledState = value; }
 	
+	/* Accesses the `downState` property (for Button instances only). */
 	public var downState(get, set):Texture;
 	private inline function get_downState():Texture { return cast(this, Button).downState; }
 	private inline function set_downState(value:Texture):Texture { return cast(this, Button).downState = value; }
 	
+	/* Accesses the `enabled` property (for Button instances only). */
 	public var enabled(get, set):Bool;
 	private inline function get_enabled():Bool { return cast(this, Button).enabled; }
 	private inline function set_enabled(value:Bool):Bool { return cast(this, Button).enabled = value; }
 	
+	/* Accesses the `minHitAreaSize` property (for Button instances only). */
 	public var minHitAreaSize(get, set):Float;
 	private inline function get_minHitAreaSize():Float { return cast(this, Button).minHitAreaSize; }
 	private inline function set_minHitAreaSize(value:Float):Float { return cast(this, Button).minHitAreaSize = value; }
 	
+	/* Accesses the `overlay` property (for Button instances only). */
 	public var overlay(get, never):Sprite;
 	private inline function get_overlay():Sprite { return cast(this, Button).overlay; }
 	
+	/* Accesses the `overState` property (for Button instances only). */
 	public var overState(get, set):Texture;
 	private inline function get_overState():Texture { return cast(this, Button).overState; }
 	private inline function set_overState(value:Texture):Texture { return cast(this, Button).overState = value; }
 	
+	/* Accesses the `scaleWhenDown` property (for Button instances only). */
 	public var scaleWhenDown(get, set):Float;
 	private inline function get_scaleWhenDown():Float { return cast(this, Button).scaleWhenDown; }
 	private inline function set_scaleWhenDown(value:Float):Float { return cast(this, Button).scaleWhenDown = value; }
 	
+	/* Accesses the `scaleWhenOver` property (for Button instances only). */
 	public var scaleWhenOver(get, set):Float;
 	private inline function get_scaleWhenOver():Float { return cast(this, Button).scaleWhenOver; }
 	private inline function set_scaleWhenOver(value:Float):Float { return cast(this, Button).scaleWhenOver = value; }
 	
+	/* Accesses the `state` property (for Button instances only). */
 	public var state(get, set):String;
 	private inline function get_state():String { return cast(this, Button).state; }
 	private inline function set_state(value:String):String { return cast(this, Button).state = value; }
 	
+	/* Accesses the `textFormat` property (for Button instances only). */
 	public var textFormat(get, set):TextFormat;
 	private inline function get_textFormat():TextFormat { return cast(this, Button).textFormat; }
 	private inline function set_textFormat(value:TextFormat):TextFormat { return cast(this, Button).textFormat = value; }
 	
+	/* Accesses the `textStyle` property (for Button instances only). */
 	public var textStyle(get, set):MeshStyle;
 	private inline function get_textStyle():MeshStyle { return cast(this, Button).textStyle; }
 	private inline function set_textStyle(value:MeshStyle):MeshStyle { return cast(this, Button).textStyle = value; }
 	
+	/* Accesses the `upState` property (for Button instances only). */
 	public var upState(get, set):Texture;
 	private inline function get_upState():Texture { return cast(this, Button).upState; }
 	private inline function set_upState(value:Texture):Texture { return cast(this, Button).upState = value; }
@@ -192,205 +207,233 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// DisplayObject
 	//################################################################################
-	/** Accesses the `alpha` property */
+	/* Accesses the `alpha` property */
 	public var alpha(get, set):Float;
 	private inline function get_alpha():Float { return this.alpha; }
 	private inline function set_alpha(value:Float):Float { return this.alpha = value; }
 	
+	/* Accesses the `base` property */
 	public var base(get, never):DisplayObject;
 	private inline function get_base():DisplayObject { return this.base; }
 	
+	/* Accesses the `blendMode` property */
 	public var blendMode(get, set):String;
 	private inline function get_blendMode():String { return this.blendMode; }
 	private inline function set_blendMode(value:String):String { return this.blendMode = value; }
 	
+	/* Accesses the `bounds` property */
 	public var bounds(get, never):Rectangle;
 	private inline function get_bounds():Rectangle { return this.bounds; }
 	
+	/* Accesses the `filter` property */
 	public var filter(get, set):FragmentFilter;
 	private inline function get_filter():FragmentFilter { return this.filter; }
 	private inline function set_filter(value:FragmentFilter):FragmentFilter { return this.filter = value; }
 	
+	/* Accesses the `height` property */
 	public var height(get, set):Float;
 	private inline function get_height():Float { return this.height; }
 	private inline function set_height(value:Float):Float { return this.height = value; }
 	
+	/* Accesses the `is3D` property */
 	public var is3D(get, never):Bool;
 	private inline function get_is3D():Bool { return this.is3D; }
 	
+	/* Accesses the `mask` property */
 	public var mask(get, set):DisplayObject;
 	private inline function get_mask():DisplayObject { return this.mask; }
 	private inline function set_mask(value:DisplayObject):DisplayObject { return this.mask = value; }
 	
+	/* Accesses the `maskInverted` property */
 	public var maskInverted(get, set):Bool;
 	private inline function get_maskInverted():Bool { return this.maskInverted; }
 	private inline function set_maskInverted(value:Bool):Bool { return this.maskInverted = value; }
 	
+	/* Accesses the `name` property */
 	public var name(get, set):String;
 	private inline function get_name():String { return this.name; }
 	private inline function set_name(value:String):String { return this.name = value; }
 	
+	/* Accesses the `parent` property */
 	public var parent(get, never):DisplayObject;
 	private inline function get_parent():DisplayObject { return this.parent; }
 	
+	/* Accesses the `pivotX` property */
 	public var pivotX(get, set):Float;
 	private inline function get_pivotX():Float { return this.pivotX; }
 	private inline function set_pivotX(value:Float):Float { return this.pivotX = value; }
 	
+	/* Accesses the `pivotY` property */
 	public var pivotY(get, set):Float;
 	private inline function get_pivotY():Float { return this.pivotY; }
 	private inline function set_pivotY(value:Float):Float { return this.pivotY = value; }
 	
+	/* Accesses the `requiresRedraw` property */
 	public var requiresRedraw(get, never):Bool;
 	private inline function get_requiresRedraw():Bool { return this.requiresRedraw; }
 	
+	/* Accesses the `root` property */
 	public var root(get, never):DisplayObject;
 	private inline function get_root():DisplayObject { return this.root; }
 	
+	/* Accesses the `rotation` property */
 	public var rotation(get, set):Float;
 	private inline function get_rotation():Float { return this.rotation; }
 	private inline function set_rotation(value:Float):Float { return this.rotation = value; }
 	
+	/* Accesses the `scale` property */
 	public var scale(get, set):Float;
 	private inline function get_scale():Float { return this.scale; }
 	private inline function set_scale(value:Float):Float { return this.scale = value; }
 	
+	/* Accesses the `scaleX` property */
 	public var scaleX(get, set):Float;
 	private inline function get_scaleX():Float { return this.scaleX; }
 	private inline function set_scaleX(value:Float):Float { return this.scaleX = value; }
 	
+	/* Accesses the `scaleY` property */
 	public var scaleY(get, set):Float;
 	private inline function get_scaleY():Float { return this.scaleY; }
 	private inline function set_scaleY(value:Float):Float { return this.scaleY = value; }
 	
+	/* Accesses the `skewX` property */
 	public var skewX(get, set):Float;
 	private inline function get_skewX():Float { return this.skewX; }
 	private inline function set_skewX(value:Float):Float { return this.skewX = value; }
 	
+	/* Accesses the `skewY` property */
 	public var skewY(get, set):Float;
 	private inline function get_skewY():Float { return this.skewY; }
 	private inline function set_skewY(value:Float):Float { return this.skewY = value; }
 	
+	/* Accesses the `stage` property */
 	public var stage(get, never):Stage;
 	private inline function get_stage():Stage { return this.stage; }
 	
+	/* Accesses the `touchable` property */
 	public var touchable(get, set):Bool;
 	private inline function get_touchable():Bool { return this.touchable; }
 	private inline function set_touchable(value:Bool):Bool { return this.touchable = value; }
 	
+	/* Accesses the `transformationMatrix` property */
 	public var transformationMatrix(get, set):Matrix;
 	private inline function get_transformationMatrix():Matrix { return this.transformationMatrix; }
 	private inline function set_transformationMatrix(value:Matrix):Matrix { return this.transformationMatrix = value; }
 	
+	/* Accesses the `transformationMatrix3D` property */
 	public var transformationMatrix3D(get, never):Matrix3D;
 	private inline function get_transformationMatrix3D():Matrix3D { return this.transformationMatrix3D; }
 	
-	/** Accesses the `useHandCursor` property. */
+	/* Accesses the `useHandCursor` property. */
 	public var useHandCursor(get, set):Bool;
 	private inline function get_useHandCursor():Bool { return this.useHandCursor; }
 	private inline function set_useHandCursor(value:Bool):Bool { return this.useHandCursor = value; }
 	
+	/* Accesses the `visible` property */
 	public var visible(get, set):Bool;
 	private inline function get_visible():Bool { return this.visible; }
 	private inline function set_visible(value:Bool):Bool { return this.visible = value; }
 	
+	/* Accesses the `width` property */
 	public var width(get, set):Float;
 	private inline function get_width():Float { return this.width; }
 	private inline function set_width(value:Float):Float { return this.width = value; }
 	
+	/* Accesses the `x` property */
 	public var x(get, set):Float;
 	private inline function get_x():Float { return this.x; }
 	private inline function set_x(value:Float):Float { return this.x = value; }
 	
+	/* Accesses the `y` property */
 	public var y(get, set):Float;
 	private inline function get_y():Float { return this.y; }
 	private inline function set_y(value:Float):Float { return this.y = value; }
 	
-	/** Moves the pivot point to a certain position within the local coordinate system of the object. */
+	/* Moves the pivot point to a certain position within the local coordinate system of the object. */
 	public function alignPivot(horizontalAlign:String = "center", verticalAlign:String = "center"):Void
 	{
 		this.alignPivot(horizontalAlign, verticalAlign);
 	}
 	
-	/** Disposes all resources of the display object. */
+	/* Disposes all resources of the display object. */
 	public function dispose():Void
 	{
 		this.dispose();
 	}
 	
-	/** Draws the object into a BitmapData object. */
+	/* Draws the object into a BitmapData object. */
 	public function drawToBitmapData(out:BitmapData = null, color:UInt = 0x0, alpha:Float = 0.0):BitmapData
 	{
 		return this.drawToBitmapData(out, color, alpha);
 	}
 	
-	/** Returns a rectangle that completely encloses the object as it appears in another coordinate system. */
+	/* Returns a rectangle that completely encloses the object as it appears in another coordinate system. */
 	public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
 	{
 		return this.getBounds(targetSpace, out);
 	}
 	
-	/** Creates a matrix that represents the transformation from the local coordinate system to another. */
+	/* Creates a matrix that represents the transformation from the local coordinate system to another. */
 	public function getTransformationMatrix(targetSpace:DisplayObject, out:Matrix = null):Matrix
 	{
 		return this.getTransformationMatrix(targetSpace, out);
 	}
 	
-	/** Creates a matrix that represents the transformation from the local coordinate system to another. */
+	/* Creates a matrix that represents the transformation from the local coordinate system to another. */
 	public function getTransformationMatrix3D(targetSpace:DisplayObject, out:Matrix3D = null):Matrix3D
 	{
 		return this.getTransformationMatrix3D(targetSpace, out);
 	}
 	
-	/** Transforms a point from global (stage) coordinates to the local coordinate system. */
+	/* Transforms a point from global (stage) coordinates to the local coordinate system. */
 	public function globalToLocal(globalPoint:Point, out:Point = null):Point
 	{
 		return this.globalToLocal(globalPoint, out);
 	}
 	
-	/** Transforms a point from global (stage) coordinates to the 3D local coordinate system. */
+	/* Transforms a point from global (stage) coordinates to the 3D local coordinate system. */
 	public function globalToLocal3D(globalPoint:Point, out:Vector3D = null):Vector3D
 	{
 		return this.globalToLocal3D(globalPoint, out);
 	}
 	
-	/** Returns the object that is found topmost beneath a point in local coordinates, or null if the test fails. */
+	/* Returns the object that is found topmost beneath a point in local coordinates, or null if the test fails. */
 	public function hitTest(localPoint:Point):DisplayObject
 	{
 		return this.hitTest(localPoint);
 	}
 	
-	/** Checks if a certain point is inside the display object's mask. */
+	/* Checks if a certain point is inside the display object's mask. */
 	public function hitTestMask(localPoint:Point):Bool
 	{
 		return this.hitTestMask(localPoint);
 	}
 	
-	/** Transforms a 3D point from the local coordinate system to global (stage) coordinates. */
+	/* Transforms a 3D point from the local coordinate system to global (stage) coordinates. */
 	public function local3DToGlobal(localPoint:Vector3D, out:Point = null):Point
 	{
 		return this.local3DToGlobal(localPoint, out);
 	}
 	
-	/** Transforms a point from the local coordinate system to global (stage) coordinates. */
+	/* Transforms a point from the local coordinate system to global (stage) coordinates. */
 	public function localToGlobal(localPoint:Point, out:Point = null):Point
 	{
 		return this.localToGlobal(localPoint, out);
 	}
 	
-	/** Removes the object from its parent, if it has one, and optionally disposes it. */
+	/* Removes the object from its parent, if it has one, and optionally disposes it. */
 	public function removeFromParent(dispose:Bool = false):Void
 	{
 		this.removeFromParent(dispose);
 	}
 	
-	/** Renders the display object with the help of a painter object. */
+	/* Renders the display object with the help of a painter object. */
 	public function render(painter:Painter):Void
 	{
 		this.render(painter);
 	}
 	
-	/** Forces the object to be redrawn in the next frame. */
+	/* Forces the object to be redrawn in the next frame. */
 	public function setRequiresRedraw():Void
 	{
 		this.setRequiresRedraw();
@@ -507,37 +550,37 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// EventDispatcher
 	//################################################################################
-	/** Registers an event listener at a certain object. */
+	/* Registers an event listener at a certain object. */
     public function addEventListener(type:String, listener:Function):Void
 	{
 		this.addEventListener(type, listener);
 	}
 	
-	/** Dispatches an event to all objects that have registered listeners for its type. */
+	/* Dispatches an event to all objects that have registered listeners for its type. */
 	public function dispatchEvent(event:Event):Void
 	{
 		this.dispatchEvent(event);
 	}
 	
-	/** Dispatches an event with the given parameters to all objects that have registered listeners for the given type. */
+	/* Dispatches an event with the given parameters to all objects that have registered listeners for the given type. */
 	public function dispatchEventWith(type:String, bubbles:Bool = false, data:Dynamic = null):Void
 	{
 		this.dispatchEventWith(type, bubbles, data);
 	}
 	
-	/** If called with one argument, figures out if there are any listeners registered for the given event type. */
+	/* If called with one argument, figures out if there are any listeners registered for the given event type. */
 	public function hasEventListener(type:String, listener:Function = null):Bool
 	{
 		return this.hasEventListener(type, listener);
 	}
 	
-	/** Removes an event listener from the object. */
+	/* Removes an event listener from the object. */
 	public function removeEventListener(type:String, listener:Function):Void
 	{
 		this.removeEventListener(type, listener);
 	}
 	
-	/** Removes all event listeners with a certain type, or all of them if type is null. */
+	/* Removes all event listeners with a certain type, or all of them if type is null. */
 	public function removeEventListeners(type:String = null):Void
 	{
 		this.removeEventListeners(type);
@@ -549,7 +592,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// Image
 	//################################################################################
-	/** Accesses the `scale9Grid` property (for Image and Button instances only). */
+	/* Accesses the `scale9Grid` property (for Image and Button instances only). */
 	public var scale9Grid(get, set):Rectangle;
 	private inline function get_scale9Grid():Rectangle
 	{
@@ -568,6 +611,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	}
 	private inline function set_scale9Grid(value:Rectangle):Rectangle { return cast(this, Image).scale9Grid = value; }
 	
+	/* Accesses the `tileGrid` property (for Image instances only). */
 	public var tileGrid(get, set):Rectangle;
 	private inline function get_tileGrid():Rectangle { return cast(this, Image).tileGrid; }
 	private inline function set_tileGrid(value:Rectangle):Rectangle { return cast(this, Image).tileGrid = value; }
@@ -578,7 +622,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// Mesh
 	//################################################################################
-	/** Accesses the `color` property (for Mesh and Button instances only). */
+	/* Accesses the `color` property (for Mesh and Button instances only). */
 	public var color(get, set):UInt;
 	private inline function get_color():UInt 
 	{
@@ -611,16 +655,19 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 	
+	/* Accesses the `numIndices` property (for Mesh instances only). */
 	public var numIndices(get, never):Int;
 	private inline function get_numIndices():Int { return cast(this, Mesh).numIndices; }
 	
+	/* Accesses the `numTriangles` property (for Mesh instances only). */
 	public var numTriangles(get, never):Int;
 	private inline function get_numTriangles():Int { return cast(this, Mesh).numTriangles; }
 	
+	/* Accesses the `numVertices` property (for Mesh instances only). */
 	public var numVertices(get, never):Int;
 	private inline function get_numVertices():Int { return cast(this, Mesh).numVertices; }
 	
-	/** Accesses the `pixelSnapping` property (for Mesh, Button and TextField instances only). */
+	/* Accesses the `pixelSnapping` property (for Mesh, Button and TextField instances only). */
 	public var pixelSnapping(get, set):Bool;
 	private inline function get_pixelSnapping():Bool 
 	{
@@ -661,7 +708,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 	
-	/** Accesses the `style` property (for Mesh, Button and TextField instances only). */
+	/* Accesses the `style` property (for Mesh, Button and TextField instances only). */
 	public var style(get, set):MeshStyle;
 	private inline function get_style():MeshStyle
 	{
@@ -702,15 +749,17 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 	
+	/* Accesses the `texture` property (for Mesh instances only). */
 	public var texture(get, set):Texture;
 	private inline function get_texture():Texture { return cast(this, Mesh).texture; }
 	private inline function set_texture(value:Texture):Texture { return cast(this, Mesh).texture = value; }
 	
+	/* Accesses the `textureRepeat` property (for Mesh instances only). */
 	public var textureRepeat(get, set):Bool;
 	private inline function get_textureRepeat():Bool { return cast(this, Mesh).textureRepeat; }
 	private inline function set_textureRepeat(value:Bool):Bool { return cast(this, Mesh).textureRepeat = value; }
 	
-	/** Accesses the `textureSmoothing` property (for Mesh and Button instances only). */
+	/* Accesses the `textureSmoothing` property (for Mesh and Button instances only). */
 	public var textureSmoothing(get, set):String;
 	private inline function get_textureSmoothing():String
 	{
@@ -743,6 +792,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 	
+	/* Accesses the `vertexFormat` property (for Mesh instances only). */
 	public var vertexFormat(get, never):VertexDataFormat;
 	private inline function get_vertexFormat():VertexDataFormat { return cast(this, Mesh).vertexFormat; }
 	
@@ -818,7 +868,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// MeshBatch
 	//################################################################################
-	/** Accesses the `batchable` property (for MeshBatch and TextField instances only). */
+	/* Accesses the `batchable` property (for MeshBatch and TextField instances only). */
 	public var batchable(get, set):Bool;
 	private inline function get_batchable():Bool 
 	{
@@ -898,39 +948,49 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// MovieClip
 	//################################################################################
+	/* Accesses the `currentFrame` property (for MovieClip instances only). */
 	public var currentFrame(get, set):Int;
 	private inline function get_currentFrame():Int { return cast(this, MovieClip).currentFrame; }
 	private inline function set_currentFrame(value:Int):Int { return cast(this, MovieClip).currentFrame = value; }
 	
+	/* Accesses the `currentTime` property (for MovieClip instances only). */
 	public var currentTime(get, set):Float;
 	private inline function get_currentTime():Float { return cast(this, MovieClip).currentTime; }
 	private inline function set_currentTime(value:Float):Float { return cast(this, MovieClip).currentTime = value; }
 	
+	/* Accesses the `fps` property (for MovieClip instances only). */
 	public var fps(get, set):Float;
 	private inline function get_fps():Float { return cast(this, MovieClip).fps; }
 	private inline function set_fps(value:Float):Float { return cast(this, MovieClip).fps = value; }
 	
+	/* Accesses the `isComplete` property (for MovieClip instances only). */
 	public var isComplete(get, never):Bool;
 	private inline function get_isComplete():Bool { return cast(this, MovieClip).isComplete; }
 	
+	/* Accesses the `isPlaying` property (for MovieClip instances only). */
 	public var isPlaying(get, never):Bool;
 	private inline function get_isPlaying():Bool { return cast(this, MovieClip).isPlaying; }
 	
+	/* Accesses the `color` property (for MovieClip instances only). */
 	public var loop(get, set):Bool;
 	private inline function get_loop():Bool { return cast(this, MovieClip).loop; }
 	private inline function set_loop(value:Bool):Bool { return cast(this, MovieClip).loop = value; }
 	
+	/* Accesses the `muted` property (for MovieClip instances only). */
 	public var muted(get, set):Bool;
 	private inline function get_muted():Bool { return cast(this, MovieClip).muted; }
 	private inline function set_muted(value:Bool):Bool { return cast(this, MovieClip).muted; }
 	
+	/* Accesses the `numFrames` property (for MovieClip instances only). */
 	public var numFrames(get, never):Int;
 	private inline function get_numFrames():Int { return cast(this, MovieClip).numFrames; }
 	
+	/* Accesses the `soundTransform` property (for MovieClip instances only). */
 	public var soundTransform(get, set):SoundTransform;
 	private inline function get_soundTransform():SoundTransform { return cast(this, MovieClip).soundTransform; }
 	private inline function set_soundTransform(value:SoundTransform):SoundTransform { return cast(this, MovieClip).soundTransform; }
 	
+	/* Accesses the `totalTime` property (for MovieClip instances only). */
 	public var totalTime(get, never):Float;
 	private inline function get_totalTime():Float { return cast(this, MovieClip).totalTime; }
 	
@@ -1048,29 +1108,36 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// Sprite3D
 	//################################################################################
+	/* Accesses the `isFlat` property (for Sprite3D instances only). */
 	public var isFlat(get, never):Bool;
 	private inline function get_isFlat():Bool { return cast(this, Sprite3D).isFlat; }
 	
+	/* Accesses the `pivotZ` property (for Sprite3D instances only). */
 	public var pivotZ(get, set):Float;
 	private inline function get_pivotZ():Float { return cast(this, Sprite3D).pivotZ; }
 	private inline function set_pivotZ(value:Float):Float { return cast(this, Sprite3D).pivotZ = value; }
 	
+	/* Accesses the `rotationX` property (for Sprite3D instances only). */
 	public var rotationX(get, set):Float;
 	private inline function get_rotationX():Float { return cast(this, Sprite3D).rotationX; }
 	private inline function set_rotationX(value:Float):Float { return cast(this, Sprite3D).rotationX = value; }
 	
+	/* Accesses the `rotationY` property (for Sprite3D instances only). */
 	public var rotationY(get, set):Float;
 	private inline function get_rotationY():Float { return cast(this, Sprite3D).rotationY; }
 	private inline function set_rotationY(value:Float):Float { return cast(this, Sprite3D).rotationY = value; }
 	
+	/* Accesses the `rotationZ` property (for Sprite3D instances only). */
 	public var rotationZ(get, set):Float;
 	private inline function get_rotationZ():Float { return cast(this, Sprite3D).rotationZ; }
 	private inline function set_rotationZ(value:Float):Float { return cast(this, Sprite3D).rotationZ = value; }
 	
+	/* Accesses the `scaleZ` property (for Sprite3D instances only). */
 	public var scaleZ(get, set):Float;
 	private inline function get_scaleZ():Float { return cast(this, Sprite3D).scaleZ; }
 	private inline function set_scaleZ(value:Float):Float { return cast(this, Sprite3D).scaleZ = value; }
 	
+	/* Accesses the `z` property (for Sprite3D instances only). */
 	public var z(get, set):Float;
 	private inline function get_z():Float { return cast(this, Sprite3D).z; }
 	private inline function set_z(value:Float):Float { return cast(this, Sprite3D).z = value; }
@@ -1081,37 +1148,44 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	//################################################################################
 	// TextField
 	//################################################################################
+	/* Accesses the `autoScale` property (for Sprite3D instances only). */
 	public var autoScale(get, set):Bool;
 	private inline function get_autoScale():Bool { return cast(this, TextField).autoScale; }
 	private inline function set_autoScale(value:Bool):Bool { return cast(this, TextField).autoScale = value; }
 	
+	/* Accesses the `autoSize` property (for Sprite3D instances only). */
 	public var autoSize(get, set):String;
 	private inline function get_autoSize():String { return cast(this, TextField).autoSize; }
 	private inline function set_autoSize(value:String):String { return cast(this, TextField).autoSize = value; }
 	
+	/* Accesses the `border` property (for Sprite3D instances only). */
 	public var border(get, set):Bool;
 	private inline function get_border():Bool { return cast(this, TextField).border; }
 	private inline function set_border(value:Bool):Bool { return cast(this, TextField).border = value; }
 	
+	/* Accesses the `format` property (for Sprite3D instances only). */
 	public var format(get, set):TextFormat;
 	private inline function get_format():TextFormat { return cast(this, TextField).format; }
 	private inline function set_format(value:TextFormat):TextFormat { return cast(this, TextField).format = value; }
 	
+	/* Accesses the `isHtmlText` property (for Sprite3D instances only). */
 	public var isHtmlText(get, set):Bool;
 	private inline function get_isHtmlText():Bool { return cast(this, TextField).isHtmlText; }
 	private inline function set_isHtmlText(value:Bool):Bool { return cast(this, TextField).isHtmlText = value; }
 	
+	/* Accesses the `padding` property (for Sprite3D instances only). */
 	public var padding(get, set):Float;
 	private inline function get_padding():Float { return cast(this, TextField).padding; }
 	private inline function set_padding(value:Float):Float { return cast(this, TextField).padding = value; }
 	
 	#if flash
+	/* Accesses the `styleSheet` property (for Sprite3D instances only). */
 	public var styleSheet(get, set):StyleSheet;
 	private inline function get_styleSheet():StyleSheet { return cast(this, TextField).styleSheet; }
 	private inline function set_styleSheet(value:StyleSheet):StyleSheet { return cast(this, TextField).styleSheet = value; }
 	#end
 	
-	/** Accesses the `text` property (for TextField and Button instances only). */
+	/* Accesses the `text` property (for TextField and Button instances only). */
 	public var text(get, set):String;
 	private inline function get_text():String
 	{
@@ -1144,7 +1218,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 		}
 	}
 	
-	/** Accesses the `textBounds` property (for TextField and Button instances only - read-only for TextField). */
+	/* Accesses the `textBounds` property (for TextField and Button instances only - read-only for TextField). */
 	public var textBounds(get, set):Rectangle;
 	private inline function get_textBounds():Rectangle
 	{
