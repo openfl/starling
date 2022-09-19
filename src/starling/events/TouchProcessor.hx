@@ -87,7 +87,7 @@ class TouchProcessor
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();
-    private static var sHoveringTouchData:Vector<Object> = new Vector<Object>();
+    private static var sHoveringTouchData:Array<Object> = new Array<Object>();
     private static var sHelperPoint:Point = new Point();
     
     private static inline var TOP:Int = 0;
@@ -228,7 +228,7 @@ class TouchProcessor
                                     shiftDown:Bool, ctrlDown:Bool):Void
     {
         var touch:Touch;
-        sHoveringTouchData.length = 0;
+        sHoveringTouchData.resize(0);
 
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method makes sure each bubble target is visited only once.
