@@ -14,10 +14,15 @@ jobs:
           name: starling-haxelib
           path: |
             ./
+            !lib/
+            !samples/
+            !scripts/
             !tests/
             !haxe-*-*/
             !neko-*-*/
             !.git/
+            !webpack.*
+            !package.json
           if-no-files-found: error
 
   docs:
