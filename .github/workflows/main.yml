@@ -56,3 +56,40 @@ jobs:
           name: starling-docs
           path: docs
           if-no-files-found: error
+
+  samples:
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.0.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install openfl --quiet
+          haxelib dev starling $GITHUB_WORKSPACE
+
+      - name: Build samples/demo
+        working-directory: samples/demo
+        run: |
+          haxelib run lime build html5
+          haxelib run lime build neko
+          haxelib run lime build hl
+          haxelib run lime build flash
+
+      - name: Build samples/particle_demo
+        working-directory: samples/particle_demo
+        run: |
+          haxelib run lime build html5
+          haxelib run lime build neko
+          haxelib run lime build hl
+          haxelib run lime build flash
