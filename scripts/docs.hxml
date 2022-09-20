@@ -103,4 +103,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -o ../docs -i xml -in starling --toplevel-package starling -D version 2.4 -D source-path "https://github.com/openfl/starling/tree/master/src/" --title "Starling API Reference"
+-cmd haxelib run dox -o ../docs -i xml -in starling --toplevel-package starling -D version 2.7 -D website "http://www.openfl.org" -D source-path "https://github.com/openfl/starling/tree/master/src/" --title "Starling API Reference"
