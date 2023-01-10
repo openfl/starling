@@ -176,6 +176,8 @@ class EventDispatcher
                 var numArgs:Int = untyped ($nargs)(listener);
                 #elseif cpp
                 var numArgs:Int = untyped listener.__ArgCount();
+				#elseif html5
+				var numArgs:Int = untyped listener.length;
                 #else
                 var numArgs:Int = 2;
                 #end

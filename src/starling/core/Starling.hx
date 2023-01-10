@@ -1272,19 +1272,19 @@ class Starling extends EventDispatcher
     private static function get_all():Vector<Starling> { return sAll; }
     
     /** The render context of the currently active Starling instance. */
-    // public static var context(get, never):Context3D;
-    // private static function get_context():Context3D { return sCurrent != null ? sCurrent.context : null; }
+    public static var currentContext(get, never):Context3D;
+    private static function get_currentContext():Context3D { return sCurrent != null ? sCurrent.context : null; }
     
     /** The default juggler of the currently active Starling instance. */
-    // public static var juggler(get, never):Juggler;
-    // private static function get_juggler():Juggler { return sCurrent != null ? sCurrent.__juggler : null; }
+    public static var currentJuggler(get, never):Juggler;
+    private static function get_currentJuggler():Juggler { return sCurrent != null ? sCurrent.__juggler : null; }
     
     /** The contentScaleFactor of the currently active Starling instance. */
-    // public static var contentScaleFactor(get, never):Float;
-    // private static function get_contentScaleFactor():Float 
-    // {
-    //     return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
-    // }
+    public static var currentContentScaleFactor(get, never):Float;
+    private static function get_currentContentScaleFactor():Float 
+    {
+        return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
+    }
     
     /** Indicates if multitouch input should be supported. You can enable or disable
      *  multitouch at any time; just beware that any current touches will be cancelled. */

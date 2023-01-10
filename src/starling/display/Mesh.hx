@@ -162,7 +162,7 @@ class Mesh extends DisplayObject
      *  calls either the <code>defaultStyleFactory</code> or (if no factory has been assigned)
      *  instantiates <code>defaultStyle</code>.
      */
-    private function createDefaultStyle(instance:Mesh=null):MeshStyle
+    public static function createDefaultStyle(instance:Mesh=null):MeshStyle
     {
         var meshStyle:MeshStyle = null;
 
