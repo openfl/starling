@@ -228,7 +228,11 @@ class TouchProcessor
                                     shiftDown:Bool, ctrlDown:Bool):Void
     {
         var touch:Touch;
+        #if haxe4
         sHoveringTouchData.resize(0);
+        #else
+        sHoveringTouchData.splice(0, sHoveringTouchData.length);
+        #end
 
         // the same touch event will be dispatched to all targets;
         // the 'dispatch' method makes sure each bubble target is visited only once.
