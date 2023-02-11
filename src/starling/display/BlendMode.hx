@@ -158,6 +158,7 @@ class BlendMode
 	/** Returns true if a blend mode with the given name is available. */
 	public static function isRegistered(modeName:String):Bool
 	{
+		if (sBlendModes == null) registerDefaults();
 		return sBlendModes.exists(modeName);
 	}
 
