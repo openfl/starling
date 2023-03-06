@@ -4,7 +4,7 @@
 	"license": "BSD",
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "2.7",
+	"version": "2.7.0",
 	"releasenote": "Update to Starling 2.7",
 	"contributors": [
 		"p.j.shand",
