@@ -28,6 +28,8 @@ class Execute
             var maxNumArgs:Int = untyped ($nargs)(func);
             #elseif cpp
             var maxNumArgs:Int = untyped func.__ArgCount();
+			#elseif html5
+			var maxNumArgs:Int = untyped func.length;
             #else
             var maxNumArgs:Int = -1;
             #end
