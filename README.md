@@ -64,6 +64,18 @@ cd demo
 openfl test flash
 ```
 
+Note about high-dpi support
+---------------------------
+Starling supports high-dpi devices such as 4K monitors
+For it to work you need to add this in your project file:
+```xml
+<window allow-high-dpi="true"/>
+```
+You also need to tell starling to support high resolutions in your code:
+```bash
+starling.supportHighResolutions = true;
+```
+
 Quick Links (AS3)
 -----------------
 
