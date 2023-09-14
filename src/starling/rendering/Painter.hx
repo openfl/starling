@@ -10,6 +10,7 @@
 
 package starling.rendering;
 
+import haxe.ds.ObjectMap;
 import openfl.display.Stage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DCompareMode;
@@ -22,7 +23,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
-import openfl.utils.Dictionary;
 import openfl.utils.Object;
 import openfl.Vector;
 
@@ -91,7 +91,7 @@ class Painter
     private var _frameID:UInt = 0;
     private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
-    private var _stencilReferenceValues:Dictionary<Object, UInt>;
+    private var _stencilReferenceValues:ObjectMap<Dynamic, UInt>;
     private var _clipRectStack:Vector<Rectangle>;
     private var _batchCacheExclusions:Vector<DisplayObject>;
     private var _batchTrimInterval:Int = 250;
@@ -131,7 +131,7 @@ class Painter
 
     #if commonjs
     private static function __init__ () {
-        
+
         untyped __js__ ("Object").defineProperties (Painter.prototype, {
             "drawCount": { get: untyped __js__ ("function () { return this.get_drawCount (); }"), set: untyped __js__ ("function (v) { return this.set_drawCount (v); }") },
             "stencilReferenceValue": { get: untyped __js__ ("function () { return this.get_stencilReferenceValue (); }"), set: untyped __js__ ("function (v) { return this.set_stencilReferenceValue (v); }") },
@@ -151,12 +151,12 @@ class Painter
             "sharedData": { get: untyped __js__ ("function () { return this.get_sharedData (); }") },
             //"programs": { get: untyped __js__ ("function () { return this.get_programs (); }") },
         });
-        
+
     }
     #end
 
     // construction
-    
+
     /** Creates a new Painter object. Normally, it's not necessary to create any custom
      *  painters; instead, use the global painter found on the Starling instance. */
     public function new(stage3D:Stage3D, sharedContext:Null<Bool>=null)
@@ -164,19 +164,19 @@ class Painter
         _stage3D = stage3D;
         _stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 40, true);
         _context = _stage3D.context3D;
-        
+
         if (sharedContext != null) _shareContext = sharedContext;
         else _shareContext = _context != null && _context.driverInfo != "Disposed";
-        
+
         #if !flash
         if (!Reflect.hasField (@:privateAccess Starling.current.__nativeStage, "context3D") || Reflect.field (@:privateAccess Starling.current.__nativeStage, "context3D") == _context)
             _shareContext = false; // starling.mustAlwaysRender will also be forced to true
         #end
-        
+
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
-        _stencilReferenceValues = new Dictionary();
+        _stencilReferenceValues = new ObjectMap<Dynamic, UInt>();
         _clipRectStack = new Vector<Rectangle>();
 
         _batchProcessorCurr = new BatchProcessor();
@@ -197,7 +197,7 @@ class Painter
         _stateStackPos = -1;
         _stateStackLength = 0;
     }
-    
+
     /** Disposes all mesh batches, programs, and - if it is not being shared -
      *  the render context. */
     public function dispose():Void
@@ -589,7 +589,7 @@ class Painter
     }
 
     // mesh rendering
-    
+
     /** Adds a mesh to the current batch of unrendered meshes. If the current batch is not
      *  compatible with the mesh, all previous meshes are rendered at once and the batch
      *  is cleared.
@@ -608,7 +608,7 @@ class Painter
     {
         _batchProcessor.finishBatch();
     }
-    
+
     /** Indicate how often the internally used batches are being trimmed to save memory.
      *
      *  <p>While rendering, the internally used MeshBatches are used in a different way in each
@@ -901,7 +901,7 @@ class Painter
     }
 
     // properties
-    
+
     /** Indicates the number of stage3D draw calls. */
     public var drawCount(get, set):Int;
     private function get_drawCount():Int { return _drawCount; }
@@ -916,14 +916,14 @@ class Painter
     private function get_stencilReferenceValue():UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
+        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues.get(key);
         else return DEFAULT_STENCIL_VALUE;
     }
 
     private function set_stencilReferenceValue(value:UInt):UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        _stencilReferenceValues[key] = value;
+        _stencilReferenceValues.set(key, value);
 
         if (contextValid)
             _context.setStencilReferenceValue(value);

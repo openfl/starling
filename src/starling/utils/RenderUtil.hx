@@ -16,6 +16,7 @@ import haxe.Timer;
 import openfl.display.Stage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DTextureFormat;
@@ -243,14 +244,16 @@ class RenderUtil
         var onFinished:Void->Void = null;
         var onError:Event->Void = null;
         var onCreated:Event->Void = null;
-        
+
         requestNextProfile = function():Void
         {
             currentProfile = profiles.shift();
 
-            try 
+            try
             {
-                executeFunc(stage3D.requestContext3D, [renderMode, currentProfile]);
+                var rm:Context3DRenderMode = renderMode;
+                var p:Context3DProfile = currentProfile;
+                executeFunc(stage3D.requestContext3D, [rm, p]);
             }
             catch (error:Error)
             {
@@ -289,10 +292,10 @@ class RenderUtil
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
             stage3D.removeEventListener(ErrorEvent.ERROR, onError);
         }
-        
+
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
         stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
-        
+
         requestNextProfile();
     }
 }
