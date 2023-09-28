@@ -1284,21 +1284,12 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	@:arrayAccess
 	private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
-		#if flash
 		if (this != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
 		{
 			var container:DisplayObjectContainer = cast this;
 			return container.getChildByName(childName);
 		}
 		return null;
-		#else
-		if (this == null || this.__children == null) return null;
-		for (child in this.__children)
-		{
-			if (child.name == childName) return child;
-		}
-		return null;
-		#end
 	}
 	
 	@:to private static inline function __toButton(value:ChildAccess<Dynamic>):Button
