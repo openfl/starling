@@ -14,9 +14,9 @@
 -xml xml/Flash.xml
 -cpp obj/docs
 -D display=usage
--D flash_doc_gen
--D openfl_doc_gen
 -D doc_gen
+-D flash_doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -30,6 +30,7 @@
 -D display=usage
 -D windows
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -43,6 +44,7 @@
 -D display=usage
 -D mac
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -56,6 +58,7 @@
 -D display=usage
 -D linux
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -68,6 +71,7 @@
 -neko obj/docs
 -D display=usage
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -81,6 +85,7 @@
 -D display=usage
 -D ios
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
@@ -94,6 +99,7 @@
 -D display=usage
 -D android
 -D doc_gen
+-D nocffi
 --macro include("starling")
 -lib lime
 -lib openfl
