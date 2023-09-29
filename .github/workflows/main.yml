@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
 
   package-haxelib:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
           if-no-files-found: error
 
   docs:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
