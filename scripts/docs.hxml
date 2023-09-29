@@ -3,9 +3,9 @@
 -xml xml/Flash.xml
 -swf obj/docs
 -swf-version 17.0
--D display
+-D display=usage
 -D doc_gen
-ImportAll
+--macro include("starling")
 -lib lime
 -lib openfl
 -cp ../src
@@ -15,10 +15,10 @@ ImportAll
 
 # -xml xml/Windows.xml
 # -cpp obj/docs
-# -D display
+# -D display=usage
 # -D windows
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -28,10 +28,10 @@ ImportAll
 
 # -xml xml/macOS.xml
 # -cpp obj/docs
-# -D display
+# -D display=usage
 # -D mac
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -41,10 +41,10 @@ ImportAll
 
 # -xml xml/Linux.xml
 # -cpp obj/docs
-# -D display
+# -D display=usage
 # -D linux
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -54,9 +54,9 @@ ImportAll
 
 # -xml xml/Neko.xml
 # -neko obj/docs
-# -D display
+# -D display=usage
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -66,10 +66,10 @@ ImportAll
 
 # -xml xml/iOS.xml
 # -cpp obj/docs
-# -D display
+# -D display=usage
 # -D ios
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -79,10 +79,10 @@ ImportAll
 
 # -xml xml/Android.xml
 # -cpp obj/docs
-# -D display
+# -D display=usage
 # -D android
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
@@ -92,10 +92,10 @@ ImportAll
 
 # -xml xml/HTML5.xml
 # -js obj/docs
-# -D display
+# -D display=usage
 # -D html5
 # -D doc_gen
-# ImportAll
+# --macro include("starling")
 # -lib lime
 # -lib openfl
 # -cp ../src
