@@ -1,7 +1,6 @@
 -main Demo
--js src/app.js
+-js dist/app.js
 -cp node_modules/openfl/lib
 -cp node_modules/starling-framework/lib
 -cp src
 -D source-map
--dce no

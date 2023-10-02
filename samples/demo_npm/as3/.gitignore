@@ -1,3 +1,4 @@
-node_modules
-bin
+node_modules/
+bin/js-debug/
+bin/js-release/
 *.map

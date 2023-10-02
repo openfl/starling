@@ -1,5 +1,3 @@
-node_modules
-src/app.js
-dist/app.js
-dist/assets
+node_modules/
+dist/
 *.map

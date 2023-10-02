@@ -1,15 +1,15 @@
 {
 	"compilerOptions": {
+		"outDir": "dist",
 		"target": "es5",
-		"baseUrl": ".",
+		"module": "CommonJS",
+		"moduleResolution": "node",
 		"paths": {
-			"openfl/*": ["node_modules/openfl/lib/openfl/*"],
-			"starling/*": ["node_modules/starling-framework/lib/starling/*"]
+			"openfl": ["./node_modules/openfl/lib/openfl"],
+			"openfl/*": ["./node_modules/openfl/lib/openfl/*"],
+			"starling": ["./node_modules/starling-framework/lib/starling"],
+			"starling/*": ["./node_modules/starling-framework/lib/starling/*"]
 		},
-		"lib": ["es2017", "dom"],
 		"sourceMap": true
-	},
-	"files": [
-		"src/demo.ts"
-	]
+	}
 }
