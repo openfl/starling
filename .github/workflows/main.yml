@@ -68,6 +68,10 @@ jobs:
         with:
           haxe-version: 4.0.5
 
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+
       - name: Set HAXEPATH
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
