@@ -35,7 +35,7 @@ npm install
 npm start -s
 ```
 
-There are ES5, ES6, Haxe and TypeScript versions of the demo available.
+There are AS3, ES5, ES6, Haxe and TypeScript versions of the demo available.
 
 Getting Started (Haxelib)
 -------------------------
