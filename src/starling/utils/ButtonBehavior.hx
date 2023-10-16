@@ -80,7 +80,7 @@ class ButtonBehavior
 	#if commonjs
     private static function __init__ () {
         
-        untyped Object.defineProperties (StatsDisplay.prototype, {
+        untyped Object.defineProperties (ButtonBehavior.prototype, {
             "state": { get: untyped __js__ ("function () { return this.get_state (); }"), set: untyped __js__ ("function (v) { return this.set_state (v); }") },
             "target": { get: untyped __js__ ("function () { return this.get_target (); }") },
             "onStateChange": { get: untyped __js__ ("function () { return this.get_onStateChange (); }"), set: untyped __js__ ("function (v) { return this.set_onStateChange (v); }") },
