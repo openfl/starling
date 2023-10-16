@@ -58,7 +58,6 @@ jobs:
           if-no-files-found: error
 
   samples:
-
     runs-on: ubuntu-latest
     steps:
 
@@ -127,3 +126,35 @@ jobs:
         run: |
           npm install
           npm run build
+
+  build-npm:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Build Library
+        run: |
+          npm run build
+
+      - name: Package Library for npm
+        run: |
+          npm pack
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: starling-framework-npm
+          path: starling-framework-*.tgz
+          if-no-files-found: error
+
+      - name: Build docs
+        run: |
+          npm run build-docs
