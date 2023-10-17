@@ -7,8 +7,8 @@
     "asconfigc": "^1.8.0",
     "cpx": "^1.5.0",
     "http-server": "^14.1.1",
-    "openfl": "^8.9.6",
-    "starling-framework": "^2.5.1"
+    "openfl": "^9.3.1",
+    "starling-framework": "^2.7.0"
   },
   "scripts": {
     "build": "npm run build:prod",

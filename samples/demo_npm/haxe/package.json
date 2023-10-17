@@ -6,8 +6,8 @@
     "copy-webpack-plugin": "^11.0.0",
     "haxe": "^5.2.1",
     "haxe-loader": "^0.10.0",
-    "openfl": "^8.9.6",
-    "starling-framework": "^2.5.1",
+    "openfl": "^9.3.1",
+    "starling-framework": "^2.7.0",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
@@ -22,6 +22,5 @@
     "start": "npm run start:dev",
     "start:dev": "webpack serve --mode=development",
     "start:prod": "webpack serve --mode=production"
-  },
-  "dependencies": {}
+  }
 }
