@@ -236,12 +236,7 @@ class RenderUtil
         else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, Int))
             profiles = [cast profile];
         else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, String))
-            #if hl
-            // for some reason on HashLink if you don't do that it will result in a 'Can't cast String to i32' error
             profiles = [Std.string(profile)];
-            #else
-            profiles = [profile];
-            #end
         else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, Array))
         {
             var dynProfiles:Array<Dynamic> = cast(profile, Array<Dynamic>);
@@ -254,12 +249,7 @@ class RenderUtil
                 }
                 else 
                 {
-                    #if hl
-                    // for some reason on HashLink if you don't do that it will result in a 'Can't cast String to i32' error
                     profiles.push(Std.string(prof));
-                    #else
-                    profiles.push(prof);
-                    #end
                 }
             }
         }
