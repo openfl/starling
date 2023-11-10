@@ -87,19 +87,19 @@ jobs:
 
       - name: Build HTML5 samples
         run: |
-          haxelib run lime build samples/basic/demo html5
-          haxelib run lime build samples/basic/particle_demo html5
+          haxelib run lime build samples/demo html5
+          haxelib run lime build samples/particle_demo html5
 
       - name: Build Flash samples
         run: |
-          haxelib run lime build samples/basic/demo flash
-          haxelib run lime build samples/basic/particle_demo flash
+          haxelib run lime build samples/demo flash
+          haxelib run lime build samples/particle_demo flash
 
       - name: Build HashLink samples
         if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
-          haxelib run lime build samples/basic/demo hl
-          haxelib run lime build samples/basic/particle_demo hl
+          haxelib run lime build samples/demo hl
+          haxelib run lime build samples/particle_demo hl
 
   build-npm:
     runs-on: ubuntu-latest
