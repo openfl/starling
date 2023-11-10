@@ -1,105 +1,123 @@
 # Generate platform-specific XML for documentation output
 
+# -xml xml/Flash.xml
+# -swf obj/docs
+# -swf-version 17.0
+# -D display=usage
+# -D doc_gen
+# --macro include("starling")
+# -lib lime
+# -lib openfl
+# -cp ../src
+# --no-output
+
 -xml xml/Flash.xml
--swf obj/docs
--swf-version 17.0
--D display
+-cpp obj/docs
+-D display=usage
 -D doc_gen
-ImportAll
+-D flash_doc_gen
+-D nocffi
+--macro include("starling")
 -lib lime
 -lib openfl
 -cp ../src
 --no-output
 
-# --next
+--next
 
-# -xml xml/Windows.xml
-# -cpp obj/docs
-# -D display
-# -D windows
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/Windows.xml
+-cpp obj/docs
+-D display=usage
+-D windows
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/macOS.xml
-# -cpp obj/docs
-# -D display
-# -D mac
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/macOS.xml
+-cpp obj/docs
+-D display=usage
+-D mac
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/Linux.xml
-# -cpp obj/docs
-# -D display
-# -D linux
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/Linux.xml
+-cpp obj/docs
+-D display=usage
+-D linux
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/Neko.xml
-# -neko obj/docs
-# -D display
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/Neko.xml
+-neko obj/docs
+-D display=usage
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/iOS.xml
-# -cpp obj/docs
-# -D display
-# -D ios
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/iOS.xml
+-cpp obj/docs
+-D display=usage
+-D ios
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/Android.xml
-# -cpp obj/docs
-# -D display
-# -D android
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/Android.xml
+-cpp obj/docs
+-D display=usage
+-D android
+-D doc_gen
+-D nocffi
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
-# --next
+--next
 
-# -xml xml/HTML5.xml
-# -js obj/docs
-# -D display
-# -D html5
-# -D doc_gen
-# ImportAll
-# -lib lime
-# -lib openfl
-# -cp ../src
-# --no-output
+-xml xml/HTML5.xml
+-js obj/docs
+-D display=usage
+-D html5
+-D doc_gen
+--macro include("starling")
+-lib lime
+-lib openfl
+-cp ../src
+--no-output
 
 --next
 

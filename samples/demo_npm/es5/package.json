@@ -3,21 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "copy-webpack-plugin": "^4.3.1",
-    "openfl": "^8.1.1",
-    "starling-framework": "*",
-    "uglifyjs-webpack-plugin": "^1.1.4",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7",
-    "webpack-merge": "^4.1.1",
-    "write-file-webpack-plugin": "^4.2.0"
+    "copy-webpack-plugin": "^11.0.0",
+    "openfl": "^9.3.1",
+    "starling-framework": "^2.7.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   },
   "scripts": {
     "build": "npm run build:prod",
-    "build:dev": "webpack --config webpack.dev.js",
-    "build:prod": "webpack --config webpack.prod.js",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production",
     "start": "npm run start:dev",
-    "start:dev": "webpack-dev-server --open --config webpack.dev.js",
-    "start:prod": "webpack-dev-server --open --config webpack.prod.js"
+    "start:dev": "webpack serve --mode=development",
+    "start:prod": "webpack serve --mode=production"
   }
 }

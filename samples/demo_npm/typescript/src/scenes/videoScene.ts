@@ -53,7 +53,7 @@ class VideoScene extends Scene
 		}
 		else
 		{
-			var errorMessage:String = "Video texture is not supported on this platform";
+			var errorMessage = "Video texture is not supported on this platform";
 			
 			var textField:TextField = new TextField(220, 128, errorMessage);
 			textField.format.font = "DejaVu Sans";

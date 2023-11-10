@@ -11,12 +11,14 @@
             "node_modules/openfl/dist/openfl.swc",
             "node_modules/starling-framework/dist/starling.swc"
         ],
+        "source-map": true,
         "targets": [
-            "js"
+            "JS"
         ]
     },
-    "files":
-    [
-        "src/Main.as"
-    ]
+    "additionalOptions": [
+        "-js-getter-prefix=get_",
+        "-js-setter-prefix=set_"
+    ],
+    "mainClass": "Main"
 }

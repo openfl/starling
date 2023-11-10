@@ -34,7 +34,7 @@
     "url": "https://github.com/openfl/starling.git"
   },
   "scripts": {
-    "build": "npm run build-lib && npm run build-dist && npm run build-swc && npm run build-docs",
+    "build": "npm run build-lib && npm run build-dist && npm run build-swc",
     "build-dist": "npm run build-dist:dev && npm run build-dist:prod",
     "build-dist:dev": "webpack --config webpack.dev.js",
     "build-dist:prod": "webpack --config webpack.prod.js",
@@ -48,18 +48,20 @@
     "watch": "watch \"echo watch: Compiling... && npm run build-lib -s && echo watch: Compiled successfully.\" ./src ./scripts  ./node_modules/openfl/src"
   },
   "devDependencies": {
-    "@apache-royale/royale-js": "^0.9.3",
-    "haxe": "^5.0.10",
+    "@apache-royale/royale-js": "0.9.8",
+    "brotli-webpack-plugin": "^1.1.0",
+    "compression-webpack-plugin": "^10.0.0",
+    "haxe": "^5.2.1",
     "hxgenjs": "kevinresol/hxgenjs",
-    "typedoc": "^0.9.0",
-    "typescript": "^2.7.1",
-    "uglifyjs-webpack-plugin": "^1.1.6",
+    "typedoc": "^0.11.1",
+    "typescript": "^5.0.4",
     "watch": "^1.0.2",
-    "webpack": "^3.10.0",
-    "webpack-merge": "^4.1.1"
+    "webpack": "^5.79.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-merge": "^5.8.0"
   },
-  "dependencies": {
-    "openfl": "^8.1.1"
+  "peerDependencies": {
+    "openfl": "^9.3.1"
   },
   "haxeDependencies": {
     "haxe": "3.4.7"

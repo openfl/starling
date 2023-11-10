@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
 
   package-haxelib:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
@@ -26,14 +26,14 @@ jobs:
           if-no-files-found: error
 
   docs:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.0.5
+          haxe-version: 4.2.5
 
       - name: Set HAXEPATH
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install lime 7.9.0 --quiet
+          haxelib install lime --quiet
           haxelib install openfl --quiet
           haxelib install dox --quiet
           haxelib dev starling $GITHUB_WORKSPACE
@@ -58,7 +58,6 @@ jobs:
           if-no-files-found: error
 
   samples:
-
     runs-on: ubuntu-latest
     steps:
 
@@ -67,6 +66,10 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.0.5
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
 
       - name: Set HAXEPATH
         run: |
@@ -93,3 +96,65 @@ jobs:
           haxelib run lime build neko
           haxelib run lime build hl
           haxelib run lime build flash
+
+      - name: Build samples/demo_npm/as3
+        working-directory: samples/demo_npm/as3
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/es5
+        working-directory: samples/demo_npm/es5
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/es6
+        working-directory: samples/demo_npm/es6
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/haxe
+        working-directory: samples/demo_npm/haxe
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/typescript
+        working-directory: samples/demo_npm/typescript
+        run: |
+          npm install
+          npm run build
+
+  build-npm:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Build Library
+        run: |
+          npm run build
+
+      - name: Package Library for npm
+        run: |
+          npm pack
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: starling-framework-npm
+          path: starling-framework-*.tgz
+          if-no-files-found: error
+
+      - name: Build docs
+        run: |
+          npm run build-docs

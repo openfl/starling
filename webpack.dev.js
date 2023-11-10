@@ -1,5 +1,5 @@
 const webpack = require ("webpack");
-const merge = require ("webpack-merge");
+const { merge } = require ("webpack-merge");
 const common = require ("./webpack.common.js");
 const package = require ("./package.json");
 
@@ -12,6 +12,7 @@ var banner = "/*!\n"
  + " */";
 
 module.exports = merge (common, {
+	mode: "development",
 	output: {
 		filename: "starling.js"
 	},

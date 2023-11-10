@@ -1,4 +1,4 @@
-[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/starling-framework.svg?style=flat)](http://npmjs.com/package/starling-framework) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/starling) [![Build Status](https://img.shields.io/circleci/project/github/openfl/starling/master.svg)](https://circleci.com/gh/openfl/starling)
+[![Simplified BSD License](https://img.shields.io/badge/license-BSD-blue.svg?style=flat)](LICENSE.md) [![NPM Version](https://img.shields.io/npm/v/starling-framework.svg?style=flat)](http://npmjs.com/package/starling-framework) [![Haxelib Version](https://img.shields.io/github/tag/openfl/starling.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/starling) [![Build Status](https://img.shields.io/github/actions/workflow/status/openfl/starling/main.yml?branch=master)](https://github.com/openfl/starling/actions)
 
 Starling Framework
 ==================
@@ -35,7 +35,7 @@ npm install
 npm start -s
 ```
 
-There are ES5, ES6, Haxe and TypeScript versions of the demo available.
+There are AS3, ES5, ES6, Haxe and TypeScript versions of the demo available.
 
 Getting Started (Haxelib)
 -------------------------

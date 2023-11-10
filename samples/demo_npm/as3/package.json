@@ -3,21 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "@apache-royale/cli": "^0.1.0",
-    "@apache-royale/royale-js": "^0.9.3",
-    "asconfigc": "^0.6.9",
+    "@apache-royale/royale-js": "^0.9.11",
+    "asconfigc": "^1.8.0",
     "cpx": "^1.5.0",
-    "howler": "^2.0.12",
-    "openfl": "^8.1.1",
-    "pako": "^1.0.6",
-    "starling-framework": "^2.3.3"
+    "http-server": "^14.1.1",
+    "openfl": "^9.3.1",
+    "starling-framework": "^2.7.0"
   },
   "scripts": {
-    "build": "npm run build:dev",
-    "build:dev": "cpx \"assets/**/*.*\" bin/js-debug/assets && cpx node_modules/openfl/dist/openfl.min.js bin/js-debug && cpx node_modules/howler/dist/howler.min.js bin/js-debug && cpx node_modules/starling-framework/dist/starling.min.js bin/js-debug && cpx node_modules/pako/dist/pako.min.js bin/js-debug && asconfigc --debug=true",
-    "build:prod": "cpx \"assets/**/*.*\" bin/js-release/assets && cpx node_modules/openfl/dist/openfl.min.js bin/js-release && cpx node_modules/howler/dist/howler.min.js bin/js-release && cpx node_modules/starling-framework/dist/starling.min.js bin/js-release && cpx node_modules/pako/dist/pako.min.js bin/js-release && asconfigc --debug=false",
+    "build": "npm run build:prod",
+    "build:dev": "cpx \"assets/**/*.*\" bin/js-debug/assets && cpx favicon.png bin/js-debug && cpx node_modules/starling-framework/dist/starling.min.js bin/js-debug && cpx node_modules/openfl/dist/openfl.min.js bin/js-debug && cpx node_modules/pako/dist/pako.min.js bin/js-debug && cpx node_modules/howler/dist/howler.min.js bin/js-debug && asconfigc --debug=true",
+    "build:prod": "cpx \"assets/**/*.*\" bin/js-release/assets && cpx favicon.png bin/js-release && cpx node_modules/starling-framework/dist/starling.min.js bin/js-release && cpx node_modules/openfl/dist/openfl.min.js bin/js-release && cpx node_modules/pako/dist/pako.min.js bin/js-release && cpx node_modules/howler/dist/howler.min.js bin/js-release && asconfigc --debug=false",
     "start": "npm run start:dev",
-    "start:dev": "npm run build:dev && royale serve:debug",
-    "start:prod": "npm run build:prod && royale serve:release"
+    "start:dev": "npm run build:dev && http-server bin/js-debug",
+    "start:prod": "npm run build:prod && http-server bin/js-release"
   }
 }

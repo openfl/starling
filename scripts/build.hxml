@@ -1,6 +1,6 @@
 -js ../lib/_gen/_.js
 # --gen-hx-classes
-ImportAll
+--macro include('starling', true)
 # -lib starling
 -cp ../src
 #-lib hxgenjs
