@@ -230,7 +230,7 @@ import starling.utils.Color;
             if (__onStart != null)
             {
                 if (__onStartArgs != null) {
-                    Reflect.callMethod(__onStart, __onStart, onStartArgs);
+                    Reflect.callMethod(__onStart, __onStart, __onStartArgs);
                 } else {
                     __onStart();
                 }
