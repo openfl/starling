@@ -210,7 +210,7 @@ class RenderUtil
     * @param stage3D    The stage3D object the context needs to be requested from.
     * @param renderMode The 'Context3DRenderMode' to use when requesting the context.
     * @param profile    If you know exactly which 'Context3DProfile' you want to use, simply
-    *                   pass a String with that profile.
+    *                   pass a Context3DProfile value, or a String with that profile.
     *
     *                   <p>If you are unsure which profiles are supported on the current
     *                   device, you can also pass an Array of profiles; they will be
@@ -233,21 +233,33 @@ class RenderUtil
             profiles = ["enhanced",
                         "standardExtended", "standard", "standardConstrained",
                         "baselineExtended", "baseline", "baselineConstrained"];
+        else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, Int))
+            profiles = [cast profile];
         else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, String))
+            #if hl
+            // for some reason on HashLink if you don't do that it will result in a 'Can't cast String to i32' error
             profiles = [Std.string(profile)];
+            #else
+            profiles = [profile];
+            #end
         else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(profile, Array))
         {
             var dynProfiles:Array<Dynamic> = cast(profile, Array<Dynamic>);
             profiles = [];
             for (prof in dynProfiles)
             {
-                if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(prof, String))
+                if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(prof, Int))
                 {
-                    profiles.push(Std.string(prof));
+                    profiles.push(cast prof);
                 }
                 else 
                 {
+                    #if hl
+                    // for some reason on HashLink if you don't do that it will result in a 'Can't cast String to i32' error
+                    profiles.push(Std.string(prof));
+                    #else
                     profiles.push(prof);
+                    #end
                 }
             }
         }
