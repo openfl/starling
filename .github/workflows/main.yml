@@ -59,13 +59,16 @@ jobs:
 
   samples:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.2]
     steps:
 
       - uses: actions/checkout@v3
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.0.5
+          haxe-version: ${{ matrix.haxe-version }}
 
       - uses: actions/setup-node@v3
         with:
@@ -96,36 +99,6 @@ jobs:
           haxelib run lime build neko
           haxelib run lime build hl
           haxelib run lime build flash
-
-      - name: Build samples/demo_npm/as3
-        working-directory: samples/demo_npm/as3
-        run: |
-          npm install
-          npm run build
-
-      - name: Build samples/demo_npm/es5
-        working-directory: samples/demo_npm/es5
-        run: |
-          npm install
-          npm run build
-
-      - name: Build samples/demo_npm/es6
-        working-directory: samples/demo_npm/es6
-        run: |
-          npm install
-          npm run build
-
-      - name: Build samples/demo_npm/haxe
-        working-directory: samples/demo_npm/haxe
-        run: |
-          npm install
-          npm run build
-
-      - name: Build samples/demo_npm/typescript
-        working-directory: samples/demo_npm/typescript
-        run: |
-          npm install
-          npm run build
 
   build-npm:
     runs-on: ubuntu-latest
@@ -158,3 +131,51 @@ jobs:
       - name: Build docs
         run: |
           npm run build-docs
+
+  npm-samples:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.0.5
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Build samples/demo_npm/as3
+        working-directory: samples/demo_npm/as3
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/es5
+        working-directory: samples/demo_npm/es5
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/es6
+        working-directory: samples/demo_npm/es6
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/haxe
+        working-directory: samples/demo_npm/haxe
+        run: |
+          npm install
+          npm run build
+
+      - name: Build samples/demo_npm/typescript
+        working-directory: samples/demo_npm/typescript
+        run: |
+          npm install
+          npm run build
