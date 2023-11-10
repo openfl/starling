@@ -2,10 +2,10 @@
 	"name": "starling",
 	"url": "https://github.com/openfl/starling",
 	"license": "BSD",
-	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp" ],
+	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp", "hl" ],
 	"description": "The Cross-Platform Game Engine",
-	"version": "2.7.0",
-	"releasenote": "Update to Starling 2.7",
+	"version": "2.7.1",
+	"releasenote": "Fixes known issues with HashLink",
 	"contributors": [
 		"p.j.shand",
 		"singmajesty",
