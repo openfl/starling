@@ -10,9 +10,12 @@
 
 package starling.rendering;
 
+import haxe.ds.ObjectMap;
+
 import openfl.display.Stage3D;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DRenderMode;
 import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.textures.TextureBase;
@@ -22,7 +25,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
-import openfl.utils.Dictionary;
 import openfl.utils.Object;
 import openfl.Vector;
 
@@ -91,7 +93,7 @@ class Painter
     private var _frameID:UInt = 0;
     private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
-    private var _stencilReferenceValues:Dictionary<Object, UInt>;
+    private var _stencilReferenceValues:ObjectMap<Dynamic, UInt>;
     private var _clipRectStack:Vector<Rectangle>;
     private var _batchCacheExclusions:Vector<DisplayObject>;
     private var _batchTrimInterval:Int = 250;
@@ -176,7 +178,7 @@ class Painter
         _backBufferWidth  = _context != null ? _context.backBufferWidth  : 0;
         _backBufferHeight = _context != null ? _context.backBufferHeight : 0;
         _backBufferScaleFactor = _pixelSize = 1.0;
-        _stencilReferenceValues = new Dictionary();
+        _stencilReferenceValues = new ObjectMap<Dynamic, UInt>();
         _clipRectStack = new Vector<Rectangle>();
 
         _batchProcessorCurr = new BatchProcessor();
@@ -223,7 +225,7 @@ class Painter
      *
      *  @see starling.utils.RenderUtil
      */
-    public function requestContext3D(renderMode:String, profile:Dynamic):Void
+    public function requestContext3D(renderMode:Context3DRenderMode, profile:Dynamic):Void
     {
         RenderUtil.requestContext3D(_stage3D, renderMode, profile);
     }
@@ -916,14 +918,14 @@ class Painter
     private function get_stencilReferenceValue():UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues[key];
+        if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues.get(key);
         else return DEFAULT_STENCIL_VALUE;
     }
 
     private function set_stencilReferenceValue(value:UInt):UInt
     {
         var key:Dynamic = _state.renderTarget != null ? _state.renderTargetBase : this;
-        _stencilReferenceValues[key] = value;
+        _stencilReferenceValues.set(key, value);
 
         if (contextValid)
             _context.setStencilReferenceValue(value);
