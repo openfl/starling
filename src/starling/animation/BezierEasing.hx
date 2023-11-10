@@ -1,6 +1,5 @@
 package starling.animation;
 
-import haxe.Constraints.Function;
 import openfl.errors.ArgumentError;
 
 /** Provides Cubic Bezier Curve easing, which generalizes easing functions
