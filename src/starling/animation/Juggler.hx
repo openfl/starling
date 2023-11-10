@@ -299,7 +299,7 @@ class Juggler implements IAnimatable
     
     private function onPooledDelayedCallComplete(event:Event):Void
     {
-        DelayedCall.toPool(cast(event.target, DelayedCall));
+        DelayedCall.toPool(cast event.target);
     }
     
     /** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
@@ -346,7 +346,7 @@ class Juggler implements IAnimatable
         {
             value = Reflect.field(properties, property);
             
-            if (sTweenInstanceFields.indexOf ("set_" + property) > -1)
+            if (sTweenInstanceFields.indexOf ("set_" + property) != -1)
                 Reflect.setProperty(tween, property, value);
             else if (Reflect.hasField(target, property) || Reflect.getProperty(target, property) != null)
                 tween.animate(property, value);
@@ -360,7 +360,7 @@ class Juggler implements IAnimatable
     
     private function onPooledTweenComplete(event:Event):Void
     {
-        Tween.toPool(cast(event.target, Tween));
+        Tween.toPool(cast event.target);
     }
     
     /** Advances all objects by a certain time (in seconds). */
@@ -411,7 +411,7 @@ class Juggler implements IAnimatable
     
     private function onRemove(event:Event):Void
     {
-        var objectID:UInt = remove(cast(event.target, IAnimatable));
+        var objectID:UInt = remove(cast event.target);
 
         if (objectID != 0)
         {
