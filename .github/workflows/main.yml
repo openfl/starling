@@ -70,10 +70,6 @@ jobs:
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-
       - name: Set HAXEPATH
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
@@ -84,21 +80,26 @@ jobs:
           haxelib install openfl --quiet
           haxelib dev starling $GITHUB_WORKSPACE
 
-      - name: Build samples/demo
-        working-directory: samples/demo
+      - name: Build Neko samples
         run: |
-          haxelib run lime build html5
-          haxelib run lime build neko
-          haxelib run lime build hl
-          haxelib run lime build flash
+          haxelib run lime build samples/demo neko
+          haxelib run lime build samples/particle_demo neko
 
-      - name: Build samples/particle_demo
-        working-directory: samples/particle_demo
+      - name: Build HTML5 samples
         run: |
-          haxelib run lime build html5
-          haxelib run lime build neko
-          haxelib run lime build hl
-          haxelib run lime build flash
+          haxelib run lime build samples/basic/demo html5
+          haxelib run lime build samples/basic/particle_demo html5
+
+      - name: Build Flash samples
+        run: |
+          haxelib run lime build samples/basic/demo flash
+          haxelib run lime build samples/basic/particle_demo flash
+
+      - name: Build HashLink samples
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
+          haxelib run lime build samples/basic/demo hl
+          haxelib run lime build samples/basic/particle_demo hl
 
   build-npm:
     runs-on: ubuntu-latest
