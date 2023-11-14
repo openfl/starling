@@ -181,12 +181,12 @@ class BitmapFont implements ITextCompositor
         }
 
         var common:Xml = fontXml.elementsNamed("common").next();
-        __name = info.get("face");
-        __size = Std.parseFloat(info.get("size")) / scale;
-        __lineHeight = Std.parseFloat(common.get("lineHeight")) / scale;
-        __baseline = Std.parseFloat(common.get("base")) / scale;
+        __name = info != null ? info.get("face") : "";
+        __size = info != null ? Std.parseFloat(info.get("size")) / scale : Math.NaN;
+        __lineHeight = common != null ? Std.parseFloat(common.get("lineHeight")) / scale : Math.NaN;
+        __baseline = common != null ? Std.parseFloat(common.get("base")) / scale : Math.NaN;
         
-        if (info.get("smooth") == "0")
+        if (info != null && info.get("smooth") == "0")
             smoothing = TextureSmoothing.NONE;
         
         if (__size <= 0)
@@ -209,22 +209,25 @@ class BitmapFont implements ITextCompositor
         }
         
         var chars:Xml = fontXml.elementsNamed("chars").next();
-        for (charElement in chars.elementsNamed("char"))
+        if (chars != null)
         {
-            var id:Int = Std.parseInt(charElement.get("id"));
-            var xOffset:Float = Std.parseFloat(charElement.get("xoffset")) / scale;
-            var yOffset:Float = Std.parseFloat(charElement.get("yoffset")) / scale;
-            var xAdvance:Float = Std.parseFloat(charElement.get("xadvance")) / scale;
-            
-            var region:Rectangle = new Rectangle();
-            region.x = Std.parseFloat(charElement.get("x")) / scale + frameX;
-            region.y = Std.parseFloat(charElement.get("y")) / scale + frameY;
-            region.width  = Std.parseFloat(charElement.get("width")) / scale;
-            region.height = Std.parseFloat(charElement.get("height")) / scale;
-            
-            var texture:Texture = Texture.fromTexture(__texture, region);
-            var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
-            addChar(id, bitmapChar);
+            for (charElement in chars.elementsNamed("char"))
+            {
+                var id:Int = Std.parseInt(charElement.get("id"));
+                var xOffset:Float = Std.parseFloat(charElement.get("xoffset")) / scale;
+                var yOffset:Float = Std.parseFloat(charElement.get("yoffset")) / scale;
+                var xAdvance:Float = Std.parseFloat(charElement.get("xadvance")) / scale;
+                
+                var region:Rectangle = new Rectangle();
+                region.x = Std.parseFloat(charElement.get("x")) / scale + frameX;
+                region.y = Std.parseFloat(charElement.get("y")) / scale + frameY;
+                region.width  = Std.parseFloat(charElement.get("width")) / scale;
+                region.height = Std.parseFloat(charElement.get("height")) / scale;
+                
+                var texture:Texture = Texture.fromTexture(__texture, region);
+                var bitmapChar:BitmapChar = new BitmapChar(id, texture, xOffset, yOffset, xAdvance); 
+                addChar(id, bitmapChar);
+            }
         }
         
         if (fontXml.exists("kernings"))
