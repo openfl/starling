@@ -475,7 +475,7 @@ class AssetManager extends EventDispatcher
                 if (postProcessors.length > 0)
                 {
                     try { postProcessors.shift().execute(self); }
-                    catch (e:Error) { Execute.execute(onError, [e.message]); }
+                    catch (e:Dynamic) { Execute.execute(onError, [e.message]); }
 
                     Timer.delay(runPostProcessors, 1);
                 }

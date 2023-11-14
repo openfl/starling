@@ -105,5 +105,13 @@ class XmlFactory extends AssetFactory
             onError("Could not parse XML: " + e.message);
             return;
         }
+        catch (e:Dynamic)
+        {
+            // prevent closures from keeping references
+            reference.data = bytes = null;
+            
+            onError("Could not parse XML: " + Std.string(e));
+            return;
+        }
     }
 }

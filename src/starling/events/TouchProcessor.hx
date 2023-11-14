@@ -644,7 +644,7 @@ class TouchProcessor
             else
                 Lib.current.stage.removeEventListener("deactivate", onInterruption);
         }
-        catch (e:Error) {} // we're not running in AIR
+        catch (e:Dynamic) {} // we're not running in AIR
     }
     
     private function onInterruption(event:Dynamic):Void

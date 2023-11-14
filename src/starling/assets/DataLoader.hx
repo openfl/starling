@@ -140,7 +140,7 @@ class DataLoader
         for (loader in _urlLoaders.keys())
         {
             try { loader.close(); }
-            catch (e:Error) {}
+            catch (e:Dynamic) {}
         }
 
         _urlLoaders =new Map<URLLoader, Bool>();

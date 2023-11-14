@@ -215,7 +215,7 @@ class ConcreteTexture extends Texture
         // (while it *does* work on iOS + Android).
         
         try { painter.clear(color, alpha); }
-        catch (e:Error) {}
+        catch (e:Dynamic) {}
         
         painter.popState();
         setDataUploaded();

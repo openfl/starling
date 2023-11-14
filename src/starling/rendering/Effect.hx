@@ -167,13 +167,13 @@ class Effect
 
         if (_vertexBuffer != null && vertexBuffer)
         {
-            try { _vertexBuffer.dispose(); } catch (e:Error) {}
+            try { _vertexBuffer.dispose(); } catch (e:Dynamic) {}
             _vertexBuffer = null;
         }
 
         if (_indexBuffer != null && indexBuffer)
         {
-            try { _indexBuffer.dispose(); } catch (e:Error) {}
+            try { _indexBuffer.dispose(); } catch (e:Dynamic) {}
             _indexBuffer = null;
         }
     }

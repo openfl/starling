@@ -103,7 +103,7 @@ class SystemUtil
             sAIR = true;
             #end
         }
-        catch (e:Error)
+        catch (e:Dynamic)
         {
             sAIR = false;
         }
@@ -116,7 +116,7 @@ class SystemUtil
         for (call in sWaitingCalls)
         {
             try { Reflect.callMethod(null, call[0], call[1]); }
-            catch (e:Error)
+            catch (e:Dynamic)
             {
                 trace("[Starling] Error in 'executeWhenApplicationIsActive' call: " + e.message);
             }

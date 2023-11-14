@@ -48,5 +48,9 @@ class JsonFactory extends AssetFactory
         {
             onError("Could not parse JSON: " + e.message);
         }
+        catch (e:Dynamic)
+        {
+            onError("Could not parse JSON: " + Std.string(e));
+        }
     }
 }

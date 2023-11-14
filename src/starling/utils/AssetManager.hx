@@ -955,6 +955,10 @@ class AssetManager extends EventDispatcher
                         {
                             log("Texture restoration failed for '" + name + "': " + e.message);
                         }
+                        catch (e:Dynamic)
+                        {
+                            log("Texture restoration failed for '" + name + "': " + Std.string(e));
+                        }
 
                         __numRestoredTextures++;
                         Starling.current.stage.setRequiresRedraw();
@@ -992,6 +996,10 @@ class AssetManager extends EventDispatcher
                             {
                                 log("Texture restoration failed for '" + name + "': " + e.message);
                             }
+                            catch (e:Dynamic)
+                            {
+                                log("Texture restoration failed for '" + name + "': " + Std.string(e));
+                            }
                             
                             __numRestoredTextures++;
                             Starling.current.stage.setRequiresRedraw();
@@ -1011,6 +1019,11 @@ class AssetManager extends EventDispatcher
                         log("Could not parse JSON: " + e.message);
                         dispatchEventWith(Event.PARSE_ERROR, false, name);
                     }
+                    catch (e:Dynamic)
+                    {
+                        log("Could not parse JSON: " + Std.string(e));
+                        dispatchEventWith(Event.PARSE_ERROR, false, name);
+                    }
 
                     if (object != null) addObject(name, object);
 
@@ -1023,6 +1036,11 @@ class AssetManager extends EventDispatcher
                     catch (e:Error)
                     {
                         log("Could not parse XML: " + e.message);
+                        dispatchEventWith(Event.PARSE_ERROR, false, name);
+                    }
+                    catch (e:Dynamic)
+                    {
+                        log("Could not parse XML: " + Std.string(e));
                         dispatchEventWith(Event.PARSE_ERROR, false, name);
                     }
 

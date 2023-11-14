@@ -73,5 +73,10 @@ class SoundFactory extends AssetFactory
             onError("Could not load sound data: " + e.message);
             return;
         }
+        catch (e:Dynamic)
+        {
+            onError("Could not load sound data: " + Std.string(e));
+            return;
+        }
     }
 }
