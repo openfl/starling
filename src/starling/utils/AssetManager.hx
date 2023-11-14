@@ -647,7 +647,7 @@ class AssetManager extends EventDispatcher
             }
             else
             {
-                log("Ignoring unsupported asset type: " + Type.getClassName(rawAsset));
+                log("Ignoring unsupported asset type: " + openfl.Lib.getQualifiedClassName(rawAsset));
             }
         }
     }
