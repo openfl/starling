@@ -100,4 +100,12 @@ class StringUtil
 
         return string.substring(startPos, endPos + 1);
     }
+
+    /** Returns <code>true</code> if <code>value</code> equals
+     *  <code>true, TRUE, True, or 1</code>.
+     */
+    public static function parseBoolean(value:String):Bool
+    {
+        return value == "true" || value == "TRUE" || value == "True" || value == "1";
+    }
 }
