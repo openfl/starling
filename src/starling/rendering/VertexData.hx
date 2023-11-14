@@ -112,7 +112,7 @@ class VertexData
     private var _attributes:Vector<VertexDataAttribute>;
     private var _numAttributes:Int;
     private var _premultipliedAlpha:Bool;
-    private var _tinted:Bool;
+    private var _tinted:Bool = false;
 
     private var _posOffset:Int;  // in bytes
     private var _colOffset:Int;  // in bytes
