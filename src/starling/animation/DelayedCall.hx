@@ -63,7 +63,7 @@ class DelayedCall extends EventDispatcher implements IAnimatable
         __currentTime = 0;
         __totalTime = Math.max(delay, 0.0001);
         __callback = callback;
-        __args = args;
+        __args = args != null ? args : [];
         __repeatCount = 1;
         
         return this;
