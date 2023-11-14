@@ -102,6 +102,7 @@ class VertexDataFormat
      */
     public static function fromString(format:String):VertexDataFormat
     {
+        if (format == null) format = "";
         if (sFormats.exists(format)) return sFormats[format];
         else
         {
