@@ -98,7 +98,7 @@ class Polygon
     public function addVertices(args:Array<Dynamic>):Void
     {
         var i:Int;
-        var numArgs:Int = args.length;
+        var numArgs:Int = args != null ? args.length : 0;
         var numCoords:Int = __coords.length;
 
         if (numArgs > 0)
