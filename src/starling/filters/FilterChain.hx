@@ -40,13 +40,13 @@ class FilterChain extends FragmentFilter
     #end
 
     /** Creates a new chain with the given filters. */
-    public function new(args:Array<FragmentFilter>)
+    public function new(args:Array<FragmentFilter> = null)
     {
         super();
         
         _filters = new Vector<FragmentFilter>();
 
-        var len:Int = args.length;
+        var len:Int = args != null ? args.length : 0;
         for (i in 0...len)
         {
             var filter:FragmentFilter = args[i];
