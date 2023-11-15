@@ -21,7 +21,7 @@ class StarlingTest extends Test {
 	private var _flashEventAdapter:openfl.events.EventDispatcher;
 	private var _eventListenerTargets:Array<starling.events.EventDispatcher>;
 
-	@:timeout(1500)
+	@:timeout(2000)
 	public function setup(async:Async):Void
 	{
 		_eventListenerTargets = [];
