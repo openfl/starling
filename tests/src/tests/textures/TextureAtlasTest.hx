@@ -47,8 +47,8 @@ class TextureAtlasTest extends Test
 		Assert.equals(16, bob.width);
 		Assert.equals(32, bob.height);
 		
-		var annST:SubTexture = Std.downcast(ann, SubTexture);
-		var bobST:SubTexture = Std.downcast(bob, SubTexture);
+		var annST:SubTexture = #if haxe4 Std.downcast #else Std.instance #end(ann, SubTexture);
+		var bobST:SubTexture = #if haxe4 Std.downcast #else Std.instance #end(bob, SubTexture);
 		
 		Assert.equals(0, annST.region.x);
 		Assert.equals(0, annST.region.y);

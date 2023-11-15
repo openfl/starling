@@ -95,7 +95,7 @@ class TextFieldTest extends StarlingTest
 	{
 		for (i in 0...textField.numChildren)
 		{
-			var meshBatch:MeshBatch = Std.downcast(textField.getChildAt(i), MeshBatch);
+			var meshBatch:MeshBatch = #if haxe4 Std.downcast #else Std.instance #end(textField.getChildAt(i), MeshBatch);
 			if (meshBatch != null) return meshBatch.texture;
 		}
 		return null;
