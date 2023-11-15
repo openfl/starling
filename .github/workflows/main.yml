@@ -209,6 +209,7 @@ jobs:
           haxelib dev starling $GITHUB_WORKSPACE
 
       - name: Run tests on Neko
+        working-directory: tests
         run: |
           haxelib run openfl test neko
 
@@ -242,6 +243,7 @@ jobs:
           haxelib dev starling $GITHUB_WORKSPACE
 
       - name: Run tests on HashLink
+        working-directory: tests
         run: |
           haxelib run openfl test hl
 
