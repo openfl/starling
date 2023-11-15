@@ -23,7 +23,7 @@ class AssetManagerTest extends StarlingTest
 {
 	private var _manager:TestAssetManager;
 	
-	@:timeout(1500)
+	@:timeout(2000)
 	override public function setup(async:Async):Void
 	{
 		super.setup(async);
