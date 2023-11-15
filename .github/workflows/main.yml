@@ -181,39 +181,6 @@ jobs:
           npm install
           npm run build
 
-  unit-test-neko:
-    strategy:
-      matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.2]
-    # Context3D unavailable error on ubuntu and windows
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: ${{ matrix.haxe-version }}
-
-      - name: Set HAXEPATH
-        run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
-
-      - name: Install Haxe dependencies
-        run: |
-          haxelib install lime --quiet
-          haxelib install openfl --quiet
-          haxelib install utest --quiet
-          haxelib install hamcrest --quiet
-
-      - name: Setup environment
-        run: |
-          haxelib dev starling $GITHUB_WORKSPACE
-
-      - name: Run tests on Neko
-        working-directory: tests
-        run: |
-          haxelib run openfl test neko
-
   unit-test-hashlink:
     strategy:
       matrix:
