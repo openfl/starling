@@ -174,20 +174,37 @@ class BitmapFont implements ITextCompositor
         var frameX:Float = frame != null ? frame.x : 0;
         var frameY:Float = frame != null ? frame.y : 0;
 
-        var info:Xml = fontXml.elementsNamed("info").next();
-        if (info == null) {
+        var info:Xml = null;
+        var infoIterator:Iterator<Xml> = fontXml.elementsNamed("info");
+        if (infoIterator.hasNext())
+        {
+            info = infoIterator.next();
+        }
+        if (info == null)
+        {
             fontXml = fontXml.firstElement();
-            info = fontXml.elementsNamed("info").next();
+            infoIterator = fontXml.elementsNamed("info");
+            if (infoIterator.hasNext())
+            {
+                info = infoIterator.next();
+            }
         }
 
-        var common:Xml = fontXml.elementsNamed("common").next();
+        var common:Xml = null;
+        var commonIterator:Iterator<Xml> = fontXml.elementsNamed("common");
+        if (commonIterator.hasNext())
+        {
+            common = commonIterator.next();
+        }
         __name = info != null ? info.get("face") : "";
         __size = info != null ? Std.parseFloat(info.get("size")) / scale : Math.NaN;
         __lineHeight = common != null ? Std.parseFloat(common.get("lineHeight")) / scale : Math.NaN;
         __baseline = common != null ? Std.parseFloat(common.get("base")) / scale : Math.NaN;
         
         if (info != null && info.get("smooth") == "0")
+        {
             smoothing = TextureSmoothing.NONE;
+        }
         
         if (__size <= 0)
         {
@@ -195,7 +212,12 @@ class BitmapFont implements ITextCompositor
             __size = (__size == 0.0 ? 16.0 : __size * -1.0);
         }
         
-        var distanceField:Xml = fontXml.elementsNamed("distanceField").next();
+        var distanceField:Xml = null;
+        var distanceFieldIterator:Iterator<Xml> = fontXml.elementsNamed("distanceField");
+        if (distanceFieldIterator.hasNext())
+        {
+            distanceField = distanceFieldIterator.next();
+        }
         if (distanceField != null && distanceField.exists("distanceRange") && distanceField.exists("fieldType"))
         {
             __distanceFieldSpread = Std.parseFloat(distanceField.get("distanceRange"));
@@ -208,7 +230,12 @@ class BitmapFont implements ITextCompositor
             __type = BitmapFontType.STANDARD;
         }
         
-        var chars:Xml = fontXml.elementsNamed("chars").next();
+        var chars:Xml = null;
+        var charsIterator:Iterator<Xml> = fontXml.elementsNamed("chars");
+        if (charsIterator.hasNext())
+        {
+            chars = charsIterator.next();
+        }
         if (chars != null)
         {
             for (charElement in chars.elementsNamed("char"))
@@ -230,9 +257,14 @@ class BitmapFont implements ITextCompositor
             }
         }
         
-        if (fontXml.exists("kernings"))
+        var kernings:Xml = null;
+        var kerningsIterator:Iterator<Xml> = fontXml.elementsNamed("kernings");
+        if (kerningsIterator.hasNext())
         {
-            var kernings:Xml = fontXml.elementsNamed("kernings").next();
+            kernings = kerningsIterator.next();
+        }
+        if (kernings != null)
+        {
             for (kerningElement in kernings.elementsNamed("kerning"))
             {
                 var first:Int = Std.parseInt(kerningElement.get("first"));
