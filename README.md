@@ -14,29 +14,6 @@ While Starling mimics the classic display tree architecture of Adobe AIR/Flash, 
 
 Starling aims to be as lightweight and easy to use as possible. As an open-source project, much care was taken to make the source code easy to read, understand and extend. With under 15k lines of code, experienced developers can easily grasp it in its entirety, or modify it to their needs.
 
-Getting Started (NPM)
----------------------
-
-You can install the Yeoman generator to create an empty project:
-
-```bash
-npm install -g yo starling-framework-generator
-mkdir StarlingProject
-cd StarlingProject
-yo starling-framework
-```
-
-You can also try the Starling demo:
-
-```bash
-git clone https://github.com/openfl/starling
-cd starling/samples/demo_npm/typescript
-npm install
-npm start -s
-```
-
-There are AS3, ES5, ES6, Haxe and TypeScript versions of the demo available.
-
 Getting Started (Haxelib)
 -------------------------
 
@@ -63,6 +40,29 @@ openfl create starling:demo
 cd demo
 openfl test flash
 ```
+
+Getting Started (NPM)
+---------------------
+
+You can install the Yeoman generator to create an empty project:
+
+```bash
+npm install -g yo starling-framework-generator
+mkdir StarlingProject
+cd StarlingProject
+yo starling-framework
+```
+
+You can also try the Starling demo:
+
+```bash
+git clone https://github.com/openfl/starling
+cd starling/samples/demo_npm/typescript
+npm install
+npm start -s
+```
+
+There are AS3, ES5, ES6, Haxe and TypeScript versions of the demo available.
 
 Note about high-dpi support
 ---------------------------
