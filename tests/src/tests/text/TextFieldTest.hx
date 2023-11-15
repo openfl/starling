@@ -24,8 +24,8 @@ import utest.Assert;
 
 class TextFieldTest extends StarlingTest
 {
-	private static final E:Float = 0.0001;
-	private static final SUPER_LARGE_TEXT_LENGTH:Float = 3200;
+	@:final private static var E:Float = 0.0001;
+	@:final private static var SUPER_LARGE_TEXT_LENGTH:Float = 3200;
 
 	
 	public function testTextField():Void
@@ -80,7 +80,7 @@ class TextFieldTest extends StarlingTest
 	/** Creates a sample text longer than 'leastLength'. */
 	private function getSampleText(leastLength:Int):String
 	{
-		final sample:String = "This is a sample String. ";
+		var sample:String = "This is a sample String. ";
 		var repeat:Int = Math.ceil(leastLength / sample.length);
 		var parts:Vector<String> = new Vector<String>(repeat);
 

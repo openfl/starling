@@ -24,7 +24,7 @@ import utest.Test;
 
 class DisplayObjectTest extends Test
 {
-	private static final E:Float = 0.0001;
+	@:final private static var E:Float = 0.0001;
 	
 	
 	public function testBase():Void

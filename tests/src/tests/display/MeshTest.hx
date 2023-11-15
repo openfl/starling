@@ -83,7 +83,7 @@ class MeshTest extends Test
 		mesh.setVertexAlpha(1, 0.5);
 		mesh.setVertexAlpha(2, 0.8);
 
-		final E:Float = 0.02;
+		var E:Float = 0.02;
 		Helpers.assertThat(mesh.getVertexAlpha(0), closeTo(0.2, E));
 		Helpers.assertThat(mesh.getVertexAlpha(1), closeTo(0.5, E));
 		Helpers.assertThat(mesh.getVertexAlpha(2), closeTo(0.8, E));

@@ -25,8 +25,8 @@ import utest.Test;
 
 class VertexDataTest extends Test
 {
-	private static final E:Float = 0.001;
-	private static final STD_FORMAT:String = "position:float2, texCoords:float2, color:bytes4";
+	@:final private static var E:Float = 0.001;
+	@:final private static var STD_FORMAT:String = "position:float2, texCoords:float2, color:bytes4";
 
 	
 	public function testNumVertices():Void

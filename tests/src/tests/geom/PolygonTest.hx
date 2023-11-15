@@ -19,7 +19,7 @@ import utest.Test;
 
 class PolygonTest extends Test
 {
-	private static final E:Float = 0.0001;
+	@:final private static var E:Float = 0.0001;
 
 	
 	public function testConstructorWithPoints():Void

@@ -23,7 +23,7 @@ import utest.Test;
 
 class DisplayObjectContainerTest extends Test
 {
-	private static final E:Float = 0.0001;
+	@:final private static var E:Float = 0.0001;
 	
 	private var _added:Int;
 	private var _addedToStage:Int;

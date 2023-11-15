@@ -17,7 +17,7 @@ import utest.Test;
 
 class ColorTest extends Test
 {
-	private static final E:Float = 0.004;
+	@:final private static var E:Float = 0.004;
 
 	
 	public function testGetElement():Void

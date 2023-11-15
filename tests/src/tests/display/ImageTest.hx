@@ -20,7 +20,7 @@ import utest.Test;
 
 class ImageTest extends Test
 {
-	private static final E:Float = 0.00001;
+	@:final private static var E:Float = 0.00001;
 
 	
 	public function testBindScale9GridToTexture():Void

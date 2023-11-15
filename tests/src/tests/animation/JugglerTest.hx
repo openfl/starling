@@ -21,7 +21,7 @@ import org.hamcrest.Matchers.closeTo;
 
 class JugglerTest extends Test
 {
-	private final E:Float = 0.0001;
+	@:final private var E:Float = 0.0001;
 	
 	public function testModificationWithinCallback():Void
 	{

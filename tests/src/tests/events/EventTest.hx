@@ -19,7 +19,7 @@ import utest.Test;
 class EventTest extends Test {
 	public function testBubbling():Void
 	{
-		final eventType:String = "test";
+		var eventType:String = "test";
 		
 		var grandParent:Sprite = new Sprite();
 		var parent:Sprite = new Sprite();
@@ -98,7 +98,7 @@ class EventTest extends Test {
 	
 	public function testStopPropagation():Void
 	{
-		final eventType:String = "test";
+		var eventType:String = "test";
 		
 		var grandParent:Sprite = new Sprite();
 		var parent:Sprite = new Sprite();
@@ -228,7 +228,7 @@ class EventTest extends Test {
 	
 	public function testBubbleWithModifiedChain():Void
 	{
-		final eventType:String = "test";
+		var eventType:String = "test";
 		
 		var grandParent:Sprite = new Sprite();
 		var parent:Sprite = new Sprite();
@@ -265,7 +265,7 @@ class EventTest extends Test {
 	
 	public function testRedispatch():Void
 	{
-		final eventType:String = "test";
+		var eventType:String = "test";
 		
 		var grandParent:Sprite = new Sprite();
 		var parent:Sprite = new Sprite();
@@ -319,7 +319,7 @@ class EventTest extends Test {
 	
 	public function testHasEventListener():Void
 	{
-		final eventType:String = "event";
+		var eventType:String = "event";
 		var dispatcher:EventDispatcher = new EventDispatcher();
 
 		function onEvent():Void {}

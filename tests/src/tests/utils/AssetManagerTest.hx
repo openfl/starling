@@ -316,7 +316,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testTextureAsset():Void
 	{
-		final NAME:String = "test_texture";
+		var NAME:String = "test_texture";
 		var texture:MockTexture = new MockTexture();
 		
 		_manager.addAsset(NAME, texture);
@@ -334,7 +334,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testTextureAtlasAsset():Void
 	{
-		final NAME:String = "test_textureAtlas";
+		var NAME:String = "test_textureAtlas";
 		var atlas:TextureAtlas = new TextureAtlas(null);
 		
 		_manager.addAsset(NAME, atlas);
@@ -350,7 +350,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testSoundAsset():Void
 	{
-		final NAME:String = "test_sound";
+		var NAME:String = "test_sound";
 		var sound:Sound = new Sound();
 		
 		_manager.addAsset(NAME, sound);
@@ -372,7 +372,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testXmlAsset():Void
 	{
-		final NAME:String = "test_xml";
+		var NAME:String = "test_xml";
 		var xml:Xml = Xml.parse("<test/>");
 		
 		_manager.addAsset(NAME, xml);
@@ -388,7 +388,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testObjectAsset():Void
 	{
-		final NAME:String = "test_object";
+		var NAME:String = "test_object";
 		var object:Dynamic = {};
 		
 		_manager.addAsset(NAME, object);
@@ -404,7 +404,7 @@ class AssetManagerTest extends StarlingTest
 	
 	public function testByteArrayAsset():Void
 	{
-		final NAME:String = "test_bytearray";
+		var NAME:String = "test_bytearray";
 		var bytes:ByteArray = new ByteArray();
 		
 		_manager.addAsset(NAME, bytes);

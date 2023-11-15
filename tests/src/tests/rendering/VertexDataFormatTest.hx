@@ -16,7 +16,7 @@ import utest.Test;
 
 class VertexDataFormatTest extends Test
 {
-	private static final STD_FORMAT:String = "position:float2, texCoords:float2, color:bytes4";
+	@:final private static var STD_FORMAT:String = "position:float2, texCoords:float2, color:bytes4";
 
 	public function testFormatParsing():Void
 	{

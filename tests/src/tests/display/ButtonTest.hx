@@ -19,7 +19,7 @@ import tests.utils.MockTexture;
 
 class ButtonTest extends StarlingTest
 {
-	private static final E:Float = 0.0001;
+	@:final private static var E:Float = 0.0001;
 
 	
 	public function testWidthAndHeight():Void
