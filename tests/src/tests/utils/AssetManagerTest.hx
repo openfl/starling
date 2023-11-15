@@ -38,6 +38,7 @@ class AssetManagerTest extends StarlingTest
 		super.teardown();
 	}
 	
+	@:timeout(1000)
 	public function testLoadEmptyQueue(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -54,6 +55,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadBitmapFromPngFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -71,6 +73,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadBitmapFromJpgFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -91,6 +94,7 @@ class AssetManagerTest extends StarlingTest
 	#if !flash
 	@Ignored
 	#end
+	@:timeout(1000)
 	public function testLoadBitmapFromGifFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -108,6 +112,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadXmlFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -125,6 +130,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadInvalidXmlFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -144,6 +150,7 @@ class AssetManagerTest extends StarlingTest
 		_manager.loadQueue(onComplete, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadJsonFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -161,6 +168,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadInvalidJsonFromFile(async:Async):Void
 	{
 		var errorCount:Int=0;
@@ -180,6 +188,7 @@ class AssetManagerTest extends StarlingTest
 		_manager.loadQueue(onComplete, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadSoundFromMp3File(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -197,6 +206,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadTextureAtlasFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -215,6 +225,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadFontFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -233,6 +244,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 	
+	@:timeout(1000)
 	public function testLoadByteArrayFromFile(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -252,6 +264,7 @@ class AssetManagerTest extends StarlingTest
 		}, onError);
 	}
 
+	// @:timeout(1000)
 	// public function testLoadXmlFromByteArray(async:Async):Void
 	// {
 	// 	_manager.verbose = true;
@@ -266,6 +279,7 @@ class AssetManagerTest extends StarlingTest
 	// 	});
 	// }
 	
+	// @:timeout(1000)
 	// public function testLoadJsonFromByteArray(async:Async):Void
 	// {
 	// 	_manager.verbose = true;
@@ -284,6 +298,7 @@ class AssetManagerTest extends StarlingTest
 	// this is the one target where it _should_ work
 	@Ignored
 	#end
+	@:timeout(1000)
 	public function testLoadAtfFromByteArray(async:Async):Void
 	{
 		var errorCount:Int = 0;
@@ -481,6 +496,7 @@ class AssetManagerTest extends StarlingTest
 		Assert.isFalse(texture.isDisposed);
 	}
 
+	@:timeout(1000)
 	public function testDequeueAsset(async:Async):Void
 	{
 		var errorCount:Int = 0;
