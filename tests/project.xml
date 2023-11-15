@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="Starling Tests"/>
+	<app main="TestMain" file="StarlingTests"/>
+	<window hidden="true"/>
+
+	<source path="src"/>
+	<source path="../src"/>
+	
+	<haxelib name="openfl"/>
+	<haxelib name="utest"/>
+	<haxelib name="hamcrest"/>
+
+	<assets path="fixtures" embed="false"/>
+</project>

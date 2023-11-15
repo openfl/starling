@@ -14,5 +14,6 @@ package-lock.json
 lib/_gen
 npm-debug.log
 dist
+/tests/**/bin
 *.map
 *.tgz
