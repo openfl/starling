@@ -141,7 +141,7 @@ class DisplayObject extends EventDispatcher
     private var __transformationMatrix:Matrix;
     private var __transformationMatrix3D:Matrix3D;
     private var __transformationChanged:Bool;
-    private var __is3D:Bool;
+    private var __is3D:Bool = false;
     private var __maskee:DisplayObject;
     private var __maskInverted:Bool = false;
 
