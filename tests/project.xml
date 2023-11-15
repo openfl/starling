@@ -12,4 +12,6 @@
 	<haxelib name="hamcrest"/>
 
 	<assets path="fixtures" embed="false"/>
+
+	<template path="templates" if="html5"/>
 </project>
