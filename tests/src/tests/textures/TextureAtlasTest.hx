@@ -39,8 +39,8 @@ class TextureAtlasTest extends Test
 		var ann:Texture = atlas.getTexture("ann");            
 		var bob:Texture = atlas.getTexture("bob");
 		
-		Assert.isTrue(ann is SubTexture);
-		Assert.isTrue(bob is SubTexture);
+		Assert.isOfType(ann, SubTexture);
+		Assert.isOfType(bob, SubTexture);
 		
 		Assert.equals(55.5, ann.width);
 		Assert.equals(16, ann.height);
