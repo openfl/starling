@@ -202,6 +202,7 @@ jobs:
       - name: Install Haxe dependencies
         run: |
           haxelib install lime --quiet
+          haxelib install openfl --quiet
           haxelib install utest --quiet
           haxelib install hamcrest --quiet
           haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
@@ -211,5 +212,6 @@ jobs:
           haxelib dev starling $Env:GITHUB_WORKSPACE
 
       - name: Run tests on Adobe AIR
+        working-directory: tests
         run: |
           haxelib run openfl test air
