@@ -44,7 +44,7 @@ jobs:
           haxelib install lime --quiet
           haxelib install openfl --quiet
           haxelib install dox --quiet
-          haxelib dev starling $GITHUB_WORKSPACE
+          haxelib dev starling ${{ github.workspace }}
 
       - name: Build docs
         working-directory: scripts
@@ -78,7 +78,7 @@ jobs:
         run: |
           haxelib install lime --quiet
           haxelib install openfl --quiet
-          haxelib dev starling $GITHUB_WORKSPACE
+          haxelib dev starling ${{ github.workspace }}
 
       - name: Build Neko samples
         run: |
@@ -208,7 +208,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev starling $GITHUB_WORKSPACE
+          haxelib dev starling ${{ github.workspace }}
 
       - name: Run tests on HashLink
         working-directory: tests
@@ -246,7 +246,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev starling $Env:GITHUB_WORKSPACE
+          haxelib dev starling ${{ github.workspace }}
 
       - name: Run tests on Adobe AIR
         working-directory: tests
