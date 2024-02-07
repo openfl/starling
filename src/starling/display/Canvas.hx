@@ -22,9 +22,9 @@ import starling.rendering.VertexData;
  */
 class Canvas extends DisplayObjectContainer
 {
-    private var __polygons:Vector<Polygon>;
-    private var __fillColor:UInt;
-    private var __fillAlpha:Float;
+    @:noCompletion private var __polygons:Vector<Polygon>;
+    @:noCompletion private var __fillColor:UInt;
+    @:noCompletion private var __fillAlpha:Float;
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function new()
@@ -123,7 +123,7 @@ class Canvas extends DisplayObjectContainer
         __polygons.length = 0;
     }
 
-    private function __appendPolygon(polygon:Polygon):Void
+    @:noCompletion private function __appendPolygon(polygon:Polygon):Void
     {
         var vertexData:VertexData = new VertexData();
         var indexData:IndexData = new IndexData(polygon.numTriangles * 3);

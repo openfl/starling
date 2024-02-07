@@ -6,10 +6,10 @@ import starling.rendering.IndexData;
 
 class Rectangle extends ImmutablePolygon
 {
-    private var __x:Float;
-    private var __y:Float;
-    private var __width:Float;
-    private var __height:Float;
+    @:noCompletion private var __x:Float;
+    @:noCompletion private var __y:Float;
+    @:noCompletion private var __width:Float;
+    @:noCompletion private var __height:Float;
 
     public function new(x:Float, y:Float, width:Float, height:Float)
     {

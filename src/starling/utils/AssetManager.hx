@@ -129,27 +129,27 @@ class AssetManager extends EventDispatcher
     // This HTTPStatusEvent is only available in AIR
     private static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
-    private var __starling:Starling;
-    private var __numLostTextures:Int;
-    private var __numRestoredTextures:Int;
-    private var __numLoadingQueues:Int = 0;
+    @:noCompletion private var __starling:Starling;
+    @:noCompletion private var __numLostTextures:Int;
+    @:noCompletion private var __numRestoredTextures:Int;
+    @:noCompletion private var __numLoadingQueues:Int = 0;
 
-    private var __defaultTextureOptions:TextureOptions;
-    private var __registerBitmapFontsWithFontFace:Bool;
-    private var __checkPolicyFile:Bool;
-    private var __keepAtlasXmls:Bool;
-    private var __keepFontXmls:Bool;
-    private var __numConnections:Int;
-    private var __verbose:Bool;
-    private var __queue:Array<QueuedAsset>;
+    @:noCompletion private var __defaultTextureOptions:TextureOptions;
+    @:noCompletion private var __registerBitmapFontsWithFontFace:Bool;
+    @:noCompletion private var __checkPolicyFile:Bool;
+    @:noCompletion private var __keepAtlasXmls:Bool;
+    @:noCompletion private var __keepFontXmls:Bool;
+    @:noCompletion private var __numConnections:Int;
+    @:noCompletion private var __verbose:Bool;
+    @:noCompletion private var __queue:Array<QueuedAsset>;
     
-    private var __textures:Map<String, Texture>;
-    private var __atlases:Map<String, TextureAtlas>;
-    private var __sounds:Map<String, Sound>;
-    private var __xmls:Map<String, Xml>;
-    private var __objects:Map<String, Dynamic>;
-    private var __byteArrays:Map<String, ByteArray>;
-    private var __bitmapFonts:Map<String, BitmapFont>;
+    @:noCompletion private var __textures:Map<String, Texture>;
+    @:noCompletion private var __atlases:Map<String, TextureAtlas>;
+    @:noCompletion private var __sounds:Map<String, Sound>;
+    @:noCompletion private var __xmls:Map<String, Xml>;
+    @:noCompletion private var __objects:Map<String, Dynamic>;
+    @:noCompletion private var __byteArrays:Map<String, ByteArray>;
+    @:noCompletion private var __bitmapFonts:Map<String, BitmapFont>;
     
     /** helper objects */
     private static var sNames:Vector<String> = new Vector<String>();

@@ -76,10 +76,12 @@ import starling.utils.StringUtil;
 class TextureAtlas
 {
     private static var NAME_REGEX:EReg = ~/(.+?)\d+$/; // find text before trailing digits
+
+    public var xmlScale = 1.0;
     
-    private var __atlasTexture:Texture;
-    private var __subTextures:Map<String, SubTexture>;
-    private var __subTextureNames:Vector<String>;
+    @:noCompletion private var __atlasTexture:Texture;
+    @:noCompletion private var __subTextures:Map<String, SubTexture>;
+    @:noCompletion private var __subTextureNames:Vector<String>;
     
     /** helper objects */
     private static var sNames:Vector<String> = new Vector<String>();
@@ -96,10 +98,12 @@ class TextureAtlas
     
     /** Create a texture atlas from a texture and atlas data. The second argument typically
      *  points to an XML file. */
-    public function new(texture:Texture, data:Dynamic=null)
+    public function new(texture:Texture, data:Dynamic=null, xmlScale:Float = 1)
     {
         __subTextures = new Map();
         __atlasTexture = texture;
+
+        this.xmlScale = xmlScale;
         
         if (data != null)
             parseAtlasData(data);

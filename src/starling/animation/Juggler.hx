@@ -50,10 +50,10 @@ import starling.events.EventDispatcher;
  */
 class Juggler implements IAnimatable
 {
-    private var __objects:Vector<IAnimatable>;
-    private var __objectIDs:Map<IAnimatable, UInt>;
-    private var __elapsedTime:Float;
-    private var __timeScale:Float;
+    @:noCompletion private var __objects:Vector<IAnimatable>;
+    @:noCompletion private var __objectIDs:Map<IAnimatable, UInt>;
+    @:noCompletion private var __elapsedTime:Float;
+    @:noCompletion private var __timeScale:Float;
 
     private static var sCurrentObjectID:UInt = 0;
     private static var sTweenInstanceFields:Array<String>;

@@ -29,11 +29,11 @@ import starling.events.EventDispatcher;
  */ 
 class DelayedCall extends EventDispatcher implements IAnimatable
 {
-    private var __currentTime:Float;
-    private var __totalTime:Float;
-    @:allow(starling) private var __callback:Function;
-    private var __args:Array<Dynamic>;
-    private var __repeatCount:Int;
+    @:noCompletion private var __currentTime:Float;
+    @:noCompletion private var __totalTime:Float;
+    @:allow(starling) @:noCompletion private var __callback:Function;
+    @:noCompletion private var __args:Array<Dynamic>;
+    @:noCompletion private var __repeatCount:Int;
     
     #if commonjs
     private static function __init__ () {

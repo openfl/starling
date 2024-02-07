@@ -180,7 +180,7 @@ class FilterChain extends FragmentFilter
         this.padding.copyFrom(sPadding);
     }
 
-    private function __onEnterFrame(event:Event):Void
+    @:noCompletion private function __onEnterFrame(event:Event):Void
     {
         var numFilters:Int = _filters.length;
         for (i in 0...numFilters) _filters[i].dispatchEvent(event);

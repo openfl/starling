@@ -57,10 +57,10 @@ class TouchEvent extends Event
     /** Event type for touch or mouse input. */
     public static inline var TOUCH:String = "touch";
 
-    private var __shiftKey:Bool;
-    private var __ctrlKey:Bool;
-    private var __timestamp:Float;
-    private var __visitedObjects:Vector<EventDispatcher>;
+    @:noCompletion private var __shiftKey:Bool;
+    @:noCompletion private var __ctrlKey:Bool;
+    @:noCompletion private var __timestamp:Float;
+    @:noCompletion private var __visitedObjects:Vector<EventDispatcher>;
     
     /** Helper object. */
     private static var sTouches:Vector<Touch> = new Vector<Touch>();

@@ -45,22 +45,22 @@ import starling.textures.Texture;
  */
 class Button extends DisplayObjectContainer
 {
-    private var __upState:Texture;
-    private var __downState:Texture;
-    private var __overState:Texture;
-    private var __disabledState:Texture;
+    @:noCompletion private var __upState:Texture;
+    @:noCompletion private var __downState:Texture;
+    @:noCompletion private var __overState:Texture;
+    @:noCompletion private var __disabledState:Texture;
     
-    private var __contents:Sprite;
-    private var __body:Image;
-    private var __textField:TextField;
-    private var __textBounds:Rectangle;
-    private var __overlay:Sprite;
+    @:noCompletion private var __contents:Sprite;
+    @:noCompletion private var __body:Image;
+    @:noCompletion private var __textField:TextField;
+    @:noCompletion private var __textBounds:Rectangle;
+    @:noCompletion private var __overlay:Sprite;
     
-	private var __behavior:ButtonBehavior;
-    private var __scaleWhenDown:Float;
-    private var __scaleWhenOver:Float;
-    private var __alphaWhenDown:Float;
-    private var __alphaWhenDisabled:Float;
+	@:noCompletion private var __behavior:ButtonBehavior;
+    @:noCompletion private var __scaleWhenDown:Float;
+    @:noCompletion private var __scaleWhenOver:Float;
+    @:noCompletion private var __alphaWhenDown:Float;
+    @:noCompletion private var __alphaWhenDisabled:Float;
     
     #if commonjs
     private static function __init__ () {
@@ -188,7 +188,7 @@ class Button extends DisplayObjectContainer
         if (__textField != null) __createTextField();
     }
 
-    private function __createTextField():Void
+    @:noCompletion private function __createTextField():Void
     {
         if (__textField == null)
         {
@@ -211,14 +211,14 @@ class Button extends DisplayObjectContainer
     private function get_state():String { return __behavior.state; }
     private function set_state(value:String):String { return __behavior.state = value; }
     
-    private function __setContentScale(scale:Float):Void
+    @:noCompletion private function __setContentScale(scale:Float):Void
     {
         __contents.scaleX = __contents.scaleY = scale;
         __contents.x = (1.0 - scale) / 2.0 * __body.width;
         __contents.y = (1.0 - scale) / 2.0 * __body.height;
     }
 
-    private function __setStateTexture(texture:Texture):Void
+    @:noCompletion private function __setStateTexture(texture:Texture):Void
     {
         __body.texture = texture != null ? texture : __upState;
         

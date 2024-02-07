@@ -66,14 +66,14 @@ class ButtonBehavior
     // 'minHitAreaSize' defaults to 44 points, as recommended by Apple Human Interface Guidelines.
 	// -> https://developer.apple.com/ios/human-interface-guidelines/visual-design/adaptivity-and-layout/
 
-	private var __state:String;
-	private var __target:DisplayObject;
-	private var __triggerBounds:Rectangle;
-	private var __minHitAreaSize:Float;
-	private var __abortDistance:Float;
-	private var __onStateChange:Function;
-	private var __useHandCursor:Bool;
-	private var __enabled:Bool;
+	@:noCompletion private var __state:String;
+	@:noCompletion private var __target:DisplayObject;
+	@:noCompletion private var __triggerBounds:Rectangle;
+	@:noCompletion private var __minHitAreaSize:Float;
+	@:noCompletion private var __abortDistance:Float;
+	@:noCompletion private var __onStateChange:Function;
+	@:noCompletion private var __useHandCursor:Bool;
+	@:noCompletion private var __enabled:Bool;
 
 	private static var sBounds:Rectangle = new Rectangle();
 	

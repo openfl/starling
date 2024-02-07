@@ -7,7 +7,7 @@ import starling.geom.Polygon;
 
 class ImmutablePolygon extends Polygon
 {
-    private var __frozen:Bool;
+    @:noCompletion private var __frozen:Bool;
 
     public function new(vertices:Array<Dynamic>)
     {

@@ -19,12 +19,12 @@ import starling.textures.Texture;
  */ 
 class BitmapChar
 {
-    private var __texture:Texture;
-    private var __charID:Int;
-    private var __xOffset:Float;
-    private var __yOffset:Float;
-    private var __xAdvance:Float;
-    private var __kernings:Map<Int, Float>;
+    @:noCompletion private var __texture:Texture;
+    @:noCompletion private var __charID:Int;
+    @:noCompletion private var __xOffset:Float;
+    @:noCompletion private var __yOffset:Float;
+    @:noCompletion private var __xAdvance:Float;
+    @:noCompletion private var __kernings:Map<Int, Float>;
     
     #if commonjs
     private static function __init__ () {

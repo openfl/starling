@@ -49,10 +49,10 @@ class MeshBatch extends Mesh
     /** The maximum number of vertices that fit into one MeshBatch. */
     public static inline var MAX_NUM_VERTICES:Int = 65535;
 
-    private var __effect:MeshEffect;
-    private var __batchable:Bool;
-    private var __vertexSyncRequired:Bool;
-    private var __indexSyncRequired:Bool;
+    @:noCompletion private var __effect:MeshEffect;
+    @:noCompletion private var __batchable:Bool;
+    @:noCompletion private var __vertexSyncRequired:Bool;
+    @:noCompletion private var __indexSyncRequired:Bool;
 
     // helper object
     private static var sFullMeshSubset:MeshSubset = new MeshSubset();
@@ -99,18 +99,18 @@ class MeshBatch extends Mesh
         super.setIndexDataChanged();
     }
 
-    private function __setVertexAndIndexDataChanged():Void
+    @:noCompletion private function __setVertexAndIndexDataChanged():Void
     {
         __vertexSyncRequired = __indexSyncRequired = true;
     }
 
-    private function __syncVertexBuffer():Void
+    @:noCompletion private function __syncVertexBuffer():Void
     {
         __effect.uploadVertexData(__vertexData);
         __vertexSyncRequired = false;
     }
 
-    private function __syncIndexBuffer():Void
+    @:noCompletion private function __syncIndexBuffer():Void
     {
         __effect.uploadIndexData(__indexData);
         __indexSyncRequired = false;
@@ -202,7 +202,7 @@ class MeshBatch extends Mesh
         __indexSyncRequired = __vertexSyncRequired = true;
     }
 
-    private function __setupFor(mesh:Mesh):Void
+    @:noCompletion private function __setupFor(mesh:Mesh):Void
     {
         var meshStyle:MeshStyle = mesh.__style;
         var meshStyleType:Class<Dynamic> = meshStyle.type;

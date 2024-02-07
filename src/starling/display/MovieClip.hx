@@ -48,15 +48,15 @@ import starling.textures.Texture;
  */    
 class MovieClip extends Image implements IAnimatable
 {
-    private var __frames:Vector<MovieClipFrame>;
-    private var __defaultFrameDuration:Float;
-    private var __currentTime:Float;
-    private var __currentFrameID:Int;
-    private var __loop:Bool;
-    private var __playing:Bool;
-    private var __muted:Bool;
-    private var __wasStopped:Bool;
-    private var __soundTransform:SoundTransform = null;
+    @:noCompletion private var __frames:Vector<MovieClipFrame>;
+    @:noCompletion private var __defaultFrameDuration:Float;
+    @:noCompletion private var __currentTime:Float;
+    @:noCompletion private var __currentFrameID:Int;
+    @:noCompletion private var __loop:Bool;
+    @:noCompletion private var __playing:Bool;
+    @:noCompletion private var __muted:Bool;
+    @:noCompletion private var __wasStopped:Bool;
+    @:noCompletion private var __soundTransform:SoundTransform = null;
     
     #if commonjs
     private static function __init__ () {

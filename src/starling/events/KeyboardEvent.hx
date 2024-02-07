@@ -28,13 +28,13 @@ class KeyboardEvent extends Event
     /** Event type for a key that was pressed. */
     public static inline var KEY_DOWN:String = "keyDown";
     
-    private var __charCode:UInt;
-    private var __keyCode:UInt;
-    private var __keyLocation:UInt;
-    private var __altKey:Bool;
-    private var __ctrlKey:Bool;
-    private var __shiftKey:Bool;
-    private var __isDefaultPrevented:Bool;
+    @:noCompletion private var __charCode:UInt;
+    @:noCompletion private var __keyCode:UInt;
+    @:noCompletion private var __keyLocation:UInt;
+    @:noCompletion private var __altKey:Bool;
+    @:noCompletion private var __ctrlKey:Bool;
+    @:noCompletion private var __shiftKey:Bool;
+    @:noCompletion private var __isDefaultPrevented:Bool;
     
     #if commonjs
     private static function __init__ () {

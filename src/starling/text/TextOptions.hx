@@ -29,16 +29,16 @@ import starling.events.EventDispatcher;
  */
 class TextOptions extends EventDispatcher
 {
-    private var __wordWrap:Bool;
-    private var __autoScale:Bool;
-    private var __autoSize:String;
-    private var __isHtmlText:Bool;
-    private var __textureScale:Float;
-    private var __textureFormat:String;
+    @:noCompletion private var __wordWrap:Bool;
+    @:noCompletion private var __autoScale:Bool;
+    @:noCompletion private var __autoSize:String;
+    @:noCompletion private var __isHtmlText:Bool;
+    @:noCompletion private var __textureScale:Float;
+    @:noCompletion private var __textureFormat:String;
     #if flash
-    private var __styleSheet:StyleSheet;
+    @:noCompletion private var __styleSheet:StyleSheet;
     #end
-    private var __padding:Float;
+    @:noCompletion private var __padding:Float;
 
     #if commonjs
     private static function __init__ () {

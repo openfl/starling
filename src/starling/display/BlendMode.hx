@@ -37,9 +37,9 @@ import starling.core.Starling;
  */
 class BlendMode
 {
-    private var __name:String;
-    private var __sourceFactor:Context3DBlendFactor;
-    private var __destinationFactor:Context3DBlendFactor;
+    @:noCompletion private var __name:String;
+    @:noCompletion private var __sourceFactor:Context3DBlendFactor;
+    @:noCompletion private var __destinationFactor:Context3DBlendFactor;
     
     private static var sBlendModes:Map<String, BlendMode>;
     

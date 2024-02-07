@@ -49,35 +49,35 @@ import starling.utils.Color;
 {
     private static inline var HINT_MARKER:String = '#';
 
-    private var __target:Dynamic;
-    private var __transitionFunc:Float->Float;
-    private var __transitionName:String;
+    @:noCompletion private var __target:Dynamic;
+    @:noCompletion private var __transitionFunc:Float->Float;
+    @:noCompletion private var __transitionName:String;
     
-    private var __properties:Vector<String>;
-    private var __startValues:Vector<Float>;
-    private var __endValues:Vector<Float>;
-    private var __updateFuncs:Vector<String->Float->Float->Void>;
+    @:noCompletion private var __properties:Vector<String>;
+    @:noCompletion private var __startValues:Vector<Float>;
+    @:noCompletion private var __endValues:Vector<Float>;
+    @:noCompletion private var __updateFuncs:Vector<String->Float->Float->Void>;
 
-    private var __onStart:Function;
-    private var __onUpdate:Function;
-    private var __onRepeat:Function;
-    private var __onComplete:Function;  
+    @:noCompletion private var __onStart:Function;
+    @:noCompletion private var __onUpdate:Function;
+    @:noCompletion private var __onRepeat:Function;
+    @:noCompletion private var __onComplete:Function;  
     
-    private var __onStartArgs:Array<Dynamic>;
-    private var __onUpdateArgs:Array<Dynamic>;
-    private var __onRepeatArgs:Array<Dynamic>;
-    private var __onCompleteArgs:Array<Dynamic>;
+    @:noCompletion private var __onStartArgs:Array<Dynamic>;
+    @:noCompletion private var __onUpdateArgs:Array<Dynamic>;
+    @:noCompletion private var __onRepeatArgs:Array<Dynamic>;
+    @:noCompletion private var __onCompleteArgs:Array<Dynamic>;
     
-    private var __totalTime:Float;
-    private var __currentTime:Float;
-    private var __progress:Float;
-    private var __delay:Float;
-    private var __roundToInt:Bool;
-    private var __nextTween:Tween;
-    private var __repeatCount:Int;
-    private var __repeatDelay:Float;
-    private var __reverse:Bool;
-    private var __currentCycle:Int;
+    @:noCompletion private var __totalTime:Float;
+    @:noCompletion private var __currentTime:Float;
+    @:noCompletion private var __progress:Float;
+    @:noCompletion private var __delay:Float;
+    @:noCompletion private var __roundToInt:Bool;
+    @:noCompletion private var __nextTween:Tween;
+    @:noCompletion private var __repeatCount:Int;
+    @:noCompletion private var __repeatDelay:Float;
+    @:noCompletion private var __reverse:Bool;
+    @:noCompletion private var __currentCycle:Int;
     
     #if commonjs
 	private static function __init__ () {

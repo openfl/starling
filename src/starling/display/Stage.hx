@@ -56,14 +56,14 @@ import starling.utils.RectangleUtil;
  */
 class Stage extends DisplayObjectContainer
 {
-    private var __width:Int;
-    private var __height:Int;
-    private var __color:UInt;
-    private var __fieldOfView:Float;
-    private var __projectionOffset:Point;
-    private var __cameraPosition:Vector3D;
-    private var __enterFrameEvent:EnterFrameEvent;
-    private var __enterFrameListeners:Vector<DisplayObject>;
+    @:noCompletion private var __width:Int;
+    @:noCompletion private var __height:Int;
+    @:noCompletion private var __color:UInt;
+    @:noCompletion private var __fieldOfView:Float;
+    @:noCompletion private var __projectionOffset:Point;
+    @:noCompletion private var __cameraPosition:Vector3D;
+    @:noCompletion private var __enterFrameEvent:EnterFrameEvent;
+    @:noCompletion private var __enterFrameListeners:Vector<DisplayObject>;
 
     /** Helper objects. */
     private static var sMatrix:Matrix = new Matrix();

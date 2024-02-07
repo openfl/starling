@@ -47,8 +47,8 @@ import starling.utils.Execute;
  */ 
 class Image extends Quad
 {
-    private var __scale9Grid:Rectangle;
-    private var __tileGrid:Rectangle;
+    @:noCompletion private var __scale9Grid:Rectangle;
+    @:noCompletion private var __tileGrid:Rectangle;
 
     private static var sAutomators = new Map<Texture, SetupAutomator>();
 
@@ -222,7 +222,7 @@ class Image extends Quad
 
     // vertex setup
 
-    private function __setupScale9Grid():Void
+    @:noCompletion private function __setupScale9Grid():Void
     {
         var texture:Texture = this.texture;
         var frame:Rectangle = texture.frame;
@@ -374,7 +374,7 @@ class Image extends Quad
         setRequiresRedraw();
     }
 
-    private function __setupScale9GridAttributes(startX:Float, startY:Float,
+    @:noCompletion private function __setupScale9GridAttributes(startX:Float, startY:Float,
                                                  posCols:Vector<Float>, posRows:Vector<Float>,
                                                  texCols:Vector<Float>, texRows:Vector<Float>):Int
     {
@@ -439,7 +439,7 @@ class Image extends Quad
         return vertexID;
     }
 
-    private function __setupTileGrid():Void
+    @:noCompletion private function __setupTileGrid():Void
     {
         // calculate the grid of vertices simulating a repeating / tiled texture.
         // again, texture frames make this somewhat more complicated than one would think.

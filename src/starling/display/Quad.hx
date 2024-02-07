@@ -52,7 +52,7 @@ import starling.utils.RectangleUtil;
  */
 class Quad extends Mesh
 {
-    private var __bounds:Rectangle;
+    @:noCompletion private var __bounds:Rectangle;
 
     // helper objects
     private static var sPoint3D:Vector3D = new Vector3D();
@@ -77,7 +77,7 @@ class Quad extends Mesh
     }
 
     /** Sets up vertex- and index-data according to the current settings. */
-    private function __setupVertices():Void
+    @:noCompletion private function __setupVertices():Void
     {
         var posAttr:String = "position";
         var texAttr:String = "texCoords";

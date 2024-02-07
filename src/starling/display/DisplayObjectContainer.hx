@@ -66,8 +66,8 @@ class DisplayObjectContainer extends DisplayObject
 {
     // members
 
-    private var __children:Vector<DisplayObject>;
-    private var __touchGroup:Bool;
+    @:noCompletion private var __children:Vector<DisplayObject>;
+    @:noCompletion private var __touchGroup:Bool;
     
     // helper objects
     private static var sHitTestMatrix:Matrix = new Matrix();
@@ -522,7 +522,7 @@ class DisplayObjectContainer extends DisplayObject
     }
 
     /** @private */
-    private function __getChildEventListeners(object:DisplayObject, eventType:String, 
+    @:noCompletion private function __getChildEventListeners(object:DisplayObject, eventType:String, 
                                              listeners:Vector<DisplayObject>):Void
     {
         var container:DisplayObjectContainer = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, DisplayObjectContainer) ? cast object : null;

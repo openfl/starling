@@ -43,10 +43,10 @@ import starling.utils.MeshUtil;
  */
 class Mesh extends DisplayObject
 {
-    @:allow(starling) private var __style:MeshStyle;
-    @:allow(starling) private var __vertexData:VertexData;
-    @:allow(starling) private var __indexData:IndexData;
-    @:allow(starling) private var __pixelSnapping:Bool;
+    @:allow(starling) @:noCompletion private var __style:MeshStyle;
+    @:allow(starling) @:noCompletion private var __vertexData:VertexData;
+    @:allow(starling) @:noCompletion private var __indexData:IndexData;
+    @:allow(starling) @:noCompletion private var __pixelSnapping:Bool;
 
     private static var sDefaultStyle:Class<Dynamic> = MeshStyle;
     private static var sDefaultStyleFactory:?Mesh->MeshStyle = null;

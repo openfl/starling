@@ -38,23 +38,23 @@ import starling.utils.StringUtil;
  */  
 class Touch
 {
-    private var __id:Int;
-    private var __globalX:Float;
-    private var __globalY:Float;
-    private var __previousGlobalX:Float;
-    private var __previousGlobalY:Float;
-    private var __startGlobalX:Float;
-    private var __startGlobalY:Float;
-    private var __startTimestamp:Float;
-    private var __tapCount:Int;
-    private var __phase:String;
-    private var __target:DisplayObject;
-    private var __timestamp:Float;
-    private var __pressure:Float;
-    private var __width:Float;
-    private var __height:Float;
-    private var __cancelled:Bool;
-    private var __bubbleChain:Vector<EventDispatcher>;
+    @:noCompletion private var __id:Int;
+    @:noCompletion private var __globalX:Float;
+    @:noCompletion private var __globalY:Float;
+    @:noCompletion private var __previousGlobalX:Float;
+    @:noCompletion private var __previousGlobalY:Float;
+    @:noCompletion private var __startGlobalX:Float;
+    @:noCompletion private var __startGlobalY:Float;
+    @:noCompletion private var __startTimestamp:Float;
+    @:noCompletion private var __tapCount:Int;
+    @:noCompletion private var __phase:String;
+    @:noCompletion private var __target:DisplayObject;
+    @:noCompletion private var __timestamp:Float;
+    @:noCompletion private var __pressure:Float;
+    @:noCompletion private var __width:Float;
+    @:noCompletion private var __height:Float;
+    @:noCompletion private var __cancelled:Bool;
+    @:noCompletion private var __bubbleChain:Vector<EventDispatcher>;
     
     /** Helper object. */
     private static var sHelperPoint:Point = new Point();

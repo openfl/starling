@@ -71,18 +71,18 @@ class BitmapFont implements ITextCompositor
     private static inline var CHAR_CARRIAGE_RETURN:Int = 13;
     private static inline var CHAR_SPACE:Int           = 32;
     
-    private var __texture:Texture;
-    private var __chars:Map<Int, BitmapChar>;
-    private var __name:String;
-    private var __size:Float;
-    private var __lineHeight:Float;
-    private var __baseline:Float;
-    private var __offsetX:Float;
-    private var __offsetY:Float;
-    private var __padding:Float;
-    private var __helperImage:Image;
-    private var __type:String;
-    private var __distanceFieldSpread:Float;
+    @:noCompletion private var __texture:Texture;
+    @:noCompletion private var __chars:Map<Int, BitmapChar>;
+    @:noCompletion private var __name:String;
+    @:noCompletion private var __size:Float;
+    @:noCompletion private var __lineHeight:Float;
+    @:noCompletion private var __baseline:Float;
+    @:noCompletion private var __offsetX:Float;
+    @:noCompletion private var __offsetY:Float;
+    @:noCompletion private var __padding:Float;
+    @:noCompletion private var __helperImage:Image;
+    @:noCompletion private var __type:String;
+    @:noCompletion private var __distanceFieldSpread:Float;
 
     // helper objects
     private static var sLines:Array<Vector<BitmapCharLocation>> = [];

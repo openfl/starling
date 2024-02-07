@@ -6,10 +6,10 @@ import starling.rendering.IndexData;
 
 class Ellipse extends ImmutablePolygon
 {
-    private var __x:Float;
-    private var __y:Float;
-    private var __radiusX:Float;
-    private var __radiusY:Float;
+    @:noCompletion private var __x:Float;
+    @:noCompletion private var __y:Float;
+    @:noCompletion private var __radiusX:Float;
+    @:noCompletion private var __radiusY:Float;
 
     public function new(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1)
     {

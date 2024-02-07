@@ -25,9 +25,9 @@ import starling.utils.MathUtil;
  *  set for x- and y-axis separately. */
 class BlurFilter extends FragmentFilter
 {
-    private var __blurX:Float;
-    private var __blurY:Float;
-    private var __quality:Float;
+    @:noCompletion private var __blurX:Float;
+    @:noCompletion private var __blurY:Float;
+    @:noCompletion private var __quality:Float;
 
     #if commonjs
     private static function __init__ () {

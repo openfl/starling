@@ -22,8 +22,8 @@ import starling.textures.Texture;
 /** The TouchMarker is used internally to mark touches created through "simulateMultitouch". */
 class TouchMarker extends Sprite
 {
-    private var __center:Point;
-    private var __texture:Texture;
+    @:noCompletion private var __center:Point;
+    @:noCompletion private var __texture:Texture;
     
     #if commonjs
     private static function __init__ () {

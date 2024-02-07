@@ -32,19 +32,19 @@ class StatsDisplay extends Sprite
     private static inline var UPDATE_INTERVAL:Float = 0.5;
     private static inline var B_TO_MB:Float = 1.0 / (1024 * 1024); // convert from bytes to MB
     
-    private var __background:Quad;
-    private var __labels:TextField;
-    private var __values:TextField;
+    @:noCompletion private var __background:Quad;
+    @:noCompletion private var __labels:TextField;
+    @:noCompletion private var __values:TextField;
     
-    private var __frameCount:Int = 0;
-    private var __totalTime:Float = 0;
+    @:noCompletion private var __frameCount:Int = 0;
+    @:noCompletion private var __totalTime:Float = 0;
 
-    private var __fps:Float = 0;
-    private var __memory:Float = 0;
-    private var __gpuMemory:Float = 0;
-    private var __drawCount:Int = 0;
-    private var __skipCount:Int = 0;
-	private var __showSkipped:Bool = false;
+    @:noCompletion private var __fps:Float = 0;
+    @:noCompletion private var __memory:Float = 0;
+    @:noCompletion private var __gpuMemory:Float = 0;
+    @:noCompletion private var __drawCount:Int = 0;
+    @:noCompletion private var __skipCount:Int = 0;
+	@:noCompletion private var __showSkipped:Bool = false;
     
     #if commonjs
     private static function __init__ () {

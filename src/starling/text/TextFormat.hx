@@ -28,17 +28,17 @@ import starling.utils.Align;
  */
 class TextFormat extends EventDispatcher
 {
-    private var __font:String;
-    private var __size:Float;
-    private var __color:UInt;
-    private var __bold:Bool;
-    private var __italic:Bool;
-    private var __underline:Bool;
-    private var __horizontalAlign:String;
-    private var __verticalAlign:String;
-    private var __kerning:Bool;
-    private var __leading:Float;
-    private var __letterSpacing:Float;
+    @:noCompletion private var __font:String;
+    @:noCompletion private var __size:Float;
+    @:noCompletion private var __color:UInt;
+    @:noCompletion private var __bold:Bool;
+    @:noCompletion private var __italic:Bool;
+    @:noCompletion private var __underline:Bool;
+    @:noCompletion private var __horizontalAlign:String;
+    @:noCompletion private var __verticalAlign:String;
+    @:noCompletion private var __kerning:Bool;
+    @:noCompletion private var __leading:Float;
+    @:noCompletion private var __letterSpacing:Float;
 
     #if commonjs
     private static function __init__ () {

@@ -36,8 +36,8 @@ import starling.display.DisplayObject;
  */
 class EventDispatcher
 {
-    private var __eventListeners:Map<String, Vector<Function>>;
-    private var __eventStack:Vector<String> = new Vector<String>();
+    @:noCompletion private var __eventListeners:Map<String, Vector<Function>>;
+    @:noCompletion private var __eventStack:Vector<String> = new Vector<String>();
     
     /** Helper object. */
     private static var sBubbleChains:Array<Vector<EventDispatcher>> = new Array<Vector<EventDispatcher>>();
@@ -150,7 +150,7 @@ class EventDispatcher
      * Invokes an event on the current object. This method does not do any bubbling, nor
      * does it back-up and restore the previous target on the event. The 'dispatchEvent' 
      * method uses this method internally. */
-    @:allow(starling) private function __invokeEvent(event:Event):Bool
+    @:allow(starling) @:noCompletion private function __invokeEvent(event:Event):Bool
     {
         var listeners:Vector<Function> = __eventListeners != null ?
             __eventListeners[event.type] : null;
@@ -204,7 +204,7 @@ class EventDispatcher
     }
     
     /** @private */
-    private function __bubbleEvent(event:Event):Void
+    @:noCompletion private function __bubbleEvent(event:Event):Void
     {
         // we determine the bubble chain before starting to invoke the listeners.
         // that way, changes done by the listeners won't affect the bubble chain.

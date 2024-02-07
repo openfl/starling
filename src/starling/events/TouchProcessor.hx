@@ -57,33 +57,33 @@ import starling.utils.Pool;
  */
 class TouchProcessor
 {
-    private var __stage:Stage;
-    private var __root:DisplayObject;
-    private var __elapsedTime:Float;
-    private var __lastTaps:Vector<Touch>;
-    private var __shiftDown:Bool = false;
-    private var __ctrlDown:Bool  = false;
-    private var __multitapTime:Float = 0.3;
-    private var __multitapDistance:Float = 25;
-    private var __touchEvent:TouchEvent;
-    private var __isProcessing:Bool;
-    private var __cancelRequested:Bool;
+    @:noCompletion private var __stage:Stage;
+    @:noCompletion private var __root:DisplayObject;
+    @:noCompletion private var __elapsedTime:Float;
+    @:noCompletion private var __lastTaps:Vector<Touch>;
+    @:noCompletion private var __shiftDown:Bool = false;
+    @:noCompletion private var __ctrlDown:Bool  = false;
+    @:noCompletion private var __multitapTime:Float = 0.3;
+    @:noCompletion private var __multitapDistance:Float = 25;
+    @:noCompletion private var __touchEvent:TouchEvent;
+    @:noCompletion private var __isProcessing:Bool;
+    @:noCompletion private var __cancelRequested:Bool;
 
-    private var __touchMarker:TouchMarker;
-    private var __simulateMultitouch:Bool;
-    private var __occlusionTest:Float->Float->Bool;
+    @:noCompletion private var __touchMarker:TouchMarker;
+    @:noCompletion private var __simulateMultitouch:Bool;
+    @:noCompletion private var __occlusionTest:Float->Float->Bool;
 
     // system gesture detection
-    private var __discardSystemGestures:Bool;
-    private var __systemGestureTouchID:Int = -1;
-    private var __systemGestureMargins:Array<Float> = [15, 15, 15, 0];
+    @:noCompletion private var __discardSystemGestures:Bool;
+    @:noCompletion private var __systemGestureTouchID:Int = -1;
+    @:noCompletion private var __systemGestureMargins:Array<Float> = [15, 15, 15, 0];
     
     /** A vector of arrays with the arguments that were passed to the "enqueue"
      * method (the oldest being at the end of the vector). */
-    private var __queue:Vector<TouchData>;
+    @:noCompletion private var __queue:Vector<TouchData>;
     
     /** The list of all currently active touches. */
-    private var __currentTouches:Vector<Touch>;
+    @:noCompletion private var __currentTouches:Vector<Touch>;
     
     /** Helper objects. */
     private static var sUpdatedTouches:Vector<Touch> = new Vector<Touch>();

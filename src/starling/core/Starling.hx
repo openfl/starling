@@ -219,35 +219,35 @@ class Starling extends EventDispatcher
     
     // members
     
-    private var __stage:Stage; // starling.display.stage!
-    private var __rootClass:Class<Dynamic>;
-    private var __root:DisplayObject;
-    private var __juggler:Juggler;
-    private var __painter:Painter;
-    private var __touchProcessor:TouchProcessor;
-    private var __antiAliasing:Int;
-    private var __frameTimestamp:Float;
-    private var __frameID:UInt;
-    private var __leftMouseDown:Bool;
-    private var __statsDisplay:StatsDisplay;
-    private var __statsDisplayAlign:openfl.utils.Object;
-    private var __started:Bool;
-    private var __rendering:Bool;
-    private var __supportHighResolutions:Bool;
-    private var __supportBrowserZoom:Bool;
-    private var __skipUnchangedFrames:Bool;
-    private var __showStats:Bool;
-    private var __supportsCursor:Bool;
-    private var __multitouchEnabled:Bool;
+    @:noCompletion private var __stage:Stage; // starling.display.stage!
+    @:noCompletion private var __rootClass:Class<Dynamic>;
+    @:noCompletion private var __root:DisplayObject;
+    @:noCompletion private var __juggler:Juggler;
+    @:noCompletion private var __painter:Painter;
+    @:noCompletion private var __touchProcessor:TouchProcessor;
+    @:noCompletion private var __antiAliasing:Int;
+    @:noCompletion private var __frameTimestamp:Float;
+    @:noCompletion private var __frameID:UInt;
+    @:noCompletion private var __leftMouseDown:Bool;
+    @:noCompletion private var __statsDisplay:StatsDisplay;
+    @:noCompletion private var __statsDisplayAlign:openfl.utils.Object;
+    @:noCompletion private var __started:Bool;
+    @:noCompletion private var __rendering:Bool;
+    @:noCompletion private var __supportHighResolutions:Bool;
+    @:noCompletion private var __supportBrowserZoom:Bool;
+    @:noCompletion private var __skipUnchangedFrames:Bool;
+    @:noCompletion private var __showStats:Bool;
+    @:noCompletion private var __supportsCursor:Bool;
+    @:noCompletion private var __multitouchEnabled:Bool;
     
-    private var __viewPort:Rectangle;
-    private var __previousViewPort:Rectangle;
-    private var __clippedViewPort:Rectangle;
+    @:noCompletion private var __viewPort:Rectangle;
+    @:noCompletion private var __previousViewPort:Rectangle;
+    @:noCompletion private var __clippedViewPort:Rectangle;
 
-    private var __nativeStage:OpenFLStage;
-    private var __nativeStageEmpty:Bool;
-    private var __nativeOverlay:Sprite;
-    private var __nativeOverlayBlocksTouches:Bool;
+    @:noCompletion private var __nativeStage:OpenFLStage;
+    @:noCompletion private var __nativeStageEmpty:Bool;
+    @:noCompletion private var __nativeOverlay:Sprite;
+    @:noCompletion private var __nativeOverlayBlocksTouches:Bool;
 
     private static var sCurrent:Starling;
     private static var sAll:Vector<Starling> = new Vector<Starling>();

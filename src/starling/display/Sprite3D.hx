@@ -67,11 +67,11 @@ class Sprite3D extends DisplayObjectContainer
 {
     private static inline var E:Float = 0.00001;
 
-    private var __rotationX:Float;
-    private var __rotationY:Float;
-    private var __scaleZ:Float;
-    private var __pivotZ:Float;
-    private var __z:Float;
+    @:noCompletion private var __rotationX:Float;
+    @:noCompletion private var __rotationY:Float;
+    @:noCompletion private var __scaleZ:Float;
+    @:noCompletion private var __pivotZ:Float;
+    @:noCompletion private var __z:Float;
 
     /** Helper objects. */
     private static var sHelperPoint:Vector3D    = new Vector3D();
@@ -149,17 +149,17 @@ class Sprite3D extends DisplayObjectContainer
 
     // helpers
 
-    private function __onAddedChild(event:Event):Void
+    @:noCompletion private function __onAddedChild(event:Event):Void
     {
         __recursivelySetIs3D(cast(event.target, DisplayObject), true);
     }
 
-    private function __onRemovedChild(event:Event):Void
+    @:noCompletion private function __onRemovedChild(event:Event):Void
     {
         __recursivelySetIs3D(cast(event.target, DisplayObject), false);
     }
 
-    private function __recursivelySetIs3D(object:DisplayObject, value:Bool):Void
+    @:noCompletion private function __recursivelySetIs3D(object:DisplayObject, value:Bool):Void
     {
         if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, Sprite3D))
             return;
@@ -187,7 +187,7 @@ class Sprite3D extends DisplayObjectContainer
             __rotationX, __rotationY, rotation, out, out3D);
     }
 
-    @:allow(starling) private function __updateTransformationMatrices3D(
+    @:allow(starling) @:noCompletion private function __updateTransformationMatrices3D(
         x:Float, y:Float, z:Float,
         pivotX:Float, pivotY:Float, pivotZ:Float,
         scaleX:Float, scaleY:Float, scaleZ:Float,

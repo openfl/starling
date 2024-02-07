@@ -208,7 +208,7 @@ class RenderTexture extends SubTexture
         __renderBundled(renderBlockFunc, null, null, 1.0, antiAliasing, cameraPos);
     }
     
-    private function __render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
+    @:noCompletion private function __render(object:DisplayObject, matrix:Matrix=null, alpha:Float=1.0):Void
     {
         var painter:Painter = Starling.current.painter;
         var state:RenderState = painter.state;
@@ -238,7 +238,7 @@ class RenderTexture extends SubTexture
         painter.cacheEnabled = wasCacheEnabled;
     }
     
-    private function __renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
+    @:noCompletion private function __renderBundled(renderBlock:DisplayObject->Matrix->Float->Void, object:DisplayObject=null,
                                      matrix:Matrix=null, alpha:Float=1.0,
                                      antiAliasing:Int=0, cameraPos:Vector3D=null):Void
     {

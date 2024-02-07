@@ -30,7 +30,7 @@ import starling.utils.Pool;
  */
 class Polygon
 {
-    private var __coords:Vector<Float>;
+    @:noCompletion private var __coords:Vector<Float>;
 
     // Helper object
     private static var sRestIndices:Vector<UInt> = new Vector<UInt>();

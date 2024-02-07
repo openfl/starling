@@ -1282,7 +1282,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	**/
 	@:op(a.b)
 	@:arrayAccess
-	private function __resolve(childName:String):ChildAccess<DisplayObject>
+	@:noCompletion private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
 		if (this != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
 		{

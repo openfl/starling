@@ -123,39 +123,39 @@ class DisplayObject extends EventDispatcher
 {
     // private members
     
-    private var __x:Float;
-    private var __y:Float;
-    private var __pivotX:Float;
-    private var __pivotY:Float;
-    private var __scaleX:Float;
-    private var __scaleY:Float;
-    private var __skewX:Float;
-    private var __skewY:Float;
-    private var __rotation:Float;
-    private var __alpha:Float;
-    private var __visible:Bool;
-    private var __touchable:Bool;
-    private var __blendMode:String;
-    private var __name:String;
-    private var __useHandCursor:Bool;
-    private var __transformationMatrix:Matrix;
-    private var __transformationMatrix3D:Matrix3D;
-    private var __transformationChanged:Bool;
-    private var __is3D:Bool = false;
-    private var __maskee:DisplayObject;
-    private var __maskInverted:Bool = false;
+    @:noCompletion private var __x:Float;
+    @:noCompletion private var __y:Float;
+    @:noCompletion private var __pivotX:Float;
+    @:noCompletion private var __pivotY:Float;
+    @:noCompletion private var __scaleX:Float;
+    @:noCompletion private var __scaleY:Float;
+    @:noCompletion private var __skewX:Float;
+    @:noCompletion private var __skewY:Float;
+    @:noCompletion private var __rotation:Float;
+    @:noCompletion private var __alpha:Float;
+    @:noCompletion private var __visible:Bool;
+    @:noCompletion private var __touchable:Bool;
+    @:noCompletion private var __blendMode:String;
+    @:noCompletion private var __name:String;
+    @:noCompletion private var __useHandCursor:Bool;
+    @:noCompletion private var __transformationMatrix:Matrix;
+    @:noCompletion private var __transformationMatrix3D:Matrix3D;
+    @:noCompletion private var __transformationChanged:Bool;
+    @:noCompletion private var __is3D:Bool = false;
+    @:noCompletion private var __maskee:DisplayObject;
+    @:noCompletion private var __maskInverted:Bool = false;
 
     // internal members (for fast access on rendering)
 
-    @:allow(starling) private var __parent:DisplayObjectContainer;
-    @:allow(starling) private var __lastParentOrSelfChangeFrameID:UInt;
-    @:allow(starling) private var __lastChildChangeFrameID:UInt;
-    @:allow(starling) private var __tokenFrameID:UInt;
-    @:allow(starling) private var __pushToken:BatchToken = new BatchToken();
-    @:allow(starling) private var __popToken:BatchToken = new BatchToken();
-    @:allow(starling) private var __hasVisibleArea:Bool;
-    @:allow(starling) private var __filter:FragmentFilter;
-    @:allow(starling) private var __mask:DisplayObject;
+    @:allow(starling) @:noCompletion private var __parent:DisplayObjectContainer;
+    @:allow(starling) @:noCompletion private var __lastParentOrSelfChangeFrameID:UInt;
+    @:allow(starling) @:noCompletion private var __lastChildChangeFrameID:UInt;
+    @:allow(starling) @:noCompletion private var __tokenFrameID:UInt;
+    @:allow(starling) @:noCompletion private var __pushToken:BatchToken = new BatchToken();
+    @:allow(starling) @:noCompletion private var __popToken:BatchToken = new BatchToken();
+    @:allow(starling) @:noCompletion private var __hasVisibleArea:Bool;
+    @:allow(starling) @:noCompletion private var __filter:FragmentFilter;
+    @:allow(starling) @:noCompletion private var __mask:DisplayObject;
 
     // helper objects
 
@@ -643,7 +643,7 @@ class DisplayObject extends EventDispatcher
     // internal methods
     
     /** @private */
-    private function __setParent(value:DisplayObjectContainer):Void 
+    @:noCompletion private function __setParent(value:DisplayObjectContainer):Void 
     {
         // check for a recursion
         var ancestor:DisplayObject = value;
@@ -658,7 +658,7 @@ class DisplayObject extends EventDispatcher
     }
 
     /** @private */
-    private function __setIs3D(value:Bool):Void
+    @:noCompletion private function __setIs3D(value:Bool):Void
     {
         __is3D = value;
     }
@@ -729,14 +729,14 @@ class DisplayObject extends EventDispatcher
     // helpers
 
     /** @private */
-    @:allow(starling) private function __setTransformationChanged():Void
+    @:allow(starling) @:noCompletion private function __setTransformationChanged():Void
     {
         __transformationChanged = true;
         setRequiresRedraw();
     }
 
     /** @private */
-    @:allow(starling) private function __updateTransformationMatrices(
+    @:allow(starling) @:noCompletion private function __updateTransformationMatrices(
         x:Float, y:Float, pivotX:Float, pivotY:Float, scaleX:Float, scaleY:Float,
         skewX:Float, skewY:Float, rotation:Float, out:Matrix, out3D:Matrix3D):Void
     {
@@ -861,12 +861,12 @@ class DisplayObject extends EventDispatcher
         super.removeEventListeners(type);
     }
     
-    private function __addEnterFrameListenerToStage(e:Event = null):Void
+    @:noCompletion private function __addEnterFrameListenerToStage(e:Event = null):Void
     {
         Starling.current.stage.addEnterFrameListener(this);
     }
     
-    private function __removeEnterFrameListenerFromStage(e:Event = null):Void
+    @:noCompletion private function __removeEnterFrameListenerFromStage(e:Event = null):Void
     {
         Starling.current.stage.removeEnterFrameListener(this);
     }
@@ -981,7 +981,7 @@ class DisplayObject extends EventDispatcher
         return value;
     }
     
-    private function __onTouch(event:TouchEvent):Void
+    @:noCompletion private function __onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = event.interactsWith(this) ? MouseCursor.BUTTON : MouseCursor.AUTO;
     }
