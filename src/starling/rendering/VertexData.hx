@@ -947,7 +947,7 @@ class VertexData
             buffer.uploadFromByteArray(_rawData, 0, vertexID, numVertices);
     }
 
-    @:final private /*inline*/ function getAttribute(attrName:String):VertexDataAttribute
+    #if haxe4 final #else @:final #end private /*inline*/ function getAttribute(attrName:String):VertexDataAttribute
     {
         var i:Int, attribute:VertexDataAttribute;
 
