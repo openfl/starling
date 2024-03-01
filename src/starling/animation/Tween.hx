@@ -240,7 +240,9 @@ import starling.utils.Color;
         var ratio:Float = __currentTime / __totalTime;
         var reversed:Bool = __reverse && (__currentCycle % 2 == 1);
         var numProperties:Int = __startValues.length;
+
         __progress = reversed ? __transitionFunc(1.0 - ratio) : __transitionFunc(ratio);
+        if (__progress != __progress) __progress = 0; // isNaN check
 
         for (i in 0...numProperties)
         {                
