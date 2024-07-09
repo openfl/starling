@@ -1039,7 +1039,7 @@ class AssetManager extends EventDispatcher
      *  default, it traces 'message' to the console. */
     private function log(message:String):Void
     {
-        if (_verbose) trace("[AssetManager]", message);
+        if (_verbose) trace("[AssetManager] " + message);
     }
 
     private function getDictionaryKeys(dictionary:Map<String, Dynamic>, prefix:String="",

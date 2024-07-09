@@ -70,7 +70,6 @@ class BatchToken
     /** Creates a String representation of this instance. */
     public function toString():String
     {
-        return StringUtil.format("[BatchToken batchID={0} vertexID={1} indexID={2}]",
-            [ batchID, vertexID, indexID ]);
+        return '[BatchToken batchID=$batchID vertexID=$vertexID indexID=$indexID]';
     }
 }

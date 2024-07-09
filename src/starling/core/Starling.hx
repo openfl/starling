@@ -616,7 +616,7 @@ class Starling extends EventDispatcher
         nativeOverlay.addChild(textField);
         stop(true);
 
-        trace("[Starling]", message);
+        trace("[Starling] " + message);
         dispatchEventWith(starling.events.Event.FATAL_ERROR, false, message);
     }
     
