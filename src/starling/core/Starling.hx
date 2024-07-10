@@ -60,146 +60,95 @@ import starling.utils.Pool;
 import starling.utils.RectangleUtil;
 import starling.utils.SystemUtil;
 
-/** Dispatched when a new render context is created. The 'data' property references the context. */
-@:meta(Event(name = "context3DCreate", type = "starling.events.Event"))
-/** Dispatched when the root class has been created. The 'data' property references that object. */
-@:meta(Event(name = "rootCreated", type = "starling.events.Event"))
-/** Dispatched when a fatal error is encountered. The 'data' property contains an error string. */
-@:meta(Event(name = "fatalError", type = "starling.events.Event"))
-/** Dispatched when the display list is about to be rendered. This event provides the last
- *  opportunity to make changes before the display list is rendered. */
-@:meta(Event(name = "render", type = "starling.events.Event"))
-/** The Starling class represents the core of the Starling framework.
- *
- *  <p>The Starling framework makes it possible to create 2D applications and games that make
- *  use of the Stage3D architecture introduced in Flash Player 11. It implements a display tree
- *  system that is very similar to that of conventional Flash, while leveraging modern GPUs
- *  to speed up rendering.</p>
- *  
- *  <p>The Starling class represents the link between the conventional Flash display tree and
- *  the Starling display tree. To create a Starling-powered application, you have to create
- *  an instance of the Starling class:</p>
- *  
- *  <pre>var starling:Starling = new Starling(Game, stage);</pre>
- *  
- *  <p>The first parameter has to be a Starling display object class, e.g. a subclass of 
- *  <code>starling.display.Sprite</code>. In the sample above, the class "Game" is the
- *  application root. An instance of "Game" will be created as soon as Starling is initialized.
- *  The second parameter is the conventional (Flash) stage object. Per default, Starling will
- *  display its contents directly below the stage.</p>
- *  
- *  <p>It is recommended to store the Starling instance as a member variable, to make sure
- *  that the Garbage Collector does not destroy it. After creating the Starling object, you 
- *  have to start it up like this:</p>
+/**
+ * Dispatched when a new render context is created. The 'data' property references the context.
+ * @:meta(Event(name = "context3DCreate", type = "starling.events.Event"))
  * 
- *  <pre>starling.start();</pre>
+ * Dispatched when the root class has been created. The 'data' property references that object.
+ * @:meta(Event(name = "rootCreated", type = "starling.events.Event"))
  * 
- *  <p>It will now render the contents of the "Game" class in the frame rate that is set up for
- *  the application (as defined in the Flash stage).</p> 
+ * Dispatched when a fatal error is encountered. The 'data' property contains an error string.
+ * @:meta(Event(name = "fatalError", type = "starling.events.Event"))
  * 
- *  <strong>Context3D Profiles</strong>
+ * Dispatched when the display list is about to be rendered. This event provides the last
+ * opportunity to make changes before the display list is rendered.
+ * @:meta(Event(name = "render", type = "starling.events.Event"))
  * 
- *  <p>Stage3D supports different rendering profiles, and Starling works with all of them. The
- *  last parameter of the Starling constructor allows you to choose which profile you want.
- *  The following profiles are available:</p>
+ * The Starling class represents the core of the Starling framework.
  * 
- *  <ul>
- *    <li>BASELINE_CONSTRAINED: provides the broadest hardware reach. If you develop for the
- *        browser, this is the profile you should test with.</li>
- *    <li>BASELINE: recommend for any mobile application, as it allows Starling to use a more
- *        memory efficient texture type (RectangleTextures). It also supports more complex
- *        AGAL code.</li>
- *    <li>BASELINE_EXTENDED: adds support for textures up to 4096x4096 pixels. This is
- *        especially useful on mobile devices with very high resolutions.</li>
- *    <li>STANDARD_CONSTRAINED, STANDARD, STANDARD_EXTENDED: each provide more AGAL features,
- *        among other things. Most Starling games will not gain much from them.</li>
- *  </ul>
- *  
- *  <p>The recommendation is to deploy your app with the profile "auto" (which makes Starling
- *  pick the best available of those), but to test it in all available profiles.</p>
- *  
- *  <strong>Accessing the Starling object</strong>
+ * The Starling framework enables the creation of 2D applications and games using the Stage3D
+ * architecture introduced in Flash Player 11. It implements a display tree system similar to
+ * conventional Flash, leveraging GPUs for accelerated rendering.
  * 
- *  <p>From within your application, you can access the current Starling object anytime
- *  through the static method <code>Starling.current</code>. It will return the active Starling
- *  instance (most applications will only have one Starling object, anyway).</p> 
+ * To create a Starling-powered application, instantiate the Starling class:
  * 
- *  <strong>Viewport</strong>
+ * var starling:Starling = new Starling(Game, stage);
  * 
- *  <p>The area the Starling content is rendered into is, per default, the complete size of the 
- *  stage. You can, however, use the "viewPort" property to change it. This can be  useful 
- *  when you want to render only into a part of the screen, or if the player size changes. For
- *  the latter, you can listen to the RESIZE-event dispatched by the Starling
- *  stage.</p>
+ * The first parameter, a subclass of 'starling.display.Sprite', specifies the application root
+ * class. For example, "Game" becomes the root object created upon Starling initialization.
+ * The second parameter is the conventional Flash stage object, where Starling contents are
+ * displayed directly below by default.
  * 
- *  <strong>Native overlay</strong>
- *  
- *  <p>Sometimes you will want to display native Flash content on top of Starling. That's what the
- *  <code>nativeOverlay</code> property is for. It returns a Flash Sprite lying directly
- *  on top of the Starling content. You can add conventional Flash objects to that overlay.</p>
- *  
- *  <p>Beware, though, that conventional Flash content on top of 3D content can lead to
- *  performance penalties on some (mobile) platforms. For that reason, always remove all child
- *  objects from the overlay when you don't need them any longer.</p>
- *  
- *  <strong>Multitouch</strong>
- *  
- *  <p>Starling supports multitouch input on devices that provide it. During development, 
- *  where most of us are working with a conventional mouse and keyboard, Starling can simulate 
- *  multitouch events with the help of the "Shift" and "Ctrl" (Mac: "Cmd") keys. Activate
- *  this feature by enabling the <code>simulateMultitouch</code> property.</p>
- *
- *  <strong>Skipping Unchanged Frames</strong>
- *
- *  <p>It happens surprisingly often in an app or game that a scene stays completely static for
- *  several frames. So why redraw the stage at all in those situations? That's exactly the
- *  point of the <code>skipUnchangedFrames</code>-property. If enabled, static scenes are
- *  recognized as such and the back buffer is simply left as it is. On a mobile device, the
- *  impact of this feature can't be overestimated! There's simply no better way to enhance
- *  battery life. Make it a habit to always activate it; look at the documentation of the
- *  corresponding property for details.</p>
- *  
- *  <strong>Handling a lost render context</strong>
- *  
- *  <p>On some operating systems and under certain conditions (e.g. returning from system
- *  sleep), Starling's stage3D render context may be lost. Starling will try to recover
- *  from a lost context automatically; to be able to do this, it will cache textures in
- *  RAM. This will take up quite a bit of extra memory, though, which might be problematic
- *  especially on mobile platforms. To avoid the higher memory footprint, it's recommended
- *  to load your textures with Starling's "AssetManager"; it is smart enough to recreate a
- *  texture directly from its origin.</p>
- *
- *  <p>In case you want to react to a context loss manually, Starling dispatches an event with
- *  the type "Event.CONTEXT3D_CREATE" when the context is restored, and textures will execute
- *  their <code>root.onRestore</code> callback, to which you can attach your own logic.
- *  Refer to the "Texture" class for more information.</p>
- *
- *  <strong>Sharing a 3D Context</strong>
+ * It's recommended to store the Starling instance as a member variable to prevent garbage
+ * collection. Start Starling after creation:
  * 
- *  <p>Per default, Starling handles the Stage3D context itself. If you want to combine
- *  Starling with another Stage3D engine, however, this may not be what you want. In this case,
- *  you can make use of the <code>shareContext</code> property:</p> 
- *  
- *  <ol>
- *    <li>Manually create and configure a context3D object that both frameworks can work with
- *        (ideally through <code>RenderUtil.requestContext3D</code> and
- *        <code>context.configureBackBuffer</code>).</li>
- *    <li>Initialize Starling with the stage3D instance that contains that configured context.
- *        This will automatically enable <code>shareContext</code>.</li>
- *    <li>Call <code>start()</code> on your Starling instance (as usual). This will make  
- *        Starling queue input events (keyboard/mouse/touch).</li>
- *    <li>Create a game loop (e.g. using the native <code>ENTER_FRAME</code> event) and let it  
- *        call Starling's <code>nextFrame</code> as well as the equivalent method of the other 
- *        Stage3D engine. Surround those calls with <code>context.clear()</code> and 
- *        <code>context.present()</code>.</li>
- *  </ol>
- *  
- *  <p>The Starling wiki contains a <a href="http://goo.gl/BsXzw">tutorial</a> with more 
- *  information about this topic.</p>
- *
- *  @see starling.utils.AssetManager
- *  @see starling.textures.Texture
- *
+ * starling.start();
+ * 
+ * Starling renders at the application's defined frame rate, as set in the Flash stage.
+ * 
+ * Context3D Profiles:
+ * 
+ * Stage3D supports various rendering profiles, all compatible with Starling:
+ * - BASELINE_CONSTRAINED: Broadest hardware compatibility for browser deployment.
+ * - BASELINE: Recommended for mobile apps, with efficient RectangleTextures and AGAL support.
+ * - BASELINE_EXTENDED: Adds support for larger textures (up to 4096x4096).
+ * - STANDARD_CONSTRAINED, STANDARD, STANDARD_EXTENDED: Offer additional AGAL features.
+ * 
+ * Use "auto" for Starling to select the best available profile automatically, but test with all
+ * profiles during development.
+ * 
+ * Accessing the Starling Object:
+ * 
+ * Use the static method Starling.current() within your application to access the active
+ * Starling instance.
+ * 
+ * Viewport:
+ * 
+ * By default, Starling renders to the entire stage size. Use the "viewPort" property to render
+ * to a specific area or adapt to stage size changes. Listen for the RESIZE event dispatched by
+ * the Starling stage for the latter.
+ * 
+ * Native Overlay:
+ * 
+ * The nativeOverlay property provides a Flash Sprite overlaying Starling content. Add Flash
+ * objects to this overlay as needed. Remove child objects from the overlay to avoid performance
+ * penalties, especially on mobile platforms.
+ * 
+ * Multitouch:
+ * 
+ * Starling supports multitouch input where available. Simulate multitouch during development
+ * with Shift/Ctrl (Cmd on Mac). Enable this with simulateMultitouch property.
+ * 
+ * Skipping Unchanged Frames:
+ * 
+ * Enable skipUnchangedFrames to skip rendering static scenes, conserving battery on mobile
+ * devices. Refer to property documentation for details.
+ * 
+ * Handling Lost Render Context:
+ * 
+ * Starling attempts automatic recovery from lost Stage3D contexts. Manage context loss manually
+ * using Event.CONTEXT3D_CREATE and Texture.onRestore for custom logic. Utilize AssetManager for
+ * optimized texture loading.
+ * 
+ * Sharing a 3D Context:
+ * 
+ * Starling manages Stage3D context by default. For integration with other Stage3D engines, use
+ * shareContext to synchronize contexts and input handling.
+ * 
+ * For more information, refer to the Starling wiki tutorial on context sharing.
+ * 
+ * @see starling.utils.AssetManager
+ * @see starling.textures.Texture
  */
 @:access(starling.display.Stage)
 class Starling extends EventDispatcher {
@@ -324,29 +273,31 @@ class Starling extends EventDispatcher {
 
 	// construction
 
-	/** Creates a new Starling instance. 
-	 * @param rootClass  A subclass of 'starling.display.DisplayObject'. It will be created
-	 *                   as soon as initialization is finished and will become the first child
-	 *                   of the Starling stage. Pass <code>null</code> if you don't want to
-	 *                   create a root object right away. (You can use the
-	 *                   <code>rootClass</code> property later to make that happen.)
-	 * @param stage      The Flash (2D) stage.
-	 * @param viewPort   A rectangle describing the area into which the content will be 
-	 *                   rendered. Default: stage size
-	 * @param stage3D    The Stage3D object into which the content will be rendered. If it 
-	 *                   already contains a context, <code>sharedContext</code> will be set
-	 *                   to <code>true</code>. Default: the first available Stage3D.
-	 * @param renderMode The Context3D render mode that should be requested.
-	 *                   Use this parameter if you want to force "software" rendering.
-	 * @param profile    The Context3D profile that should be requested.
-	 *
-	 *                   <ul>
-	 *                   <li>If you pass a profile String, this profile is enforced.</li>
-	 *                   <li>Pass an Array of profiles to make Starling pick the first
-	 *                       one that works (starting with the first array element).</li>
-	 *                   <li>Pass the String "auto" to make Starling pick the best available
-	 *                       profile automatically.</li>
-	 *                   </ul>
+	/**
+	 * Creates a new Starling instance.
+	 * 
+	 * @param rootClass   A subclass of 'starling.display.DisplayObject'. It will be created
+	 *                    as soon as initialization is finished and will become the first child
+	 *                    of the Starling stage. Pass <code>null</code> if you don't want to
+	 *                    create a root object right away. (You can use the
+	 *                    <code>rootClass</code> property later to make that happen.)
+	 * @param stage       The Flash (2D) stage.
+	 * @param viewPort    A rectangle describing the area into which the content will be 
+	 *                    rendered. Default: stage size.
+	 * @param stage3D     The Stage3D object into which the content will be rendered. If it 
+	 *                    already contains a context, <code>sharedContext</code> will be set
+	 *                    to <code>true</code>. Default: the first available Stage3D.
+	 * @param renderMode  The Context3D render mode that should be requested.
+	 *                    Use this parameter if you want to force "software" rendering.
+	 * @param profile     The Context3D profile that should be requested.
+	 *                    <ul>
+	 *                    <li>If you pass a profile String, this profile is enforced.</li>
+	 *                    <li>Pass an Array of profiles to make Starling pick the first
+	 *                        one that works (starting with the first array element).</li>
+	 *                    <li>Pass the String "auto" to make Starling pick the best available
+	 *                        profile automatically.</li>
+	 *                    </ul>
+	 * @param sharedContext Whether the Stage3D context is shared or not. Default: <code>null</code>.
 	 */
 	public function new(rootClass:Class<Dynamic>, stage:openfl.display.Stage, viewPort:Rectangle = null, stage3D:Stage3D = null,
 			renderMode:Context3DRenderMode = AUTO, profile:Dynamic = "auto", sharedContext:Null<Bool> = null) {
@@ -416,8 +367,14 @@ class Starling extends EventDispatcher {
 		}
 	}
 
-	/** Disposes all children of the stage and the render context; removes all registered
-	 * event listeners. */
+	/**
+	 * Disposes of all resources used by the stage, including children, render context,
+	 * and event listeners.
+	 * Stops ongoing animations and removes event listeners for frame updates, keyboard,
+	 * resize, mouse, and touch events.
+	 * Also handles specific AIR platform events if applicable.
+	 * Finally, cleans up touch processing, rendering, and stage resources.
+	 */
 	public function dispose():Void {
 		stop(true);
 
@@ -476,8 +433,12 @@ class Starling extends EventDispatcher {
 		}
 	}
 
-	/** Calls <code>advanceTime()</code> (with the time that has passed since the last frame)
-	 * and <code>render()</code>. */
+	/**
+	 * Advances the game or animation by one frame.
+	 * Calculates the time passed since the last frame using Lib.getTimer(),
+	 * limits the maximum delta to prevent time-based animation issues,
+	 * and updates the game logic and renders the frame.
+	 */
 	public function nextFrame():Void {
 		var now:Float = Lib.getTimer() / 1000.0;
 		var passedTime:Float = now - __frameTimestamp;
@@ -495,8 +456,12 @@ class Starling extends EventDispatcher {
 		render();
 	}
 
-	/** Dispatches ENTER_FRAME events on the display list, advances the Juggler 
-	 * and processes touches. */
+	/**
+	 * Dispatches ENTER_FRAME events on the display list, advances the Juggler, 
+	 * and processes touches.
+	 * 
+	 * @param passedTime The time that has passed since the last frame, in seconds.
+	 */
 	public function advanceTime(passedTime:Float):Void {
 		if (!contextValid)
 			return;
@@ -508,12 +473,14 @@ class Starling extends EventDispatcher {
 		__juggler.advanceTime(passedTime);
 	}
 
-	/** Renders the complete display list. Before rendering, the context is cleared; afterwards,
+	/**
+	 * Renders the complete display list. Before rendering, the context is cleared; afterwards,
 	 * it is presented (to avoid this, enable <code>shareContext</code>).
 	 *
-	 * <p>This method also dispatches an <code>Event.RENDER</code>-event on the Starling
+	 * <p>This method also dispatches an <code>Event.RENDER</code> event on the Starling
 	 * instance. That's the last opportunity to make changes before the display list is
-	 * rendered.</p> */
+	 * rendered.</p>
+	 */
 	public function render():Void {
 		if (!contextValid)
 			return;
@@ -598,8 +565,12 @@ class Starling extends EventDispatcher {
 		__nativeOverlay.scaleY = __viewPort.height / __stage.stageHeight;
 	}
 
-	/** Stops Starling right away and displays an error message on the native overlay.
-	 * This method will also cause Starling to dispatch a FATAL_ERROR event. */
+	/**
+	 * Stops Starling right away and displays an error message on the native overlay.
+	 * This method will also cause Starling to dispatch a FATAL_ERROR event.
+	 * 
+	 * @param message The error message to display.
+	 */
 	public function stopWithFatalError(message:String):Void {
 		var background:Shape = new Shape();
 		background.graphics.beginFill(0x0, 0.8);
@@ -628,40 +599,47 @@ class Starling extends EventDispatcher {
 		dispatchEventWith(starling.events.Event.FATAL_ERROR, false, message);
 	}
 
-	/** Make this Starling instance the <code>current</code> one. */
+	/**
+	 * Makes this Starling instance the <code>current</code> one.
+	 */
 	public function makeCurrent():Void {
 		sCurrent = this;
 	}
 
-	/** As soon as Starling is started, it will queue input events (keyboard/mouse/touch);   
+	/**
+	 * As soon as Starling is started, it will queue input events (keyboard/mouse/touch);
 	 * furthermore, the method <code>nextFrame</code> will be called once per Flash Player
 	 * frame. (Except when <code>shareContext</code> is enabled: in that case, you have to
-	 * call that method manually.) */
+	 * call that method manually.)
+	 */
 	public function start():Void {
 		__started = __rendering = true;
 		__frameTimestamp = Lib.getTimer() / 1000.0;
 	}
 
-	/** Stops all logic and input processing, effectively freezing the app in its current state.
+	/**
+	 * Stops all logic and input processing, effectively freezing the app in its current state.
 	 * Per default, rendering will continue: that's because the classic display list
-	 * is only updated when stage3D is. (If Starling stopped rendering, conventional Flash
+	 * is only updated when Stage3D is. (If Starling stopped rendering, conventional Flash
 	 * contents would freeze, as well.)
 	 * 
 	 * <p>However, if you don't need classic Flash contents, you can stop rendering, too.
-	 * On some mobile systems (e.g. iOS), you are even required to do so if you have
+	 * On some mobile systems (e.g., iOS), you are even required to do so if you have
 	 * activated background code execution.</p>
+	 * 
+	 * @param suspendRendering If true, rendering will also be stopped. Default is false.
 	 */
 	public function stop(suspendRendering:Bool = false):Void {
 		__started = false;
 		__rendering = !suspendRendering;
 	}
 
-	/** Makes sure that the next frame is actually rendered.
+	/**
+	 * Makes sure that the next frame is actually rendered.
 	 *
-	 *  <p>When <code>skipUnchangedFrames</code> is enabled, some situations require that you
-	 *  manually force a redraw, e.g. when a RenderTexture is changed. This method is the
-	 *  easiest way to do so; it's just a shortcut to <code>stage.setRequiresRedraw()</code>.
-	 *  </p>
+	 * <p>When <code>skipUnchangedFrames</code> is enabled, some situations require that you
+	 * manually force a redraw, e.g., when a RenderTexture is changed. This method is the
+	 * easiest way to do so; it's just a shortcut to <code>stage.setRequiresRedraw()</code>.</p>
 	 */
 	public function setRequiresRedraw():Void {
 		__stage.setRequiresRedraw();
@@ -899,71 +877,103 @@ class Starling extends EventDispatcher {
 
 	// properties
 
-	/** Indicates if this Starling instance is started. */
+	/**
+	 * Indicates if this Starling instance is started.
+	 * 
+	 * @return A boolean value indicating whether the Starling instance is started.
+	 */
 	public var isStarted(get, never):Bool;
 
-	private function get_isStarted():Bool {
+	private inline function get_isStarted():Bool {
 		return __started;
 	}
 
-	/** The default juggler of this instance. Will be advanced once per frame. */
+	/**
+	 * The default juggler of this instance. Will be advanced once per frame.
+	 * 
+	 * @return The default Juggler instance.
+	 */
 	public var juggler(get, never):Juggler;
 
-	private function get_juggler():Juggler {
+	private inline function get_juggler():Juggler {
 		return __juggler;
 	}
 
-	/** The painter, which is used for all rendering. The same instance is passed to all
-	 *  <code>render</code>methods each frame. */
+	/**
+	 * The painter, which is used for all rendering. The same instance is passed to all
+	 * <code>render</code> methods each frame.
+	 * 
+	 * @return The Painter instance used for all rendering.
+	 */
 	public var painter(get, never):Painter;
 
-	private function get_painter():Painter {
+	private inline function get_painter():Painter {
 		return __painter;
 	}
 
-	/** The render context of this instance. */
+	/**
+	 * The render context of this instance.
+	 * 
+	 * @return The Context3D object representing the render context of this instance.
+	 */
 	public var context(get, never):Context3D;
 
-	private function get_context():Context3D {
+	private inline function get_context():Context3D {
 		return __painter.context;
 	}
 
-	/** Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd"-keys is enabled.
-	 *  @default false */
+	/**
+	 * Indicates if multitouch simulation with "Shift" and "Ctrl"/"Cmd" keys is enabled.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether multitouch simulation is enabled.
+	 */
 	public var simulateMultitouch(get, set):Bool;
 
-	private function get_simulateMultitouch():Bool {
+	private inline function get_simulateMultitouch():Bool {
 		return __touchProcessor.simulateMultitouch;
 	}
 
-	private function set_simulateMultitouch(value:Bool):Bool {
+	private inline function set_simulateMultitouch(value:Bool):Bool {
 		return __touchProcessor.simulateMultitouch = value;
 	}
 
-	/** Indicates if Stage3D render methods will report errors. It's recommended to activate
+	/**
+	 * Indicates if Stage3D render methods will report errors. It's recommended to activate
 	 * this when writing custom rendering code (shaders, etc.), since you'll get more detailed
 	 * error messages. However, it has a very negative impact on performance, and it prevents
 	 * ATF textures from being restored on a context loss. Never activate for release builds!
-	 *
-	 * @default false */
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether error checking is enabled for Stage3D render methods.
+	 */
 	public var enableErrorChecking(get, set):Bool;
 
-	private function get_enableErrorChecking():Bool {
+	private inline function get_enableErrorChecking():Bool {
 		return __painter.enableErrorChecking;
 	}
 
-	private function set_enableErrorChecking(value:Bool):Bool {
+	private inline function set_enableErrorChecking(value:Bool):Bool {
 		return __painter.enableErrorChecking = value;
 	}
 
-	/** The antialiasing level. 0 - no antialasing, 16 - maximum antialiasing. @default 0 */
+	/**
+	 * The antialiasing level. 0 - no antialiasing, 16 - maximum antialiasing.
+	 * 
+	 * @default 0
+	 * 
+	 * @return An integer representing the antialiasing level.
+	 * @param value The antialiasing level to set, ranging from 0 (no antialiasing) to 16 (maximum antialiasing).
+	 */
 	public var antiAliasing(get, set):Int;
 
-	private function get_antiAliasing():Int {
+	private inline function get_antiAliasing():Int {
 		return __antiAliasing;
 	}
 
-	private function set_antiAliasing(value:Int):Int {
+	private inline function set_antiAliasing(value:Int):Int {
 		if (__antiAliasing != value) {
 			__antiAliasing = value;
 			if (contextValid)
@@ -972,36 +982,55 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** The viewport into which Starling contents will be rendered. */
+	/**
+	 * The viewport into which Starling contents will be rendered.
+	 * 
+	 * @return A Rectangle object representing the viewport.
+	 * @param value The Rectangle to set as the viewport.
+	 */
 	public var viewPort(get, set):Rectangle;
 
 	private function get_viewPort():Rectangle {
 		return __viewPort;
 	}
 
-	private function set_viewPort(value:Rectangle):Rectangle {
+	private inline function set_viewPort(value:Rectangle):Rectangle {
 		__viewPort.copyFrom(value);
 		return value;
 	}
 
-	/** The ratio between viewPort width and stage width. Useful for choosing a different
-	 * set of textures depending on the display resolution. */
+	/**
+	 * The ratio between viewPort width and stage width. Useful for choosing a different
+	 * set of textures depending on the display resolution.
+	 * 
+	 * @return A float value representing the ratio between the viewPort width and the stage width.
+	 */
 	public var contentScaleFactor(get, never):Float;
 
-	private function get_contentScaleFactor():Float {
+	private inline function get_contentScaleFactor():Float {
 		return (__viewPort.width * __painter.backBufferScaleFactor) / __stage.stageWidth;
 	}
 
-	/** A Flash Sprite placed directly on top of the Starling content. Use it to display native
-	 * Flash components. */
+	/**
+	 * A Flash Sprite placed directly on top of the Starling content. Use it to display native
+	 * Flash components.
+	 * 
+	 * @return The Flash Sprite used as a native overlay.
+	 */
 	public var nativeOverlay(get, never):Sprite;
 
 	private inline function get_nativeOverlay():Sprite {
 		return __nativeOverlay;
 	}
 
-	/** If enabled, touches or mouse events on the native overlay won't be propagated to
-	 *  Starling. @default false */
+	/**
+	 * If enabled, touches or mouse events on the native overlay won't be propagated to
+	 * Starling.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether touches or mouse events on the native overlay are blocked from propagating to Starling.
+	 */
 	public var nativeOverlayBlocksTouches(get, set):Bool;
 
 	private inline function get_nativeOverlayBlocksTouches():Bool {
@@ -1014,13 +1043,16 @@ class Starling extends EventDispatcher {
 		return __nativeOverlayBlocksTouches = value;
 	}
 
-	/** Indicates if a small statistics box (with FPS, memory usage and draw count) is
+	/**
+	 * Indicates if a small statistics box (with FPS, memory usage, and draw count) is
 	 * displayed.
 	 *
 	 * <p>Beware that the memory usage should be taken with a grain of salt. The value is
 	 * determined via <code>System.totalMemory</code> and does not take texture memory
 	 * into account. It is recommended to use Adobe Scout for reliable and comprehensive
 	 * memory analysis.</p>
+	 * 
+	 * @return A boolean value indicating whether the statistics box is displayed.
 	 */
 	public var showStats(get, set):Bool;
 
@@ -1042,7 +1074,13 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** Displays the statistics box at a certain position. */
+	/**
+	 * Displays the statistics box at a certain position.
+	 * 
+	 * @param horizontalAlign The horizontal alignment of the statistics box. Default is "left".
+	 * @param verticalAlign The vertical alignment of the statistics box. Default is "top".
+	 * @param scale The scale factor of the statistics box. Default is 1.
+	 */
 	public function showStatsAt(horizontalAlign:String = "left", verticalAlign:String = "top", scale:Float = 1):Void {
 		function onRootCreated():Void {
 			if (__showStats)
@@ -1107,21 +1145,34 @@ class Starling extends EventDispatcher {
 		Pool.putRectangle(clipping);
 	}
 
-	/** The Starling stage object, which is the root of the display tree that is rendered. */
+	/**
+	 * The Starling stage object, which is the root of the display tree that is rendered.
+	 * 
+	 * @return The Starling stage object.
+	 */
 	public var stage(get, never):Stage;
 
 	private inline function get_stage():Stage {
 		return __stage;
 	}
 
-	/** The Flash Stage3D object Starling renders into. */
+	/**
+	 * The Flash Stage3D object Starling renders into.
+	 * 
+	 * @return The Stage3D object used by Starling for rendering.
+	 */
 	public var stage3D(get, never):Stage3D;
 
 	private inline function get_stage3D():Stage3D {
 		return __painter.stage3D;
 	}
 
-	/** The Flash (2D) stage object Starling renders beneath. */
+	/**
+	 * The instance of the root class provided in the constructor. Available as soon as 
+	 * the event 'ROOT_CREATED' has been dispatched.
+	 * 
+	 * @return The instance of the root class.
+	 */
 	public var nativeStage(get, never):OpenFLStage;
 
 	private inline function get_nativeStage():OpenFLStage {
@@ -1136,15 +1187,19 @@ class Starling extends EventDispatcher {
 		return __root;
 	}
 
-	/** The class that will be instantiated by Starling as the 'root' display object.
+	/**
+	 * The class that will be instantiated by Starling as the 'root' display object.
 	 * Must be a subclass of 'starling.display.DisplayObject'.
 	 *
-	 * <p>If you passed <code>null</code> as first parameter to the Starling constructor,
+	 * <p>If you passed <code>null</code> as the first parameter to the Starling constructor,
 	 * you can use this property to set the root class at a later time. As soon as the class
 	 * is instantiated, Starling will dispatch a <code>ROOT_CREATED</code> event.</p>
 	 *
 	 * <p>Beware: you cannot change the root class once the root object has been
 	 * instantiated.</p>
+	 * 
+	 * @return The class that will be instantiated as the 'root' display object.
+	 * @param value The class to be set as the 'root' display object.
 	 */
 	public var rootClass(get, set):Class<Dynamic>;
 
@@ -1163,10 +1218,16 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** Indicates if another Starling instance (or another Stage3D framework altogether)
+	/**
+	 * Indicates if another Starling instance (or another Stage3D framework altogether)
 	 * uses the same render context. If enabled, Starling will not execute any destructive
-	 * context operations (e.g. not call 'configureBackBuffer', 'clear', 'present', etc.
-	 * This has to be done manually, then. @default false */
+	 * context operations (e.g., not call 'configureBackBuffer', 'clear', 'present', etc.).
+	 * This has to be done manually, then.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether the render context is shared with another Starling instance or Stage3D framework.
+	 */
 	public var shareContext(get, set):Bool;
 
 	private inline function get_shareContext():Bool {
@@ -1179,18 +1240,28 @@ class Starling extends EventDispatcher {
 		return __painter.shareContext = value;
 	}
 
-	/** The Context3D profile of the current render context, or <code>null</code>
-	 * if the context has not been created yet. */
+	/**
+	 * The Context3D profile of the current render context, or <code>null</code>
+	 * if the context has not been created yet.
+	 * 
+	 * @return The Context3D profile of the current render context, or <code>null</code> if the context is not created.
+	 */
 	public var profile(get, never):Context3DProfile;
 
 	private inline function get_profile():Context3DProfile {
 		return __painter.profile;
 	}
 
-	/** Indicates that if the device supports HiDPI screens Starling will attempt to allocate
+	/**
+	 * Indicates that if the device supports HiDPI screens, Starling will attempt to allocate
 	 * a larger back buffer than indicated via the viewPort size. Note that this is used
 	 * on Desktop only; mobile AIR apps still use the "requestedDisplayResolution" parameter
-	 * the application descriptor XML. @default false */
+	 * in the application descriptor XML.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether Starling attempts to allocate a larger back buffer for HiDPI screens.
+	 */
 	public var supportHighResolutions(get, set):Bool;
 
 	private inline function get_supportHighResolutions():Bool {
@@ -1206,10 +1277,15 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** If enabled, the Stage3D back buffer will change its size according to the browser zoom
-	 *  value - similar to what's done when "supportHighResolutions" is enabled. The resolution
-	 *  is updated on the fly when the zoom factor changes. Only relevant for the browser plugin.
-	 *  @default false */
+	/**
+	 * If enabled, the Stage3D back buffer will change its size according to the browser zoom
+	 * value - similar to what's done when "supportHighResolutions" is enabled. The resolution
+	 * is updated on the fly when the zoom factor changes. Only relevant for the browser plugin.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether the Stage3D back buffer size adjusts according to the browser zoom value.
+	 */
 	public var supportBrowserZoom(get, set):Bool;
 
 	private inline function get_supportBrowserZoom():Bool {
@@ -1232,16 +1308,19 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** When enabled, Starling will skip rendering the stage if it hasn't changed since the
-	 *  last frame. This is great for apps that remain static from time to time, since it will
-	 *  greatly reduce power consumption. You should activate this whenever possible!
+	/**
+	 * When enabled, Starling will skip rendering the stage if it hasn't changed since the
+	 * last frame. This is great for apps that remain static from time to time, since it will
+	 * greatly reduce power consumption. You should activate this whenever possible!
 	 *
-	 *  <p>The reason why it's disabled by default is just that it causes problems with Render-
-	 *  and VideoTextures. When you use those, you either have to disable this property
-	 *  temporarily, or call <code>setRequiresRedraw()</code> (ideally on the stage) whenever
-	 *  those textures are changing. Otherwise, the changes won't show up.</p>
+	 * <p>The reason why it's disabled by default is that it causes problems with Render-
+	 * and VideoTextures. When you use those, you either have to disable this property
+	 * temporarily or call <code>setRequiresRedraw()</code> (ideally on the stage) whenever
+	 * those textures are changing. Otherwise, the changes won't show up.</p>
 	 *
-	 *  @default false
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether rendering is skipped for unchanged frames.
 	 */
 	public var skipUnchangedFrames(get, set):Bool;
 
@@ -1257,9 +1336,13 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** The TouchProcessor is passed all mouse and touch input and is responsible for
+	/**
+	 * The TouchProcessor is passed all mouse and touch input and is responsible for
 	 * dispatching TouchEvents to the Starling display tree. If you want to handle these
-	 * types of input manually, pass your own custom subclass to this property. */
+	 * types of input manually, pass your own custom subclass to this property.
+	 * 
+	 * @return The current TouchProcessor instance.
+	 */
 	public var touchProcessor(get, set):TouchProcessor;
 
 	private inline function get_touchProcessor():TouchProcessor {
@@ -1276,11 +1359,16 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** When enabled, all touches that start very close to the screen edges are discarded.
-	 *  On mobile, such touches often indicate swipes that are meant to use OS features.
-	 *  Per default, margins of 15 points at the top, bottom, and left side of the screen are
-	 *  checked. Call <code>starling.touchProcessor.setSystemGestureMargins()</code> to adapt
-	 *  the margins in each direction. @default true on mobile, false on desktop
+	/**
+	 * When enabled, all touches that start very close to the screen edges are discarded.
+	 * On mobile, such touches often indicate swipes that are meant to use OS features.
+	 * By default, margins of 15 points at the top, bottom, and left side of the screen are
+	 * checked. Call <code>starling.touchProcessor.setSystemGestureMargins()</code> to adapt
+	 * the margins in each direction.
+	 * 
+	 * @default true on mobile, false on desktop
+	 * 
+	 * @return A boolean value indicating whether touches near the screen edges are discarded.
 	 */
 	public var discardSystemGestures(get, set):Bool;
 
@@ -1293,15 +1381,22 @@ class Starling extends EventDispatcher {
 		return value;
 	}
 
-	/** The number of frames that have been rendered since this instance was created. */
+	/**
+	 * The number of frames that have been rendered since this instance was created.
+	 * 
+	 * @return An unsigned integer representing the number of frames rendered since the creation of this instance.
+	 */
 	public var frameID(get, never):UInt;
 
 	private inline function get_frameID():UInt {
 		return __frameID;
 	}
 
-	/** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
-	 * disposed). */
+	/**
+	 * Indicates if the Context3D object is currently valid (i.e., it hasn't been lost or disposed).
+	 * 
+	 * @return A boolean value indicating whether the Context3D object is currently valid.
+	 */
 	public var contextValid(get, never):Bool;
 
 	private inline function get_contextValid():Bool {
@@ -1310,43 +1405,70 @@ class Starling extends EventDispatcher {
 
 	// static properties
 
-	/** The currently active Starling instance. */
+	/**
+	 * The currently active Starling instance.
+	 * 
+	 * @return The currently active Starling instance.
+	 */
 	public static var current(get, never):Starling;
 
 	private static inline function get_current():Starling {
 		return sCurrent;
 	}
 
-	/** All Starling instances. <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
+	/**
+	 * All Starling instances.
+	 * 
+	 * <p>CAUTION: This is not a copy, but the actual object! Do not modify!</p>
+	 * 
+	 * @return An array of all Starling instances.
+	 */
 	public static var all(get, never):Array<Starling>;
 
 	private static inline function get_all():Array<Starling> {
 		return sAll;
 	}
 
-	/** The render context of the currently active Starling instance. */
+	/**
+	 * The render context of the currently active Starling instance.
+	 * 
+	 * @return The current Context3D instance.
+	 */
 	public static var currentContext(get, never):Context3D;
 
 	private static inline function get_currentContext():Context3D {
 		return sCurrent != null ? sCurrent.context : null;
 	}
 
-	/** The default juggler of the currently active Starling instance. */
+	/**
+	 * The default juggler of the currently active Starling instance.
+	 * 
+	 * @return The default Juggler instance.
+	 */
 	public static var currentJuggler(get, never):Juggler;
 
 	private static inline function get_currentJuggler():Juggler {
 		return sCurrent != null ? sCurrent.__juggler : null;
 	}
 
-	/** The contentScaleFactor of the currently active Starling instance. */
+	/**
+	 * The contentScaleFactor of the currently active Starling instance.
+	 * 
+	 * @return A float value representing the content scale factor.
+	 */
 	public static var currentContentScaleFactor(get, never):Float;
 
 	private static inline function get_currentContentScaleFactor():Float {
 		return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
 	}
 
-	/** Indicates if multitouch input should be supported. You can enable or disable
-	 *  multitouch at any time; just beware that any current touches will be cancelled. */
+	/**
+	 * Indicates if multitouch input should be supported. You can enable or disable
+	 * multitouch at any time; just beware that any current touches will be cancelled.
+	 * 
+	 * @return A boolean value indicating whether multitouch input is enabled.
+	 * @default false
+	 */
 	public static var multitouchEnabled(get, set):Bool;
 
 	private static inline function get_multitouchEnabled():Bool {
