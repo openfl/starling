@@ -16,7 +16,6 @@ import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.media.Sound;
 import openfl.media.SoundTransform;
-import openfl.Vector;
 
 import starling.animation.IAnimatable;
 import starling.events.Event;
@@ -27,7 +26,7 @@ import starling.textures.Texture;
 
 /** A MovieClip is a simple way to display an animation depicted by a list of textures.
  *  
- *  <p>Pass the frames of the movie in a vector of textures to the constructor. The movie clip 
+ *  <p>Pass the frames of the movie in a Array of textures to the constructor. The movie clip 
  *  will have the width and height of the first frame. If you group your frames with the help 
  *  of a texture atlas (which is recommended), use the <code>getTextures</code>-method of the 
  *  atlas to receive the textures in the correct (alphabetic) order.</p> 
@@ -48,7 +47,7 @@ import starling.textures.Texture;
  */    
 class MovieClip extends Image implements IAnimatable
 {
-    @:noCompletion private var __frames:Vector<MovieClipFrame>;
+    @:noCompletion private var __frames:Array<MovieClipFrame>;
     @:noCompletion private var __defaultFrameDuration:Float;
     @:noCompletion private var __currentTime:Float;
     @:noCompletion private var __currentFrameID:Int;
@@ -79,7 +78,7 @@ class MovieClip extends Image implements IAnimatable
     
     /** Creates a movie clip from the provided textures and with the specified default framerate.
      * The movie will have the size of the first frame. */  
-    public function new(textures:Vector<Texture>, fps:Float=12)
+    public function new(textures:Array<Texture>, fps:Float=12)
     {
         if (textures.length > 0)
         {
@@ -92,7 +91,7 @@ class MovieClip extends Image implements IAnimatable
         }
     }
     
-    private function init(textures:Vector<Texture>, fps:Float):Void
+    private function init(textures:Array<Texture>, fps:Float):Void
     {
         if (fps <= 0) throw new ArgumentError("Invalid fps: " + fps);
         var numFrames:Int = textures.length;
@@ -103,7 +102,7 @@ class MovieClip extends Image implements IAnimatable
         __currentTime = 0.0;
         __currentFrameID = 0;
         __wasStopped = true;
-        __frames = new Vector<MovieClipFrame>();
+        __frames = new Array<MovieClipFrame>();
         
         for (i in 0...numFrames)
             __frames[i] = new MovieClipFrame(
@@ -128,7 +127,7 @@ class MovieClip extends Image implements IAnimatable
 
         var frame:MovieClipFrame = new MovieClipFrame(texture, duration);
         frame.sound = sound;
-        __frames.insertAt(frameID, frame);
+        __frames.insert(frameID, frame);
 
         if (frameID == numFrames)
         {
@@ -146,7 +145,7 @@ class MovieClip extends Image implements IAnimatable
         if (frameID < 0 || frameID >= numFrames) throw new ArgumentError("Invalid frame id");
         if (numFrames == 1) throw new IllegalOperationError("Movie clip must not be empty");
 
-        __frames.removeAt(frameID);
+        __frames.splice(frameID, 1);
 
         if (frameID != numFrames)
             updateStartTimes();
