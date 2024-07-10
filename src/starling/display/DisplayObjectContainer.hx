@@ -209,7 +209,7 @@ class DisplayObjectContainer extends DisplayObject {
 
 		// If the child is on the stage, dispatch the REMOVED_FROM_STAGE event
 		if (stage != null) {
-			var container:DisplayObjectContainer = (child : DisplayObjectContainer);
+			var container:DisplayObjectContainer = Std.isOfType(child, DisplayObjectContainer) ? cast child : null;
 			if (container != null) {
 				container.broadcastEventWith(Event.REMOVED_FROM_STAGE);
 			} else {
@@ -649,8 +649,8 @@ class DisplayObjectContainer extends DisplayObject {
 		if (object.hasEventListener(eventType)) {
 			listeners[listeners.length] = object; // avoiding 'push'
 		}
-
-		var container:DisplayObjectContainer = (object : DisplayObjectContainer);
+        
+		var container:DisplayObjectContainer = Std.isOfType(object, DisplayObjectContainer) ? cast object : null;
 
 		if (container != null) {
 			var children:Array<DisplayObject> = container.__children;
