@@ -20,7 +20,6 @@ import openfl.media.SoundTransform;
 import openfl.net.URLRequest;
 import openfl.system.System;
 import openfl.utils.ByteArray;
-import openfl.Vector;
 //import openfl.utils.describeType;
 //import openfl.utils.getQualifiedClassName;
 //import openfl.utils.setTimeout;
@@ -151,9 +150,9 @@ class AssetManager extends EventDispatcher
     private var _numConnections:Int;
     private var _dataLoader:DataLoader;
     private var _textureOptions:TextureOptions;
-    private var _queue:Vector<AssetReference>;
+    private var _queue:Array<AssetReference>;
     private var _registerBitmapFontsWithFontFace:Bool;
-    private var _assetFactories:Vector<AssetFactory>;
+    private var _assetFactories:Array<AssetFactory>;
     private var _numRestoredTextures:Int;
     private var _numLostTextures:Int;
 
@@ -165,7 +164,7 @@ class AssetManager extends EventDispatcher
     private static var sNoNameCount:Int = 0;
 
     // helper objects
-    private static var sNames:Vector<String> = new Vector<String>();
+    private static var sNames:Array<String> = new Array<String>();
 
     #if commonjs
     private static function __init__ () {
@@ -190,10 +189,10 @@ class AssetManager extends EventDispatcher
         _assets = new Map<String, Map<String, Dynamic>>();
         _verbose = true;
         _textureOptions = new TextureOptions(scaleFactor);
-        _queue = new Vector<AssetReference>();
+        _queue = new Array<AssetReference>();
         _numConnections = 3;
         _dataLoader = new DataLoader();
-        _assetFactories = new Vector<AssetFactory>();
+        _assetFactories = new Array<AssetFactory>();
 
         registerFactory(new BitmapTextureFactory());
         registerFactory(new AtfTextureFactory());
@@ -371,7 +370,11 @@ class AssetManager extends EventDispatcher
     /** Empties the queue and aborts any pending load operations. */
     public function purgeQueue():Void
     {
-        _queue.length = 0;
+        #if (haxe_ver >= 4.0)
+		_queue.resize(0);
+		#else
+		ArrayUtil.resize(_queue, 0);
+		#end
         _dataLoader.close();
         dispatchEventWith(Event.CANCEL);
     }
@@ -396,12 +399,12 @@ class AssetManager extends EventDispatcher
     {
         var self:AssetManager = this;
         var canceled:Bool = false;
-        var queue:Vector<AssetReference> = _queue.concat();
+        var queue:Array<AssetReference> = _queue.copy();
         var numAssets:Int = queue.length;
         var numComplete:Int = 0;
         var numConnections:Int = Std.int(MathUtil.min(_numConnections, numAssets));
-        var assetProgress:Vector<Float> = new Vector<Float>();
-        var postProcessors:Vector<AssetPostProcessor> = new Vector<AssetPostProcessor>();
+        var assetProgress:Array<Float> = new Array<Float>();
+        var postProcessors:Array<AssetPostProcessor> = new Array<AssetPostProcessor>();
         var factoryHelper:AssetFactoryHelper = null;
         
         var loadNextAsset:Void->Void = null;
@@ -516,7 +519,12 @@ class AssetManager extends EventDispatcher
         factoryHelper.logFunc = log;
 
         _starling = Starling.current;
-        _queue.length = 0;
+
+        #if (haxe_ver >= 4.0)
+		_queue.resize(0);
+		#else
+		ArrayUtil.resize(_queue, 0);
+		#end
 
         for (i in 0...numAssets)
             assetProgress[i] = -1;
@@ -526,7 +534,7 @@ class AssetManager extends EventDispatcher
     }
 
     private function loadFromQueue(
-        queue:Vector<AssetReference>, progressRatios:Vector<Float>, index:Int,
+        queue:Array<AssetReference>, progressRatios:Array<Float>, index:Int,
         helper:AssetFactoryHelper, onComplete:String->Dynamic->Void, onProgress:Float->Void,
         onError:String->Void, onIntermediateError:String->Void):Void
     {
@@ -716,10 +724,10 @@ class AssetManager extends EventDispatcher
      *  start with the given prefix. If 'recursive' is true, the method will traverse included
      *  texture atlases and asset managers. */
     public function getAssetNames(assetType:String, prefix:String="", recursive:Bool=true,
-                                  out:Vector<String>=null):Vector<String>
+                                  out:Array<String>=null):Array<String>
     {
         if(out == null)
-            out = new Vector<String>();
+            out = new Array<String>();
 
         if (recursive)
         {
@@ -779,20 +787,25 @@ class AssetManager extends EventDispatcher
 
     /** Returns all textures that start with a certain string, sorted alphabetically
      *  (especially useful for "MovieClip"). Includes textures stored inside atlases. */
-    public function getTextures(prefix:String="", out:Vector<Texture>=null):Vector<Texture>
+    public function getTextures(prefix:String="", out:Array<Texture>=null):Array<Texture>
     {
-        if (out == null) out = new Vector<Texture>();
+        if (out == null) out = new Array<Texture>();
 
         for (name in getTextureNames(prefix, sNames))
             out[out.length] = getTexture(name); // avoid 'push'
 
-        sNames.length = 0;
+        #if (haxe_ver >= 4.0)
+		sNames.resize(0);
+		#else
+		ArrayUtil.resize(sNames, 0);
+		#end
+
         return out;
     }
 
     /** Returns all texture names that start with a certain string, sorted alphabetically.
      *  Includes textures stored inside atlases. */
-    public function getTextureNames(prefix:String="", out:Vector<String>=null):Vector<String>
+    public function getTextureNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.TEXTURE, prefix, true, out);
     }
@@ -805,8 +818,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all texture atlas names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getTextureAtlasNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getTextureAtlasNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.TEXTURE_ATLAS, prefix, true, out);
     }
@@ -819,8 +832,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all sound names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getSoundNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getSoundNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.SOUND, prefix, true, out);
     }
@@ -843,8 +856,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all XML names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getXmlNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getXmlNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.XML_DOCUMENT, prefix, true, out);
     }
@@ -857,8 +870,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all object names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getObjectNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getObjectNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.OBJECT, prefix, true, out);
     }
@@ -871,8 +884,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all byte array names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getByteArrayNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getByteArrayNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.BYTE_ARRAY, prefix, true, out);
     }
@@ -885,8 +898,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all bitmap font names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getBitmapFontNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getBitmapFontNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.BITMAP_FONT, prefix, true, out);
     }
@@ -899,8 +912,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all asset manager names that start with a certain string, sorted alphabetically.
-     *  If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getAssetManagerNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     *  If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getAssetManagerNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getAssetNames(AssetType.ASSET_MANAGER, prefix, true, out);
     }
@@ -969,8 +982,7 @@ class AssetManager extends EventDispatcher
 	/** Unregisters the specified AssetFactory. */
 	public function unregisterFactory(factory:AssetFactory):Void
 	{
-		var index:Int = _assetFactories.indexOf(factory);
-		if (index != -1) _assetFactories.removeAt(index);
+		_assetFactories.remove(factory);
 	}
 
     // helpers
@@ -1043,9 +1055,9 @@ class AssetManager extends EventDispatcher
     }
 
     private function getDictionaryKeys(dictionary:Map<String, Dynamic>, prefix:String="",
-                                              out:Vector<String>=null):Vector<String>
+                                              out:Array<String>=null):Array<String>
     {
-        if (out == null) out = new Vector<String>();
+        if (out == null) out = new Array<String>();
         if (dictionary != null)
         {
             for (name in dictionary.keys())
