@@ -10,7 +10,6 @@
 package starling.display;
 
 import openfl.geom.Point;
-import openfl.Array;
 import starling.geom.Polygon;
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;
