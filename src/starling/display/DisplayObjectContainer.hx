@@ -143,7 +143,7 @@ class DisplayObjectContainer extends DisplayObject {
 			child.removeFromParent();
 
 			// Insert the child at the specified index
-			__children.insertAt(index, child);
+			__children.insert(index, child);
 			child.__setParent(this);
 
 			// Dispatch the ADDED event
@@ -313,7 +313,7 @@ class DisplayObjectContainer extends DisplayObject {
 			throw new ArgumentError("Not a child of this container");
 
 		__children.splice(oldIndex, 1);
-		__children.insertAt(index, child);
+		__children.insert(index, child);
 		setRequiresRedraw();
 	}
 
