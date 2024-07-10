@@ -41,7 +41,6 @@ import haxe.Json;
 import haxe.Timer;
 
 import openfl.utils.ByteArray;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -52,6 +51,7 @@ import starling.textures.AtfData;
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 import starling.textures.TextureOptions;
+import starling.utils.ArrayUtil;
 
 /** Dispatched when all textures have been restored after a context loss. */
 @:meta(Event(name="texturesRestored", type="starling.events.Event"))
@@ -152,7 +152,7 @@ class AssetManager extends EventDispatcher
     @:noCompletion private var __bitmapFonts:Map<String, BitmapFont>;
     
     /** helper objects */
-    private static var sNames:Vector<String> = new Vector<String>();
+    private static var sNames:Array<String> = new Array<String>();
     
     /** Regex for name / extension extraction from URL. */
     private static var NAME_REGEX:EReg = ~/([^\?\/\\]+?)(?:\.([\w\-]+))?(?:\?.*)?$/;
@@ -242,19 +242,24 @@ class AssetManager extends EventDispatcher
     
     /** Returns all textures that start with a certain string, sorted alphabetically
      * (especially useful for "MovieClip"). */
-    public function getTextures(prefix:String="", out:Vector<Texture>=null):Vector<Texture>
+    public function getTextures(prefix:String="", out:Array<Texture>=null):Array<Texture>
     {
-        if (out == null) out = new Vector<Texture>();
+        if (out == null) out = new Array<Texture>();
         
         for (name in getTextureNames(prefix, sNames))
             out[out.length] = getTexture(name); // avoid 'push'
 
-        sNames.length = 0;
+        #if (haxe_ver >= 4.0)
+		sNames.resize(0);
+		#else
+		ArrayUtil.resize(sNames, 0);
+		#end
+
         return out;
     }
     
     /** Returns all texture names that start with a certain string, sorted alphabetically. */
-    public function getTextureNames(prefix:String="", out:Vector<String>=null):Vector<String>
+    public function getTextureNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         out = getDictionaryKeys(__textures, prefix, out);
         
@@ -272,8 +277,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all texture atlas names that start with a certain string, sorted alphabetically.
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getTextureAtlasNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getTextureAtlasNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__atlases, prefix, out);
     }
@@ -285,8 +290,8 @@ class AssetManager extends EventDispatcher
     }
     
     /** Returns all sound names that start with a certain string, sorted alphabetically.
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getSoundNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getSoundNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__sounds, prefix, out);
     }
@@ -309,8 +314,8 @@ class AssetManager extends EventDispatcher
     }
     
     /** Returns all XML names that start with a certain string, sorted alphabetically. 
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getXmlNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getXmlNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__xmls, prefix, out);
     }
@@ -323,8 +328,8 @@ class AssetManager extends EventDispatcher
     }
     
     /** Returns all object names that start with a certain string, sorted alphabetically. 
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getObjectNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getObjectNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__objects, prefix, out);
     }
@@ -336,8 +341,8 @@ class AssetManager extends EventDispatcher
     }
     
     /** Returns all byte array names that start with a certain string, sorted alphabetically. 
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getByteArrayNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getByteArrayNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__byteArrays, prefix, out);
     }
@@ -349,8 +354,8 @@ class AssetManager extends EventDispatcher
     }
 
     /** Returns all bitmap fonts names that start with a certain string, sorted alphabetically. 
-     * If you pass an <code>out</code>-vector, the names will be added to that vector. */
-    public function getBitmapFontNames(prefix:String="", out:Vector<String>=null):Vector<String>
+     * If you pass an <code>out</code>-Array, the names will be added to that Array. */
+    public function getBitmapFontNames(prefix:String="", out:Array<String>=null):Array<String>
     {
         return getDictionaryKeys(__bitmapFonts, prefix, out);
     }
@@ -716,7 +721,7 @@ class AssetManager extends EventDispatcher
 
         var i:Int;
         var canceled:Bool = false;
-        var xmls:Vector<Xml> = new Vector<Xml>();
+        var xmls:Array<Xml> = new Array<Xml>();
         var assetInfos:Array<QueuedAsset> = __queue.copy();
         var assetCount:Int = __queue.length;
         var assetProgress:Array<Float> = [];
@@ -880,7 +885,7 @@ class AssetManager extends EventDispatcher
     }
     
     private function processRawAsset(name:String, rawAsset:Dynamic, options:TextureOptions,
-                                     xmls:Vector<Xml>,
+                                     xmls:Array<Xml>,
                                      onProgress:Float->Void, onComplete:Void->Void):Void
     {
         var canceled:Bool = false;
@@ -1329,9 +1334,9 @@ class AssetManager extends EventDispatcher
     }
     
     private function getDictionaryKeys(dictionary:Map<String, Dynamic>, prefix:String="",
-                                       out:Vector<String>=null):Vector<String>
+                                       out:Array<String>=null):Array<String>
     {
-        if (out == null) out = new Vector<String>();
+        if (out == null) out = new Array<String>();
         
         for (name in dictionary.keys())
             if (name.indexOf(prefix) == 0)
