@@ -33,6 +33,7 @@ import starling.textures.TextureAtlas;
 import starling.textures.TextureOptions;
 import starling.utils.MathUtil;
 import starling.utils.Execute;
+import starling.utils.ArrayUtil;
 
 /** Dispatched when all textures have been restored after a context loss. */
 @:meta(Event(name="texturesRestored", type="starling.events.Event"))
