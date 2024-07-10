@@ -25,7 +25,6 @@ import openfl.geom.Vector3D;
 import openfl.system.Capabilities;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.errors.AbstractMethodError;
@@ -40,6 +39,7 @@ import starling.utils.Color;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
 import starling.utils.SystemUtil;
+import starling.utils.ArrayUtil;
 
 /** Dispatched when an object is added to a parent. */
 @:meta(Event(name="added", type="starling.events.Event"))
@@ -159,7 +159,7 @@ class DisplayObject extends EventDispatcher
 
     // helper objects
 
-    private static var sAncestors:Vector<DisplayObject> = new Vector<DisplayObject>();
+    private static var sAncestors:Array<DisplayObject> = new Array<DisplayObject>();
     private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperPointAlt3D:Vector3D = new Vector3D();
@@ -627,7 +627,7 @@ class DisplayObject extends EventDispatcher
     }
 
     /** Transforms a point from global (stage) coordinates to the 3D local coordinate system.
-     * If you pass an <code>out</code>-vector, the result will be stored in this point instead of
+     * If you pass an <code>out</code>-Array, the result will be stored in this point instead of
      * creating a new object. */
     public function globalToLocal3D(globalPoint:Point, out:Vector3D=null):Vector3D
     {
@@ -797,7 +797,11 @@ class DisplayObject extends EventDispatcher
         while (currentObject != null && sAncestors.indexOf(currentObject) == -1)
             currentObject = currentObject.__parent;
 
-        sAncestors.length = 0;
+        #if (haxe_ver >= 4.0)
+            sAncestors.resize(0);
+			#else
+			ArrayUtil.resize(sAncestors, 0);
+			#end
 
         if (currentObject != null) return currentObject;
         else throw new ArgumentError("Object not connected to target");

@@ -378,6 +378,7 @@ class Juggler implements IAnimatable {
 
 			while (i < numObjects)
 				__objects[currentIndex++] = __objects[i++];
+            
 			#if (haxe_ver >= 4.0)
 			__objects.resize(currentIndex);
 			#else
