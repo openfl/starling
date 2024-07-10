@@ -151,7 +151,7 @@ class DisplayObjectContainer extends DisplayObject {
 
 			// If the container is on the stage, dispatch the ADDED_TO_STAGE event
 			if (stage != null) {
-				var container:DisplayObjectContainer = (child : DisplayObjectContainer);
+				var container:DisplayObjectContainer = Std.isOfType(child, DisplayObjectContainer) ? cast child : null;
 				if (container != null) {
 					container.broadcastEventWith(Event.ADDED_TO_STAGE);
 				} else {
