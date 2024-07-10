@@ -404,7 +404,7 @@ class Juggler implements IAnimatable
             while (i < numObjects)
                 __objects[currentIndex++] = __objects[i++];
             
-            __objects.length = currentIndex;
+            __objects.resize(currentIndex);
         }
     }
     
