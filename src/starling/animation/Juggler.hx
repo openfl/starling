@@ -13,7 +13,6 @@ package starling.animation;
 import haxe.Constraints.Function;
 
 import openfl.errors.ArgumentError;
-import openfl.Vector;
 
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -50,7 +49,7 @@ import starling.events.EventDispatcher;
  */
 class Juggler implements IAnimatable
 {
-    @:noCompletion private var __objects:Vector<IAnimatable>;
+    @:noCompletion private var __objects:Array<IAnimatable>;
     @:noCompletion private var __objectIDs:Map<IAnimatable, UInt>;
     @:noCompletion private var __elapsedTime:Float;
     @:noCompletion private var __timeScale:Float;
@@ -75,7 +74,7 @@ class Juggler implements IAnimatable
     {
         __elapsedTime = 0;
         __timeScale = 1.0;
-        __objects = new Vector<IAnimatable>();
+        __objects = new Array<IAnimatable>();
         __objectIDs = new Map();
     }
 
@@ -243,9 +242,9 @@ class Juggler implements IAnimatable
     /** Removes all objects at once. */
     public function purge():Void
     {
-        // the object vector is not purged right away, because if this method is called 
+        // the object Array is not purged right away, because if this method is called 
         // from an 'advanceTime' call, this would make the loop crash. Instead, the
-        // vector is filled with 'null' values. They will be cleaned up on the next call
+        // Array is filled with 'null' values. They will be cleaned up on the next call
         // to 'advanceTime'.
         
         var object:IAnimatable, dispatcher:EventDispatcher;
@@ -434,7 +433,7 @@ class Juggler implements IAnimatable
     private function get_timeScale():Float { return __timeScale; }
     private function set_timeScale(value:Float):Float { return __timeScale = value; }
 
-    /** The actual vector that contains all objects that are currently being animated. */
-    private var objects(get, never):Vector<IAnimatable>;
-    private function get_objects():Vector<IAnimatable> { return __objects; }
+    /** The actual Array that contains all objects that are currently being animated. */
+    private var objects(get, never):Array<IAnimatable>;
+    private function get_objects():Array<IAnimatable> { return __objects; }
 }
