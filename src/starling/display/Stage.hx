@@ -15,7 +15,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.geom.Array3D;
+import openfl.geom.Vector3D;
 
 import starling.core.Starling;
 import starling.events.EnterFrameEvent;
@@ -60,7 +60,7 @@ class Stage extends DisplayObjectContainer
     @:noCompletion private var __color:UInt;
     @:noCompletion private var __fieldOfView:Float;
     @:noCompletion private var __projectionOffset:Point;
-    @:noCompletion private var __cameraPosition:Array3D;
+    @:noCompletion private var __cameraPosition:Vector3D;
     @:noCompletion private var __enterFrameEvent:EnterFrameEvent;
     @:noCompletion private var __enterFrameListeners:Array<DisplayObject>;
 
@@ -95,7 +95,7 @@ class Stage extends DisplayObjectContainer
         __color = color;
         __fieldOfView = 1.0;
         __projectionOffset = new Point();
-        __cameraPosition = new Array3D();
+        __cameraPosition = new Vector3D();
         __enterFrameEvent = new EnterFrameEvent(Event.ENTER_FRAME, 0.0);
         __enterFrameListeners = new Array<DisplayObject>();
     }
@@ -164,7 +164,7 @@ class Stage extends DisplayObjectContainer
      * To change the position of the camera, you can modify the properties 'fieldOfView',
      * 'focalDistance' and 'projectionOffset'.
      */
-    public function getCameraPosition(space:DisplayObject=null, out:Array3D=null):Array3D
+    public function getCameraPosition(space:DisplayObject=null, out:Vector3D=null):Vector3D
     {
         getTransformationMatrix3D(space, sMatrix3D);
 
@@ -383,8 +383,8 @@ class Stage extends DisplayObjectContainer
      *
      * <p>CAUTION: not a copy, but the actual object!</p>
      */
-    public var cameraPosition(get, never):Array3D;
-    private function get_cameraPosition():Array3D
+    public var cameraPosition(get, never):Vector3D;
+    private function get_cameraPosition():Vector3D
     {
         return getCameraPosition(null, __cameraPosition);
     }
