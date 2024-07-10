@@ -14,6 +14,7 @@ import openfl.geom.Point;
 import starling.display.DisplayObject;
 import starling.utils.Pool;
 import starling.utils.StringUtil;
+import starling.utils.ArrayUtil;
 
 /** A Touch object contains information about the presence or movement of a finger
  *  or the mouse on the screen.
