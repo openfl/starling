@@ -19,6 +19,7 @@ import starling.display.DisplayObject;
 import starling.display.Stage;
 import starling.utils.MathUtil;
 import starling.utils.Pool;
+import starling.utils.ArrayUtil;
 
 /** The TouchProcessor is used to convert mouse and touch events of the conventional
  *  Flash stage to Starling's TouchEvents.

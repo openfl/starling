@@ -10,7 +10,7 @@
 package starling.events;
 
 import starling.display.DisplayObject;
-
+import starling.utils.ArrayUtil;
 /**
  * A TouchEvent is triggered either by touch or mouse input.
  * 
