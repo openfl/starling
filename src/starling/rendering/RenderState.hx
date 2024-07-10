@@ -72,17 +72,17 @@ class RenderState {
 
 	/** @private */ @:allow(starling) private var _modelviewMatrix:Matrix;
 
-	private static var CULLING_VALUES:Array<Context3DTriangleFace> = new Array<Context3DTriangleFace>([
+	private static var CULLING_VALUES:Array<Context3DTriangleFace> = [
 		Context3DTriangleFace.NONE,        Context3DTriangleFace.FRONT,
 		Context3DTriangleFace.BACK, Context3DTriangleFace.FRONT_AND_BACK
-	]);
+	];
 
-	private static var COMPARE_VALUES:Array<Context3DCompareMode> = new Array<Context3DCompareMode>([
+	private static var COMPARE_VALUES:Array<Context3DCompareMode> = [
 		 Context3DCompareMode.ALWAYS,         Context3DCompareMode.NEVER,
 		   Context3DCompareMode.LESS,    Context3DCompareMode.LESS_EQUAL,
 		  Context3DCompareMode.EQUAL, Context3DCompareMode.GREATER_EQUAL,
 		Context3DCompareMode.GREATER,     Context3DCompareMode.NOT_EQUAL
-	]);
+	];
 
 	private var _miscOptions:UInt = 0;
 	private var _clipRect:Rectangle;
