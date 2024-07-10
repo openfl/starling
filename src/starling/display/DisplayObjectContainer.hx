@@ -21,7 +21,7 @@ import starling.rendering.BatchToken;
 import starling.rendering.Painter;
 import starling.utils.MatrixUtil;
 import starling.utils.Max;
-
+import starling.utils.ArrayUtil;
 /**
  *  A DisplayObjectContainer represents a collection of display objects.
  *  It is the base class of all display objects that act as a container for other objects. By 
@@ -358,9 +358,17 @@ class DisplayObjectContainer extends DisplayObject {
 	 *                        first object is greater than the second.
 	 */
 	public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void {
+		#if (haxe_ver >= 4.0)
 		sSortBuffer.resize(__children.length);
+		#else
+		ArrayUtil.resize(sSortBuffer, __children.length);
+		#end
 		mergeSort(__children, compareFunction, 0, __children.length, sSortBuffer);
+        #if (haxe_ver >= 4.0)
 		sSortBuffer.resize(0);
+		#else
+		ArrayUtil.resize(sSortBuffer, 0);
+		#end
 		setRequiresRedraw();
 	}
 
@@ -551,8 +559,12 @@ class DisplayObjectContainer extends DisplayObject {
 
 		for (i in fromIndex...toIndex)
 			sBroadcastListeners[i].dispatchEvent(event);
-
+        
+        #if (haxe_ver >= 4.0)
 		sBroadcastListeners.resize(fromIndex);
+		#else
+		ArrayUtil.resize(sBroadcastListeners, fromIndex);
+		#end
 	}
 
 	/**
@@ -649,7 +661,7 @@ class DisplayObjectContainer extends DisplayObject {
 		if (object.hasEventListener(eventType)) {
 			listeners[listeners.length] = object; // avoiding 'push'
 		}
-        
+
 		var container:DisplayObjectContainer = Std.isOfType(object, DisplayObjectContainer) ? cast object : null;
 
 		if (container != null) {
