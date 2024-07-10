@@ -12,7 +12,6 @@ package starling.events;
 
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-import openfl.Vector;
 
 import starling.display.DisplayObject;
 import starling.utils.Pool;
@@ -54,7 +53,7 @@ class Touch
     @:noCompletion private var __width:Float;
     @:noCompletion private var __height:Float;
     @:noCompletion private var __cancelled:Bool;
-    @:noCompletion private var __bubbleChain:Vector<EventDispatcher>;
+    @:noCompletion private var __bubbleChain:Array<EventDispatcher>;
     
     /** Helper object. */
     private static var sHelperPoint:Point = new Point();
@@ -92,7 +91,7 @@ class Touch
         __tapCount = 0;
         __phase = TouchPhase.HOVER;
         __pressure = __width = __height = 1.0;
-        __bubbleChain = new Vector<EventDispatcher>();
+        __bubbleChain = new Array<EventDispatcher>();
         __timestamp = __startTimestamp = -1;
     }
     
@@ -204,7 +203,12 @@ class Touch
             var length:Int = 1;
             var element:DisplayObject = __target;
             
-            __bubbleChain.length = 1;
+            #if (haxe_ver >= 4.0)
+			__bubbleChain.resize(1);
+			#else
+			ArrayUtil.resize(__bubbleChain, 1);
+			#end
+
             __bubbleChain[0] = element;
             
             while ((element = element.parent) != null)
@@ -212,7 +216,11 @@ class Touch
         }
         else
         {
-            __bubbleChain.length = 0;
+            #if (haxe_ver >= 4.0)
+			__bubbleChain.resize(0);
+			#else
+			ArrayUtil.resize(__bubbleChain, 0);
+			#end
         }
     }
     
@@ -371,9 +379,9 @@ class Touch
     }
     
     /** @private */
-    @:allow(starling) private var bubbleChain(get, never):Vector<EventDispatcher>;
-    private function get_bubbleChain():Vector<EventDispatcher>
+    @:allow(starling) private var bubbleChain(get, never):Array<EventDispatcher>;
+    private function get_bubbleChain():Array<EventDispatcher>
     {
-        return __bubbleChain.concat();
+        return __bubbleChain.copy();
     }
 }

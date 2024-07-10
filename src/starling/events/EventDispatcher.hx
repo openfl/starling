@@ -84,7 +84,7 @@ class EventDispatcher {
 
 				if (index != -1) {
 					if (__eventStack.indexOf(type) == -1) {
-						listeners.removeAt(index);
+						listeners.splice(index, 1);
 					} else {
 						var restListeners:Array<Function> = listeners.slice(0, index);
 
