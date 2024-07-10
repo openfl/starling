@@ -421,7 +421,7 @@ class Starling extends EventDispatcher
         if (__stage != null) __stage.dispose();
 
         var index:Int =  sAll.indexOf(this);
-        if (index != -1) sAll.removeAt(index);
+        if (index != -1) sAll.splice(index, 1);
         if (sCurrent == this) sCurrent = null;
     }
     

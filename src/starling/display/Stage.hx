@@ -186,7 +186,7 @@ class Stage extends DisplayObjectContainer
     @:allow(starling) private function removeEnterFrameListener(listener:DisplayObject):Void
     {
         var index:Int = __enterFrameListeners.indexOf(listener);
-        if (index >= 0) __enterFrameListeners.removeAt(index); 
+        if (index >= 0) __enterFrameListeners.splice(index, 1); 
     }
     
     /** @private */

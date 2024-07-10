@@ -223,7 +223,7 @@ class DisplayObjectContainer extends DisplayObject {
 		// Re-check the index as it might have changed due to event handlers
 		index = __children.indexOf(child);
 		if (index >= 0) {
-			__children.removeAt(index);
+			__children.splice(index, 1);
 		}
 
 		// Dispose the child if requested
@@ -312,7 +312,7 @@ class DisplayObjectContainer extends DisplayObject {
 		if (oldIndex == -1)
 			throw new ArgumentError("Not a child of this container");
 
-		__children.removeAt(oldIndex);
+		__children.splice(oldIndex, 1);
 		__children.insertAt(index, child);
 		setRequiresRedraw();
 	}
@@ -399,10 +399,10 @@ class DisplayObjectContainer extends DisplayObject {
 			__children[0].getBounds(targetSpace, out);
 		} else {
 			// Multiple children: Calculate the combined bounding box
-			var minX:Float = Float.MAX_VALUE;
-			var maxX:Float = -Float.MAX_VALUE;
-			var minY:Float = Float.MAX_VALUE;
-			var maxY:Float = -Float.MAX_VALUE;
+			var minX:Float = Max.MAX_VALUE;
+			var maxX:Float = -Max.MAX_VALUE;
+			var minY:Float = Max.MAX_VALUE;
+			var maxY:Float = -Max.MAX_VALUE;
 
 			// Iterate over all children to determine the overall bounds
 			for (i in 0...numChildren) {
