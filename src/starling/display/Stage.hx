@@ -15,8 +15,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.geom.Vector3D;
-import openfl.Vector;
+import openfl.geom.Array3D;
 
 import starling.core.Starling;
 import starling.events.EnterFrameEvent;
@@ -61,9 +60,9 @@ class Stage extends DisplayObjectContainer
     @:noCompletion private var __color:UInt;
     @:noCompletion private var __fieldOfView:Float;
     @:noCompletion private var __projectionOffset:Point;
-    @:noCompletion private var __cameraPosition:Vector3D;
+    @:noCompletion private var __cameraPosition:Array3D;
     @:noCompletion private var __enterFrameEvent:EnterFrameEvent;
-    @:noCompletion private var __enterFrameListeners:Vector<DisplayObject>;
+    @:noCompletion private var __enterFrameListeners:Array<DisplayObject>;
 
     /** Helper objects. */
     private static var sMatrix:Matrix = new Matrix();
@@ -96,9 +95,9 @@ class Stage extends DisplayObjectContainer
         __color = color;
         __fieldOfView = 1.0;
         __projectionOffset = new Point();
-        __cameraPosition = new Vector3D();
+        __cameraPosition = new Array3D();
         __enterFrameEvent = new EnterFrameEvent(Event.ENTER_FRAME, 0.0);
-        __enterFrameListeners = new Vector<DisplayObject>();
+        __enterFrameListeners = new Array<DisplayObject>();
     }
     
     /** @inheritDoc */
@@ -165,7 +164,7 @@ class Stage extends DisplayObjectContainer
      * To change the position of the camera, you can modify the properties 'fieldOfView',
      * 'focalDistance' and 'projectionOffset'.
      */
-    public function getCameraPosition(space:DisplayObject=null, out:Vector3D=null):Vector3D
+    public function getCameraPosition(space:DisplayObject=null, out:Array3D=null):Array3D
     {
         getTransformationMatrix3D(space, sMatrix3D);
 
@@ -192,7 +191,7 @@ class Stage extends DisplayObjectContainer
     
     /** @private */
     @:allow(starling) private override function __getChildEventListeners(object:DisplayObject, eventType:String, 
-                                                                         listeners:Vector<DisplayObject>):Void
+                                                                         listeners:Array<DisplayObject>):Void
     {
         if (eventType == Event.ENTER_FRAME && object == this)
         {
@@ -321,7 +320,7 @@ class Stage extends DisplayObjectContainer
     public var starling(get, never):Starling;
     private function get_starling():Starling
     {
-        var instances:Vector<Starling> = Starling.all;
+        var instances:Array<Starling> = Starling.all;
         var numInstances:Int = instances.length;
 
         for (i in 0...numInstances)
@@ -364,7 +363,7 @@ class Stage extends DisplayObjectContainer
         return value;
     }
 
-    /** A vector that moves the camera away from its default position in the center of the
+    /** A Array that moves the camera away from its default position in the center of the
      * stage. Use this property to change the center of projection, i.e. the vanishing
      * point for 3D display objects. <p>CAUTION: not a copy, but the actual object!</p>
      */
@@ -384,8 +383,8 @@ class Stage extends DisplayObjectContainer
      *
      * <p>CAUTION: not a copy, but the actual object!</p>
      */
-    public var cameraPosition(get, never):Vector3D;
-    private function get_cameraPosition():Vector3D
+    public var cameraPosition(get, never):Array3D;
+    private function get_cameraPosition():Array3D
     {
         return getCameraPosition(null, __cameraPosition);
     }

@@ -47,7 +47,6 @@ import openfl.ui.Multitouch;
 import openfl.ui.MultitouchInputMode;
 import openfl.utils.ByteArray;
 import openfl.Lib;
-import openfl.Vector;
 
 import starling.animation.Juggler;
 import starling.display.DisplayObject;
@@ -250,7 +249,7 @@ class Starling extends EventDispatcher
     @:noCompletion private var __nativeOverlayBlocksTouches:Bool;
 
     private static var sCurrent:Starling;
-    private static var sAll:Vector<Starling> = new Vector<Starling>();
+    private static var sAll:Array<Starling> = new Array<Starling>();
     
     #if commonjs
     private static function __init__ () {
@@ -1268,8 +1267,8 @@ class Starling extends EventDispatcher
     private static function get_current():Starling { return sCurrent; }
 
     /** All Starling instances. <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    public static var all(get, never):Vector<Starling>;
-    private static function get_all():Vector<Starling> { return sAll; }
+    public static var all(get, never):Array<Starling>;
+    private static function get_all():Array<Starling> { return sAll; }
     
     /** The render context of the currently active Starling instance. */
     public static var currentContext(get, never):Context3D;
