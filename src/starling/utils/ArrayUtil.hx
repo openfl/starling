@@ -21,7 +21,7 @@ class ArrayUtil {
 	 * @param newSize The new size of the array.
 	 * @param defaultValue The value to fill new elements with.
 	 */
-	public static function extend<T>(arr:Array<T>, newSize:Int, defaultValue:T):Void {
+	public static function extend<T>(arr:Array<T>, newSize:Int, defaultValue:T = null):Void {
 		while (arr.length < newSize) {
 			arr.push(defaultValue);
 		}
@@ -33,7 +33,7 @@ class ArrayUtil {
 	 * @param newSize The new size of the array.
 	 * @param defaultValue The value to fill new elements with when extending.
 	 */
-	public static function resize<T>(arr:Array<T>, newSize:Int, defaultValue:T):Void {
+	public static function resize<T>(arr:Array<T>, newSize:Int, defaultValue:T = null):Void {
 		if (newSize < arr.length) {
 			truncate(arr, newSize);
 		} else {
