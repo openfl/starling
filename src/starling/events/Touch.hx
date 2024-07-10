@@ -63,22 +63,34 @@ class Touch {
 			"previousGlobalY": {get: untyped __js__("function () { return this.get_previousGlobalY (); }")},
 			"startGlobalX": {get: untyped __js__("function () { return this.get_startGlobalX (); }")},
 			"startGlobalY": {get: untyped __js__("function () { return this.get_startGlobalY (); }")},
-			"globalX": {get: untyped __js__("function () { return this.get_globalX (); }"),
-				set: untyped __js__("function (v) { return this.set_globalX (v); }")},
-			"globalY": {get: untyped __js__("function () { return this.get_globalY (); }"),
-				set: untyped __js__("function (v) { return this.set_globalY (v); }")},
-			"tapCount": {get: untyped __js__("function () { return this.get_tapCount (); }"),
-				set: untyped __js__("function (v) { return this.set_tapCount (v); }")},
+			"globalX": {
+				get: untyped __js__("function () { return this.get_globalX (); }"),
+				set: untyped __js__("function (v) { return this.set_globalX (v); }")
+			},
+			"globalY": {
+				get: untyped __js__("function () { return this.get_globalY (); }"),
+				set: untyped __js__("function (v) { return this.set_globalY (v); }")
+			},
+			"tapCount": {
+				get: untyped __js__("function () { return this.get_tapCount (); }"),
+				set: untyped __js__("function (v) { return this.set_tapCount (v); }")
+			},
 			"phase": {get: untyped __js__("function () { return this.get_phase (); }"), set: untyped __js__("function (v) { return this.set_phase (v); }")},
 			"target": {get: untyped __js__("function () { return this.get_target (); }"), set: untyped __js__("function (v) { return this.set_target (v); }")},
-			"timestamp": {get: untyped __js__("function () { return this.get_timestamp (); }"),
-				set: untyped __js__("function (v) { return this.set_timestamp (v); }")},
-			"pressure": {get: untyped __js__("function () { return this.get_pressure (); }"),
-				set: untyped __js__("function (v) { return this.set_pressure (v); }")},
+			"timestamp": {
+				get: untyped __js__("function () { return this.get_timestamp (); }"),
+				set: untyped __js__("function (v) { return this.set_timestamp (v); }")
+			},
+			"pressure": {
+				get: untyped __js__("function () { return this.get_pressure (); }"),
+				set: untyped __js__("function (v) { return this.set_pressure (v); }")
+			},
 			"width": {get: untyped __js__("function () { return this.get_width (); }"), set: untyped __js__("function (v) { return this.set_width (v); }")},
 			"height": {get: untyped __js__("function () { return this.get_height (); }"), set: untyped __js__("function (v) { return this.set_height (v); }")},
-			"cancelled": {get: untyped __js__("function () { return this.get_cancelled (); }"),
-				set: untyped __js__("function (v) { return this.set_cancelled (v); }")},
+			"cancelled": {
+				get: untyped __js__("function () { return this.get_cancelled (); }"),
+				set: untyped __js__("function (v) { return this.set_cancelled (v); }")
+			},
 			"duration": {get: untyped __js__("function () { return this.get_duration (); }")},
 			"bubbleChain": {get: untyped __js__("function () { return this.get_bubbleChain (); }")},
 		});
