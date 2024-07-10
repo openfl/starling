@@ -10,7 +10,6 @@ import starling.events.Event;
 import starling.text.TextField;
 import starling.utils.Color;
 import starling.utils.MathUtil.deg2rad;
-import openfl.Vector;
 
 import utils.MenuButton;
 

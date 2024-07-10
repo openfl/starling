@@ -1,7 +1,6 @@
 package scenes;
 
 import openfl.media.Sound;
-import openfl.Vector;
 
 import starling.core.Starling;
 import starling.display.MovieClip;
@@ -15,7 +14,7 @@ import starling.textures.Texture;
     public function new()
     {
         super();
-        var frames:Vector<Texture> = Game.assets.getTextures("flight");
+        var frames:Array<Texture> = Game.assets.getTextures("flight");
         _movie = new MovieClip(frames, 15);
         
         // add sounds
