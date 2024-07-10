@@ -247,39 +247,65 @@ class Starling extends EventDispatcher {
 			"mustAlwaysRender": {get: untyped __js__("function () { return this.get_mustAlwaysRender (); }")},
 			"isStarted": {get: untyped __js__("function () { return this.get_isStarted (); }")},
 			"juggler": {get: untyped __js__("function () { return this.get_juggler (); }")},
-			"context": {get: untyped __js__("function () { return this.get_context (); }"),
-				set: untyped __js__("function (v) { return this.set_context (v); }")},
-			"simulateMultitouch": {get: untyped __js__("function () { return this.get_simulateMultitouch (); }"),
-				set: untyped __js__("function (v) { return this.set_simulateMultitouch (v); }")},
-			"enableErrorChecking": {get: untyped __js__("function () { return this.get_enableErrorChecking (); }"),
-				set: untyped __js__("function (v) { return this.set_enableErrorChecking (v); }")},
-			"antiAliasing": {get: untyped __js__("function () { return this.get_antiAliasing (); }"),
-				set: untyped __js__("function (v) { return this.set_antiAliasing (v); }")},
-			"viewPort": {get: untyped __js__("function () { return this.get_viewPort (); }"),
-				set: untyped __js__("function (v) { return this.set_viewPort (v); }")},
+			"context": {
+				get: untyped __js__("function () { return this.get_context (); }"),
+				set: untyped __js__("function (v) { return this.set_context (v); }")
+			},
+			"simulateMultitouch": {
+				get: untyped __js__("function () { return this.get_simulateMultitouch (); }"),
+				set: untyped __js__("function (v) { return this.set_simulateMultitouch (v); }")
+			},
+			"enableErrorChecking": {
+				get: untyped __js__("function () { return this.get_enableErrorChecking (); }"),
+				set: untyped __js__("function (v) { return this.set_enableErrorChecking (v); }")
+			},
+			"antiAliasing": {
+				get: untyped __js__("function () { return this.get_antiAliasing (); }"),
+				set: untyped __js__("function (v) { return this.set_antiAliasing (v); }")
+			},
+			"viewPort": {
+				get: untyped __js__("function () { return this.get_viewPort (); }"),
+				set: untyped __js__("function (v) { return this.set_viewPort (v); }")
+			},
 			"contentScaleFactor": {get: untyped __js__("function () { return this.get_contentScaleFactor (); }")},
 			"nativeOverlay": {get: untyped __js__("function () { return this.get_nativeOverlay (); }")},
-			"nativeOverlayBlocksTouches": {get: untyped __js__("function () { return this.get_nativeOverlayBlocksTouches (); }"),
-				set: untyped __js__("function (v) { return this.set_nativeOverlayBlocksTouches (v); }")},
-			"showStats": {get: untyped __js__("function () { return this.get_showStats (); }"),
-				set: untyped __js__("function (v) { return this.set_showStats (v); }")},
+			"nativeOverlayBlocksTouches": {
+				get: untyped __js__("function () { return this.get_nativeOverlayBlocksTouches (); }"),
+				set: untyped __js__("function (v) { return this.set_nativeOverlayBlocksTouches (v); }")
+			},
+			"showStats": {
+				get: untyped __js__("function () { return this.get_showStats (); }"),
+				set: untyped __js__("function (v) { return this.set_showStats (v); }")
+			},
 			"stage": {get: untyped __js__("function () { return this.get_stage (); }")},
 			"stage3D": {get: untyped __js__("function () { return this.get_stage3D (); }")},
 			"nativeStage": {get: untyped __js__("function () { return this.get_nativeStage (); }")},
 			"root": {get: untyped __js__("function () { return this.get_root (); }")},
-			"rootClass": {get: untyped __js__("function () { return this.get_rootClass (); }"),
-				set: untyped __js__("function (v) { return this.set_rootClass (v); }")},
-			"shareContext": {get: untyped __js__("function () { return this.get_shareContext (); }"),
-				set: untyped __js__("function (v) { return this.set_shareContext (v); }")},
+			"rootClass": {
+				get: untyped __js__("function () { return this.get_rootClass (); }"),
+				set: untyped __js__("function (v) { return this.set_rootClass (v); }")
+			},
+			"shareContext": {
+				get: untyped __js__("function () { return this.get_shareContext (); }"),
+				set: untyped __js__("function (v) { return this.set_shareContext (v); }")
+			},
 			"profile": {get: untyped __js__("function () { return this.get_profile (); }")},
-			"supportHighResolutions": {get: untyped __js__("function () { return this.get_supportHighResolutions (); }"),
-				set: untyped __js__("function (v) { return this.set_supportHighResolutions (v); }")},
-			"skipUnchangedFrames": {get: untyped __js__("function () { return this.get_skipUnchangedFrames (); }"),
-				set: untyped __js__("function (v) { return this.set_skipUnchangedFrames (v); }")},
-			"touchProcessor": {get: untyped __js__("function () { return this.get_touchProcessor (); }"),
-				set: untyped __js__("function (v) { return this.set_touchProcessor (v); }")},
-			"discardSystemGestures": {get: untyped __js__("function () { return this.get_discardSystemGestures (); }"),
-				set: untyped __js__("function (v) { return this.set_discardSystemGestures (v); }")},
+			"supportHighResolutions": {
+				get: untyped __js__("function () { return this.get_supportHighResolutions (); }"),
+				set: untyped __js__("function (v) { return this.set_supportHighResolutions (v); }")
+			},
+			"skipUnchangedFrames": {
+				get: untyped __js__("function () { return this.get_skipUnchangedFrames (); }"),
+				set: untyped __js__("function (v) { return this.set_skipUnchangedFrames (v); }")
+			},
+			"touchProcessor": {
+				get: untyped __js__("function () { return this.get_touchProcessor (); }"),
+				set: untyped __js__("function (v) { return this.set_touchProcessor (v); }")
+			},
+			"discardSystemGestures": {
+				get: untyped __js__("function () { return this.get_discardSystemGestures (); }"),
+				set: untyped __js__("function (v) { return this.set_discardSystemGestures (v); }")
+			},
 			"frameID": {get: untyped __js__("function () { return this.get_frameID (); }")},
 			"contextValid": {get: untyped __js__("function () { return this.get_contextValid (); }")},
 		});
@@ -288,8 +314,10 @@ class Starling extends EventDispatcher {
 			"current": {get: untyped __js__("function () { return Starling.get_current (); }")},
 			"all": {get: untyped __js__("function () { return Starling.get_all (); }")},
 			"contentScaleFactor": {get: untyped __js__("function () { return Starling.get_contentScaleFactor (); }")},
-			"multitouchEnabled": {get: untyped __js__("function () { return Starling.get_multitouchEnabled (); }"),
-				set: untyped __js__("function (v) { return Starling.set_multitouchEnabled (v); }")},
+			"multitouchEnabled": {
+				get: untyped __js__("function () { return Starling.get_multitouchEnabled (); }"),
+				set: untyped __js__("function (v) { return Starling.set_multitouchEnabled (v); }")
+			},
 		});
 	}
 	#end
@@ -455,13 +483,13 @@ class Starling extends EventDispatcher {
 		var passedTime:Float = now - __frameTimestamp;
 		__frameTimestamp = now;
 
-		// to avoid overloading time-based animations, the maximum delta is truncated.
-		if (passedTime > 1.0)
+		// Truncate the maximum delta to avoid overloading time-based animations
+		if (passedTime > 1.0) {
 			passedTime = 1.0;
-
-		// after about 25 days, 'getTimer()' will roll over. A rare event, but still ...
-		if (passedTime < 0.0)
+		} else if (passedTime < 0.0) {
+			// Handle the timer rollover case
 			passedTime = 1.0 / __nativeStage.frameRate;
+		}
 
 		advanceTime(passedTime);
 		render();
@@ -493,28 +521,26 @@ class Starling extends EventDispatcher {
 		makeCurrent();
 		updateViewPort();
 
-		var doRedraw:Bool = __stage.requiresRedraw || mustAlwaysRender;
-		if (doRedraw) {
+		if (__stage.requiresRedraw || mustAlwaysRender) {
 			dispatchEventWith(starling.events.Event.RENDER);
-
-			var shareContext:Bool = __painter.shareContext;
-			var scaleX:Float = __viewPort.width / __stage.stageWidth;
-			var scaleY:Float = __viewPort.height / __stage.stageHeight;
-			var stageColor:UInt = __stage.color;
 
 			__painter.nextFrame();
 			__painter.pixelSize = 1.0 / contentScaleFactor;
+
+			var scaleX:Float = __viewPort.width / __stage.stageWidth;
+			var scaleY:Float = __viewPort.height / __stage.stageHeight;
+
 			__painter.state.setProjectionMatrix(__viewPort.x < 0 ? -__viewPort.x / scaleX : 0.0, __viewPort.y < 0 ? -__viewPort.y / scaleY : 0.0,
 				__clippedViewPort.width / scaleX, __clippedViewPort.height / scaleY, __stage.stageWidth, __stage.stageHeight, __stage.cameraPosition);
 
-			if (!shareContext)
-				__painter.clear(stageColor, Color.getAlpha(stageColor));
+			if (!__painter.shareContext)
+				__painter.clear(__stage.color, Color.getAlpha(__stage.color));
 
 			__stage.render(__painter);
 			__painter.finishFrame();
 			__painter.frameID = ++__frameID;
 
-			if (!shareContext)
+			if (!__painter.shareContext)
 				__painter.present();
 		} else {
 			dispatchEventWith(starling.events.Event.SKIP_FRAME);
@@ -776,20 +802,14 @@ class Starling extends EventDispatcher {
 			}
 		}
 
-		// figure out touch phase
+		// Determine touch phase
 		switch (event.type) {
-			case TouchEvent.TOUCH_BEGIN:
+			case TouchEvent.TOUCH_BEGIN, MouseEvent.MOUSE_DOWN:
 				phase = TouchPhase.BEGAN;
-			case TouchEvent.TOUCH_MOVE:
-				phase = TouchPhase.MOVED;
-			case TouchEvent.TOUCH_END:
+			case TouchEvent.TOUCH_MOVE, MouseEvent.MOUSE_MOVE:
+				phase = (__leftMouseDown || event.type == TouchEvent.TOUCH_MOVE) ? TouchPhase.MOVED : TouchPhase.HOVER;
+			case TouchEvent.TOUCH_END, MouseEvent.MOUSE_UP:
 				phase = TouchPhase.ENDED;
-			case MouseEvent.MOUSE_DOWN:
-				phase = TouchPhase.BEGAN;
-			case MouseEvent.MOUSE_UP:
-				phase = TouchPhase.ENDED;
-			case MouseEvent.MOUSE_MOVE:
-				phase = (__leftMouseDown ? TouchPhase.MOVED : TouchPhase.HOVER);
 		}
 
 		// move position into viewport bounds
@@ -976,7 +996,7 @@ class Starling extends EventDispatcher {
 	 * Flash components. */
 	public var nativeOverlay(get, never):Sprite;
 
-	private function get_nativeOverlay():Sprite {
+	private inline function get_nativeOverlay():Sprite {
 		return __nativeOverlay;
 	}
 
@@ -984,11 +1004,11 @@ class Starling extends EventDispatcher {
 	 *  Starling. @default false */
 	public var nativeOverlayBlocksTouches(get, set):Bool;
 
-	private function get_nativeOverlayBlocksTouches():Bool {
+	private inline function get_nativeOverlayBlocksTouches():Bool {
 		return __touchProcessor.occlusionTest != null;
 	}
 
-	private function set_nativeOverlayBlocksTouches(value:Bool):Bool {
+	private inline function set_nativeOverlayBlocksTouches(value:Bool):Bool {
 		if (value != __nativeOverlayBlocksTouches)
 			__touchProcessor.occlusionTest = value ? hitTestNativeOverlay : null;
 		return __nativeOverlayBlocksTouches = value;
@@ -1004,11 +1024,11 @@ class Starling extends EventDispatcher {
 	 */
 	public var showStats(get, set):Bool;
 
-	private function get_showStats():Bool {
+	private inline function get_showStats():Bool {
 		return __showStats;
 	}
 
-	private function set_showStats(value:Bool):Bool {
+	private inline function set_showStats(value:Bool):Bool {
 		__showStats = value;
 
 		if (value) {
@@ -1090,21 +1110,21 @@ class Starling extends EventDispatcher {
 	/** The Starling stage object, which is the root of the display tree that is rendered. */
 	public var stage(get, never):Stage;
 
-	private function get_stage():Stage {
+	private inline function get_stage():Stage {
 		return __stage;
 	}
 
 	/** The Flash Stage3D object Starling renders into. */
 	public var stage3D(get, never):Stage3D;
 
-	private function get_stage3D():Stage3D {
+	private inline function get_stage3D():Stage3D {
 		return __painter.stage3D;
 	}
 
 	/** The Flash (2D) stage object Starling renders beneath. */
 	public var nativeStage(get, never):OpenFLStage;
 
-	private function get_nativeStage():OpenFLStage {
+	private inline function get_nativeStage():OpenFLStage {
 		return __nativeStage;
 	}
 
@@ -1112,7 +1132,7 @@ class Starling extends EventDispatcher {
 	 * the event 'ROOT_CREATED' has been dispatched. */
 	public var root(get, never):DisplayObject;
 
-	private function get_root():DisplayObject {
+	private inline function get_root():DisplayObject {
 		return __root;
 	}
 
@@ -1128,11 +1148,11 @@ class Starling extends EventDispatcher {
 	 */
 	public var rootClass(get, set):Class<Dynamic>;
 
-	private function get_rootClass():Class<Dynamic> {
+	private inline function get_rootClass():Class<Dynamic> {
 		return __rootClass;
 	}
 
-	private function set_rootClass(value:Class<Dynamic>):Class<Dynamic> {
+	private inline function set_rootClass(value:Class<Dynamic>):Class<Dynamic> {
 		if (__rootClass != null && __root != null)
 			throw new Error("Root class may not change after root has been instantiated");
 		else if (__rootClass == null) {
@@ -1149,11 +1169,11 @@ class Starling extends EventDispatcher {
 	 * This has to be done manually, then. @default false */
 	public var shareContext(get, set):Bool;
 
-	private function get_shareContext():Bool {
+	private inline function get_shareContext():Bool {
 		return __painter.shareContext;
 	}
 
-	private function set_shareContext(value:Bool):Bool {
+	private inline function set_shareContext(value:Bool):Bool {
 		if (!value)
 			__previousViewPort.setEmpty(); // forces back buffer update
 		return __painter.shareContext = value;
@@ -1163,7 +1183,7 @@ class Starling extends EventDispatcher {
 	 * if the context has not been created yet. */
 	public var profile(get, never):Context3DProfile;
 
-	private function get_profile():Context3DProfile {
+	private inline function get_profile():Context3DProfile {
 		return __painter.profile;
 	}
 
@@ -1173,11 +1193,11 @@ class Starling extends EventDispatcher {
 	 * the application descriptor XML. @default false */
 	public var supportHighResolutions(get, set):Bool;
 
-	private function get_supportHighResolutions():Bool {
+	private inline function get_supportHighResolutions():Bool {
 		return __supportHighResolutions;
 	}
 
-	private function set_supportHighResolutions(value:Bool):Bool {
+	private inline function set_supportHighResolutions(value:Bool):Bool {
 		if (__supportHighResolutions != value) {
 			__supportHighResolutions = value;
 			if (contextValid)
@@ -1192,11 +1212,11 @@ class Starling extends EventDispatcher {
 	 *  @default false */
 	public var supportBrowserZoom(get, set):Bool;
 
-	private function get_supportBrowserZoom():Bool {
+	private inline function get_supportBrowserZoom():Bool {
 		return __supportBrowserZoom;
 	}
 
-	private function set_supportBrowserZoom(value:Bool):Bool {
+	private inline function set_supportBrowserZoom(value:Bool):Bool {
 		if (__supportBrowserZoom != value) {
 			__supportBrowserZoom = value;
 			#if air
@@ -1225,11 +1245,11 @@ class Starling extends EventDispatcher {
 	 */
 	public var skipUnchangedFrames(get, set):Bool;
 
-	private function get_skipUnchangedFrames():Bool {
+	private inline function get_skipUnchangedFrames():Bool {
 		return __skipUnchangedFrames;
 	}
 
-	private function set_skipUnchangedFrames(value:Bool):Bool {
+	private inline function set_skipUnchangedFrames(value:Bool):Bool {
 		__skipUnchangedFrames = value;
 		__nativeStageEmpty = false; // required by 'mustAlwaysRender'
 		if (__statsDisplay != null)
@@ -1242,11 +1262,11 @@ class Starling extends EventDispatcher {
 	 * types of input manually, pass your own custom subclass to this property. */
 	public var touchProcessor(get, set):TouchProcessor;
 
-	private function get_touchProcessor():TouchProcessor {
+	private inline function get_touchProcessor():TouchProcessor {
 		return __touchProcessor;
 	}
 
-	private function set_touchProcessor(value:TouchProcessor):TouchProcessor {
+	private inline function set_touchProcessor(value:TouchProcessor):TouchProcessor {
 		if (value == null)
 			throw new ArgumentError("TouchProcessor must not be null");
 		else if (value != __touchProcessor) {
@@ -1264,11 +1284,11 @@ class Starling extends EventDispatcher {
 	 */
 	public var discardSystemGestures(get, set):Bool;
 
-	private function get_discardSystemGestures():Bool {
+	private inline function get_discardSystemGestures():Bool {
 		return __touchProcessor.discardSystemGestures;
 	}
 
-	private function set_discardSystemGestures(value:Bool):Bool {
+	private inline function set_discardSystemGestures(value:Bool):Bool {
 		__touchProcessor.discardSystemGestures = value;
 		return value;
 	}
@@ -1276,7 +1296,7 @@ class Starling extends EventDispatcher {
 	/** The number of frames that have been rendered since this instance was created. */
 	public var frameID(get, never):UInt;
 
-	private function get_frameID():UInt {
+	private inline function get_frameID():UInt {
 		return __frameID;
 	}
 
@@ -1284,7 +1304,7 @@ class Starling extends EventDispatcher {
 	 * disposed). */
 	public var contextValid(get, never):Bool;
 
-	private function get_contextValid():Bool {
+	private inline function get_contextValid():Bool {
 		return __painter.contextValid;
 	}
 
@@ -1293,35 +1313,35 @@ class Starling extends EventDispatcher {
 	/** The currently active Starling instance. */
 	public static var current(get, never):Starling;
 
-	private static function get_current():Starling {
+	private static inline function get_current():Starling {
 		return sCurrent;
 	}
 
 	/** All Starling instances. <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
 	public static var all(get, never):Array<Starling>;
 
-	private static function get_all():Array<Starling> {
+	private static inline function get_all():Array<Starling> {
 		return sAll;
 	}
 
 	/** The render context of the currently active Starling instance. */
 	public static var currentContext(get, never):Context3D;
 
-	private static function get_currentContext():Context3D {
+	private static inline function get_currentContext():Context3D {
 		return sCurrent != null ? sCurrent.context : null;
 	}
 
 	/** The default juggler of the currently active Starling instance. */
 	public static var currentJuggler(get, never):Juggler;
 
-	private static function get_currentJuggler():Juggler {
+	private static inline function get_currentJuggler():Juggler {
 		return sCurrent != null ? sCurrent.__juggler : null;
 	}
 
 	/** The contentScaleFactor of the currently active Starling instance. */
 	public static var currentContentScaleFactor(get, never):Float;
 
-	private static function get_currentContentScaleFactor():Float {
+	private static inline function get_currentContentScaleFactor():Float {
 		return sCurrent != null ? sCurrent.contentScaleFactor : 1.0;
 	}
 
@@ -1329,7 +1349,7 @@ class Starling extends EventDispatcher {
 	 *  multitouch at any time; just beware that any current touches will be cancelled. */
 	public static var multitouchEnabled(get, set):Bool;
 
-	private static function get_multitouchEnabled():Bool {
+	private static inline function get_multitouchEnabled():Bool {
 		var enabled:Bool = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
 		var outOfSync:Bool = false;
 
@@ -1343,7 +1363,7 @@ class Starling extends EventDispatcher {
 		return enabled;
 	}
 
-	private static function set_multitouchEnabled(value:Bool):Bool {
+	private static inline function set_multitouchEnabled(value:Bool):Bool {
 		var wasEnabled:Bool = Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
 
 		Multitouch.inputMode = value ? MultitouchInputMode.TOUCH_POINT : MultitouchInputMode.NONE;
