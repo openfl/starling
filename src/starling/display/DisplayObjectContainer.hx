@@ -15,7 +15,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
-import openfl.Array;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
 import starling.rendering.BatchToken;
@@ -97,18 +96,24 @@ class DisplayObjectContainer extends DisplayObject {
 
 	/** Disposes the resources of all children. */
 	public override function dispose():Void {
-        // Dispose of all children
-        for (i in 0...__children.length) {
-            __children[i].dispose();
-        }
-    
-        // Call the superclass dispose method
-        super.dispose();
-    }
+		// Dispose of all children
+		for (i in 0...__children.length) {
+			__children[i].dispose();
+		}
+
+		// Call the superclass dispose method
+		super.dispose();
+	}
 
 	// child management
 
-	/** Adds a child to the container. It will be at the frontmost position. */
+	/**
+	 * Adds a child display object to the container at the frontmost position.
+	 * 
+	 * @param child The display object to add as a child.
+	 * @return The added child.
+	 * @throws ArgumentError Thrown if the child is null.
+	 */
 	public function addChild(child:DisplayObject):DisplayObject {
 		return addChildAt(child, __children.length);
 	}
@@ -161,8 +166,15 @@ class DisplayObjectContainer extends DisplayObject {
 		return child;
 	}
 
-	/** Removes a child from the container. If the object is not a child, the method returns
-	 * <code>null</code>. If requested, the child will be disposed right away. */
+	/**
+	 * Removes a child display object from the container. If the object is not a child, 
+	 * the method returns <code>null</code>. If requested, the child will be disposed 
+	 * right away.
+	 * 
+	 * @param child The display object to remove.
+	 * @param dispose If set to true, the child will be disposed right away.
+	 * @return The removed child, or <code>null</code> if the object is not a child of the container.
+	 */
 	public function removeChild(child:DisplayObject, dispose:Bool = false):DisplayObject {
 		var childIndex:Int = getChildIndex(child);
 		if (childIndex != -1)
@@ -222,8 +234,14 @@ class DisplayObjectContainer extends DisplayObject {
 		return child;
 	}
 
-	/** Removes a range of children from the container (endIndex included). 
-	 * If no arguments are given, all children will be removed. */
+	/**
+	 * Removes a range of children from the container (endIndex included). 
+	 * If no arguments are given, all children will be removed.
+	 * 
+	 * @param beginIndex The beginning index of the range of children to remove. Default is 0.
+	 * @param endIndex The ending index of the range of children to remove (inclusive). Default is -1, which means the last child.
+	 * @param dispose If set to true, the children will be disposed right away. Default is false.
+	 */
 	public function removeChildren(beginIndex:Int = 0, endIndex:Int = -1, dispose:Bool = false):Void {
 		// Adjust endIndex if it is out of bounds
 		if (endIndex < 0 || endIndex >= numChildren)
@@ -235,8 +253,14 @@ class DisplayObjectContainer extends DisplayObject {
 		}
 	}
 
-	/** Returns a child object at a certain index. If you pass a negative index,
-	 * '-1' will return the last child, '-2' the second to last child, etc. */
+	/**
+	 * Returns a child display object at a specified index. If you pass a negative index,
+	 * '-1' will return the last child, '-2' the second to last child, and so on.
+	 * 
+	 * @param index The index position of the child object. Negative indices count from the end.
+	 * @return The child display object at the specified index.
+	 * @throws RangeError Thrown if the provided index is out of bounds.
+	 */
 	public function getChildAt(index:Int):DisplayObject {
 		var numChildren:Int = __children.length;
 
@@ -249,7 +273,12 @@ class DisplayObjectContainer extends DisplayObject {
 			throw new RangeError("Invalid child index");
 	}
 
-	/** Returns a child object with a certain name (non-recursively). */
+	/**
+	 * Returns a child display object with a specified name (non-recursively).
+	 * 
+	 * @param name The name of the child to return.
+	 * @return The child display object with the specified name, or <code>null</code> if no child with the given name exists.
+	 */
 	public function getChildByName(name:String):DisplayObject {
 		var numChildren:Int = __children.length;
 		for (i in 0...numChildren)
@@ -259,12 +288,23 @@ class DisplayObjectContainer extends DisplayObject {
 		return null;
 	}
 
-	/** Returns the index of a child within the container, or "-1" if it is not found. */
+	/**
+	 * Returns the index of a child display object within the container, or <code>-1</code> if it is not found.
+	 * 
+	 * @param child The child display object whose index is to be determined.
+	 * @return The index of the child within the container, or <code>-1</code> if the child is not found.
+	 */
 	public function getChildIndex(child:DisplayObject):Int {
 		return __children.indexOf(child);
 	}
 
-	/** Moves a child to a certain index. Children at and after the replaced position move up.*/
+	/**
+	 * Moves a child display object to a specified index. Children at and after the replaced position move up.
+	 * 
+	 * @param child The child display object to move.
+	 * @param index The index position to move the child to.
+	 * @throws ArgumentError Thrown if the specified child is not a child of this container.
+	 */
 	public function setChildIndex(child:DisplayObject, index:Int):Void {
 		var oldIndex:Int = getChildIndex(child);
 		if (oldIndex == index)
@@ -277,7 +317,13 @@ class DisplayObjectContainer extends DisplayObject {
 		setRequiresRedraw();
 	}
 
-	/** Swaps the indexes of two children. */
+	/**
+	 * Swaps the indexes of two child display objects.
+	 * 
+	 * @param child1 The first child display object.
+	 * @param child2 The second child display object.
+	 * @throws ArgumentError Thrown if either of the specified children is not a child of this container.
+	 */
 	public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void {
 		var index1:Int = getChildIndex(child1);
 		var index2:Int = getChildIndex(child2);
@@ -286,7 +332,13 @@ class DisplayObjectContainer extends DisplayObject {
 		swapChildrenAt(index1, index2);
 	}
 
-	/** Swaps the indexes of two children. */
+	/**
+	 * Swaps the indexes of two child display objects at the specified positions.
+	 * 
+	 * @param index1 The index of the first child display object.
+	 * @param index2 The index of the second child display object.
+	 * @throws RangeError Thrown if either of the specified indexes is out of bounds.
+	 */
 	public function swapChildrenAt(index1:Int, index2:Int):Void {
 		var child1:DisplayObject = getChildAt(index1);
 		var child2:DisplayObject = getChildAt(index2);
@@ -295,8 +347,16 @@ class DisplayObjectContainer extends DisplayObject {
 		setRequiresRedraw();
 	}
 
-	/** Sorts the children according to a given function (that works just like the sort function
-	 * of the Array class). */
+	/**
+	 * Sorts the children according to a given comparison function. The comparison function
+	 * should work just like the sort function of the Array class.
+	 * 
+	 * @param compareFunction A function that takes two DisplayObject instances and returns
+	 *                        an integer indicating the order of the objects. The function
+	 *                        should return a negative value if the first object is less than
+	 *                        the second, zero if they are equal, and a positive value if the
+	 *                        first object is greater than the second.
+	 */
 	public function sortChildren(compareFunction:DisplayObject->DisplayObject->Int):Void {
 		sSortBuffer.resize(__children.length);
 		mergeSort(__children, compareFunction, 0, __children.length, sSortBuffer);
@@ -304,7 +364,12 @@ class DisplayObjectContainer extends DisplayObject {
 		setRequiresRedraw();
 	}
 
-	/** Determines if a certain object is a child of the container (recursively). */
+	/**
+	 * Determines if a certain display object is a child of the container, including all its descendants (recursively).
+	 * 
+	 * @param child The display object to test.
+	 * @return A boolean value indicating whether the specified display object is a child (or descendant) of the container.
+	 */
 	public function contains(child:DisplayObject):Bool {
 		while (child != null) {
 			if (child == this)
@@ -465,7 +530,12 @@ class DisplayObjectContainer extends DisplayObject {
 		painter.popState();
 	}
 
-	/** Dispatches an event on all children (recursively). The event must not bubble. */
+	/**
+	 * Dispatches an event on all children (recursively). The event must not bubble.
+	 * 
+	 * @param event The event to dispatch. The event must not bubble.
+	 * @throws ArgumentError Thrown if the event is a bubbling event.
+	 */
 	public function broadcastEvent(event:Event):Void {
 		if (event.bubbles)
 			throw new ArgumentError("Broadcast of bubbling events is prohibited");
@@ -485,25 +555,39 @@ class DisplayObjectContainer extends DisplayObject {
 		sBroadcastListeners.resize(fromIndex);
 	}
 
-	/** Dispatches an event with the given parameters on all children (recursively). 
-	 * The method uses an internal pool of event objects to avoid allocations. */
+	/**
+	 * Dispatches an event with the given parameters on all children (recursively). 
+	 * The method uses an internal pool of event objects to avoid allocations.
+	 * 
+	 * @param eventType The type of event to dispatch.
+	 * @param data Optional data to attach to the event.
+	 */
 	public function broadcastEventWith(eventType:String, data:Dynamic = null):Void {
 		var event:Event = Event.fromPool(eventType, false, data);
 		broadcastEvent(event);
 		Event.toPool(event);
 	}
 
-	/** The number of children of this container. */
+	/**
+	 * The number of children in this container.
+	 * 
+	 * @return The number of child display objects.
+	 */
 	public var numChildren(get, never):Int;
 
 	private inline function get_numChildren():Int {
 		return __children.length;
 	}
 
-	/** If a container is a 'touchGroup', it will act as a single touchable object.
-	 * Touch events will have the container as target, not the touched child.
-	 * (Similar to 'mouseChildren' in the classic display list, but with inverted logic.)
-	 * @default false */
+	/**
+	 * If a container is a 'touchGroup', it will act as a single touchable object.
+	 * Touch events will have the container as their target, not the touched child.
+	 * This is similar to 'mouseChildren' in the classic display list, but with inverted logic.
+	 * 
+	 * @default false
+	 * 
+	 * @return A boolean value indicating whether the container is a touch group.
+	 */
 	public var touchGroup(get, set):Bool;
 
 	private inline function get_touchGroup():Bool {
