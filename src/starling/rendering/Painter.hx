@@ -89,7 +89,7 @@ class Painter
     private var _stage3D:Stage3D;
     private var _context:Context3D;
     private var _shareContext:Bool;
-    private var _drawCount:Int;
+    private var _drawCount:Int = 0;
     private var _frameID:UInt = 0;
     private var _pixelSize:Float;
     private var _enableErrorChecking:Bool;
