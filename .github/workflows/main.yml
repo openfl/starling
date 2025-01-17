@@ -86,6 +86,7 @@ jobs:
           haxelib run lime build samples/particle_demo neko
 
       - name: Build HTML5 samples
+        if: matrix.haxe-version != "3.4.7" # temporarily exclude Haxe 3 until Lime update after 8.2.2 is released
         run: |
           haxelib run lime build samples/demo html5
           haxelib run lime build samples/particle_demo html5
