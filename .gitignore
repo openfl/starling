@@ -12,6 +12,7 @@ docs
 node_modules
 package-lock.json
 lib/_gen
+lib/**/*.as
 npm-debug.log
 dist
 /tests/**/bin
