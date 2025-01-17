@@ -125,7 +125,7 @@ package scenes
             
             Starling.current.juggler.delayCall(colorizeEgg, 1.0, [true]);
             Starling.current.juggler.delayCall(colorizeEgg, 2.0, [false]);
-            Starling.current.juggler.delayCall(function(unused = null):void { _delayButton.enabled = true; }, 2.0);
+            Starling.current.juggler.delayCall(function(unused:* = null):void { _delayButton.enabled = true; }, 2.0);
         }
         
         private function colorizeEgg(colorize:Boolean):void
