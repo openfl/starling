@@ -64,6 +64,6 @@
     "openfl": "^9.3.1"
   },
   "haxeDependencies": {
-    "haxe": "3.4.7"
+    "haxe": "4.0.5"
   }
 }
