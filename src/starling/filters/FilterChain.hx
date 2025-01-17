@@ -33,7 +33,7 @@ class FilterChain extends FragmentFilter
     private static function __init__ () {
         
         untyped Object.defineProperties (FilterChain.prototype, {
-            "numFilters": { get: untyped __js__ ("function () { return this.get_numFilters (); }") },
+            "numFilters": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numFilters (); }") },
         });
         
     }

@@ -69,10 +69,10 @@ class TouchEvent extends Event
     private static function __init__ () {
         
         untyped Object.defineProperties (TouchEvent.prototype, {
-            "timestamp": { get: untyped __js__ ("function () { return this.get_timestamp (); }") },
-            "touches": { get: untyped __js__ ("function () { return this.get_touches (); }") },
-            "shiftKey": { get: untyped __js__ ("function () { return this.get_shiftKey (); }") },
-            "ctrlKey": { get: untyped __js__ ("function () { return this.get_ctrlKey (); }") },
+            "timestamp": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_timestamp (); }") },
+            "touches": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_touches (); }") },
+            "shiftKey": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shiftKey (); }") },
+            "ctrlKey": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_ctrlKey (); }") },
         });
         
     }

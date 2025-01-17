@@ -90,7 +90,7 @@ class TextureAtlas
     private static function __init__ () {
         
         untyped Object.defineProperties (TextureAtlas.prototype, {
-            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }") },
+            "texture": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_texture (); }") },
         });
         
     }

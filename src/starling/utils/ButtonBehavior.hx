@@ -81,13 +81,13 @@ class ButtonBehavior
     private static function __init__ () {
         
         untyped Object.defineProperties (ButtonBehavior.prototype, {
-            "state": { get: untyped __js__ ("function () { return this.get_state (); }"), set: untyped __js__ ("function (v) { return this.set_state (v); }") },
-            "target": { get: untyped __js__ ("function () { return this.get_target (); }") },
-            "onStateChange": { get: untyped __js__ ("function () { return this.get_onStateChange (); }"), set: untyped __js__ ("function (v) { return this.set_onStateChange (v); }") },
-            "useHandCursor": { get: untyped __js__ ("function () { return this.get_useHandCursor (); }"), set: untyped __js__ ("function (v) { return this.set_useHandCursor (v); }") },
-            "enabled": { get: untyped __js__ ("function () { return this.get_enabled (); }"), set: untyped __js__ ("function (v) { return this.set_enabled (v); }") },
-			"minHitAreaSize": { get: untyped __js__ ("function () { return this.get_minHitAreaSize (); }"), set: untyped __js__ ("function (v) { return this.set_minHitAreaSize (v); }") },
-			"abortDistance": { get: untyped __js__ ("function () { return this.get_abortDistance (); }"), set: untyped __js__ ("function (v) { return this.set_abortDistance (v); }") },
+            "state": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_state (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_state (v); }") },
+            "target": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_target (); }") },
+            "onStateChange": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_onStateChange (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_onStateChange (v); }") },
+            "useHandCursor": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_useHandCursor (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_useHandCursor (v); }") },
+            "enabled": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enabled (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enabled (v); }") },
+			"minHitAreaSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_minHitAreaSize (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_minHitAreaSize (v); }") },
+			"abortDistance": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_abortDistance (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_abortDistance (v); }") },
         });
         
     }

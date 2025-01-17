@@ -82,13 +82,13 @@ class Sprite3D extends DisplayObjectContainer
     private static function __init__ () {
         
         untyped Object.defineProperties (Sprite3D.prototype, {
-            "z": { get: untyped __js__ ("function () { return this.get_z (); }"), set: untyped __js__ ("function (v) { return this.set_z (v); }") },
-            "pivotZ": { get: untyped __js__ ("function () { return this.get_pivotZ (); }"), set: untyped __js__ ("function (v) { return this.set_pivotZ (v); }") },
-            "scaleZ": { get: untyped __js__ ("function () { return this.get_scaleZ (); }"), set: untyped __js__ ("function (v) { return this.set_scaleZ (v); }") },
-            "rotationX": { get: untyped __js__ ("function () { return this.get_rotationX (); }"), set: untyped __js__ ("function (v) { return this.set_rotationX (v); }") },
-            "rotationY": { get: untyped __js__ ("function () { return this.get_rotationY (); }"), set: untyped __js__ ("function (v) { return this.set_rotationY (v); }") },
-            "rotationZ": { get: untyped __js__ ("function () { return this.get_rotationZ (); }"), set: untyped __js__ ("function (v) { return this.set_rotationZ (v); }") },
-            "isFlat": { get: untyped __js__ ("function () { return this.get_isFlat (); }") },
+            "z": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_z (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_z (v); }") },
+            "pivotZ": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_pivotZ (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_pivotZ (v); }") },
+            "scaleZ": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleZ (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleZ (v); }") },
+            "rotationX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotationX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rotationX (v); }") },
+            "rotationY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotationY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rotationY (v); }") },
+            "rotationZ": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotationZ (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rotationZ (v); }") },
+            "isFlat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isFlat (); }") },
         });
         
     }

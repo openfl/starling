@@ -53,13 +53,13 @@ class FilterHelper implements IFilterHelper
     private static function __init__ () {
         
         untyped Object.defineProperties (FilterHelper.prototype, {
-            "projectionMatrix3D": { get: untyped __js__ ("function () { return this.get_projectionMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_projectionMatrix3D (v); }") },
-            "renderTarget": { get: untyped __js__ ("function () { return this.get_renderTarget (); }"), set: untyped __js__ ("function (v) { return this.set_renderTarget (v); }") },
-            "clipRect": { get: untyped __js__ ("function () { return this.get_clipRect (); }"), set: untyped __js__ ("function (v) { return this.set_clipRect (v); }") },
-            "targetBounds": { get: untyped __js__ ("function () { return this.get_targetBounds (); }"), set: untyped __js__ ("function (v) { return this.set_targetBounds (v); }") },
-            "target": { get: untyped __js__ ("function () { return this.get_target (); }"), set: untyped __js__ ("function (v) { return this.set_target (v); }") },
-            "targetScale": { get: untyped __js__ ("function () { return this.get_targetScale (); }"), set: untyped __js__ ("function (v) { return this.set_targetScale (v); }") },
-            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
+            "projectionMatrix3D": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_projectionMatrix3D (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_projectionMatrix3D (v); }") },
+            "renderTarget": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_renderTarget (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_renderTarget (v); }") },
+            "clipRect": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_clipRect (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_clipRect (v); }") },
+            "targetBounds": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_targetBounds (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_targetBounds (v); }") },
+            "target": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_target (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_target (v); }") },
+            "targetScale": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_targetScale (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_targetScale (v); }") },
+            "textureFormat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureFormat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureFormat (v); }") },
         });
         
     }

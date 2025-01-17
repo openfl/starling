@@ -35,8 +35,8 @@ class CompositeFilter extends FragmentFilter
     private static function __init__ () {
         
         untyped Object.defineProperties (CompositeFilter.prototype, {
-            "compositeEffect": { get: untyped __js__ ("function () { return this.get_compositeEffect (); }") },
-            "numLayers": { get: untyped __js__ ("function () { return this.get_numLayers (); }") },
+            "compositeEffect": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_compositeEffect (); }") },
+            "numLayers": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numLayers (); }") },
         });
         
     }

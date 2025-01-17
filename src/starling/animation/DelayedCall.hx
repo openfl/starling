@@ -39,12 +39,12 @@ class DelayedCall extends EventDispatcher implements IAnimatable
     private static function __init__ () {
         
         untyped Object.defineProperties (DelayedCall.prototype, {
-            "isComplete": { get: untyped __js__ ("function () { return this.get_alpha (); }") },
-            "totalTime": { get: untyped __js__ ("function () { return this.get_totalTime (); }") },
-            "currentTime": { get: untyped __js__ ("function () { return this.get_currentTime (); }") },
-            "repeatCount": { get: untyped __js__ ("function () { return this.get_repeatCount (); }"), set: untyped __js__ ("function (v) { return this.set_repeatCount (v); }") },
-            "callback": { get: untyped __js__ ("function () { return this.get_callback (); }") },
-            "arguments": { get: untyped __js__ ("function () { return this.get_arguments (); }") },
+            "isComplete": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }") },
+            "totalTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalTime (); }") },
+            "currentTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentTime (); }") },
+            "repeatCount": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_repeatCount (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_repeatCount (v); }") },
+            "callback": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_callback (); }") },
+            "arguments": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_arguments (); }") },
         });
         
     }

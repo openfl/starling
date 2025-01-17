@@ -73,14 +73,14 @@ class Stage extends DisplayObjectContainer
     private static function __init__ () {
         
         untyped Object.defineProperties (Stage.prototype, {
-            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
-            "stageWidth": { get: untyped __js__ ("function () { return this.get_stageWidth (); }"), set: untyped __js__ ("function (v) { return this.set_stageWidth (v); }") },
-            "stageHeight": { get: untyped __js__ ("function () { return this.get_stageHeight (); }"), set: untyped __js__ ("function (v) { return this.set_stageHeight (v); }") },
-            "starling": { get: untyped __js__ ("function () { return this.get_starling (); }"), set: untyped __js__ ("function (v) { return this.set_starling (v); }") },
-            "focalLength": { get: untyped __js__ ("function () { return this.get_focalLength (); }"), set: untyped __js__ ("function (v) { return this.set_focalLength (v); }") },
-            "fieldOfView": { get: untyped __js__ ("function () { return this.get_fieldOfView (); }"), set: untyped __js__ ("function (v) { return this.set_fieldOfView (v); }") },
-            "projectionOffset": { get: untyped __js__ ("function () { return this.get_projectionOffset (); }"), set: untyped __js__ ("function (v) { return this.set_projectionOffset (v); }") },
-            "cameraPosition": { get: untyped __js__ ("function () { return this.get_cameraPosition (); }") },
+            "color": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }") },
+            "stageWidth": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_stageWidth (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_stageWidth (v); }") },
+            "stageHeight": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_stageHeight (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_stageHeight (v); }") },
+            "starling": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_starling (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_starling (v); }") },
+            "focalLength": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_focalLength (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_focalLength (v); }") },
+            "fieldOfView": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fieldOfView (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_fieldOfView (v); }") },
+            "projectionOffset": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_projectionOffset (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_projectionOffset (v); }") },
+            "cameraPosition": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_cameraPosition (); }") },
         });
         
     }

@@ -62,16 +62,16 @@ class MovieClip extends Image implements IAnimatable
     private static function __init__ () {
         
         untyped Object.defineProperties (MovieClip.prototype, {
-            "numFrames": { get: untyped __js__ ("function () { return this.get_numFrames (); }") },
-            "totalTime": { get: untyped __js__ ("function () { return this.get_totalTime (); }") },
-            "currentTime": { get: untyped __js__ ("function () { return this.get_currentTime (); }"), set: untyped __js__ ("function (v) { return this.set_currentTime (v); }") },
-            "loop": { get: untyped __js__ ("function () { return this.get_loop (); }"), set: untyped __js__ ("function (v) { return this.set_loop (v); }") },
-            "muted": { get: untyped __js__ ("function () { return this.get_muted (); }"), set: untyped __js__ ("function (v) { return this.set_muted (v); }") },
-            "soundTransform": { get: untyped __js__ ("function () { return this.get_soundTransform (); }"), set: untyped __js__ ("function (v) { return this.set_soundTransform (v); }") },
-            "currentFrame": { get: untyped __js__ ("function () { return this.get_currentFrame (); }"), set: untyped __js__ ("function (v) { return this.set_currentFrame (v); }") },
-            "fps": { get: untyped __js__ ("function () { return this.get_fps (); }"), set: untyped __js__ ("function (v) { return this.set_fps (v); }") },
-            "isPlaying": { get: untyped __js__ ("function () { return this.get_isPlaying (); }") },
-            "isComplete": { get: untyped __js__ ("function () { return this.get_isComplete (); }") },
+            "numFrames": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numFrames (); }") },
+            "totalTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalTime (); }") },
+            "currentTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentTime (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_currentTime (v); }") },
+            "loop": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_loop (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_loop (v); }") },
+            "muted": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_muted (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_muted (v); }") },
+            "soundTransform": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }") },
+            "currentFrame": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrame (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_currentFrame (v); }") },
+            "fps": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fps (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_fps (v); }") },
+            "isPlaying": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isPlaying (); }") },
+            "isComplete": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isComplete (); }") },
         });
         
     }

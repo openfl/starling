@@ -63,11 +63,11 @@ class VertexDataFormat
     private static function __init__ () {
         
         untyped Object.defineProperties (VertexDataFormat.prototype, {
-            "attributes": { get: untyped __js__ ("function () { return this.get_attributes (); }") },
-            "formatString": { get: untyped __js__ ("function () { return this.get_formatString (); }") },
-            "vertexSize": { get: untyped __js__ ("function () { return this.get_vertexSize (); }") },
-            "vertexSizeIn32Bits": { get: untyped __js__ ("function () { return this.get_vertexSizeIn32Bits (); }") },
-            "numAttributes": { get: untyped __js__ ("function () { return this.get_numAttributes (); }") },
+            "attributes": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_attributes (); }") },
+            "formatString": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_formatString (); }") },
+            "vertexSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexSize (); }") },
+            "vertexSizeIn32Bits": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexSizeIn32Bits (); }") },
+            "numAttributes": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numAttributes (); }") },
         });
         
     }

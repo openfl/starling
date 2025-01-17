@@ -99,14 +99,14 @@ class TouchProcessor
     private static function __init__ () {
         
         untyped global.Object.defineProperties (TouchProcessor.prototype, {
-            "simulateMultitouch": { get: untyped __js__ ("function () { return this.get_simulateMultitouch (); }"), set: untyped __js__ ("function (v) { return this.set_simulateMultitouch (v); }") },
-            "multitapTime": { get: untyped __js__ ("function () { return this.get_multitapTime (); }"), set: untyped __js__ ("function (v) { return this.set_multitapTime (v); }") },
-            "multitapDistance": { get: untyped __js__ ("function () { return this.get_multitapDistance (); }"), set: untyped __js__ ("function (v) { return this.set_multitapDistance (v); }") },
-            "root": { get: untyped __js__ ("function () { return this.get_root (); }"), set: untyped __js__ ("function (v) { return this.set_root (v); }") },
-            "stage": { get: untyped __js__ ("function () { return this.get_stage (); }") },
-            "numCurrentTouches": { get: untyped __js__ ("function () { return this.get_numCurrentTouches (); }") },
-            "occlusionTest": { get: untyped __js__ ("function () { return this.get_occlusionTest (); }"), set: untyped __js__ ("function (v) { return this.set_occlusionTest (v); }") },
-            "discardSystemGestures": { get: untyped __js__ ("function () { return this.get_discardSystemGestures (); }"), set: untyped __js__ ("function (v) { return this.set_discardSystemGestures (v); }") },
+            "simulateMultitouch": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_simulateMultitouch (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_simulateMultitouch (v); }") },
+            "multitapTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_multitapTime (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_multitapTime (v); }") },
+            "multitapDistance": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_multitapDistance (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_multitapDistance (v); }") },
+            "root": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_root (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_root (v); }") },
+            "stage": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_stage (); }") },
+            "numCurrentTouches": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numCurrentTouches (); }") },
+            "occlusionTest": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_occlusionTest (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_occlusionTest (v); }") },
+            "discardSystemGestures": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_discardSystemGestures (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_discardSystemGestures (v); }") },
         });
         
     }

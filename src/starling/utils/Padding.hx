@@ -29,10 +29,10 @@ class Padding extends EventDispatcher
     private static function __init__ () {
         
         untyped Object.defineProperties (Padding.prototype, {
-            "left": { get: untyped __js__ ("function () { return this.get_left (); }"), set: untyped __js__ ("function (v) { return this.set_left (v); }") },
-            "right": { get: untyped __js__ ("function () { return this.get_right (); }"), set: untyped __js__ ("function (v) { return this.set_right (v); }") },
-            "top": { get: untyped __js__ ("function () { return this.get_top (); }"), set: untyped __js__ ("function (v) { return this.set_top (v); }") },
-            "bottom": { get: untyped __js__ ("function () { return this.get_bottom (); }"), set: untyped __js__ ("function (v) { return this.set_bottom (v); }") },
+            "left": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_left (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_left (v); }") },
+            "right": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_right (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_right (v); }") },
+            "top": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_top (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_top (v); }") },
+            "bottom": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bottom (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bottom (v); }") },
         });
         
     }

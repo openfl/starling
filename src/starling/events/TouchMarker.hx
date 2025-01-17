@@ -29,12 +29,12 @@ class TouchMarker extends Sprite
     private static function __init__ () {
         
         untyped Object.defineProperties (TouchMarker.prototype, {
-            "realMarker": { get: untyped __js__ ("function () { return this.get_realMarker(); }") },
-            "mockMarker": { get: untyped __js__ ("function () { return this.get_mockMarker (); }") },
-            "realX": { get: untyped __js__ ("function () { return this.get_realX (); }") },
-            "realY": { get: untyped __js__ ("function () { return this.get_realY (); }") },
-            "mockX": { get: untyped __js__ ("function () { return this.get_mockX (); }") },
-            "mockY": { get: untyped __js__ ("function () { return this.get_mockY (); }") },
+            "realMarker": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_realMarker(); }") },
+            "mockMarker": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mockMarker (); }") },
+            "realX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_realX (); }") },
+            "realY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_realY (); }") },
+            "mockX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mockX (); }") },
+            "mockY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mockY (); }") },
         });
         
     }

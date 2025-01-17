@@ -92,16 +92,16 @@ class BitmapFont implements ITextCompositor
     private static function __init__ () {
         
         untyped Object.defineProperties (BitmapFont.prototype, {
-            "name": { get: untyped __js__ ("function () { return this.get_name (); }") },
-            "size": { get: untyped __js__ ("function () { return this.get_size (); }") },
-            "lineHeight": { get: untyped __js__ ("function () { return this.get_lineHeight (); }") },
-            "smoothing": { get: untyped __js__ ("function () { return this.get_smoothing (); }"), set: untyped __js__ ("function (v) { return this.set_smoothing (v); }") },
-            "baseline": { get: untyped __js__ ("function () { return this.get_baseline (); }"), set: untyped __js__ ("function (v) { return this.set_baseline (v); }") },
-            "offsetX": { get: untyped __js__ ("function () { return this.get_offsetX (); }"), set: untyped __js__ ("function (v) { return this.set_offsetX (v); }") },
-            "offsetY": { get: untyped __js__ ("function () { return this.get_offsetY (); }"), set: untyped __js__ ("function (v) { return this.set_offsetY (v); }") },
-            "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
-            "type": { get: untyped __js__ ("function () { return this.get_type (); }"), set: untyped __js__ ("function (v) { return this.set_type (v); }") },
-            "distanceFieldSpread": { get: untyped __js__ ("function () { return this.get_distanceFieldSpread (); }"), set: untyped __js__ ("function (v) { return this.set_distanceFieldSpread (v); }") },
+            "name": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }") },
+            "size": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }") },
+            "lineHeight": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_lineHeight (); }") },
+            "smoothing": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_smoothing (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_smoothing (v); }") },
+            "baseline": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_baseline (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_baseline (v); }") },
+            "offsetX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_offsetX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_offsetX (v); }") },
+            "offsetY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_offsetY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_offsetY (v); }") },
+            "padding": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_padding (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_padding (v); }") },
+            "type": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_type (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_type (v); }") },
+            "distanceFieldSpread": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_distanceFieldSpread (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_distanceFieldSpread (v); }") },
         });
         
     }

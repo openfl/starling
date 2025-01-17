@@ -116,11 +116,11 @@ class RenderTexture extends SubTexture
     private static function __init__ () {
         
         untyped Object.defineProperties (RenderTexture.prototype, {
-            "isPersistent": { get: untyped __js__ ("function () { return this.get_isPersistent (); }") },
+            "isPersistent": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isPersistent (); }") },
         });
         
         untyped Object.defineProperties (RenderTexture, {
-            "useDoubleBuffering": { get: untyped __js__ ("function () { return RenderTexture.get_useDoubleBuffering (); }"), set: untyped __js__ ("function (v) { return RenderTexture.set_useDoubleBuffering (v); }") },
+            "useDoubleBuffering": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return RenderTexture.get_useDoubleBuffering (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return RenderTexture.set_useDoubleBuffering (v); }") },
         });
         
     }

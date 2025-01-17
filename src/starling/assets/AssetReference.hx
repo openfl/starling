@@ -26,13 +26,13 @@ class AssetReference
     private static function __init__ () {
         
         untyped Object.defineProperties (AssetReference.prototype, {
-            "name": { get: untyped __js__ ("function () { return this.get_name (); }"), set: untyped __js__ ("function (v) { return this.set_name (v); }") },
-            "url": { get: untyped __js__ ("function () { return this.get_url (); }"), set: untyped __js__ ("function (v) { return this.set_url (v); }") },
-            "data": { get: untyped __js__ ("function () { return this.get_data (); }"), set: untyped __js__ ("function (v) { return this.set_data (v); }") },
-            "mimeType": { get: untyped __js__ ("function () { return this.get_mimeType (); }"), set: untyped __js__ ("function (v) { return this.set_mimeType (v); }") },
-            "extension": { get: untyped __js__ ("function () { return this.get_extension (); }"), set: untyped __js__ ("function (v) { return this.set_extension (v); }") },
-            "textureOptions": { get: untyped __js__ ("function () { return this.get_textureOptions (); }"), set: untyped __js__ ("function (v) { return this.set_textureOptions (v); }") },
-            "filename": { get: untyped __js__ ("function () { return this.get_filename (); }") },
+            "name": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_name (v); }") },
+            "url": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_url (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_url (v); }") },
+            "data": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_data (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_data (v); }") },
+            "mimeType": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mimeType (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mimeType (v); }") },
+            "extension": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_extension (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_extension (v); }") },
+            "textureOptions": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureOptions (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureOptions (v); }") },
+            "filename": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_filename (); }") },
         });
         
     }

@@ -34,7 +34,7 @@ import starling.core.Starling;
     private static function __init__ () {
         
         untyped Object.defineProperties (ConcreteRectangleTexture.prototype, {
-            "rectBase": { get: untyped __js__ ("function () { return this.get_rectBase (); }") },
+            "rectBase": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rectBase (); }") },
         });
         
     }

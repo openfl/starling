@@ -65,16 +65,16 @@ class DisplacementMapFilter extends FragmentFilter
     private static function __init__ () {
         
         untyped Object.defineProperties (DisplacementMapFilter.prototype, {
-            "componentX": { get: untyped __js__ ("function () { return this.get_componentX (); }"), set: untyped __js__ ("function (v) { return this.set_componentX (v); }") },
-            "componentY": { get: untyped __js__ ("function () { return this.get_componentY (); }"), set: untyped __js__ ("function (v) { return this.set_componentY (v); }") },
-            "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
-            "scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
-            "mapX": { get: untyped __js__ ("function () { return this.get_mapX (); }"), set: untyped __js__ ("function (v) { return this.set_mapX (v); }") },
-            "mapY": { get: untyped __js__ ("function () { return this.get_mapY (); }"), set: untyped __js__ ("function (v) { return this.set_mapY (v); }") },
-            "mapScaleX": { get: untyped __js__ ("function () { return this.get_mapScaleX (); }"), set: untyped __js__ ("function (v) { return this.set_mapScaleX (v); }") },
-            "mapScaleY": { get: untyped __js__ ("function () { return this.get_mapScaleY (); }"), set: untyped __js__ ("function (v) { return this.set_mapScaleY (v); }") },
-            "mapTexture": { get: untyped __js__ ("function () { return this.get_mapTexture (); }"), set: untyped __js__ ("function (v) { return this.set_mapTexture (v); }") },
-            "mapRepeat": { get: untyped __js__ ("function () { return this.get_mapRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_mapRepeat (v); }") },
+            "componentX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_componentX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_componentX (v); }") },
+            "componentY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_componentY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_componentY (v); }") },
+            "scaleX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleX (v); }") },
+            "scaleY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleY (v); }") },
+            "mapX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapX (v); }") },
+            "mapY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapY (v); }") },
+            "mapScaleX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapScaleX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapScaleX (v); }") },
+            "mapScaleY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapScaleY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapScaleY (v); }") },
+            "mapTexture": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapTexture (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapTexture (v); }") },
+            "mapRepeat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapRepeat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapRepeat (v); }") },
         });
         
     }
@@ -314,12 +314,12 @@ class DisplacementMapEffect extends FilterEffect
     private static function __init__ () {
         
         untyped Object.defineProperties (DisplacementMapEffect.prototype, {
-            "componentX": { get: untyped __js__ ("function () { return this.get_componentX (); }"), set: untyped __js__ ("function (v) { return this.set_componentX (v); }") },
-            "componentY": { get: untyped __js__ ("function () { return this.get_componentY (); }"), set: untyped __js__ ("function (v) { return this.set_componentY (v); }") },
-            "scaleX": { get: untyped __js__ ("function () { return this.get_scaleX (); }"), set: untyped __js__ ("function (v) { return this.set_scaleX (v); }") },
-            "scaleY": { get: untyped __js__ ("function () { return this.get_scaleY (); }"), set: untyped __js__ ("function (v) { return this.set_scaleY (v); }") },
-            "mapTexture": { get: untyped __js__ ("function () { return this.get_mapTexture (); }"), set: untyped __js__ ("function (v) { return this.set_mapTexture (v); }") },
-            "mapRepeat": { get: untyped __js__ ("function () { return this.get_mapRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_mapRepeat (v); }") },
+            "componentX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_componentX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_componentX (v); }") },
+            "componentY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_componentY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_componentY (v); }") },
+            "scaleX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleX (v); }") },
+            "scaleY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleY (v); }") },
+            "mapTexture": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapTexture (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapTexture (v); }") },
+            "mapRepeat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mapRepeat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mapRepeat (v); }") },
         });
         
     }

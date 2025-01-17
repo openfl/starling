@@ -47,9 +47,9 @@ class BlendMode
     private static function __init__ () {
         
         untyped Object.defineProperties (BlendMode.prototype, {
-            "sourceFactor": { get: untyped __js__ ("function () { return this.get_sourceFactor (); }") },
-            "destinationFactor": { get: untyped __js__ ("function () { return this.get_destinationFactor (); }") },
-            "name": { get: untyped __js__ ("function () { return this.get_name (); }") },
+            "sourceFactor": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_sourceFactor (); }") },
+            "destinationFactor": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_destinationFactor (); }") },
+            "name": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }") },
         });
         
     }

@@ -50,12 +50,12 @@ class StatsDisplay extends Sprite
     private static function __init__ () {
         
         untyped Object.defineProperties (StatsDisplay.prototype, {
-            "supportsGpuMem": { get: untyped __js__ ("function () { return this.get_supportsGpuMem (); }") },
-            "drawCount": { get: untyped __js__ ("function () { return this.get_drawCount (); }"), set: untyped __js__ ("function (v) { return this.set_drawCount (v); }") },
-            "fps": { get: untyped __js__ ("function () { return this.get_fps (); }"), set: untyped __js__ ("function (v) { return this.set_fps (v); }") },
-            "memory": { get: untyped __js__ ("function () { return this.get_memory (); }"), set: untyped __js__ ("function (v) { return this.set_memory (v); }") },
-            "gpuMemory": { get: untyped __js__ ("function () { return this.get_gpuMemory (); }"), set: untyped __js__ ("function (v) { return this.set_gpuMemory (v); }") },
-			"showSkipped": { get: untyped __js__ ("function () { return this.get_showSkipped (); }"), set: untyped __js__ ("function (v) { return this.set_showSkipped (v); }") },
+            "supportsGpuMem": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_supportsGpuMem (); }") },
+            "drawCount": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_drawCount (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_drawCount (v); }") },
+            "fps": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fps (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_fps (v); }") },
+            "memory": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_memory (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_memory (v); }") },
+            "gpuMemory": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_gpuMemory (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_gpuMemory (v); }") },
+			"showSkipped": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_showSkipped (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_showSkipped (v); }") },
         });
         
     }

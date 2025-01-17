@@ -82,8 +82,8 @@ class DisplayObjectContainer extends DisplayObject
     private static function __init__ () {
         
         untyped Object.defineProperties (DisplayObjectContainer.prototype, {
-            "numChildren": { get: untyped __js__ ("function () { return this.get_numChildren (); }") },
-            "touchGroup": { get: untyped __js__ ("function () { return this.get_touchGroup (); }"), set: untyped __js__ ("function (v) { return this.set_touchGroup (v); }") },
+            "numChildren": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numChildren (); }") },
+            "touchGroup": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_touchGroup (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_touchGroup (v); }") },
         });
         
     }

@@ -44,14 +44,14 @@ class TextOptions extends EventDispatcher
     private static function __init__ () {
         
         untyped Object.defineProperties (TextOptions.prototype, {
-            "wordWrap": { get: untyped __js__ ("function () { return this.get_wordWrap (); }"), set: untyped __js__ ("function (v) { return this.set_wordWrap (v); }") },
-            "autoSize": { get: untyped __js__ ("function () { return this.get_autoSize (); }"), set: untyped __js__ ("function (v) { return this.set_autoSize (v); }") },
-            "autoScale": { get: untyped __js__ ("function () { return this.get_autoScale (); }"), set: untyped __js__ ("function (v) { return this.set_autoScale (v); }") },
-            "isHtmlText": { get: untyped __js__ ("function () { return this.get_isHtmlText (); }"), set: untyped __js__ ("function (v) { return this.set_isHtmlText (v); }") },
-            "styleSheet": { get: untyped __js__ ("function () { return this.get_styleSheet (); }"), set: untyped __js__ ("function (v) { return this.set_styleSheet (v); }") },
-            "textureScale": { get: untyped __js__ ("function () { return this.get_textureScale (); }"), set: untyped __js__ ("function (v) { return this.set_textureScale (v); }") },
-            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
-            "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
+            "wordWrap": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_wordWrap (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_wordWrap (v); }") },
+            "autoSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_autoSize (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_autoSize (v); }") },
+            "autoScale": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_autoScale (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_autoScale (v); }") },
+            "isHtmlText": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isHtmlText (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_isHtmlText (v); }") },
+            "styleSheet": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_styleSheet (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_styleSheet (v); }") },
+            "textureScale": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureScale (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureScale (v); }") },
+            "textureFormat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureFormat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureFormat (v); }") },
+            "padding": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_padding (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_padding (v); }") },
         });
         
     }

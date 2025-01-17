@@ -134,24 +134,24 @@ class Painter
     #if commonjs
     private static function __init__ () {
         
-        untyped __js__ ("Object").defineProperties (Painter.prototype, {
-            "drawCount": { get: untyped __js__ ("function () { return this.get_drawCount (); }"), set: untyped __js__ ("function (v) { return this.set_drawCount (v); }") },
-            "stencilReferenceValue": { get: untyped __js__ ("function () { return this.get_stencilReferenceValue (); }"), set: untyped __js__ ("function (v) { return this.set_stencilReferenceValue (v); }") },
-            "cacheEnabled": { get: untyped __js__ ("function () { return this.get_cacheEnabled (); }"), set: untyped __js__ ("function (v) { return this.set_cacheEnabled (v); }") },
-            "state": { get: untyped __js__ ("function () { return this.get_state (); }") },
-            "stage3D": { get: untyped __js__ ("function () { return this.get_stage3D (); }") },
-            "context": { get: untyped __js__ ("function () { return this.get_context (); }") },
-            "frameID": { get: untyped __js__ ("function () { return this.get_frameID (); }"), set: untyped __js__ ("function (v) { return this.set_frameID (v); }") },
-            "pixelSize": { get: untyped __js__ ("function () { return this.get_pixelSize (); }"), set: untyped __js__ ("function (v) { return this.set_pixelSize (v); }") },
-            "shareContext": { get: untyped __js__ ("function () { return this.get_shareContext (); }"), set: untyped __js__ ("function (v) { return this.set_shareContext (v); }") },
-            "enableErrorChecking": { get: untyped __js__ ("function () { return this.get_enableErrorChecking (); }"), set: untyped __js__ ("function (v) { return this.set_enableErrorChecking (v); }") },
-            "backBufferWidth": { get: untyped __js__ ("function () { return this.get_backBufferWidth (); }") },
-            "backBufferHeight": { get: untyped __js__ ("function () { return this.get_backBufferHeight (); }") },
-            "backBufferScaleFactor": { get: untyped __js__ ("function () { return this.get_backBufferScaleFactor (); }") },
-            "contextValid": { get: untyped __js__ ("function () { return this.get_contextValid (); }") },
-            "profile": { get: untyped __js__ ("function () { return this.get_profile (); }") },
-            "sharedData": { get: untyped __js__ ("function () { return this.get_sharedData (); }") },
-            //"programs": { get: untyped __js__ ("function () { return this.get_programs (); }") },
+        untyped #if haxe4 js.Syntax.code #else __js__ #end ("Object").defineProperties (Painter.prototype, {
+            "drawCount": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_drawCount (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_drawCount (v); }") },
+            "stencilReferenceValue": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_stencilReferenceValue (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_stencilReferenceValue (v); }") },
+            "cacheEnabled": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_cacheEnabled (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_cacheEnabled (v); }") },
+            "state": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_state (); }") },
+            "stage3D": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_stage3D (); }") },
+            "context": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_context (); }") },
+            "frameID": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_frameID (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_frameID (v); }") },
+            "pixelSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_pixelSize (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_pixelSize (v); }") },
+            "shareContext": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shareContext (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shareContext (v); }") },
+            "enableErrorChecking": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enableErrorChecking (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enableErrorChecking (v); }") },
+            "backBufferWidth": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_backBufferWidth (); }") },
+            "backBufferHeight": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_backBufferHeight (); }") },
+            "backBufferScaleFactor": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_backBufferScaleFactor (); }") },
+            "contextValid": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_contextValid (); }") },
+            "profile": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_profile (); }") },
+            "sharedData": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_sharedData (); }") },
+            //"programs": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_programs (); }") },
         });
         
     }

@@ -62,9 +62,9 @@ class Juggler implements IAnimatable
     private static function __init__ () {
         
         untyped Object.defineProperties (Juggler.prototype, {
-            "elapsedTime": { get: untyped __js__ ("function () { return this.get_elapsedTime (); }") },
-            "timeScale": { get: untyped __js__ ("function () { return this.get_timeScale (); }"), set: untyped __js__ ("function (v) { return this.set_timeScale (v); }") },
-            "objects": { get: untyped __js__ ("function () { return this.get_objects (); }") },
+            "elapsedTime": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_elapsedTime (); }") },
+            "timeScale": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_timeScale (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_timeScale (v); }") },
+            "objects": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_objects (); }") },
         });
         
     }

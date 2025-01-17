@@ -127,16 +127,16 @@ class VertexData
     private static function __init__ () {
         
         untyped Object.defineProperties (VertexData.prototype, {
-            "premultipliedAlpha": { get: untyped __js__ ("function () { return this.get_premultipliedAlpha (); }"), set: untyped __js__ ("function (v) { return this.set_premultipliedAlpha (v); }") },
-            "numVertices": { get: untyped __js__ ("function () { return this.get_numVertices (); }"), set: untyped __js__ ("function (v) { return this.set_numVertices (v); }") },
-            "rawData": { get: untyped __js__ ("function () { return this.get_rawData (); }") },
-            "format": { get: untyped __js__ ("function () { return this.get_format (); }"), set: untyped __js__ ("function (v) { return this.set_format (v); }") },
-            "tinted": { get: untyped __js__ ("function () { return this.get_tinted (); }"), set: untyped __js__ ("function (v) { return this.set_tinted (v); }") },
-            "formatString": { get: untyped __js__ ("function () { return this.get_formatString (); }") },
-            "vertexSize": { get: untyped __js__ ("function () { return this.get_vertexSize (); }") },
-            "vertexSizeIn32Bits": { get: untyped __js__ ("function () { return this.get_vertexSizeIn32Bits (); }") },
-            "size": { get: untyped __js__ ("function () { return this.get_size (); }") },
-            "sizeIn32Bits": { get: untyped __js__ ("function () { return this.get_sizeIn32Bits (); }") },
+            "premultipliedAlpha": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_premultipliedAlpha (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_premultipliedAlpha (v); }") },
+            "numVertices": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numVertices (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_numVertices (v); }") },
+            "rawData": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rawData (); }") },
+            "format": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_format (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_format (v); }") },
+            "tinted": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tinted (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tinted (v); }") },
+            "formatString": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_formatString (); }") },
+            "vertexSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexSize (); }") },
+            "vertexSizeIn32Bits": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexSizeIn32Bits (); }") },
+            "size": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }") },
+            "sizeIn32Bits": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_sizeIn32Bits (); }") },
         });
         
     }

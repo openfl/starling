@@ -127,17 +127,17 @@ class DistanceFieldStyle extends MeshStyle
     private static function __init__ () {
         
         untyped Object.defineProperties (DistanceFieldStyle.prototype, {
-            "mode": { get: untyped __js__ ("function () { return this.get_mode (); }"), set: untyped __js__ ("function (v) { return this.set_mode (v); }") },
-            "multiChannel": { get: untyped __js__ ("function () { return this.get_multiChannel (); }"), set: untyped __js__ ("function (v) { return this.set_multiChannel (v); }") },
-            "threshold": { get: untyped __js__ ("function () { return this.get_threshold (); }"), set: untyped __js__ ("function (v) { return this.set_threshold (v); }") },
-            "softness": { get: untyped __js__ ("function () { return this.get_softness (); }"), set: untyped __js__ ("function (v) { return this.set_softness (v); }") },
-            "alpha": { get: untyped __js__ ("function () { return this.get_alpha (); }"), set: untyped __js__ ("function (v) { return this.set_alpha (v); }") },
-            "outerThreshold": { get: untyped __js__ ("function () { return this.get_outerThreshold (); }"), set: untyped __js__ ("function (v) { return this.set_outerThreshold (v); }") },
-            "outerAlphaStart": { get: untyped __js__ ("function () { return this.get_outerAlphaStart (); }"), set: untyped __js__ ("function (v) { return this.set_outerAlphaStart (v); }") },
-            "outerAlphaEnd": { get: untyped __js__ ("function () { return this.get_outerAlphaEnd (); }"), set: untyped __js__ ("function (v) { return this.set_outerAlphaEnd (v); }") },
-            "outerColor": { get: untyped __js__ ("function () { return this.get_outerColor (); }"), set: untyped __js__ ("function (v) { return this.set_outerColor (v); }") },
-            "shadowOffsetX": { get: untyped __js__ ("function () { return this.get_shadowOffsetX (); }"), set: untyped __js__ ("function (v) { return this.set_shadowOffsetX (v); }") },
-            "shadowOffsetY": { get: untyped __js__ ("function () { return this.get_shadowOffsetY (); }"), set: untyped __js__ ("function (v) { return this.set_shadowOffsetY (v); }") },
+            "mode": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mode (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mode (v); }") },
+            "multiChannel": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_multiChannel (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_multiChannel (v); }") },
+            "threshold": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_threshold (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_threshold (v); }") },
+            "softness": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_softness (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_softness (v); }") },
+            "alpha": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }") },
+            "outerThreshold": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_outerThreshold (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_outerThreshold (v); }") },
+            "outerAlphaStart": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_outerAlphaStart (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_outerAlphaStart (v); }") },
+            "outerAlphaEnd": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_outerAlphaEnd (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_outerAlphaEnd (v); }") },
+            "outerColor": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_outerColor (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_outerColor (v); }") },
+            "shadowOffsetX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shadowOffsetX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shadowOffsetX (v); }") },
+            "shadowOffsetY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shadowOffsetY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shadowOffsetY (v); }") },
         });
         
     }

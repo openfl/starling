@@ -33,8 +33,8 @@ class ResizeEvent extends Event
     private static function __init__ () {
         
         untyped Object.defineProperties (ResizeEvent.prototype, {
-            "width": { get: untyped __js__ ("function () { return this.get_width (); }") },
-            "height": { get: untyped __js__ ("function () { return this.get_height (); }") },
+            "width": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_width (); }") },
+            "height": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_height (); }") },
         });
         
     }

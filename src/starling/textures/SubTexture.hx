@@ -40,10 +40,10 @@ class SubTexture extends Texture
     private static function __init__ () {
         
         untyped Object.defineProperties (SubTexture.prototype, {
-            "parent": { get: untyped __js__ ("function () { return this.get_parent (); }") },
-            "ownsParent": { get: untyped __js__ ("function () { return this.get_ownsParent (); }") },
-            "rotated": { get: untyped __js__ ("function () { return this.get_rotated (); }") },
-            "region": { get: untyped __js__ ("function () { return this.get_region (); }") },
+            "parent": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_parent (); }") },
+            "ownsParent": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_ownsParent (); }") },
+            "rotated": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotated (); }") },
+            "region": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_region (); }") },
         });
         
     }

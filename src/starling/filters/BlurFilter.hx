@@ -33,13 +33,13 @@ class BlurFilter extends FragmentFilter
     private static function __init__ () {
         
         untyped Object.defineProperties (BlurFilter.prototype, {
-            "totalBlurX": { get: untyped __js__ ("function () { return this.get_totalBlurX (); }") },
-            "totalBlurY": { get: untyped __js__ ("function () { return this.get_totalBlurY (); }") },
-            "blurX": { get: untyped __js__ ("function () { return this.get_blurX (); }"), set: untyped __js__ ("function (v) { return this.set_blurX (v); }") },
-            "blurY": { get: untyped __js__ ("function () { return this.get_blurY (); }"), set: untyped __js__ ("function (v) { return this.set_blurY (v); }") },
-            "quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
-            "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
-            "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
+            "totalBlurX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalBlurX (); }") },
+            "totalBlurY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalBlurY (); }") },
+            "blurX": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurX (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurX (v); }") },
+            "blurY": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurY (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurY (v); }") },
+            "quality": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }") },
+            "direction": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_direction (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_direction (v); }") },
+            "strength": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_strength (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_strength (v); }") },
         });
         
     }
@@ -228,9 +228,9 @@ class BlurEffect extends FilterEffect
     private static function __init__ () {
         
         untyped Object.defineProperties (BlurEffect.prototype, {
-            "direction": { get: untyped __js__ ("function () { return this.get_direction (); }"), set: untyped __js__ ("function (v) { return this.set_direction (v); }") },
-            "strength": { get: untyped __js__ ("function () { return this.get_strength (); }"), set: untyped __js__ ("function (v) { return this.set_strength (v); }") },
-            "quality": { get: untyped __js__ ("function () { return this.get_quality (); }"), set: untyped __js__ ("function (v) { return this.set_quality (v); }") },
+            "direction": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_direction (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_direction (v); }") },
+            "strength": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_strength (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_strength (v); }") },
+            "quality": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }") },
         });
         
     }

@@ -81,12 +81,12 @@ class IndexData
     private static function __init__ () {
         
         untyped Object.defineProperties (IndexData.prototype, {
-            "numIndices": { get: untyped __js__ ("function () { return this.get_numIndices (); }"), set: untyped __js__ ("function (v) { return this.set_numIndices (v); }") },
-            "numTriangles": { get: untyped __js__ ("function () { return this.get_numTriangles (); }"), set: untyped __js__ ("function (v) { return this.set_numTriangles (v); }") },
-            "numQuads": { get: untyped __js__ ("function () { return this.get_numQuads (); }"), set: untyped __js__ ("function (v) { return this.set_numQuads (v); }") },
-            "indexSizeInBytes": { get: untyped __js__ ("function () { return this.get_indexSizeInBytes (); }") },
-            "useQuadLayout": { get: untyped __js__ ("function () { return this.get_useQuadLayout (); }"), set: untyped __js__ ("function (v) { return this.set_useQuadLayout (v); }") },
-            "rawData": { get: untyped __js__ ("function () { return this.get_rawData (); }") },
+            "numIndices": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numIndices (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_numIndices (v); }") },
+            "numTriangles": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numTriangles (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_numTriangles (v); }") },
+            "numQuads": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numQuads (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_numQuads (v); }") },
+            "indexSizeInBytes": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_indexSizeInBytes (); }") },
+            "useQuadLayout": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_useQuadLayout (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_useQuadLayout (v); }") },
+            "rawData": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rawData (); }") },
         });
         
     }

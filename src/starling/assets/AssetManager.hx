@@ -171,12 +171,12 @@ class AssetManager extends EventDispatcher
     private static function __init__ () {
         
         untyped Object.defineProperties (AssetManager.prototype, {
-            "verbose": { get: untyped __js__ ("function () { return this.get_verbose (); }"), set: untyped __js__ ("function (v) { return this.set_verbose (v); }") },
-            "numQueuedAssets": { get: untyped __js__ ("function () { return this.get_numQueuedAssets (); }") },
-            "numConnections": { get: untyped __js__ ("function () { return this.get_numConnections (); }"), set: untyped __js__ ("function (v) { return this.set_numConnections (v); }") },
-            "textureOptions": { get: untyped __js__ ("function () { return this.get_textureOptions (); }"), set: untyped __js__ ("function (v) { return this.set_textureOptions (v); }") },
-            "dataLoader": { get: untyped __js__ ("function () { return this.get_dataLoader (); }"), set: untyped __js__ ("function (v) { return this.set_dataLoader (v); }") },
-            "registerBitmapFontsWithFontFace": { get: untyped __js__ ("function () { return this.get_registerBitmapFontsWithFontFace (); }"), set: untyped __js__ ("function (v) { return this.set_registerBitmapFontsWithFontFace (v); }") },
+            "verbose": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_verbose (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_verbose (v); }") },
+            "numQueuedAssets": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numQueuedAssets (); }") },
+            "numConnections": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numConnections (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_numConnections (v); }") },
+            "textureOptions": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureOptions (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureOptions (v); }") },
+            "dataLoader": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_dataLoader (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_dataLoader (v); }") },
+            "registerBitmapFontsWithFontFace": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_registerBitmapFontsWithFontFace (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_registerBitmapFontsWithFontFace (v); }") },
         });
         
     }
@@ -1130,7 +1130,7 @@ class AssetPostProcessor
     private static function __init__ () {
         
         untyped Object.defineProperties (AssetPostProcessor.prototype, {
-            "priority": { get: untyped __js__ ("function () { return this.get_priority (); }") },
+            "priority": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_priority (); }") },
         });
         
     }

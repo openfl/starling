@@ -123,17 +123,17 @@ class FragmentFilter extends EventDispatcher
     private static function __init__ () {
         
         untyped Object.defineProperties (FragmentFilter.prototype, {
-            "effect": { get: untyped __js__ ("function () { return this.get_effect (); }") },
-            "vertexData": { get: untyped __js__ ("function () { return this.get_vertexData (); }") },
-            "indexData": { get: untyped __js__ ("function () { return this.get_indexData (); }") },
-            "numPasses": { get: untyped __js__ ("function () { return this.get_numPasses (); }") },
-            "padding": { get: untyped __js__ ("function () { return this.get_padding (); }"), set: untyped __js__ ("function (v) { return this.set_padding (v); }") },
-            "isCached": { get: untyped __js__ ("function () { return this.get_isCached (); }") },
-            "resolution": { get: untyped __js__ ("function () { return this.get_resolution (); }"), set: untyped __js__ ("function (v) { return this.set_resolution (v); }") },
-            "antiAliasing": { get: untyped __js__ ("function () { return this.get_antiAliasing (); }"), set: untyped __js__ ("function (v) { return this.set_antiAliasing (v); }") },
-            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
-            "textureFormat": { get: untyped __js__ ("function () { return this.get_textureFormat (); }"), set: untyped __js__ ("function (v) { return this.set_textureFormat (v); }") },
-            "alwaysDrawToBackBuffer": { get: untyped __js__ ("function () { return this.get_alwaysDrawToBackBuffer (); }"), set: untyped __js__ ("function (v) { return this.set_alwaysDrawToBackBuffer (v); }") },
+            "effect": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_effect (); }") },
+            "vertexData": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexData (); }") },
+            "indexData": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_indexData (); }") },
+            "numPasses": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numPasses (); }") },
+            "padding": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_padding (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_padding (v); }") },
+            "isCached": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isCached (); }") },
+            "resolution": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_resolution (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_resolution (v); }") },
+            "antiAliasing": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_antiAliasing (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_antiAliasing (v); }") },
+            "textureSmoothing": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureSmoothing (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureFormat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureFormat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureFormat (v); }") },
+            "alwaysDrawToBackBuffer": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alwaysDrawToBackBuffer (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alwaysDrawToBackBuffer (v); }") },
         });
         
     }

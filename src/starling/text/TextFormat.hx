@@ -44,17 +44,17 @@ class TextFormat extends EventDispatcher
     private static function __init__ () {
         
         untyped Object.defineProperties (TextFormat.prototype, {
-            "font": { get: untyped __js__ ("function () { return this.get_font (); }"), set: untyped __js__ ("function (v) { return this.set_font (v); }") },
-            "size": { get: untyped __js__ ("function () { return this.get_size (); }"), set: untyped __js__ ("function (v) { return this.set_size (v); }") },
-            "color": { get: untyped __js__ ("function () { return this.get_color (); }"), set: untyped __js__ ("function (v) { return this.set_color (v); }") },
-            "bold": { get: untyped __js__ ("function () { return this.get_bold (); }"), set: untyped __js__ ("function (v) { return this.set_bold (v); }") },
-            "italic": { get: untyped __js__ ("function () { return this.get_italic (); }"), set: untyped __js__ ("function (v) { return this.set_italic (v); }") },
-            "underline": { get: untyped __js__ ("function () { return this.get_underline (); }"), set: untyped __js__ ("function (v) { return this.set_underline (v); }") },
-            "horizontalAlign": { get: untyped __js__ ("function () { return this.get_horizontalAlign (); }"), set: untyped __js__ ("function (v) { return this.set_horizontalAlign (v); }") },
-            "verticalAlign": { get: untyped __js__ ("function () { return this.get_verticalAlign (); }"), set: untyped __js__ ("function (v) { return this.set_verticalAlign (v); }") },
-            "kerning": { get: untyped __js__ ("function () { return this.get_kerning (); }"), set: untyped __js__ ("function (v) { return this.set_kerning (v); }") },
-            "leading": { get: untyped __js__ ("function () { return this.get_leading (); }"), set: untyped __js__ ("function (v) { return this.set_leading (v); }") },
-            "letterSpacing": { get: untyped __js__ ("function () { return this.get_letterSpacing (); }"), set: untyped __js__ ("function (v) { return this.set_letterSpacing (v); }") },
+            "font": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_font (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_font (v); }") },
+            "size": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_size (v); }") },
+            "color": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }") },
+            "bold": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bold (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bold (v); }") },
+            "italic": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_italic (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_italic (v); }") },
+            "underline": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_underline (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_underline (v); }") },
+            "horizontalAlign": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_horizontalAlign (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_horizontalAlign (v); }") },
+            "verticalAlign": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_verticalAlign (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_verticalAlign (v); }") },
+            "kerning": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_kerning (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_kerning (v); }") },
+            "leading": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_leading (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_leading (v); }") },
+            "letterSpacing": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_letterSpacing (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_letterSpacing (v); }") },
         });
         
     }

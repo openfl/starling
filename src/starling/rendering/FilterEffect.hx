@@ -49,9 +49,9 @@ class FilterEffect extends Effect
     private static function __init__ () {
         
         untyped Object.defineProperties (FilterEffect.prototype, {
-            "texture": { get: untyped __js__ ("function () { return this.get_texture (); }"), set: untyped __js__ ("function (v) { return this.set_texture (v); }") },
-            "textureSmoothing": { get: untyped __js__ ("function () { return this.get_textureSmoothing (); }"), set: untyped __js__ ("function (v) { return this.set_textureSmoothing (v); }") },
-            "textureRepeat": { get: untyped __js__ ("function () { return this.get_textureRepeat (); }"), set: untyped __js__ ("function (v) { return this.set_textureRepeat (v); }") },
+            "texture": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_texture (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_texture (v); }") },
+            "textureSmoothing": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureSmoothing (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureSmoothing (v); }") },
+            "textureRepeat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textureRepeat (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textureRepeat (v); }") },
         });
         
     }

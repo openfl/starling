@@ -118,17 +118,17 @@ class Effect
     private static function __init__ () {
         
         untyped Object.defineProperties (Effect.prototype, {
-            "programVariantName": { get: untyped __js__ ("function () { return this.get_programVariantName (); }") },
-            "programBaseName": { get: untyped __js__ ("function () { return this.get_programBaseName (); }"), set: untyped __js__ ("function (v) { return this.set_programBaseName (v); }") },
-            "programName": { get: untyped __js__ ("function () { return this.get_programName (); }") },
-            "program": { get: untyped __js__ ("function () { return this.get_program (); }") },
-            "onRestore": { get: untyped __js__ ("function () { return this.get_onRestore (); }"), set: untyped __js__ ("function (v) { return this.set_onRestore (v); }") },
-            "vertexFormat": { get: untyped __js__ ("function () { return this.get_vertexFormat (); }") },
-            "mvpMatrix3D": { get: untyped __js__ ("function () { return this.get_mvpMatrix3D (); }"), set: untyped __js__ ("function (v) { return this.set_mvpMatrix3D (v); }") },
-            "indexBuffer": { get: untyped __js__ ("function () { return this.get_indexBuffer (); }") },
-            "indexBufferSize": { get: untyped __js__ ("function () { return this.get_indexBufferSize (); }") },
-            "vertexBuffer": { get: untyped __js__ ("function () { return this.get_vertexBuffer (); }") },
-            "vertexBufferSize": { get: untyped __js__ ("function () { return this.get_vertexBufferSize (); }") },
+            "programVariantName": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_programVariantName (); }") },
+            "programBaseName": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_programBaseName (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_programBaseName (v); }") },
+            "programName": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_programName (); }") },
+            "program": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_program (); }") },
+            "onRestore": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_onRestore (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_onRestore (v); }") },
+            "vertexFormat": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexFormat (); }") },
+            "mvpMatrix3D": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mvpMatrix3D (); }"), set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mvpMatrix3D (v); }") },
+            "indexBuffer": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_indexBuffer (); }") },
+            "indexBufferSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_indexBufferSize (); }") },
+            "vertexBuffer": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexBuffer (); }") },
+            "vertexBufferSize": { get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_vertexBufferSize (); }") },
         });
         
     }
