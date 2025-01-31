@@ -241,25 +241,7 @@ class AS3ExternsGenerator {
 		}
 		result.add(' {\n');
 		result.add(generateClassTypeImports(classType));
-		result.add('/**\n * @externs\n');
-		if (classType.doc != null && StringTools.trim(classType.doc).length > 0) {
-			var lines = ~/\r?\n/g.split(classType.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add(' * $line\n');
-				} else {
-					result.add(' * $line\n');
-				}
-			}
-		}
-		result.add(' */\n');
+		result.add(generateDocs(classType.doc, true, ""));
 		var className = baseTypeToUnqualifiedName(classType);
 		result.add('public class $className');
 		if (classType.superClass != null) {
@@ -310,25 +292,7 @@ class AS3ExternsGenerator {
 	private function generateClassField(classField:ClassField, classType:ClassType, isStatic:Bool,
 			interfaces:Array<{t:Ref<ClassType>, params:Array<Type>}>):String {
 		var result = new StringBuf();
-		if (classField.doc != null && StringTools.trim(classField.doc).length > 0) {
-			result.add("\t/**\n");
-			var lines = ~/\r?\n/g.split(classField.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add('\t * $line\n');
-				} else {
-					result.add('\t * $line\n');
-				}
-			}
-			result.add("\t */\n");
-		}
+		result.add(generateDocs(classField.doc, false, "\t"));
 		result.add("\t");
 		var superClassType:ClassType = null;
 		var skippedSuperClass = false;
@@ -653,25 +617,7 @@ class AS3ExternsGenerator {
 		}
 		result.add(' {\n');
 		result.add(generateClassTypeImports(interfaceType));
-		result.add('/**\n');
-		if (interfaceType.doc != null && StringTools.trim(interfaceType.doc).length > 0) {
-			var lines = ~/\r?\n/g.split(interfaceType.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add(' * $line\n');
-				} else {
-					result.add(' * $line\n');
-				}
-			}
-		}
-		result.add(' * @externs\n */\n');
+		result.add(generateDocs(interfaceType.doc, true, ""));
 		result.add('public interface ${interfaceType.name}');
 		var interfaces = interfaceType.interfaces;
 		var firstInterface = false;
@@ -702,25 +648,7 @@ class AS3ExternsGenerator {
 
 	private function generateInterfaceField(interfaceField:ClassField):String {
 		var result = new StringBuf();
-		if (interfaceField.doc != null && StringTools.trim(interfaceField.doc).length > 0) {
-			result.add("\t/**\n");
-			var lines = ~/\r?\n/g.split(interfaceField.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add('\t * $line\n');
-				} else {
-					result.add('\t * $line\n');
-				}
-			}
-			result.add("\t */\n");
-		}
+		result.add(generateDocs(interfaceField.doc, false, "\t"));
 		result.add("\t");
 		switch (interfaceField.kind) {
 			case FMethod(k):
@@ -795,25 +723,7 @@ class AS3ExternsGenerator {
 			result.add(' ${enumType.pack.join(".")}');
 		}
 		result.add(' {\n');
-		result.add('/**\n');
-		if (enumType.doc != null && StringTools.trim(enumType.doc).length > 0) {
-			var lines = ~/\r?\n/g.split(enumType.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add(' * $line\n');
-				} else {
-					result.add(' * $line\n');
-				}
-			}
-		}
-		result.add(' * @externs\n */\n');
+		result.add(generateDocs(enumType.doc, true, ""));
 		result.add('public class ${enumType.name}');
 		result.add(' {\n');
 		for (enumField in enumType.constructs) {
@@ -826,25 +736,7 @@ class AS3ExternsGenerator {
 
 	private function generateEnumField(enumField:EnumField, enumType:EnumType, enumTypeParams:Array<Type>):String {
 		var result = new StringBuf();
-		if (enumField.doc != null && StringTools.trim(enumField.doc).length > 0) {
-			result.add("\t/**\n");
-			var lines = ~/\r?\n/g.split(enumField.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add('\t * $line\n');
-				} else {
-					result.add('\t * $line\n');
-				}
-			}
-			result.add("\t */\n");
-		}
+		result.add(generateDocs(enumField.doc, false, "\t"));
 		result.add("\t");
 		result.add('public static ');
 		// if (enumField.args.length == 0) {
@@ -892,25 +784,7 @@ class AS3ExternsGenerator {
 			result.add(' ${abstractType.pack.join(".")}');
 		}
 		result.add(' {\n');
-		result.add('/**\n');
-		if (abstractType.doc != null && StringTools.trim(abstractType.doc).length > 0) {
-			var lines = ~/\r?\n/g.split(abstractType.doc);
-			var addedLine = false;
-			for (line in lines) {
-				if (!addedLine && ~/^\s*$/.match(line)) {
-					continue;
-				}
-				addedLine = true;
-				var leadingStar = ~/^(\s*\*\s*)/;
-				if (leadingStar.match(line)) {
-					line = line.substr(leadingStar.matchedPos().len);
-					result.add(' * $line\n');
-				} else {
-					result.add(' * $line\n');
-				}
-			}
-		}
-		result.add(' * @externs\n */\n');
+		result.add(generateDocs(abstractType.doc, true, ""));
 		result.add('public class ${abstractType.name}');
 		result.add(' {\n');
 		if (abstractType.impl != null) {
@@ -924,6 +798,40 @@ class AS3ExternsGenerator {
 		}
 		result.add('}\n');
 		result.add('}\n');
+		return result.toString();
+	}
+
+	private function generateDocs(doc:String, externs:Bool, indent:String):String {
+		if (doc == null || StringTools.trim(doc).length == 0) {
+			return "";
+		}
+		
+		var result = new StringBuf();
+		result.add('$indent/**\n');
+		var lines = ~/\r?\n/g.split(doc);
+		var addedLine = false;
+		var checkedLeadingStar = false;
+		var hasLeadingStar = false;
+		for (line in lines) {
+			if (!addedLine && ~/^\s*$/.match(line)) {
+				continue;
+			}
+			addedLine = true;
+			var leadingStar = ~/^(\s*\*\s*)/;
+			if ((!checkedLeadingStar || hasLeadingStar) && leadingStar.match(line)) {
+				checkedLeadingStar = true;
+				hasLeadingStar = true;
+				line = line.substr(leadingStar.matchedPos().len);
+			} else if (!checkedLeadingStar) {
+				checkedLeadingStar = true;
+				hasLeadingStar = false;
+			}
+			result.add('$indent * $line\n');
+		}
+		if (externs) {
+			result.add('$indent * @externs\n');
+		}
+		result.add('$indent */\n');
 		return result.toString();
 	}
 
