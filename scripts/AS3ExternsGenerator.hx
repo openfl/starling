@@ -48,7 +48,7 @@ class AS3ExternsGenerator {
 		}
 	}
 
-	public static function generate(?options:GeneratorOptions):Void {
+	public static function generate(?options:AS3GeneratorOptions):Void {
 		var outputDirPath = Path.join([Path.directory(Compiler.getOutput()), "as3-externs"]);
 		if (options != null && options.outputPath != null) {
 			outputDirPath = options.outputPath;
@@ -62,9 +62,9 @@ class AS3ExternsGenerator {
 		});
 	}
 
-	private var options:GeneratorOptions;
+	private var options:AS3GeneratorOptions;
 
-	private function new(?options:GeneratorOptions) {
+	private function new(?options:AS3GeneratorOptions) {
 		this.options = options;
 	}
 
@@ -195,6 +195,11 @@ class AS3ExternsGenerator {
 		if (baseType.isPrivate || (baseType.isExtern && !asReference) || isInHiddenPackage(baseType.pack)) {
 			return true;
 		}
+		final qname = baseTypeToQname(baseType, []);
+		if ((options == null || options.renameSymbols == null || options.renameSymbols.indexOf(qname) == -1)
+				&& baseType.meta.has(":noCompletion")) {
+			return true;
+		}
 		if (options != null) {
 			if (options.includedPackages != null) {
 				for (includedPackage in options.includedPackages) {
@@ -244,9 +249,12 @@ class AS3ExternsGenerator {
 		result.add(generateDocs(classType.doc, true, ""));
 		var className = baseTypeToUnqualifiedName(classType);
 		result.add('public class $className');
+		var includeFieldsFrom:ClassType = null;
 		if (classType.superClass != null) {
 			var superClassType = classType.superClass.t.get();
-			if (!shouldSkipBaseType(superClassType, true)) {
+			if (shouldSkipBaseType(superClassType, true)) {
+				includeFieldsFrom = superClassType;
+			} else {
 				result.add(' extends ${baseTypeToQname(superClassType, classType.superClass.params)}');
 			}
 		}
@@ -271,6 +279,21 @@ class AS3ExternsGenerator {
 			if (!shouldSkipField(constructor, classType)) {
 				result.add(generateClassField(constructor, classType, false, null));
 			}
+		}
+		while (includeFieldsFrom != null) {
+			for (classField in includeFieldsFrom.fields.get()) {
+				if (shouldSkipField(classField, includeFieldsFrom)) {
+					continue;
+				}
+				if (Lambda.exists(classType.fields.get(), item -> item.name == classField.name)) {
+					continue;
+				}
+				result.add(generateClassField(classField, includeFieldsFrom, false, interfaces));
+			}
+			if (includeFieldsFrom.superClass == null) {
+				break;
+			}
+			includeFieldsFrom = includeFieldsFrom.superClass.t.get();
 		}
 		for (classField in classType.statics.get()) {
 			if (shouldSkipField(classField, classType)) {
@@ -1132,7 +1155,7 @@ class AS3ExternsGenerator {
 	}
 }
 
-typedef GeneratorOptions = {
+typedef AS3GeneratorOptions = {
 	/**
 		Externs will be generated for symbols in the specified packages only,
 		and no externs will be generated for symbols in other packages.
