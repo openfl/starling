@@ -13,6 +13,8 @@ node_modules
 package-lock.json
 lib/_gen
 lib/**/*.as
+lib/**/*.d.ts
+!lib/**/index.d.ts
 npm-debug.log
 dist
 /tests/**/bin
