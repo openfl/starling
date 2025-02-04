@@ -15,5 +15,6 @@
 -D commonjs
 --remap flash:openfl
 --macro AS3ExternsGenerator.generate({outputPath: "../lib", includedPackages: ["starling"], allowedPackageReferences: ["openfl"], renameSymbols: ["openfl.VectorData", "openfl.Vector", "openfl.utils.ByteArrayData", "openfl.utils.ByteArray"]})
+--macro TSExternsGenerator.generate({outputPath: "../lib", includedPackages: ["starling"], allowedPackageReferences: ["openfl"], renameSymbols: ["openfl.VectorData", "openfl.Vector", "openfl.utils.ByteArrayData", "openfl.utils.ByteArray"]})
 --no-inline
 -dce no
