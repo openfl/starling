@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ES2015",
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"noEmit": true,
+		"paths": {
+			"openfl": ["../node_modules/openfl/lib/openfl"],
+			"openfl/*": ["../node_modules/openfl/lib/openfl/*"]
+		}
+	},
+	"include": [
+		"../lib/**/*.d.ts"
+	]
+}

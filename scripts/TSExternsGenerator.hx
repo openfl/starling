@@ -317,7 +317,11 @@ class TSExternsGenerator {
 			if (i > 0) {
 				result.add(', ');
 			}
-			result.add(macroTypeToQname(param));
+			if (shouldSkipMacroType(param, true)) {
+				result.add("any");
+			} else {
+				result.add(macroTypeToQname(param));
+			}
 		}
 		result.add('>');
 		return result.toString();
@@ -334,7 +338,11 @@ class TSExternsGenerator {
 			if (i > 0) {
 				result.add(', ');
 			}
-			result.add(macroTypeToUnqualifiedName(param));
+			if (shouldSkipMacroType(param, true)) {
+				result.add("any");
+			} else {
+				result.add(macroTypeToUnqualifiedName(param));
+			}
 		}
 		result.add('>');
 		return result.toString();
@@ -418,10 +426,6 @@ class TSExternsGenerator {
 							}
 							result.add('>');
 						}
-						var argsAndRet = {args: args, ret: ret};
-						findInterfaceArgsAndRet(classField, classType, argsAndRet);
-						args = argsAndRet.args;
-						ret = argsAndRet.ret;
 						result.add('(');
 						var hadOpt = false;
 						for (i in 0...args.length) {
@@ -455,9 +459,6 @@ class TSExternsGenerator {
 				}
 			case FVar(read, write):
 				var isAccessor = read == AccCall || write == AccCall || mustBeAccessor(classField.name, interfaces);
-				var argsAndRet = {args: [], ret: classField.type};
-				findInterfaceArgsAndRet(classField, classType, argsAndRet);
-				var ret = argsAndRet.ret;
 				if (isAccessor) {
 					var hasGetter = read == AccCall || read == AccNormal;
 					var hasSetter = write == AccCall || write == AccNormal;
@@ -471,10 +472,10 @@ class TSExternsGenerator {
 						result.add('get ');
 						result.add(classField.name);
 						result.add('(): ');
-						if (shouldSkipMacroType(ret, true)) {
+						if (shouldSkipMacroType(classField.type, true)) {
 							result.add('any');
 						} else {
-							result.add(macroTypeToUnqualifiedName(ret));
+							result.add(macroTypeToUnqualifiedName(classField.type));
 						}
 						result.add(';');
 					}
@@ -491,10 +492,10 @@ class TSExternsGenerator {
 						result.add('set ');
 						result.add(classField.name);
 						result.add('(value: ');
-						if (shouldSkipMacroType(ret, true)) {
+						if (shouldSkipMacroType(classField.type, true)) {
 							result.add('any');
 						} else {
-							result.add(macroTypeToUnqualifiedName(ret));
+							result.add(macroTypeToUnqualifiedName(classField.type));
 						}
 						result.add(')');
 					}
@@ -517,10 +518,10 @@ class TSExternsGenerator {
 						result.add(initExpr);
 					} else {
 						result.add(': ');
-						if (shouldSkipMacroType(ret, true)) {
+						if (shouldSkipMacroType(classField.type, true)) {
 							result.add('any');
 						} else {
-							result.add(macroTypeToUnqualifiedName(ret));
+							result.add(macroTypeToUnqualifiedName(classField.type));
 						}
 					}
 					result.add(";");
@@ -606,12 +607,28 @@ class TSExternsGenerator {
 				var qname = baseTypeToQname(superClass, [], false);
 				qnames.set(qname, true);
 			}
+			for (param in classType.superClass.params) {
+				addMacroTypeQnamesForImport(param, qnames, classType.pack);
+			}
 		}
 		for (interfaceRef in classType.interfaces) {
 			var interfaceType = interfaceRef.t.get();
 			if (!shouldSkipBaseType(interfaceType, true) && !canSkipBaseTypeImport(interfaceType, classType.pack)) {
 				var qname = baseTypeToQname(interfaceType, [], false);
 				qnames.set(qname, true);
+			}
+			for (param in interfaceRef.params) {
+				addMacroTypeQnamesForImport(param, qnames, classType.pack);
+			}
+		}
+		if (classType.constructor != null) {
+			var classField = classType.constructor.get();
+			switch (classField.type) {
+				case TFun(args, ret):
+					for (arg in args) {
+						addMacroTypeQnamesForImport(arg.t, qnames, classType.pack);
+					}
+				default:
 			}
 		}
 		for (classField in classType.statics.get()) {
@@ -746,7 +763,7 @@ class TSExternsGenerator {
 					firstInterface = true;
 					result.add(' extends ');
 				}
-				result.add(baseTypeToQname(implementedInterfaceType, interfaceRef.params));
+				result.add(baseTypeToUnqualifiedName(implementedInterfaceType, interfaceRef.params));
 			}
 		}
 		result.add(' {\n');
@@ -775,6 +792,18 @@ class TSExternsGenerator {
 				result.add(interfaceField.name);
 				switch (interfaceField.type) {
 					case TFun(args, ret):
+						var params = interfaceField.params;
+						if (params.length > 0) {
+							result.add('<');
+							for (i in 0...params.length) {
+								var param = params[i];
+								if (i > 0) {
+									result.add(', ');
+								}
+								result.add(param.name);
+							}
+							result.add('>');
+						}
 						result.add('(');
 						var hadOpt = false;
 						for (i in 0...args.length) {
@@ -915,10 +944,20 @@ class TSExternsGenerator {
 				if (shouldSkipField(classField, classType)) {
 					continue;
 				}
-				result.add('\t\t');
-				result.add(classField.name);
-				result.add(generateInitExpression(classField));
-				result.add(',\n');
+				switch (classField.kind) {
+					case FVar(read, write):
+						if (read == AccInline && write == AccNever) {
+							result.add(generateDocs(classField.doc, "\t\t"));
+							result.add('\t\t');
+							result.add(classField.name);
+							result.add(generateInitExpression(classField));
+							result.add(',\n');
+						}
+						// TODO: if TypeScript will unify enums and interfaces,
+						// with the same name, we should be able to put other
+						// types of vars and methods into an interface.
+					default:
+				}
 			}
 		}
 		result.add('\t}\n');
@@ -967,7 +1006,12 @@ class TSExternsGenerator {
 					break;
 				case TAbstract(t, params):
 					var abstractType = t.get();
-					return canSkipAbstractTypeImport(abstractType, params, currentPackage);
+					if (abstractType.meta.has(":enum") && !shouldSkipBaseType(abstractType, true)) {
+						baseType = abstractType;
+						break;
+					} else {
+						return canSkipAbstractTypeImport(abstractType, params, currentPackage);
+					}
 				case TType(t, params):
 					var typedefType = t.get();
 					type = typedefType.type;
@@ -1028,9 +1072,7 @@ class TSExternsGenerator {
 					var classType = t.get();
 					switch (classType.kind) {
 						case KTypeParameter(constraints):
-							if (constraints.length > 0) {
-								return macroTypeToQname(constraints[0]);
-							}
+							return baseTypeToUnqualifiedName(classType, params, includeParams);
 						default:
 					}
 					return baseTypeToQname(classType, params, includeParams);
@@ -1242,7 +1284,6 @@ class TSExternsGenerator {
 		buffer = new StringBuf();
 		buffer.add(qname);
 		buffer.add(generateQnameParams(params));
-
 		return buffer.toString();
 	}
 
@@ -1295,19 +1336,14 @@ class TSExternsGenerator {
 
 		var buffer = new StringBuf();
 		buffer.add(unqualifiedName);
-		buffer.add("<");
-		for (param in params) {
-			if (shouldSkipMacroType(param, true)) {
-				buffer.add("any");
-			} else {
-				buffer.add(macroTypeToUnqualifiedName(param, includeParams));
-			}
-		}
-		buffer.add(">");
+		buffer.add(generateUnqualifiedParams(params));
 		return buffer.toString();
 	}
 
 	private function abstractTypeToUnqualifiedName(abstractType:AbstractType, params:Array<Type>, includeParams:Bool = true):String {
+		if (abstractType.meta.has(":enum") && !shouldSkipBaseType(abstractType, true)) {
+			return baseTypeToUnqualifiedName(abstractType, params, includeParams);
+		}
 		var pack = abstractType.pack;
 		if (abstractType.name == "Null" && pack.length == 0) {
 			return macroTypeToUnqualifiedName(params[0], includeParams);
@@ -1326,6 +1362,7 @@ class TSExternsGenerator {
 				}
 			default:
 		}
+
 		if (includeParams) {
 			var qname = macroTypeToQname(underlyingType, false);
 			if (options != null && options.renameSymbols != null) {
@@ -1337,15 +1374,20 @@ class TSExternsGenerator {
 					var newName = renameSymbols[i];
 					i++;
 					if (newName == qname) {
+						// don't use underlyingType's parameters
 						return macroTypeToUnqualifiedName(underlyingType, false) + generateUnqualifiedParams(params);
 					}
 				}
 			}
 		}
+
 		return macroTypeToUnqualifiedName(underlyingType, includeParams);
 	}
 
 	private function abstractTypeToQname(abstractType:AbstractType, params:Array<Type>, includeParams:Bool = true):String {
+		if (abstractType.meta.has(":enum") && !shouldSkipBaseType(abstractType, true)) {
+			return baseTypeToQname(abstractType, params, includeParams);
+		}
 		var pack = abstractType.pack;
 		if (abstractType.name == "Null" && pack.length == 0) {
 			return macroTypeToQname(params[0], includeParams);
@@ -1364,6 +1406,7 @@ class TSExternsGenerator {
 				}
 			default:
 		}
+
 		if (includeParams) {
 			var qname = macroTypeToQname(underlyingType, false);
 			if (options != null && options.renameSymbols != null) {
@@ -1375,12 +1418,13 @@ class TSExternsGenerator {
 					var newName = renameSymbols[i];
 					i++;
 					if (newName == qname) {
+						// don't use underlyingType's parameters
 						return qname + generateQnameParams(params);
 					}
 				}
 			}
-			return qname;
 		}
+
 		return macroTypeToQname(underlyingType, includeParams);
 	}
 
@@ -1396,43 +1440,6 @@ class TSExternsGenerator {
 		var qname = baseTypeToQname(baseType, []);
 		var relativePath = qname.split(".").join("/") + ".d.ts";
 		return Path.join([dirPath, relativePath]);
-	}
-
-	/**
-		Haxe allows classes to implement methods from interfaces with more
-		specific types, but AS3 does not. This method finds the original types
-		from the interface that are required to match.
-	**/
-	private function findInterfaceArgsAndRet(classField:ClassField, classType:ClassType,
-			argsAndRet:{args:Array<{name:String, opt:Bool, t:Type}>, ret:Type}):Void {
-		// var currentClassType = classType;
-		// while (currentClassType != null) {
-		// 	for (currentInterface in currentClassType.interfaces) {
-		// 		for (interfaceField in currentInterface.t.get().fields.get()) {
-		// 			if (interfaceField.name == classField.name) {
-		// 				switch (interfaceField.kind) {
-		// 					case FMethod(k):
-		// 						switch (interfaceField.type) {
-		// 							case TFun(interfaceArgs, interfaceRet):
-		// 								argsAndRet.args = interfaceArgs;
-		// 								argsAndRet.ret = interfaceRet;
-		// 								return;
-		// 							default:
-		// 						}
-		// 					case FVar(read, write):
-		// 						argsAndRet.ret = interfaceField.type;
-		// 					default:
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	if (currentClassType.superClass != null) {
-		// 		currentClassType = currentClassType.superClass.t.get();
-		// 	} else {
-		// 		currentClassType = null;
-		// 	}
-		// }
 	}
 
 	private function relativizePath(path:String, relativeToPath:String):String {
@@ -1478,7 +1485,7 @@ typedef TSGeneratorOptions = {
 		When `includedPackages` is not empty, `allowedPackageReferences` may
 		be used to allow types from other packages to be used for field types,
 		method parameter types, and method return types. Otherwise, the types
-		will be replaced with AS3's `*` type.
+		will be replaced with TS's `any` type.
 			
 		All package references are allowed by default. If in doubt, pass an
 		empty array to restrict all types that don't appear in
