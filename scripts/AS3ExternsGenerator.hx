@@ -26,27 +26,15 @@ class AS3ExternsGenerator {
 	// however, these are still not allowed
 	private static final DISALLOWED_AS3_NAMES = ["goto", "public", "private", "protected", "internal"];
 	private static final eregAccessor = ~/^(g|s)et_[\w]+$/;
-
-	private static function rewriteQname(qname:String):String {
-		switch (qname) {
-			case "Bool":
-				return "Boolean";
-			case "Float":
-				return "Number";
-			case "Int":
-				return "int";
-			case "UInt":
-				return "uint";
-			case "Dynamic":
-				return "*";
-			case "Any":
-				return "*";
-			case "Void":
-				return "void";
-			default:
-				return qname;
-		}
-	}
+	private static final QNAMES_TO_REWRITE:Map<String, String> = [
+		"Any" => "*",
+		"Bool" => "Boolean",
+		"Dynamic" => "*",
+		"Float" => "Number",
+		"Int" => "uint",
+		"UInt" => "number",
+		"Void" => "void"
+	];
 
 	public static function generate(?options:AS3GeneratorOptions):Void {
 		var outputDirPath = Path.join([Path.directory(Compiler.getOutput()), "as3-externs"]);
@@ -762,40 +750,11 @@ class AS3ExternsGenerator {
 		result.add(generateDocs(enumField.doc, false, "\t"));
 		result.add("\t");
 		result.add('public static ');
-		// if (enumField.args.length == 0) {
 		result.add('const ');
 		result.add(enumField.name);
 		result.add(':');
 		result.add(baseTypeToQname(enumType, enumTypeParams));
 		result.add(';');
-		/*} else {
-			result.add('function ');
-			result.add(enumField.name);
-			result.add('(');
-			var args = enumField.args;
-			var hadOpt = false;
-			for (i in 0...args.length) {
-				var arg = args[i];
-				if (i > 0) {
-					result.add(', ');
-				}
-				result.add(arg.name);
-				result.add(':');
-				if (shouldSkipMacroType(arg.t, true)) {
-					result.add('*');
-				} else {
-					result.add(macroTypeToQname(arg.t));
-				}
-				if (arg.opt || hadOpt) {
-					hadOpt = true;
-					result.add(' = undefined');
-				}
-			}
-			result.add(')');
-			result.add(':');
-			result.add(baseTypeToQname(enumType, enumTypeParams));
-			result.add(' { return null; }');
-		}*/
 		result.add('\n');
 		return result.toString();
 	}
@@ -1012,6 +971,11 @@ class AS3ExternsGenerator {
 		if (index != -1) {
 			return qname.substr(index + 1);
 		}
+
+		if (QNAMES_TO_REWRITE.exists(qname)) {
+			qname = QNAMES_TO_REWRITE.get(qname);
+		}
+
 		return qname;
 	}
 
@@ -1040,38 +1004,11 @@ class AS3ExternsGenerator {
 			}
 		}
 
-		// ignore type params in AS3
+		if (QNAMES_TO_REWRITE.exists(qname)) {
+			qname = QNAMES_TO_REWRITE.get(qname);
+		}
 
-		// remap some types
-		return rewriteQname(qname);
-	}
-
-	private function baseTypeToUnqualifiedNname(baseType:BaseType, params:Array<Type>):String {
-		if (baseType == null) {
-			return "*";
-		}
-		var buffer = new StringBuf();
-		if (baseType.pack.length > 0) {
-			buffer.add(baseType.pack.join("."));
-			buffer.add(".");
-		}
-		buffer.add(baseType.name);
-		var qname = buffer.toString();
-		if (options != null && options.renameSymbols != null) {
-			var renameSymbols = options.renameSymbols;
-			var i = 0;
-			while (i < renameSymbols.length) {
-				var originalName = renameSymbols[i];
-				i++;
-				var newName = renameSymbols[i];
-				i++;
-				if (originalName == qname) {
-					return newName;
-				}
-			}
-		}
-		// ignore type params in AS3
-		return rewriteQname(qname);
+		return qname;
 	}
 
 	private function abstractTypeToQname(abstractType:AbstractType, params:Array<Type>):String {
