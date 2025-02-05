@@ -26,5 +26,8 @@ module.exports = {
 				{ from: path.resolve(__dirname, "../../demo/assets"), to: "assets" }
 			]
 		})
-	]
+	],
+	performance: {
+		hints: false
+	}
 };
