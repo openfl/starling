@@ -102,9 +102,9 @@ class Demo extends Sprite
             Assets.registerLibrary ("default", library);
             
             var atlasTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/textures/1x/atlas.png"), false);
-            var atlasXml:String = Assets.getText("assets/textures/1x/atlas.xml");
+            var atlasXml:string = Assets.getText("assets/textures/1x/atlas.xml");
             var desyrelTexture:Texture = Texture.fromBitmapData(Assets.getBitmapData("assets/fonts/1x/desyrel.png"), false);
-            var desyrelXml:String = Assets.getText("assets/fonts/1x/desyrel.fnt");
+            var desyrelXml:string = Assets.getText("assets/fonts/1x/desyrel.fnt");
             var bitmapFont = new BitmapFont(desyrelTexture, desyrelXml);
             TextField.registerCompositor(bitmapFont, bitmapFont.name);
             assets.addTexture("atlas", atlasTexture);

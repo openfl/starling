@@ -14,7 +14,7 @@ import Scene from "./scene";
 
 class VideoScene extends Scene
 {
-	private url:String = "assets/videos/sample.mp4";
+	private url:string = "assets/videos/sample.mp4";
 	private texture:Texture;
 	private ns:NetStream;
 	private nc:NetConnection;
