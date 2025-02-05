@@ -785,6 +785,9 @@ class AS3ExternsGenerator {
 
 	private function generateDocs(doc:String, externs:Bool, indent:String):String {
 		if (doc == null || StringTools.trim(doc).length == 0) {
+			if (externs) {
+				return '$indent/**\n$indent * @externs\n$indent */\n';
+			}
 			return "";
 		}
 		
