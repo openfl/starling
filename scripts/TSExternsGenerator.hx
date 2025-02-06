@@ -246,8 +246,9 @@ class TSExternsGenerator {
 		result.add('\texport class $className');
 		result.add(generateUnqualifiedParams(params));
 		var includeFieldsFrom:ClassType = null;
+		var superClassType:ClassType = null;
 		if (classType.superClass != null) {
-			var superClassType = classType.superClass.t.get();
+			superClassType = classType.superClass.t.get();
 			if (shouldSkipBaseType(superClassType, true)) {
 				includeFieldsFrom = superClassType;
 			} else {
@@ -295,7 +296,29 @@ class TSExternsGenerator {
 			if (shouldSkipField(classField, classType)) {
 				continue;
 			}
-			result.add(generateClassField(classField, classType, true, null));
+			var current = superClassType;
+			var isConflictingStatic = false;
+			while (current != null) {
+				if (Lambda.exists(current.statics.get(), superStaticField -> superStaticField.name == classField.name && !superStaticField.type.equals(classField.type))) {
+					// typescript is weirdly strict when subclass have static
+					// members with the same name, but different signatures.
+					// it seems to be because JS allows you to use the `this`
+					// keyword in a static method, which is usually not allowed
+					// in other languages.
+					isConflictingStatic = true;
+					break;
+				}
+				if (current.superClass != null) {
+					current = current.superClass.t.get();
+				} else {
+					current = null;
+				}
+			}
+			// TODO: try to expose this another way
+			// see: https://github.com/microsoft/TypeScript/issues/4628#issuecomment-1147905253
+			if (!isConflictingStatic) {
+				result.add(generateClassField(classField, classType, true, null));
+			}
 		}
 		for (classField in classType.fields.get()) {
 			if (shouldSkipField(classField, classType)) {
@@ -724,6 +747,17 @@ class TSExternsGenerator {
 					for (param in params) {
 						addMacroTypeQnamesForImport(param, qnames, pack);
 					}
+					var abstractType = t.get();
+					switch (abstractType.type) {
+						case TAbstract(t, underlyingParams):
+							var result = baseTypeToQname(abstractType, params, false);
+							var compareTo = baseTypeToQname(t.get(), underlyingParams, false);
+							if (result != compareTo) {
+								addMacroTypeQnamesForImport(abstractType.type, qnames, pack);
+							}
+						default:
+							addMacroTypeQnamesForImport(abstractType.type, qnames, pack);
+					}
 					break;
 				case TType(t, params):
 					var typedefType = t.get();
@@ -753,10 +787,7 @@ class TSExternsGenerator {
 			result.add('declare namespace $packageName {\n');
 		}
 		result.add(generateDocs(interfaceType.doc, "\t"));
-		// yes, class instead of interface
-		// it allows us to export the interface
-		// and TS allows implementing classes
-		result.add('\texport class ${interfaceType.name}');
+		result.add('\texport interface ${interfaceType.name}');
 		result.add(generateUnqualifiedParams(params));
 		var interfaces = interfaceType.interfaces;
 		var firstInterface = false;
@@ -786,7 +817,12 @@ class TSExternsGenerator {
 		}
 
 		var qname = (packageName != null ? '$packageName.' : '') + interfaceType.name;
-		result.add('export default ${qname};');
+		result.add('type ${interfaceType.name}');
+		result.add(generateUnqualifiedParams(params));
+		result.add(' = ${qname}');
+		result.add(generateUnqualifiedParams(params));
+		result.add(';\n');
+		result.add('export default ${interfaceType.name};');
 		return result.toString();
 	}
 
