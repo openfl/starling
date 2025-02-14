@@ -217,41 +217,6 @@ jobs:
         run: |
           haxelib run openfl test hl
 
-  unit-test-neko:
-    strategy:
-      matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.2]
-    runs-on: ubuntu-latest
-    env:
-      SDL_VIDEODRIVER: "dummy"
-      SDL_AUDIODRIVER: "disk"
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: krdlab/setup-haxe@v1
-        with:
-          haxe-version: ${{ matrix.haxe-version }}
-
-      - name: Set HAXEPATH
-        run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
-
-      - name: Install Haxe dependencies
-        run: |
-          haxelib install lime --quiet
-          haxelib install openfl --quiet
-          haxelib install utest --quiet
-          haxelib install hamcrest --quiet
-
-      - name: Setup environment
-        run: |
-          haxelib dev starling ${{ github.workspace }}
-
-      - name: Run tests on Neko
-        working-directory: tests
-        run: |
-          haxelib run openfl test neko
-
   unit-test-air:
     strategy:
       matrix:
