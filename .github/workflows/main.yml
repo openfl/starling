@@ -16,6 +16,8 @@ jobs:
             ./
             !lib/
             !samples/
+            samples/demo
+            samples/particle_demo
             !scripts/
             !tests/
             !haxe-*-*/
