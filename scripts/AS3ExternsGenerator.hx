@@ -31,8 +31,8 @@ class AS3ExternsGenerator {
 		"Bool" => "Boolean",
 		"Dynamic" => "*",
 		"Float" => "Number",
-		"Int" => "uint",
-		"UInt" => "number",
+		"Int" => "int",
+		"UInt" => "uint",
 		"Void" => "void"
 	];
 
