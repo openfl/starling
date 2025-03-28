@@ -1,7 +1,7 @@
 Starling Changelog
 ==================
 
-2.7.1 (03/28/2026)
+2.7.1 (03/28/2025)
 ------------------
 
 - Added support for HashLink
