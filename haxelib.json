@@ -5,7 +5,7 @@
 	"tags": [ "starling", "2d", "gpu", "openfl", "flash", "air", "js", "web", "cpp", "hl" ],
 	"description": "The Cross-Platform Game Engine",
 	"version": "2.7.1",
-	"releasenote": "Fixes known issues with HashLink",
+	"releasenote": "Adds HashLink target, various bug fixes",
 	"contributors": [
 		"p.j.shand",
 		"singmajesty",
