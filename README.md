@@ -84,6 +84,7 @@ starling.supportHighResolutions = true;
 Quick Links (Haxe)
 ------------------
 
+* [Instruction Manual](https://books.openfl.org/starling-manual/)
 * [Starling Support Forum](https://forum.starling-framework.org/t/starling-haxe)
 * [OpenFL Support Forum](http://community.openfl.org)
 
@@ -91,7 +92,6 @@ Quick Links (AS3)
 -----------------
 
 * [Official Homepage](http://www.starling-framework.org)
-* [Instruction Manual](http://manual.starling-framework.org)
 * [API Reference](http://doc.starling-framework.org)
 * [Support Forum](https://forum.starling-framework.org/)
 * [Starling Wiki](http://wiki.starling-framework.org)
