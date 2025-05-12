@@ -175,7 +175,7 @@ class Canvas extends DisplayObjectContainer
     public function drawGraphicsData(graphicsData:Vector<IGraphicsData>):Void
     {
         var graphicsDataLength:Int = graphicsData.length;
-        for (var graphPropIndex in 0...graphicsDataLength)
+        for (graphPropIndex in 0...graphicsDataLength)
         {
             var graphicsProperties:IGraphicsData = graphicsData[graphPropIndex];
 
@@ -187,7 +187,7 @@ class Canvas extends DisplayObjectContainer
                 var data:Vector<Float> = cast(graphicsProperties, GraphicsPath).data;
 
                 var commandLength:Int = cast(graphicsProperties, GraphicsPath).commands.length;
-                for (var commandIndex in 0...commandLength)
+                for (commandIndex in 0...commandLength)
                 {
                     var command:Int = cast(graphicsProperties, GraphicsPath).commands[commandIndex];
                     switch (command)
