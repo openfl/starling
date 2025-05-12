@@ -314,10 +314,10 @@ class Canvas extends DisplayObjectContainer
 
     @:noCompletion private function __drawPathIfClosed():Void
     {
-        var lastX:Float = _currentPath[_currentPath.length - 2];
-        var lastY:Float = _currentPath[_currentPath.length - 1];
+        var lastX:Float = __currentPath[__currentPath.length - 2];
+        var lastY:Float = __currentPath[__currentPath.length - 1];
 
-        if (lastX == _currentPath[0] && lastY == _currentPath[1]) 
+        if (lastX == __currentPath[0] && lastY == __currentPath[1]) 
             drawPolygon(Polygon.fromVector(__currentPath));
     }
 }
