@@ -179,9 +179,10 @@ class Canvas extends DisplayObjectContainer
         {
             var graphicsProperties:IGraphicsData = graphicsData[graphPropIndex];
 
-            if #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsSolidFill) beginFill(cast(graphicsProperties, GraphicsSolidFill).color,
+            if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsSolidFill)) 
+                beginFill(cast(graphicsProperties, GraphicsSolidFill).color,
                 cast(graphicsProperties, GraphicsSolidFill).alpha);
-            else if #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsPath)
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsPath))
             {
                 var i:Int = 0;
                 var data:Vector<Float> = cast(graphicsProperties, GraphicsPath).data;
@@ -213,7 +214,7 @@ class Canvas extends DisplayObjectContainer
                     }
                 }
             }
-            else if #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsEndFill) endFill();
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(graphicsProperties, GraphicsEndFill)) endFill();
             else
                 trace("[Starling] Canvas.drawGraphicsData: Unimplemented Graphics Data in input:", graphicsProperties, "at index",
                     graphicsData.indexOf(graphicsProperties));
