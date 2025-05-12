@@ -265,7 +265,10 @@ class Canvas extends DisplayObjectContainer
         // stop tesselation on maxIteration level. Set it to 0 for no tesselation at all.
         if (iterationCnt >= maxIterations)
         {
-            array_out.push(ax, ay, endx, endy);
+            array_out.push(ax); 
+            array_out.push(ay);
+            array_out.push(endx); 
+            array_out.push(endy);
             return;
         }
 
@@ -278,7 +281,8 @@ class Canvas extends DisplayObjectContainer
         // stop subdividing if the angle or the length is to small
         if (lenSq < minLengthSqr)
         {
-            array_out.push(endx, endy);
+            array_out.push(endx); 
+            array_out.push(endy);
             return;
         }
 
@@ -302,7 +306,8 @@ class Canvas extends DisplayObjectContainer
         // stop subdividing if the angle or the length is to small
         if (angle_delta <= minAngle)
         {
-            array_out.push(endx, endy);
+            array_out.push(endx); 
+            array_out.push(endy);
             return;
         }
 
