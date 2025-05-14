@@ -196,21 +196,17 @@ class Canvas extends DisplayObjectContainer
                         case GraphicsPathCommand.MOVE_TO:
                             moveTo(data[i], data[i + 1]);
                             i += 2;
-                            break;
 
                         case GraphicsPathCommand.LINE_TO:
                             lineTo(data[i], data[i + 1]);
                             i += 2;
-                            break;
 
                         case GraphicsPathCommand.CURVE_TO:
                             curveTo(data[i], data[i + 1], data[i + 2], data[i + 3]);
                             i += 4;
-                            break;
 
                         default:
                             trace("[Starling] Canvas.drawGraphicsData: Unimplemented Command in Graphics Path of type", command);
-                            break;
                     }
                 }
             }
