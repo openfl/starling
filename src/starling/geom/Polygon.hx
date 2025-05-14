@@ -301,6 +301,15 @@ class Polygon
 
     // factory methods
 
+    /** Creates a Polygon with the given coordinates as a Vector ('x' and 'y' alternating). */
+    public static function fromVector(vector:Vector<Float>):Polygon
+    {
+        var polygon:Polygon = new Polygon();
+        polygon.__coords = vector;
+        return polygon;
+    }
+
+
     /** Creates an ellipse with optimized implementations of triangulation, hitTest, etc. */
     public static function createEllipse(x:Float, y:Float, radiusX:Float, radiusY:Float, numSides:Int = -1):Polygon
     {
