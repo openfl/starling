@@ -44,8 +44,8 @@ class TextureMask extends DisplayObject
 
     // helper objects (to aVoid temporary objects)
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sThresholdVector:Vector<Float> = Vector.ofArray([0, 0, 0, 0]);
-    private static var sRenderAlpha:Vector<Float> = Vector.ofArray([1, 1, 1, 1]);
+    private static var sThresholdVector:Vector<Float> = Vector.ofArray([0.0, 0.0, 0.0, 0.0]);
+    private static var sRenderAlpha:Vector<Float> = Vector.ofArray([1.0, 1.0, 1.0, 1.0]);
 
     /** Creates a new TextureMask with given texture. On rendering, any pixel with an alpha
      *  value below 'threshold' will be discarded. */
