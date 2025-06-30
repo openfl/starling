@@ -126,6 +126,10 @@ class TextureAtlas
                 atlasXml = Xml.parse(data).firstElement();
             else if(#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, Xml))
                 atlasXml = cast data;
+            #if flash
+            else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(data, flash.xml.XML))
+                atlasXml = Xml.parse((data : flash.xml.XML).toString()).firstElement();
+            #end
                 
             parseAtlasXml(atlasXml);
         }
