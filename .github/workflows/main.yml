@@ -286,6 +286,7 @@ jobs:
           haxelib install utest --quiet
           haxelib install hamcrest --quiet
           haxelib dev starling ${{ github.workspace }}
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
 
       - name: Build Neko samples
         run: |
