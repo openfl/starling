@@ -257,15 +257,16 @@ jobs:
           haxelib run openfl test air
 
   samples-and-unit-test-openfl-develop:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.2]
+    # AL init fails on both windows and ubuntu
+    runs-on: macos-latest
     steps:
 
       - uses: actions/checkout@v4
 
-      - uses: krdlab/setup-haxe@v1
+      - uses: krdlab/setup-haxe@8f35d1215b93e940a76f9470e22e8a5ba6149598
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
