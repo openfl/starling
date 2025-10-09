@@ -191,6 +191,9 @@ jobs:
         haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.2]
     # AL init fails on both windows and ubuntu
     runs-on: macos-latest
+    env:
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
     steps:
       - uses: actions/checkout@v4
 
@@ -258,6 +261,9 @@ jobs:
 
   samples-and-unit-test-openfl-develop:
     runs-on: ubuntu-latest
+    env:
+      SDL_VIDEODRIVER: "dummy"
+      SDL_AUDIODRIVER: "disk"
     strategy:
       matrix:
         haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.2]
