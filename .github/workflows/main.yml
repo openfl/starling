@@ -256,3 +256,71 @@ jobs:
         working-directory: tests
         run: |
           haxelib run openfl test air
+
+  samples-and-unit-test-openfl-develop:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.2]
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - uses: joshtynjala/setup-adobe-air-action@v2
+        with:
+          air-version: "33.1"
+          accept-license: true
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib git openfl https://github.com/openfl/openfl --quiet
+          haxelib install utest --quiet
+          haxelib install hamcrest --quiet
+          haxelib dev starling ${{ github.workspace }}
+
+      - name: Build Neko samples
+        run: |
+          haxelib run lime build samples/demo neko
+          haxelib run lime build samples/particle_demo neko
+
+      - name: Build HTML5 samples
+        if: matrix.haxe-version != '3.4.7' # temporarily exclude Haxe 3 until Lime update after 8.2.2 is released
+        run: |
+          haxelib run lime build samples/demo html5
+          haxelib run lime build samples/particle_demo html5
+
+      - name: Build Flash samples
+        run: |
+          haxelib run lime build samples/demo flash
+          haxelib run lime build samples/particle_demo flash
+
+      - name: Build HashLink samples
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
+          haxelib run lime build samples/demo hl
+          haxelib run lime build samples/particle_demo hl
+
+      - name: Run tests on Neko
+        working-directory: tests
+        run: |
+          haxelib run openfl test neko
+
+      - name: Run tests on HashLink
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        working-directory: tests
+        run: |
+          haxelib run openfl test hl
+
+      - name: Run tests on Adobe AIR
+        working-directory: tests
+        run: |
+          haxelib run openfl test air
