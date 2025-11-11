@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "devDependencies": {
-    "@apache-royale/royale-js": "^0.9.11",
-    "asconfigc": "^1.8.0",
+    "@apache-royale/royale-js": "^0.9.12",
+    "asconfigc": "^1.9.0",
     "cpx": "^1.5.0",
     "http-server": "^14.1.1",
-    "openfl": "^9.3.1",
-    "starling-framework": "^2.7.0"
+    "openfl": "^9.5.0",
+    "starling-framework": "^2.7.1"
   },
   "scripts": {
     "build": "npm run build:prod",
