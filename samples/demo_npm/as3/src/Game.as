@@ -2,7 +2,6 @@ package
 {
     import openfl.system.System;
     import openfl.ui.Keyboard;
-    import openfl.utils.getDefinitionByName;
 
     import scenes.Scene;
 

@@ -1,7 +1,5 @@
 package {
 
-    import openfl.utils.getQualifiedClassName;
-
     import scenes.AnimationScene;
     import scenes.BenchmarkScene;
     import scenes.BlendModeScene;
