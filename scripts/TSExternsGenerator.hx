@@ -633,9 +633,12 @@ class TSExternsGenerator {
 				}
 			}
 		}
+		var includeFieldsFrom:ClassType = null;
 		if (classType.superClass != null) {
 			var superClass = classType.superClass.t.get();
-			if (!shouldSkipBaseType(superClass, true) && !canSkipBaseTypeImport(superClass, classType.pack)) {
+			if (shouldSkipBaseType(superClass, true)) {
+				includeFieldsFrom = superClass;
+			} else if (!canSkipBaseTypeImport(superClass, classType.pack)) {
 				var qname = baseTypeToQname(superClass, [], false);
 				qnames.set(qname, true);
 			}
@@ -662,6 +665,29 @@ class TSExternsGenerator {
 					}
 				default:
 			}
+		}
+		while (includeFieldsFrom != null) {
+			for (classField in includeFieldsFrom.fields.get()) {
+				if (shouldSkipField(classField, includeFieldsFrom)) {
+					continue;
+				}
+				if (Lambda.exists(classType.fields.get(), item -> item.name == classField.name)) {
+					continue;
+				}
+				switch (classField.type) {
+					case TFun(args, ret):
+						for (arg in args) {
+							addMacroTypeQnamesForImport(arg.t, qnames, classType.pack);
+						}
+						addMacroTypeQnamesForImport(ret, qnames, classType.pack);
+					default:
+						addMacroTypeQnamesForImport(classField.type, qnames, classType.pack);
+				}
+			}
+			if (includeFieldsFrom.superClass == null) {
+				break;
+			}
+			includeFieldsFrom = includeFieldsFrom.superClass.t.get();
 		}
 		for (classField in classType.statics.get()) {
 			if (shouldSkipField(classField, classType)) {
