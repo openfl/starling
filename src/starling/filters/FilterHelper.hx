@@ -167,7 +167,7 @@ class FilterHelper implements IFilterHelper
         {
             factor = maxNativeSize / Math.max(newNativeWidth, newNativeHeight);
             newNativeWidth  = Std.int(newNativeWidth * factor);
-            newNativeHeight = Std.int(newNativeWidth * factor);
+            newNativeHeight = Std.int(newNativeHeight * factor);
             newScale *= factor;
         }
 
