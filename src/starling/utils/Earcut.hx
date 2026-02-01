@@ -83,7 +83,7 @@ class Earcut
 		
 		if (outerNode == null || outerNode.next == outerNode.prev) return triangles;
 		
-		var minX:Float, minY:Float, invSize:Float;
+		var minX:Float = Math.NaN, minY:Float = Math.NaN, invSize:Float = Math.NaN;
 		
 		if (hasHoles) outerNode = eliminateHoles(vertices, holes, outerNode, dimensions);
 		
@@ -120,14 +120,14 @@ class Earcut
 	// create a circular doubly linked list from polygon points in the specified winding order
 	@:noCompletion private static function linkedList(data:Vector<Float>, start:Float, end:Float, dim:UInt, clockwise:Bool):Node
 	{
-		var last:Node;
+		var last:Node = null;
 		
 		if (clockwise == (signedArea(data, start, end, dim) > 0))
 		{
 			var i:Float = start;
 			while (i < end)
 			{
-				last = insertNode(i / dim | 0, data[i], data[i + 1], last);
+				last = insertNode(Std.int(i / dim) | 0, data[Std.int(i)], data[Std.int(i) + 1], last);
 				i += dim;
 			}
 		}
@@ -136,9 +136,15 @@ class Earcut
 			var l:Float = end - dim;
 			while (l >= start)
 			{
-				last = insertNode(l / dim | 0, data[l], data[l + 1], last);
+				last = insertNode(Std.int(l / dim) | 0, data[Std.int(l)], data[Std.int(l) + 1], last);
 				l -= dim;
 			}
+		}
+		
+		if (last != null && equals(last, last.next))
+		{
+			removeNode(last);
+			last = last.next;
 		}
 		
 		return last;
@@ -172,7 +178,7 @@ class Earcut
 	}
 	
 	// main ear slicing loop which triangulates a polygon (given as a linked list)
-	@:noCompletion private static function earCutLinked(ear:Node, triangles:Vector<UInt>, dim:Int, minX:Float, minY:Float, invSize:Float, pass:Float):Void
+	@:noCompletion private static function earcutLinked(ear:Node, triangles:Vector<UInt>, dim:Int, minX:Float, minY:Float, invSize:Float, pass:Float):Void
 	{
 		if (ear == null) return;
 		
@@ -190,9 +196,9 @@ class Earcut
 			if (invSize != 0.0 ? isEarHashed(ear, minX, minY, invSize) : isEar(ear))
 			{
 				// cut off the triangle
-				triangles.push(prev.i);
-				triangles.push(ear.i);
-				triangles.push(next.i);
+				triangles.push(Std.int(prev.i));
+				triangles.push(Std.int(ear.i));
+				triangles.push(Std.int(next.i));
 				
 				removeNode(ear);
 				
@@ -263,7 +269,7 @@ class Earcut
 			b:Node = ear,
 			c:Node = ear.next;
 		
-		if (area(a, b, c) >= 0.0 return false; // reflex, can't be an ear
+		if (area(a, b, c) >= 0.0) return false; // reflex, can't be an ear
 		
 		var ax:Float = a.x, bx:Float = b.x, cx:Float = c.x, ay:Float = a.y, by:Float = b.y, cy:Float = c.y;
 		
@@ -281,7 +287,7 @@ class Earcut
 			n:Node = ear.nextZ;
 		
 		// look for points inside the triangle in both directions
-		while (p != null && p.z >= minZ && n && n.z <= maxZ)
+		while (p != null && p.z >= minZ && n != null && n.z <= maxZ)
 		{
 			if (p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1 && p != a && p != c &&
 				pointInTriangleExceptFirst(ax, ay, bx, by, cx, cy, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
@@ -321,9 +327,9 @@ class Earcut
 			
 			if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a))
 			{
-				triangles.push(a.i);
-				triangles.push(p.i);
-				triangles.push(b.i);
+				triangles.push(Std.int(a.i));
+				triangles.push(Std.int(p.i));
+				triangles.push(Std.int(b.i));
 				
 				// remove two nodes involved
 				removeNode(p);
@@ -338,7 +344,7 @@ class Earcut
 	}
 	
 	// try splitting polygon into two and triangulate them independently
-	@:noCompletion private static function splitEarCut(start:Node, triangles:Vector<UInt>, dim:Int, minX:Float, invSize:Float):Void
+	@:noCompletion private static function splitEarcut(start:Node, triangles:Vector<UInt>, dim:Int, minX:Float, minY:Float, invSize:Float):Void
 	{
 		// look for a valid diagonal that divides the polygon into two
 		var a:Node = start;
@@ -433,7 +439,7 @@ class Earcut
 		var hx:Float = hole.x;
 		var hy:Float = hole.y;
 		var qx:Float = Math.NEGATIVE_INFINITY;
-		var m:Node;
+		var m:Node = null;
 		
 		// find a segment intersected by a ray from the hole's leftmost point to the left
 		// segment's endpoint with lesser x will be potential connection point
@@ -441,7 +447,7 @@ class Earcut
 		if (equals(hole, p)) return p;
 		do {
 			if (equals(hole, p.next)) return p.next;
-			else if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y)
+			else if (hy <= p.y && hy >= p.next.y && p.next.y != p.y)
 			{
 				var x:Float = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
 				if (x <= hx && x > qx)
@@ -468,12 +474,12 @@ class Earcut
 		p = m;
 		
 		do {
-			if (hx >= p.x && p.x >= mx && hx !== p.x &&
+			if (hx >= p.x && p.x >= mx && hx != p.x &&
 				pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y))
 			{
 				var tan:Float = Math.abs(hy - p.y) / (hx - p.x); // tangential
 				if (locallyInside(p, hole) &&
-				   (tan < tanMin || (tan === tanMin && (p.x > m.x || (p.x === m.x && sectorContainsSector(m, p))))))
+				   (tan < tanMin || (tan == tanMin && (p.x > m.x || (p.x == m.x && sectorContainsSector(m, p))))))
 				{
 					m = p;
 					tanMin = tan;
@@ -481,7 +487,7 @@ class Earcut
 			}
 			
 			p = p.next;
-		} while (p != stop)
+		} while (p != stop);
 		
 		return m;
 	}
@@ -538,7 +544,7 @@ class Earcut
 				
 				while (pSize > 0 || (qSize > 0 && q != null))
 				{
-					if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) {
+					if (pSize != 0 && (qSize == 0 || q == null || p.z <= q.z)) {
 						e = p;
 						p = p.nextZ;
 						pSize--;
@@ -794,12 +800,13 @@ class Earcut
 		var l:Int = 0;
 		while (l < triangles.length)
 		{
-			var a:Float = triangles[l] * dimensions;
-			var b:Float = triangles[l + 1] * dimensions;
-			var c:Float = triangles[l + 2] * dimensions;
+			var a:Int = Std.int(triangles[l] * dimensions);
+			var b:Int = Std.int(triangles[l + 1] * dimensions);
+			var c:Int = Std.int(triangles[l + 2] * dimensions);
 			trianglesArea += Math.abs(
 				(triangles[a] - triangles[c]) * (triangles[b + 1] - triangles[a + 1]) -
 				(triangles[a] - triangles[b]) * (triangles[c + 1] - triangles[a + 1]));
+			l += 3;
 		}
 		
 		return polygonArea == 0 && trianglesArea == 0 ? 0 : Math.abs((trianglesArea - polygonArea) / polygonArea);
