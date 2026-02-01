@@ -48,6 +48,7 @@ class Canvas extends DisplayObjectContainer
     public override function dispose():Void
     {
         __polygons.length = 0;
+		__currentPath.length = 0;
         super.dispose();
     }
 
@@ -101,11 +102,17 @@ class Canvas extends DisplayObjectContainer
     {
         drawPolygon(Polygon.createRectangle(x, y, width, height));
     }
+	
+	public function drawRoundRectangle(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Float = Math.NaN):Void
+	{
+		drawPolygon(Polygon.createRoundRectangle(x, y, width, height, ellipseWidth, ellipseHeight));
+	}
 
     /** Specifies a simple one-color fill that subsequent calls to drawing methods
      * (such as <code>drawCircle()</code>) will use. */
     public function beginFill(color:UInt=0xffffff, alpha:Float=1.0):Void
     {
+		closeCurrentPathIfNeeded();
         __fillColor = color;
         __fillAlpha = alpha;
     }
@@ -113,6 +120,7 @@ class Canvas extends DisplayObjectContainer
     /** Resets the color to 'white' and alpha to '1'. */
     public function endFill():Void
     {
+		closeCurrentPathIfNeeded();
         __fillColor = 0xffffff;
         __fillAlpha = 1.0;
     }
@@ -124,8 +132,12 @@ class Canvas extends DisplayObjectContainer
      */
     public function moveTo(x:Float, y:Float):Void
     {
-        // TODO: Check if previous path is open and force close it if so
-        __currentPath = new Vector<Float>();
+        // If a previous path is still open, close it automatically before starting a new one.
+		// This matches Flash's Graphics behavior, where a new MOVE_TO implicitly ends the
+		// current sub-path.
+		closeCurrentPathIfNeeded();
+		
+        __currentPath.length = 0;
         __currentPath.push(x);
         __currentPath.push(y);
     }
@@ -140,6 +152,7 @@ class Canvas extends DisplayObjectContainer
         // TODO: This implementation too simple for strokes, only works for fills
         if (__currentPath.length == 0)
         {
+			// Behave like Flash's Graphics: if there's no current point, start at (0, 0).
             __currentPath.push(0);
             __currentPath.push(0);
         }
@@ -159,6 +172,7 @@ class Canvas extends DisplayObjectContainer
     {
         if (__currentPath.length == 0)
         {
+			// Behave like Flash's Graphics: if there's no current point, start at (0, 0).
             __currentPath.push(0);
             __currentPath.push(0);
         }
@@ -167,6 +181,28 @@ class Canvas extends DisplayObjectContainer
         __tesselateCurve(lastX, lastY, controlX, controlY, anchorX, anchorY, __currentPath);
         __drawPathIfClosed();
     }
+	
+	/** Closes the current path if it contains an unfinished polygon. */
+	private function closeCurrentPathIfNeeded():Void
+	{
+		if (__currentPath.length < 6) // fewer than 3 points -> nothing meaningful to close
+			return;
+		
+		var firstX:Float = __currentPath[0];
+		var firstY:Float = __currentPath[1];
+		var lastX:Float = __currentPath[__currentPath.length - 2];
+		var lastY:Float = __currentPath[__currentPath.length - 1];
+		var isClosed:Bool = lastX == firstX && lastY == firstY;
+		
+		if (!isClosed)
+		{
+			__currentPath.push(firstX);
+			__currentPath.push(firstY);
+		}
+		
+		// Now draw and reset the path ('drawPathIfClosed' clears '_currentPath').
+		__drawPathIfClosed();
+	}
 
     /**  Submits a series of IGraphicsData instances for drawing. 
      *
@@ -222,6 +258,7 @@ class Canvas extends DisplayObjectContainer
     {
         removeChildren(0, -1, true);
         __polygons.length = 0;
+		__currentPath.length = 0;
     }
 
     /** Draws an arbitrary polygon. */
@@ -315,10 +352,27 @@ class Canvas extends DisplayObjectContainer
 
     @:noCompletion private function __drawPathIfClosed():Void
     {
+		if (__currentPath.length < 4) return; // need at least two points
+		
         var lastX:Float = __currentPath[__currentPath.length - 2];
         var lastY:Float = __currentPath[__currentPath.length - 1];
 
-        if (lastX == __currentPath[0] && lastY == __currentPath[1]) 
-            drawPolygon(Polygon.fromVector(__currentPath));
+        if (lastX == __currentPath[0] && lastY == __currentPath[1])
+		{
+			// Create a copy so we can safely clear the path afterwards.
+            // Important: Polygon.fromVector() keeps a reference to the passed Vector (for
+            // performance / to avoid allocations). If we passed '_currentPath' directly and
+            // then cleared/reused it, we'd also modify the polygon's internal coordinates.
+			var pathCopy:Vector<Float> = __currentPath.copy();
+			__currentPath.length = 0;
+			
+            drawPolygon(Polygon.fromVector(pathCopy));
+			
+			// Keep the current position at the end of the closed path.
+            // This matches Flash Graphics semantics: subsequent lineTo/curveTo calls continue
+            // from the last point (which equals the start point after closing).
+			__currentPath.push(lastX);
+			__currentPath.push(lastY);
+		}
     }
 }
