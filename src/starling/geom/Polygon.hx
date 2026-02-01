@@ -197,7 +197,7 @@ class Polygon
 			if (indexData == null) indexData = new IndexData(indexes.length);
 			if (indexes.length < 3) return indexData;
 			
-			var triangleCount:Int = indexes.length / 3;
+			var triangleCount:Int = Std.int(indexes.length / 3);
 			for (triIndex in 0...triangleCount)
 			{
 				indexData.addTriangle(indexes[triIndex*3]+offset, indexes[triIndex*3+1]+offset, indexes[triIndex*3+2]+offset);
@@ -353,8 +353,9 @@ class Polygon
 	
 	public static function createRoundRectangle(x:Float, y:Float,
 												width:Float, height:Float,
-												ellipseWidth:Float, ellipseHeight:Float = Math.NaN):Polygon
+												ellipseWidth:Float, ?ellipseHeight:Float):Polygon
 	{
+		if (ellipseHeight == null) ellipseHeight = Math.NaN;
 		return new RoundRectangle(x, y, width, height, ellipseWidth, ellipseHeight);
 	}
 
