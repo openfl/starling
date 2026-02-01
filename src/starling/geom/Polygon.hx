@@ -14,6 +14,7 @@ import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.geom.Point;
 import openfl.Vector;
+import starling.utils.Earcut;
 
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;
@@ -31,6 +32,13 @@ import starling.utils.Pool;
 class Polygon
 {
     @:noCompletion private var __coords:Vector<Float>;
+	
+	/* Dictates if Polygon.triangulate() should use the Earcut ear-clipping polygon triangulation library
+	 * that is bundled with Starling or old ear-clipping triangulation that used to be the default.
+	 * In most cases you want to keep this on as Earcut has much better output and speed than the old triangulation,
+	 * turn it off only if you have issues not seen in the old triangulation (altough there shouldn't be any)
+	 */
+	public static var useEarcut:Bool = true;
 
     // Helper object
     private static var sRestIndices:Vector<UInt> = new Vector<UInt>();
@@ -150,7 +158,7 @@ class Polygon
         // -> http://alienryderflex.com/polygon/
 
 		var numVertices:Int = this.numVertices;
-        var i:Int, j:Int = numVertices - 1;
+		var j:Int = numVertices - 1;
         var oddNodes:UInt = 0;
 
         for (i in 0...numVertices)
@@ -183,6 +191,20 @@ class Polygon
      *  Otherwise, a new instance will be created.</p> */
     public function triangulate(indexData:IndexData=null, offset:Int=0):IndexData
     {
+		if (useEarcut)
+		{
+			var indexes:Vector<UInt> = Earcut.earcut(this.__coords);
+			if (indexData == null) indexData = new IndexData(indexes.length);
+			if (indexes.length < 3) return indexData;
+			
+			var triangleCount:Int = indexes.length / 3;
+			for (triIndex in 0...triangleCount)
+			{
+				indexData.addTriangle(indexes[triIndex*3]+offset, indexes[triIndex*3+1]+offset, indexes[triIndex*3+2]+offset);
+			}
+			return indexData;
+		}
+		
         // Algorithm "Ear clipping method" described here:
         // -> https://en.wikipedia.org/wiki/Polygon_triangulation
         //
@@ -328,6 +350,13 @@ class Polygon
     {
         return new Rectangle(x, y, width, height);
     }
+	
+	public static function createRoundRectangle(x:Float, y:Float,
+												width:Float, height:Float,
+												ellipseWidth:Float, ellipseHeight:Float = Math.NaN):Polygon
+	{
+		return new RoundRectangle(x, y, width, height, ellipseWidth, ellipseHeight);
+	}
 
     // helpers
 
