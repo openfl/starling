@@ -10,15 +10,12 @@
 
 package starling.assets;
 
-import haxe.Constraints.Function;
 import haxe.Timer;
 import openfl.errors.ArgumentError;
-import openfl.errors.Error;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundTransform;
 import openfl.net.URLRequest;
-import openfl.system.System;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 //import openfl.utils.describeType;
