@@ -50,8 +50,8 @@ class RoundRectangle extends ImmutablePolygon
 		{
 			while (j < len)
 			{
-				vertices[j * 2] = offsetX + Math.cos(angle) * _radiusX + _x + _radiusX;
-				vertices[j * 2 + 1] = offsetY + Math.sin(angle) * _radiusY + _y + _radiusY;
+				vertices[j * 2] = offsetX + Math.cos(angle) * __radiusX + __x + __radiusX;
+				vertices[j * 2 + 1] = offsetY + Math.sin(angle) * __radiusY + __y + __radiusY;
 				angle += angleDelta;
 				j++;
 			}
@@ -130,7 +130,7 @@ class RoundRectangle extends ImmutablePolygon
 		else
 		{
 			// right
-			centerX == __x + __width - __radiusX;
+			centerX = __x + __width - __radiusX;
 		}
 		if (y < __y + __radiusY)
 		{
