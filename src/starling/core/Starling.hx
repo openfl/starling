@@ -12,6 +12,7 @@ package starling.core;
 
 import haxe.macro.Compiler;
 import haxe.Timer;
+import starling.textures.TextureSmoothing;
 
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Shape;
@@ -21,11 +22,8 @@ import openfl.display.Stage in OpenFLStage;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.display3D.Context3D;
-import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
-import openfl.display3D.Context3DTriangleFace;
-import openfl.display3D.Program3D;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 import openfl.events.ErrorEvent;
@@ -41,11 +39,9 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.Multitouch;
 import openfl.ui.MultitouchInputMode;
-import openfl.utils.ByteArray;
 import openfl.Lib;
 import openfl.Vector;
 
@@ -226,6 +222,7 @@ class Starling extends EventDispatcher
     @:noCompletion private var __painter:Painter;
     @:noCompletion private var __touchProcessor:TouchProcessor;
     @:noCompletion private var __antiAliasing:Int;
+	@:noCompletion private var __defaultTextureSmoothing:String;
     @:noCompletion private var __frameTimestamp:Float;
     @:noCompletion private var __frameID:UInt;
     @:noCompletion private var __leftMouseDown:Bool;
@@ -972,6 +969,20 @@ class Starling extends EventDispatcher
         }
         return value;
     }
+	
+	/** The default texture smoothing. This value will be used as the default value when
+	 *  creating 'MeshStyle', 'FragmentFilter' or 'FilterEffect'.
+	 *  Changing it won't have any impact on the existing meshes and filters.
+	 *  @default "bilinear" */
+	public var defaultTextureSmoothing(get, set):String;
+	private function get_defaultTextureSmoothing():String { return __defaultTextureSmoothing; }
+	private function set_defaultTextureSmoothing(value:String):String
+	{
+		if (!TextureSmoothing.isValid(value))
+			throw new ArgumentError("Invalid texture smoothing: " + value);
+		
+		return __defaultTextureSmoothing = value;
+	}
     
     /** The viewport into which Starling contents will be rendered. */
     public var viewPort(get, set):Rectangle;
