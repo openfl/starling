@@ -22,7 +22,6 @@ import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
-import openfl.system.Capabilities;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 import openfl.Vector;
@@ -160,7 +159,6 @@ class DisplayObject extends EventDispatcher
     // helper objects
 
     private static var sAncestors:Vector<DisplayObject> = new Vector<DisplayObject>();
-    private static var sHelperPoint:Point = new Point();
     private static var sHelperPoint3D:Vector3D = new Vector3D();
     private static var sHelperPointAlt3D:Vector3D = new Vector3D();
     private static var sHelperRect:Rectangle = new Rectangle();
@@ -354,9 +352,11 @@ class DisplayObject extends EventDispatcher
                 sHelperMatrixAlt.invert();
             }
 
-            var helperPoint:Point = localPoint == sHelperPoint ? new Point() : sHelperPoint;
-            MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, helperPoint);
+            var maskCoords:Point = Pool.getPoint();
+            MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, maskCoords);
             var isMaskHit:Bool = __mask.hitTest(helperPoint) != null;
+			Pool.putPoint(maskCoords);
+			
             return __maskInverted ? !isMaskHit : isMaskHit;
         }
         else return true;
