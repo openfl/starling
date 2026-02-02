@@ -29,6 +29,7 @@ class BatchProcessor
     private var _currentStyleType:Class<Dynamic>;
     private var _onBatchComplete:MeshBatch->Void;
     private var _cacheToken:BatchToken;
+	private var _frameFinished:Bool;
 
     // helper objects
     private static var sMeshSubset:MeshSubset = new MeshSubset();
@@ -45,8 +46,9 @@ class BatchProcessor
     #end
 
     /** Creates a new batch processor. */
-    public function new()
+    public function new(onBatchComplete:MeshBatch->Void)
     {
+		_onBatchComplete = onBatchComplete;
         _batches = new Vector<MeshBatch>();
         _batchPool = new BatchPool();
         _cacheToken = new BatchToken();
@@ -130,6 +132,13 @@ class BatchProcessor
                 _onBatchComplete(meshBatch);
         }
     }
+	
+	/** Calls 'finishBatch()' and sets 'frameFinished' to true. */
+	public function finishFrame():Void
+	{
+		finishBatch();
+		_frameFinished = true;
+	}
 
     /** Clears all batches and adds them to a pool so they can be reused later. */
     public function clear():Void
@@ -143,6 +152,7 @@ class BatchProcessor
         _currentBatch = null;
         _currentStyleType = null;
         _cacheToken.reset();
+		_frameFinished = false;
     }
 
     /** Returns the batch at a certain index. */
@@ -170,6 +180,10 @@ class BatchProcessor
     /** The number of batches currently stored in the BatchProcessor. */
     public var numBatches(get, never):Int;
     private function get_numBatches():Int { return _batches.length; }
+	
+	/** Indicates if the processed frame is complete, i.e. 'finishFrame()' has been called. */
+	public var frameFinished(get, never):Bool;
+	private function get_frameFinished():Bool { return _frameFinished; }
 
     /** This callback is executed whenever a batch is finished and replaced by a new one.
      *  The finished MeshBatch is passed to the callback. Typically, this callback is used
