@@ -29,9 +29,9 @@ import starling.utils.MathUtil.rad2deg;
 class Canvas extends DisplayObjectContainer
 {
     @:noCompletion private var __polygons:Vector<Polygon>;
+	@:noCompletion private var __currentPath:Vector<Float>;
     @:noCompletion private var __fillColor:UInt;
     @:noCompletion private var __fillAlpha:Float;
-    @:noCompletion private var __currentPath:Vector<Float>;
 
     /** Creates a new (empty) Canvas. Call one or more of the 'draw' methods to add content. */
     public function new()
@@ -39,6 +39,7 @@ class Canvas extends DisplayObjectContainer
         super();
 
         __polygons  = new Vector<Polygon>();
+		__currentPath = new Vector<Float>();
         __fillColor = 0xffffff;
         __fillAlpha = 1.0;
         touchGroup  = true;
