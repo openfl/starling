@@ -220,9 +220,9 @@ class MovieClip extends Image implements IAnimatable
     public function reverseFrames():Void
     {
         __frames.reverse();
+		updateStartTimes();
         __currentTime = totalTime - __currentTime;
         __currentFrameID = numFrames - __currentFrameID - 1;
-        updateStartTimes();
     }
     
     // playback methods
