@@ -81,7 +81,7 @@ class Painter
     private static inline var PROGRAM_DATA_NAME:String = "starling.rendering.Painter.Programs";
 
     /** The value with which the stencil buffer will be cleared,
-        *  and the default reference value used for stencil tests. */
+     *  and the default reference value used for stencil tests. */
     public static var DEFAULT_STENCIL_VALUE:UInt = 127;
 
     // members
@@ -181,14 +181,9 @@ class Painter
         _stencilReferenceValues = new ObjectMap<Dynamic, UInt>();
         _clipRectStack = new Vector<Rectangle>();
 
-        _batchProcessorCurr = new BatchProcessor();
-        _batchProcessorCurr.onBatchComplete = drawBatch;
-
-        _batchProcessorPrev = new BatchProcessor();
-        _batchProcessorPrev.onBatchComplete = drawBatch;
-
-        _batchProcessorSpec = new BatchProcessor();
-        _batchProcessorSpec.onBatchComplete = drawBatch;
+        _batchProcessorCurr = new BatchProcessor(drawBatch);
+        _batchProcessorPrev = new BatchProcessor(drawBatch);
+        _batchProcessorSpec = new BatchProcessor(drawBatch);
 
         _batchProcessor = _batchProcessorCurr;
         _batchCacheExclusions = new Vector<DisplayObject>();
@@ -637,7 +632,7 @@ class Painter
             if (_frameID % specInterval == 0) _batchProcessorSpec.trim();
         }
 
-        _batchProcessor.finishBatch();
+        _batchProcessor.finishFrame();
         _batchProcessor = _batchProcessorSpec; // no cache between frames
         processCacheExclusions();
     }
@@ -695,6 +690,11 @@ class Painter
 
         if (!startToken.equals(endToken))
         {
+			if (!_batchProcessorPrev.frameFinished) {
+				trace("Encountered invalid batch processor → skipping draw operation.");
+				return;
+			}
+			
             pushState();
 
             for (i in startToken.batchID...(endToken.batchID + 1))
