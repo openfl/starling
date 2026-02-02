@@ -12,6 +12,9 @@ package starling.assets;
 
 import haxe.Timer;
 import openfl.errors.ArgumentError;
+#if desktop
+import openfl.filesystem.File;
+#end
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundTransform;
@@ -267,6 +270,7 @@ class AssetManager extends EventDispatcher
             {
                 enqueue(asset);
             }
+			// Note that #if 0 means no compilation
             #if 0	//We don't support Embedded assets via static class variables that are read with describeType() in AS3
             else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Class))
             {
@@ -298,6 +302,23 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
+			#if desktop
+			else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, File))
+			{
+				var file:File = cast asset;
+				if (!file.exists)
+				{
+					log("File or directory not found: '" + file.url + "'");
+				}
+				else if (!file.isHidden)
+				{
+					if (file.isDirectory)
+						enqueue(file.getDirectoryListing());
+					else
+						enqueueSingle(file);
+				}
+			}
+			#end
             else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, String) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, URLRequest) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, AssetManager))
             {
                 enqueueSingle(asset);
@@ -320,7 +341,9 @@ class AssetManager extends EventDispatcher
      *  @return         the name with which the asset was registered.
      */
     public function enqueueSingle(asset:Dynamic, name:String=null,
-                                  options:TextureOptions=null):String
+                                  options:TextureOptions=null,
+								  customExtension:String=null,
+								  customMimeType:String=null):String
     {
         if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, Class))
             asset = Type.createInstance(asset, []);
@@ -340,7 +363,12 @@ class AssetManager extends EventDispatcher
                 assetReference.name = getUniqueName();
         }
         
-        assetReference.extension = getExtensionFromUrl(assetReference.url);
+		if (customExtension != null)
+			assetReference.extension = customExtension;
+		else
+			assetReference.extension = getExtensionFromUrl(assetReference.url);
+		
+		assetReference.mimeType = customMimeType;
         
         if (options != null)
             assetReference.textureOptions = options;
@@ -1091,7 +1119,7 @@ class AssetManager extends EventDispatcher
     private function get_numConnections():Int { return _numConnections; }
     private function set_numConnections(value:Int):Int
     {
-        return _numConnections = Std.int(MathUtil.min(1, value));
+        return _numConnections = Std.int(MathUtil.max(1, value));
     }
 
     /** Textures will be created with the options set up in this object at the time of
