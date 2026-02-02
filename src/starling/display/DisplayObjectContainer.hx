@@ -17,6 +17,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.system.Capabilities;
 import openfl.Vector;
+import starling.utils.Pool;
 
 import starling.events.Event;
 import starling.filters.FragmentFilter;
@@ -71,7 +72,6 @@ class DisplayObjectContainer extends DisplayObject
     
     // helper objects
     private static var sHitTestMatrix:Matrix = new Matrix();
-	private static var sHitTestPoint:Point = new Point();
 	private static var sBoundsMatrix:Matrix = new Matrix();
 	private static var sBoundsPoint:Point = new Point();
     private static var sBroadcastListeners:Vector<DisplayObject> = new Vector<DisplayObject>();
@@ -359,8 +359,10 @@ class DisplayObjectContainer extends DisplayObject
             sHitTestMatrix.copyFrom(child.transformationMatrix);
             sHitTestMatrix.invert();
 
-            MatrixUtil.transformCoords(sHitTestMatrix, localX, localY, sHitTestPoint);
-            target = child.hitTest(sHitTestPoint);
+			var childCoords:Point = Pool.getPoint();
+            MatrixUtil.transformCoords(sHitTestMatrix, localX, localY, childCoords);
+            target = child.hitTest(childCoords);
+			Pool.putPoint(childCoords);
 
             if (target != null) return __touchGroup ? this : target;
             --i;
