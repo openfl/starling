@@ -354,7 +354,7 @@ class DisplayObject extends EventDispatcher
 
             var maskCoords:Point = Pool.getPoint();
             MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, maskCoords);
-            var isMaskHit:Bool = __mask.hitTest(helperPoint) != null;
+            var isMaskHit:Bool = __mask.hitTest(maskCoords) != null;
 			Pool.putPoint(maskCoords);
 			
             return __maskInverted ? !isMaskHit : isMaskHit;
