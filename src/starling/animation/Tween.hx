@@ -61,12 +61,16 @@ import starling.utils.Color;
     @:noCompletion private var __onStart:Function;
     @:noCompletion private var __onUpdate:Function;
     @:noCompletion private var __onRepeat:Function;
-    @:noCompletion private var __onComplete:Function;  
+    @:noCompletion private var __onComplete:Function;
+	@:noCompletion private var __onRepeatStart:Function;
+	@:noCompletion private var __onRepeatFinish:Function;
     
     @:noCompletion private var __onStartArgs:Array<Dynamic>;
     @:noCompletion private var __onUpdateArgs:Array<Dynamic>;
     @:noCompletion private var __onRepeatArgs:Array<Dynamic>;
     @:noCompletion private var __onCompleteArgs:Array<Dynamic>;
+	@:noCompletion private var __onRepeatStartArgs:Array<Dynamic>;
+	@:noCompletion private var __onRepeatFinishArgs:Array<Dynamic>;
     
     @:noCompletion private var __totalTime:Float;
     @:noCompletion private var __currentTime:Float;
@@ -76,6 +80,7 @@ import starling.utils.Color;
     @:noCompletion private var __nextTween:Tween;
     @:noCompletion private var __repeatCount:Int;
     @:noCompletion private var __repeatDelay:Float;
+	@:noCompletion private var __repeatReverseDelay:Float;
     @:noCompletion private var __reverse:Bool;
     @:noCompletion private var __currentCycle:Int;
     
@@ -128,9 +133,9 @@ import starling.utils.Color;
         __currentTime = 0.0;
         __totalTime = Math.max(0.0001, time);
         __progress = 0.0;
-        __delay = __repeatDelay = 0.0;
-        __onStart = __onUpdate = __onRepeat = __onComplete = null;
-        __onStartArgs = __onUpdateArgs = __onRepeatArgs = __onCompleteArgs = null;
+        __delay = __repeatDelay = __repeatReverseDelay = 0.0;
+        __onStart = __onUpdate = __onRepeat = __onComplete = __onRepeatStart = __onRepeatFinish = null;
+        __onStartArgs = __onUpdateArgs = __onRepeatArgs = __onCompleteArgs = __onRepeatStartArgs = __onRepeatFinishArgs = null;
         __roundToInt = __reverse = false;
         __repeatCount = 1;
         __currentCycle = -1;
@@ -236,6 +241,18 @@ import starling.utils.Color;
                 }
             }
         }
+		
+		if (previousTime <= 0 && __currentTime > 0)
+		{
+			if (__onRepeatStart != null)
+			{
+				if (__onRepeatStartArgs != null) {
+					Reflect.callMethod(__onRepeatStart, __onRepeatStart, __onRepeatStartArgs);
+				} else {
+					__onRepeatStart();
+				}
+			}
+		}
 
         var ratio:Float = __currentTime / __totalTime;
         var reversed:Bool = __reverse && (__currentCycle % 2 == 1);
@@ -266,7 +283,14 @@ import starling.utils.Color;
         {
             if (__repeatCount == 0 || __repeatCount > 1)
             {
-                __currentTime = -__repeatDelay;
+				if (reversed)
+				{
+					__currentTime = -__repeatReverseDelay;
+				}
+				else
+				{
+					__currentTime = -__repeatDelay;
+				}
                 __currentCycle++;
                 if (__repeatCount > 1) __repeatCount--;
                 if (__onRepeat != null)
@@ -277,6 +301,14 @@ import starling.utils.Color;
                         __onRepeat();
                     }
                 }
+				if (__onRepeatFinish != null)
+				{
+					if (__onRepeatFinishArgs != null) {
+						Reflect.callMethod(__onRepeatFinish, __onRepeatFinish, __onRepeatFinishArgs);
+					} else {
+						__onRepeatFinish();
+					}
+				}
             }
             else
             {
@@ -296,6 +328,14 @@ import starling.utils.Color;
                         onComplete();
                     }
                 }
+				if (__onRepeatFinish != null)
+				{
+					if (__onRepeatFinishArgs != null) {
+						Reflect.callMethod(__onRepeatFinish, __onRepeatFinish, __onRepeatFinishArgs);
+					} else {
+						__onRepeatFinish();
+					}
+				}
                 if (__currentTime == 0) carryOverTime = 0; // tween was reset
             }
         }
@@ -459,6 +499,11 @@ import starling.utils.Color;
     public var repeatDelay(get, set):Float;
     private function get_repeatDelay():Float { return __repeatDelay; }
     private function set_repeatDelay(value:Float):Float { return __repeatDelay = value; }
+	
+	/** The amount of time to wait between repeat cycles if uses 'reverse' cicle (in seconds). @default 0 */
+	public var repeatReverseDelay(get, set):Float;
+	private function get_repeatReverseDelay():Float { return __repeatReverseDelay; }
+	private function set_repeatReverseDelay(value:Float):Float { return __repeatReverseDelay = value; }
     
     /** Indicates if the tween should be reversed when it is repeating. If enabled, 
      * every second repetition will be reversed. @default false */
@@ -486,7 +531,17 @@ import starling.utils.Color;
     public var onRepeat(get, set):Function;
     private function get_onRepeat():Function { return __onRepeat; }
     private function set_onRepeat(value:Function):Function { return __onRepeat = value; }
+	
+	/** A function that will be called each time the tween starts one repetition */
+	public var onRepeatStart(get, set):Function;
+	private function get_onRepeatStart():Function { return __onRepeatStart; }
+	private function set_onRepeatStart(value:Function):Function { return __onRepeatStart = value; }
     
+	/** A function that will be called each time the tween finishes one repetition */
+	public var onRepeatFinish(get, set):Function;
+	private function get_onRepeatFinish():Function { return __onRepeatFinish; }
+	private function set_onRepeatFinish(value:Function):Function { return __onRepeatFinish = value; }
+	
     /** A function that will be called when the tween is complete. */
     public var onComplete(get, set):Function;
     private function get_onComplete():Function { return __onComplete; }
@@ -506,7 +561,17 @@ import starling.utils.Color;
     public var onRepeatArgs(get, set):Array<Dynamic>;
     private function get_onRepeatArgs():Array<Dynamic> { return __onRepeatArgs; }
     private function set_onRepeatArgs(value:Array<Dynamic>):Array<Dynamic> { return __onRepeatArgs = value; }
+	
+	/** The arguments that will be passed to the 'onRepeatStart' function. */
+	public var onRepeatStartArgs(get, set):Array<Dynamic>;
+	private function get_onRepeatStartArgs():Array<Dynamic> { return __onRepeatStartArgs; }
+	private function set_onRepeatStartArgs(value:Array<Dynamic>):Array<Dynamic> { return __onRepeatStartArgs = value; }
     
+	/** The arguments that will be passed to the 'onRepeatFinish' function. */
+	public var onRepeatFinishArgs(get, set):Array<Dynamic>;
+	private function get_onRepeatFinishArgs():Array<Dynamic> { return __onRepeatFinishArgs; }
+	private function set_onRepeatFinishArgs(value:Array<Dynamic>):Array<Dynamic> { return __onRepeatFinishArgs = value; }
+	
     /** The arguments that will be passed to the 'onComplete' function. */
     public var onCompleteArgs(get, set):Array<Dynamic>;
     private function get_onCompleteArgs():Array<Dynamic> { return __onCompleteArgs; }
@@ -534,8 +599,8 @@ import starling.utils.Color;
     @:allow(starling) private static function toPool(tween:Tween):Void
     {
         // reset any object-references, to make sure we don't prevent any garbage collection
-        tween.__onStart = tween.__onUpdate = tween.__onRepeat = tween.__onComplete = null;
-        tween.__onStartArgs = tween.__onUpdateArgs = tween.__onRepeatArgs = tween.__onCompleteArgs = null;
+        tween.__onStart = tween.__onUpdate = tween.__onRepeat = tween.__onComplete = tween.__onRepeatStart = tween.__onRepeatFinish = null;
+        tween.__onStartArgs = tween.__onUpdateArgs = tween.__onRepeatArgs = tween.__onCompleteArgs = tween.__onRepeatStartArgs = tween.__onRepeatFinishArgs = null;
         tween.__target = null;
         tween.__transitionFunc = null;
         tween.removeEventListeners();
