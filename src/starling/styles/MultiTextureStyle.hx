@@ -9,6 +9,7 @@
 // =================================================================================================
 
 package starling.styles;
+import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DProgramType;
@@ -38,12 +39,12 @@ class MultiTextureStyle extends MeshStyle
 	public static var MAX_NUM_TEXTURES:Int = 5;
 	
 	private var __dirty:Bool = true;
-	private var __textures:Array<Texture> = new Array<Texture>();
+	private var __textures:Vector<Texture> = new Vector<Texture>();
 	
 	private static var sMaxTextures:Int = 2;
 	private static var sTextureIndexMap:Array<Int> = new Array<Int>();
 	
-	public static function maxTextures(get, set):Int;
+	public static var maxTextures(get, set):Int;
 	private static function get_maxTextures():Int { return sMaxTextures; }
 	private static function set_maxTextures(value:Int):Int
 	{
@@ -160,7 +161,7 @@ class MultiTextureStyle extends MeshStyle
 						mtTarget.__textures[mtTarget.__textures.length] = texture;
 				}
 				sTextureIndexMap[i] = textureIndexOnTarget;
-				dirty ||= i != textureIndexOnTarget;
+				dirty = dirty || i != textureIndexOnTarget;
 			}
 			if (dirty)
 			{
@@ -217,14 +218,14 @@ class MultiTextureEffect extends MeshEffect
 {
 	public static var VERTEX_FORMAT:VertexDataFormat = MultiTextureStyle.VERTEX_FORMAT;
 	
-	public var textures:Array<Texture>;
+	public var textures:Vector<Texture>;
 	
 	private var __isBaseline:Bool;
 	
-	private static var kTextureIndices:Array<Float> = [
+	private static var kTextureIndices:Vector<Float> = new Vector<Float>([
 		0.125, 0.375, 0.625, 0.875,
 		1, 0, 0, 0
-	];
+	]);
 	
 	public function new()
 	{
@@ -280,7 +281,7 @@ class MultiTextureEffect extends MeshEffect
 						
 						if (length > 3)
 						{
-							fragmentShader.push("add ft5, ft5, ft0", );
+							fragmentShader.push("add ft5, ft5, ft0");
 							fragmentShader.push(FilterEffect.tex("ft4", "v0", 4, textures[3]));
 							fragmentShader.push("min ft0, ft6.wwww, ft4");
 						}
@@ -359,7 +360,7 @@ class MultiTextureEffect extends MeshEffect
 			}
 			vertexFormat.setVertexBufferAt(3, vertexBuffer, "texture");
 			context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT,
-				0, kTextureIndices, length > 1 || _isBaseline ? -1 : 1);
+				0, kTextureIndices, length > 1 || __isBaseline ? -1 : 1);
 		}
 	}
 	
