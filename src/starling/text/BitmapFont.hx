@@ -559,6 +559,8 @@ class BitmapFont implements ITextCompositor
         
         if (vAlign == Align.BOTTOM)      yOffset = Std.int(containerHeight - bottom);
         else if (vAlign == Align.CENTER) yOffset = Std.int((containerHeight - bottom) / 2);
+		
+		if (yOffset < 0) yOffset = 0;
         
         for (lineID in 0...numLines)
         {
