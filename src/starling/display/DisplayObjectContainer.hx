@@ -185,7 +185,10 @@ class DisplayObjectContainer extends DisplayObject
             }
             
             child.__setParent(null);
-            index = __children.indexOf(child); // index might have changed by event handler
+			if (index >= __children.length || __children[index] != child)
+			{
+				index = __children.indexOf(child); // index might have changed by event handler
+			}
             if (index >= 0) __children.removeAt(index);
             if (dispose) child.dispose();
             
@@ -316,21 +319,37 @@ class DisplayObjectContainer extends DisplayObject
         }
         else
         {
+			var sizedChildrenCount:Int = 0;
             var minX:Float = Max.MAX_VALUE, maxX:Float = -Max.MAX_VALUE;
             var minY:Float = Max.MAX_VALUE, maxY:Float = -Max.MAX_VALUE;
 
-            var i:Int = 0;
             for (i in 0...numChildren)
             {
                 __children[i].getBounds(targetSpace, out);
+				
+				// ignore child with no size
+				if (out.width == 0 && out.height == 0)
+					continue;
 
+				++sizedChildrenCount;
                 if (minX > out.x)      minX = out.x;
                 if (maxX < out.right)  maxX = out.right;
                 if (minY > out.y)      minY = out.y;
                 if (maxY < out.bottom) maxY = out.bottom;
             }
 
-            out.setTo(minX, minY, maxX - minX, maxY - minY);
+			// all children have no size
+			if (sizedChildrenCount == 0)
+			{
+				getTransformationMatrix(targetSpace, sBoundsMatrix);
+				MatrixUtil.transformCoords(sBoundsMatrix, 0.0, 0.0, sBoundsPoint);
+				out.setTo(sBoundsPoint.x, sBoundsPoint.y, 0, 0);
+			}
+			// at least one child is sized
+			else
+			{
+				out.setTo(minX, minY, maxX - minX, maxY - minY);
+			}
         }
         
         return out;
@@ -378,11 +397,12 @@ class DisplayObjectContainer extends DisplayObject
         var frameID:UInt = painter.frameID;
         var cacheEnabled:Bool = frameID != 0;
         var selfOrParentChanged:Bool = __lastParentOrSelfChangeFrameID == frameID;
+		var sharesMaskWithPreviousObject:Bool = false;
 
         painter.pushState();
 
         var child:DisplayObject, filter:FragmentFilter, mask:DisplayObject;
-        var pushToken:BatchToken, popToken:BatchToken;
+        var pushToken:BatchToken, popToken:BatchToken, nextChild:DisplayObject;
 
         for (i in 0...numChildren)
         {
@@ -416,12 +436,33 @@ class DisplayObjectContainer extends DisplayObject
                     painter.fillToken(pushToken);
                     painter.setStateTo(child.transformationMatrix, child.alpha, child.blendMode);
 
-                    if (mask != null) painter.drawMask(mask, child);
+					if (mask != null)
+					{
+						if (sharesMaskWithPreviousObject)
+							painter.excludeFromCache(child);
+						else
+							painter.drawMask(mask, child);
+					}
 
                     if (filter != null) filter.render(painter);
                     else                child.render(painter);
 
-                    if (mask != null) painter.eraseMask(mask, child);
+					if (mask != null)
+					{
+						nextChild = i >= numChildren - 1 ? null : __children[i + 1];
+						
+						if (nextChild != null && nextChild.__mask == mask &&
+							nextChild.maskInverted == child.maskInverted &&
+							nextChild.__hasVisibleArea)
+						{
+							sharesMaskWithPreviousObject = true;
+						}
+						else
+						{
+							sharesMaskWithPreviousObject = false;
+							painter.eraseMask(mask, child);
+						}
+					}
 
                     painter.fillToken(popToken);
                 }
