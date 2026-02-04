@@ -19,7 +19,6 @@ import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 
 import starling.core.Starling;
@@ -34,7 +33,6 @@ import starling.utils.MathUtil;
     private var _textureReadyCallback:ConcreteTexture->Void;
 
     private static var sMatrix:Matrix = new Matrix();
-    private static var sRectangle:Rectangle = new Rectangle();
     private static var sOrigin:Point = new Point();
     private static var sAsyncUploadEnabled:Bool = false;
 
@@ -90,24 +88,29 @@ import starling.utils.MathUtil;
         {
             var currentWidth:Int  = data.width  >> 1;
             var currentHeight:Int = data.height >> 1;
+			var last_canvas:BitmapData = null;
             var level:Int = 1;
-            var canvas:BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
-            var bounds:Rectangle = sRectangle;
             var matrix:Matrix = sMatrix;
             matrix.setTo(0.5, 0.0, 0.0, 0.5, 0.0, 0.0);
 
             while (currentWidth >= 1 || currentHeight >= 1)
             {
-                bounds.setTo(0, 0, currentWidth, currentHeight);
-                canvas.fillRect(bounds, 0);
-                canvas.draw(data, matrix, null, null, null, true);
+				var canvas:BitmapData = new BitmapData(Std.int(Math.max(1, currentWidth)), Std.int(Math.max(1, currentHeight)), true, 0);
+				if (level == 1) {
+					canvas.draw(data, matrix, null, null, null, true);
+				} else {
+					canvas.draw(last_canvas, matrix, null, null, null, true);
+					last_canvas.dispose();
+				}
+				last_canvas = canvas;
                 upload(canvas, level++, false); // only level 0 supports async
-                matrix.scale(0.5, 0.5);
                 currentWidth  = currentWidth  >> 1;
                 currentHeight = currentHeight >> 1;
             }
-
-            canvas.dispose();
+			
+			if (last_canvas != null) {
+				last_canvas.dispose();
+			}
         }
 
         if (buffer != null) buffer.dispose();
