@@ -11,9 +11,9 @@
 package starling.rendering;
 
 import openfl.display3D.Context3D;
+import starling.core.Starling;
 
 import starling.textures.Texture;
-import starling.textures.TextureSmoothing;
 import starling.utils.RenderUtil;
 
 /** An effect drawing a mesh of textured vertices.
@@ -61,7 +61,7 @@ class FilterEffect extends Effect
     public function new()
     {
         super();
-        _textureSmoothing = TextureSmoothing.BILINEAR;
+        _textureSmoothing = Starling.currentDefaultTextureSmoothing;
     }
 
     /** Override this method if the effect requires a different program depending on the
