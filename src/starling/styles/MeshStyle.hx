@@ -11,8 +11,8 @@
 package starling.styles;
 
 import haxe.Constraints.Function;
+import starling.core.Starling;
 
-import openfl.display3D.textures.TextureBase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 
@@ -22,7 +22,6 @@ import starling.events.EventDispatcher;
 import starling.rendering.*;
 import starling.textures.ConcreteTexture;
 import starling.textures.Texture;
-import starling.textures.TextureSmoothing;
 
 /** Dispatched every frame on styles assigned to display objects connected to the stage. */
 @:meta(Event(name="enterFrame", type="starling.events.EnterFrameEvent"))
@@ -132,7 +131,7 @@ class MeshStyle extends EventDispatcher
     @:keep public function new()
     {
         super();
-        _textureSmoothing = TextureSmoothing.BILINEAR;
+        _textureSmoothing = Starling.currentDefaultTextureSmoothing;
         _type = Type.getClass(this);
     }
     
