@@ -1313,7 +1313,12 @@ class DisplayObject extends EventDispatcher
     /** Indicates if the masked region of this object is set to be inverted.*/
     public var maskInverted(get, set):Bool;
     private function get_maskInverted():Bool { return __maskInverted; }
-    private function set_maskInverted(value:Bool):Bool { return __maskInverted = value; }
+    private function set_maskInverted(value:Bool):Bool 
+	{
+		if (__maskInverted == value) return value;
+		setRequiresRedraw();
+		return __maskInverted = value;
+	}
 
     /** The display object container that contains this display object. */
     public var parent(get, never):DisplayObjectContainer;
