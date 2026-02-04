@@ -227,11 +227,11 @@ class TouchProcessor
     private function processTouches(touches:Vector<Touch>,
                                     shiftDown:Bool, ctrlDown:Bool):Void
     {
-        var touch:Touch;
-        #if haxe4
-        sHoveringTouchData.resize(0);
+        //var touch:Touch;
+        #if (haxe_ver < 4.0)
+		sHoveringTouchData.splice(0, sHoveringTouchData.length);
         #else
-        sHoveringTouchData.splice(0, sHoveringTouchData.length);
+        sHoveringTouchData.resize(0);
         #end
 
         // the same touch event will be dispatched to all targets;
@@ -397,6 +397,7 @@ class TouchProcessor
 
         // purge touches
         __currentTouches.length = 0;
+		__systemGestureTouchID = -1;
         
         while (__queue.length > 0)
             TouchData.toPool(__queue.pop());
