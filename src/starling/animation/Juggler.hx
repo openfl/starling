@@ -51,7 +51,7 @@ import starling.events.EventDispatcher;
 class Juggler implements IAnimatable
 {
     @:noCompletion private var __objects:Vector<IAnimatable>;
-    @:noCompletion private var __objectIDs:Map<IAnimatable, UInt>;
+    @:noCompletion private var __objectIDs:Vector<UInt>;
     @:noCompletion private var __elapsedTime:Float;
     @:noCompletion private var __timeScale:Float;
 
@@ -76,7 +76,7 @@ class Juggler implements IAnimatable
         __elapsedTime = 0;
         __timeScale = 1.0;
         __objects = new Vector<IAnimatable>();
-        __objectIDs = new Map();
+        __objectIDs = new Vector<UInt>();
     }
 
     /** Adds an object to the juggler.
@@ -91,13 +91,13 @@ class Juggler implements IAnimatable
 
     public function addWithID(object:IAnimatable, objectID:UInt):UInt
     {
-        if (object != null && !__objectIDs.exists(object)) 
+        if (object != null && !contains(object)) 
         {
             var dispatcher:EventDispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
-            if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+            if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemoveRequested);
 
             __objects[__objects.length] = object;
-            __objectIDs[object] = objectID;
+            __objectIDs[__objectIDs.length] = objectID;
 
             return objectID;
         }
@@ -107,8 +107,12 @@ class Juggler implements IAnimatable
     /** Determines if an object has been added to the juggler. */
     public function contains(object:IAnimatable):Bool
     {
-        return __objectIDs.exists(object);
+        return __objects.indexOf(object) != -1;
     }
+	
+	/** Returns true if there is currently no object being juggled. */
+	public var isEmpty(get, never):Bool;
+	private function get_isEmpty():Bool { return __objects.length == 0; }
     
     /** Removes an object from the juggler.
      *
@@ -117,22 +121,43 @@ class Juggler implements IAnimatable
      */
     public function remove(object:IAnimatable):UInt
     {
-        var objectID:UInt = 0;
-
-        if (object != null && __objectIDs.exists(object))
-        {
-            var dispatcher:EventDispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
-            if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-
-            var index:Int = __objects.indexOf(object);
-            __objects[index] = null;
-
-            objectID = __objectIDs[object];
-            __objectIDs.remove(object);
-        }
-
-        return objectID;
+		var objectIndex:Int = __objects.indexOf(object);
+		if (objectIndex != -1)
+			return removeByIndex(objectIndex);
+		
+        return 0;
     }
+	
+	/** Marks the cell used by the object as "free".
+	 *
+	 * <p>This method leaves an empty slot in the object list, just in case it is currently
+	 * being iterated over. The cell will be fully cleaned & re-used on the next call to
+	 * 'advanceTime'.</p>
+	 *
+	 * <p>Important: a valid index must be used here.</p>
+	 *
+	 * @return The id of "removed" object.
+	 */
+	private function removeByIndex(index:Int):UInt
+	{
+		// get properties
+		var object:IAnimatable = __objects[index];
+		var objectID:UInt = __objectIDs[index];
+		
+		// free the cell
+		__objects[index] = null;
+		__objectIDs[index] = 0;
+		
+		// remove the event listener and dispatch removed event
+		var dispatcher:EventDispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
+		if (dispatcher != null)
+		{
+			dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemoveRequested);
+			dispatcher.dispatchEventWith(Event.REMOVED_FROM_JUGGLER);
+		}
+		
+		return objectID;
+	}
 
     /** Removes an object from the juggler, identified by the unique numeric identifier you
      *  received when adding it.
@@ -147,21 +172,10 @@ class Juggler implements IAnimatable
      */
     public function removeByID(objectID:UInt):UInt
     {
-        var object:IAnimatable;
-        var i = __objects.length - 1;
-        while (i >= 0)
-        {
-            object = __objects[i];
-
-            if (object != null && __objectIDs[object] == objectID)
-            {
-                remove(object);
-                return objectID;
-            }
-
-            --i;
-        }
-
+		var objectIndex:Int = __objectIDs.indexOf(objectID);
+		if (objectIndex != -1)
+			return removeByIndex(objectIndex);
+		
         return 0;
     }
     
@@ -170,15 +184,14 @@ class Juggler implements IAnimatable
     {
         if (target == null) return;
         
+		var tween:Tween;
         var i:Int = __objects.length - 1;
         while (i >= 0)
         {
-            var tween:Tween = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], Tween) ? cast __objects[i] : null;
+            tween = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], Tween) ? cast __objects[i] : null;
             if (tween != null && tween.target == target)
             {
-                tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-                __objects[i] = null;
-                __objectIDs.remove(tween);
+				removeByIndex(i);
             }
             --i;
         }
@@ -196,9 +209,7 @@ class Juggler implements IAnimatable
             delayedCall = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(__objects[i], DelayedCall) ? cast __objects[i] : null;
             if (delayedCall != null && delayedCall.__callback == callback)
             {
-                delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-                __objects[i] = null;
-                __objectIDs.remove(delayedCall);
+                removeByIndex(i);
             }
             --i;
         }
@@ -247,20 +258,13 @@ class Juggler implements IAnimatable
         // from an 'advanceTime' call, this would make the loop crash. Instead, the
         // vector is filled with 'null' values. They will be cleaned up on the next call
         // to 'advanceTime'.
-        
-        var object:IAnimatable, dispatcher:EventDispatcher;
-        var i:Int = __objects.length - 1;
-        while (i >= 0)
-        {
-            object = __objects[i];
-            if (object != null) {
-                dispatcher = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(object, EventDispatcher) ? cast object : null;
-                if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-                __objects[i] = null;
-                __objectIDs.remove(object);
-            }
-            --i;
-        }
+		
+		var i:Int = __objects.length - 1;
+		while (i >= 0)
+		{
+			removeByIndex(i);
+			--i;
+		}
     }
     
     /** Delays the execution of a function until <code>delay</code> seconds have passed.
@@ -276,7 +280,7 @@ class Juggler implements IAnimatable
         if (args == null) args = [];
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, delay, args);
-        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
+        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallRemovedFromJuggler);
         return add(delayedCall);
     }
 
@@ -293,11 +297,11 @@ class Juggler implements IAnimatable
         
         var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
         delayedCall.repeatCount = repeatCount;
-        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
+        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallRemovedFromJuggler);
         return add(delayedCall);
     }
     
-    private function onPooledDelayedCallComplete(event:Event):Void
+    private function onPooledDelayedCallRemovedFromJuggler(event:Event):Void
     {
         DelayedCall.toPool(cast event.target);
     }
@@ -354,11 +358,11 @@ class Juggler implements IAnimatable
                 throw new ArgumentError("Invalid property: " + property);
         }
         
-        tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledTweenComplete);
+        tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledTweenRemovedFromJuggler);
         return add(tween);
     }
     
-    private function onPooledTweenComplete(event:Event):Void
+    private function onPooledTweenRemovedFromJuggler(event:Event):Void
     {
         Tween.toPool(cast event.target);
     }
@@ -389,7 +393,9 @@ class Juggler implements IAnimatable
                 if (currentIndex != i) 
                 {
                     __objects[currentIndex] = object;
+					__objectIDs[currentIndex] = __objectIDs[i];
                     __objects[i] = null;
+					__objectIDs[i] = 0;
                 }
                 
                 object.advanceTime(time);
@@ -403,13 +409,20 @@ class Juggler implements IAnimatable
             numObjects = __objects.length; // count might have changed!
             
             while (i < numObjects)
-                __objects[currentIndex++] = __objects[i++];
+			{
+                __objects[currentIndex] = __objects[i];
+				__objectIDs[currentIndex] = __objectIDs[i];
+				
+				++currentIndex;
+				++i;
+			}
             
             __objects.length = currentIndex;
+			__objectIDs.length = currentIndex;
         }
     }
     
-    private function onRemove(event:Event):Void
+    private function onRemoveRequested(event:Event):Void
     {
         var objectID:UInt = remove(cast event.target);
 
