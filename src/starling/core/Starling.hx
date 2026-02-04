@@ -486,7 +486,8 @@ class Starling extends EventDispatcher
      *
      * <p>This method also dispatches an <code>Event.RENDER</code>-event on the Starling
      * instance. That's the last opportunity to make changes before the display list is
-     * rendered.</p> */
+     * rendered. When the rendering is completed, this method dispatches an
+	 * <code>Event.RENDER_COMPLETE</code>-event on the Starling instance too.</p> */
     public function render():Void
     {
         if (!contextValid)
@@ -498,6 +499,10 @@ class Starling extends EventDispatcher
         var doRedraw:Bool = __stage.requiresRedraw || mustAlwaysRender;
         if (doRedraw)
         {
+			// setup next frame before the RENDER event to take into account all draw calls
+			// that could happen in reaction of the event.
+			__painter.nextFrame();
+			
             dispatchEventWith(starling.events.Event.RENDER);
 
             var shareContext:Bool = __painter.shareContext;
@@ -505,7 +510,6 @@ class Starling extends EventDispatcher
             var scaleY:Float = __viewPort.height / __stage.stageHeight;
             var stageColor:UInt = __stage.color;
 
-            __painter.nextFrame();
             __painter.pixelSize = 1.0 / contentScaleFactor;
             __painter.state.setProjectionMatrix(
                 __viewPort.x < 0 ? -__viewPort.x / scaleX : 0.0,
@@ -523,6 +527,8 @@ class Starling extends EventDispatcher
 
             if (!shareContext)
                 __painter.present();
+			
+			dispatchEventWith(starling.events.Event.RENDER_COMPLETE);
         }
 		else
 		{
@@ -1335,11 +1341,19 @@ class Starling extends EventDispatcher
     }
 
     /** The number of frames that have been rendered since the current instance was created. */
-    // public static var frameID(get, never):UInt;
-    // public static function get_frameID():UInt
-    // {
-    //     return sCurrent != null ? sCurrent.__frameID : 0;
-    // }
+	public static var currentFrameID(get, never):UInt;
+	private static function get_currentFrameID():UInt
+	{
+		return sCurrent != null ? sCurrent.__frameID : 0;
+	}
+	
+	/** The default texture smoothing value of 'Starling.current', or 'bilinear'.
+	 *  @default "bilinear" */
+	public static var currentDefaultTextureSmoothing(get, never):String;
+	private static function get_currentDefaultTextureSmoothing():String
+	{
+		return sCurrent != null ? sCurrent.__defaultTextureSmoothing : TextureSmoothing.BILINEAR;
+	}
     
     private function isNativeDisplayObjectEmpty(object:openfl.display.DisplayObject):Bool
     {
