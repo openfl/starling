@@ -104,8 +104,9 @@ class Canvas extends DisplayObjectContainer
         drawPolygon(Polygon.createRectangle(x, y, width, height));
     }
 	
-	public function drawRoundRectangle(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Float = Math.NaN):Void
+	public function drawRoundRectangle(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ?ellipseHeight:Float):Void
 	{
+		if (ellipseHeight == null) ellipseHeight = Math.NaN;
 		drawPolygon(Polygon.createRoundRectangle(x, y, width, height, ellipseWidth, ellipseHeight));
 	}
 
