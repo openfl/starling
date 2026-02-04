@@ -101,7 +101,7 @@ class PolygonTest extends Test
 	
 	public function testTriangulateFewPoints():Void
 	{
-		Polygon.useEarcut = false
+		Polygon.useEarcut = false;
 		var p0:Point = new Point(0, 0);
 		var p1:Point = new Point(1, 0);
 		var p2:Point = new Point(0, 1);
