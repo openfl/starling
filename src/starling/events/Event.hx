@@ -54,6 +54,8 @@ class Event
     public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
     /** Event type that is dispatched by the Starling instance directly before rendering. */
     public static inline var RENDER:String = "render";
+	/** Event type that is dispatched by the Starling instance after rendering. */
+	public static inline var RENDER_COMPLETE:String = "renderComplete";
 	/** Event type for a frame that is skipped because the display list did not change.
 	 *  Dispatched instead of the <code>RENDER</code> event. */
 	public static inline var SKIP_FRAME:String = "skipFrame";
@@ -61,6 +63,8 @@ class Event
     public static inline var ROOT_CREATED:String = "rootCreated";
     /** Event type for an animated object that requests to be removed from the juggler. */
     public static inline var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
+	/** Event type for an animated object that is removed from its juggler. */
+	public static inline var REMOVED_FROM_JUGGLER:String = "removedFromJuggler";
     /** Event type that is dispatched by the AssetManager after a context loss. */
     public static inline var TEXTURES_RESTORED:String = "texturesRestored";
     /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
