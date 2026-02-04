@@ -183,7 +183,7 @@ class Earcut
 		if (ear == null) return;
 		
 		// interlink polygon nodes in z-order
-		if (pass == 0.0 && invSize != 0.0) indexCurve(ear, minX, minY, invSize);
+		if (pass == 0.0 && (invSize == invSize && invSize != 0.0)) indexCurve(ear, minX, minY, invSize);
 		
 		var stop:Node = ear;
 		
@@ -193,7 +193,7 @@ class Earcut
 			var prev:Node = ear.prev;
 			var next:Node = ear.next;
 			
-			if (invSize != 0.0 ? isEarHashed(ear, minX, minY, invSize) : isEar(ear))
+			if ((invSize == invSize && invSize != 0.0) ? isEarHashed(ear, minX, minY, invSize) : isEar(ear))
 			{
 				// cut off the triangle
 				triangles.push(Std.int(prev.i));
@@ -230,6 +230,8 @@ class Earcut
 				{
 					splitEarcut(ear, triangles, dim, minX, minY, invSize);
 				}
+				
+				break;
 			}
 		}
 	}
