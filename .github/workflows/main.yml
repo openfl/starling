@@ -136,6 +136,7 @@ jobs:
           npm run build-docs
 
   npm-samples:
+    needs: build-npm
     runs-on: ubuntu-latest
     steps:
 
@@ -153,33 +154,43 @@ jobs:
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: starling-framework-npm
+          path: starling-framework-npm
+
       - name: Build samples/demo_npm/as3
         working-directory: samples/demo_npm/as3
         run: |
+          npm link ../../../starling-framework-npm
           npm install
           npm run build
 
       - name: Build samples/demo_npm/es5
         working-directory: samples/demo_npm/es5
         run: |
+          npm link ../../../starling-framework-npm
           npm install
           npm run build
 
       - name: Build samples/demo_npm/es6
         working-directory: samples/demo_npm/es6
         run: |
+          npm link ../../../starling-framework-npm
           npm install
           npm run build
 
       - name: Build samples/demo_npm/haxe
         working-directory: samples/demo_npm/haxe
         run: |
+          npm link ../../../starling-framework-npm
           npm install
           npm run build
 
       - name: Build samples/demo_npm/typescript
         working-directory: samples/demo_npm/typescript
         run: |
+          npm link ../../../starling-framework-npm
           npm install
           npm run build
 

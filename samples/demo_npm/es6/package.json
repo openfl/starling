@@ -9,7 +9,7 @@
     "babel-loader": "^10.0.0",
     "copy-webpack-plugin": "^13.0.1",
     "openfl": "^9.5.0",
-    "starling-framework": "^2.7.1",
+    "starling-framework": "^2.8.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   },

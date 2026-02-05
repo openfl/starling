@@ -8,7 +8,7 @@
     "cpx": "^1.5.0",
     "http-server": "^14.1.1",
     "openfl": "^9.5.0",
-    "starling-framework": "^2.7.1"
+    "starling-framework": "^2.8.0"
   },
   "scripts": {
     "build": "npm run build:prod",
