@@ -88,7 +88,6 @@ jobs:
           haxelib run lime build samples/particle_demo neko
 
       - name: Build HTML5 samples
-        if: matrix.haxe-version != '3.4.7' # temporarily exclude Haxe 3 until Lime update after 8.2.2 is released
         run: |
           haxelib run lime build samples/demo html5
           haxelib run lime build samples/particle_demo html5
@@ -178,12 +177,11 @@ jobs:
           npm install
           npm run build
 
-      # temporarily disable until openfl-js 9.5 is released
-      # - name: Build samples/demo_npm/typescript
-      #   working-directory: samples/demo_npm/typescript
-      #   run: |
-      #     npm install
-      #     npm run build
+      - name: Build samples/demo_npm/typescript
+        working-directory: samples/demo_npm/typescript
+        run: |
+          npm install
+          npm run build
 
   unit-test-hashlink:
     strategy:
@@ -292,7 +290,6 @@ jobs:
           haxelib run lime build samples/particle_demo neko
 
       - name: Build HTML5 samples
-        if: matrix.haxe-version != '3.4.7' # temporarily exclude Haxe 3 until Lime update after 8.2.2 is released
         run: |
           haxelib run lime build samples/demo html5
           haxelib run lime build samples/particle_demo html5
