@@ -12,8 +12,10 @@ package starling.assets;
 
 import haxe.Timer;
 import openfl.errors.ArgumentError;
-#if desktop
+#if (air || sys)
+#if (!flash_doc_gen || air_doc_gen)
 import openfl.filesystem.File;
+#end
 #end
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
@@ -302,7 +304,8 @@ class AssetManager extends EventDispatcher
                 }
             }
             #end
-			#if desktop
+            #if (air || sys)
+            #if (!flash_doc_gen || air_doc_gen)
 			else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, File))
 			{
 				var file:File = cast asset;
@@ -318,7 +321,8 @@ class AssetManager extends EventDispatcher
 						enqueueSingle(file);
 				}
 			}
-			#end
+            #end
+            #end
             else if (#if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, String) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, URLRequest) || #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(asset, AssetManager))
             {
                 enqueueSingle(asset);
