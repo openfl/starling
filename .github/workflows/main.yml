@@ -163,7 +163,7 @@ jobs:
         working-directory: starling-framework-npm
         run: |
           tar --strip-components=1 -xzf $(ls starling-framework-*.tgz)
-          rm starling-framework-npm.tgz
+          rm $(ls starling-framework-*.tgz)
 
       - name: Build samples/demo_npm/as3
         working-directory: samples/demo_npm/as3
