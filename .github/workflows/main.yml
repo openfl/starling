@@ -162,7 +162,7 @@ jobs:
       - name: Extract npm library
         working-directory: starling-framework-npm
         run: |
-          tar -xzf starling-framework-npm.tgz
+          tar --strip-components=1 -xzf $(ls starling-framework-*.tgz)
           rm starling-framework-npm.tgz
 
       - name: Build samples/demo_npm/as3
