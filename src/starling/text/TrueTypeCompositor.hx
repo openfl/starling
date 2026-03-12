@@ -34,13 +34,18 @@ class TrueTypeCompositor implements ITextCompositor
 {
     // helpers
     private static var sHelperMatrix:Matrix = new Matrix();
-    private static var sHelperQuad:Quad = new Quad(100, 100);
+    private static var sHelperQuad:Quad;
     private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
     private static var sNativeFormat:openfl.text.TextFormat = new openfl.text.TextFormat();
 
     /** Creates a new TrueTypeCompositor instance. */
     public function new()
-    { }
+    {
+		// this was originally created directly from the var declaration
+		// if we don't do this here the helper quad is created during boot
+		// and if we set Mesh.defaultStyle = MultiTextureStyle TextField instances will still use MeshStyle and won't batch
+		if (sHelperQuad == null) sHelperQuad = new Quad(100, 100);
+	}
 
     /** @inheritDoc */
     public function dispose():Void
