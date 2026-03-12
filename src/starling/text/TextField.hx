@@ -109,7 +109,7 @@ class TextField extends DisplayObjectContainer
 
     // helper objects
     private static var sMatrix:Matrix = new Matrix();
-    private static var sDefaultCompositor:ITextCompositor = new TrueTypeCompositor();
+    private static var sDefaultCompositor:ITextCompositor;
     private static var sDefaultTextureFormat:String = Context3DTextureFormat.BGRA_PACKED;
 
     #if commonjs
@@ -142,6 +142,11 @@ class TextField extends DisplayObjectContainer
     public function new(width:Int, height:Int, text:String="", format:TextFormat=null, options:TextOptions=null)
     {
         super();
+		
+		// this was originally created directly from the var declaration
+		// if we don't do this here the helper quad is created during boot
+		// and if we set Mesh.defaultStyle = MultiTextureStyle TextField instances will still use MeshStyle and won't batch
+		if (sDefaultCompositor == null) sDefaultCompositor = new TrueTypeCompositor();
 
         _text = text != null ? text : "";
         _hitArea = new Rectangle(0, 0, width, height);
