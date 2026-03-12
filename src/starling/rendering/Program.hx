@@ -60,11 +60,11 @@ class Program
 
     /** Creates a new Program instance from AGAL assembly language. */
     public static function fromSource(vertexShader:String, fragmentShader:String,
-                                      agalVersion:UInt=1):Program
+                                      agalVersion:UInt=1, ignoreLimits:Bool = false):Program
     {
         return new Program(
-            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion),
-            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
+            sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion, ignoreLimits),
+            sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion, ignoreLimits));
     }
 
     /** Activates the program on the given context. If you don't pass a context, the current
