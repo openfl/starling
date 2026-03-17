@@ -157,7 +157,7 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          name: starling-framework-npm
+          pattern: starling-framework-*.tgz
           path: starling-framework-npm
 
       - name: Extract npm library
