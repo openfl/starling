@@ -236,9 +236,12 @@ class TSExternsGenerator {
 	private function generateClass(classType:ClassType, params:Array<Type>):String {
 		var result = new StringBuf();
 		result.add(generateClassTypeImports(classType));
+		var qname = baseTypeToQname(classType, params, false);
+		var qnameParts = qname.split(".");
+		qnameParts.pop();
 		var packageName:String = null;
-		if (classType.pack.length > 0) {
-			packageName = classType.pack.join(".");
+		if (qnameParts.length > 0) {
+			packageName = qnameParts.join(".");
 			result.add('declare namespace $packageName {\n');
 		}
 		result.add(generateDocs(classType.doc, "\t"));
@@ -280,6 +283,16 @@ class TSExternsGenerator {
 		while (includeFieldsFrom != null) {
 			for (classField in includeFieldsFrom.fields.get()) {
 				if (shouldSkipField(classField, includeFieldsFrom)) {
+					continue;
+				}
+				var isOverride = false;
+				for (current in includeFieldsFrom.overrides) {
+					if (current.get().name == classField.name) {
+						isOverride = true;
+						break;
+					}
+				}
+				if (isOverride) {
 					continue;
 				}
 				if (Lambda.exists(classType.fields.get(), item -> item.name == classField.name)) {
@@ -812,9 +825,12 @@ class TSExternsGenerator {
 	private function generateInterface(interfaceType:ClassType, params:Array<Type>):String {
 		var result = new StringBuf();
 		result.add(generateClassTypeImports(interfaceType));
+		var qname = baseTypeToQname(interfaceType, params, false);
+		var qnameParts = qname.split(".");
+		qnameParts.pop();
 		var packageName:String = null;
-		if (interfaceType.pack.length > 0) {
-			packageName = interfaceType.pack.join(".");
+		if (qnameParts.length > 0) {
+			packageName = qnameParts.join(".");
 			result.add('declare namespace $packageName {\n');
 		}
 		result.add(generateDocs(interfaceType.doc, "\t"));
@@ -966,9 +982,12 @@ class TSExternsGenerator {
 
 	private function generateEnum(enumType:EnumType, params:Array<Type>):String {
 		var result = new StringBuf();
+		var qname = baseTypeToQname(enumType, params, false);
+		var qnameParts = qname.split(".");
+		qnameParts.pop();
 		var packageName:String = null;
-		if (enumType.pack.length > 0) {
-			packageName = enumType.pack.join(".");
+		if (qnameParts.length > 0) {
+			packageName = qnameParts.join(".");
 			result.add('declare namespace $packageName {\n');
 		}
 		result.add(generateDocs(enumType.doc, "\t"));
@@ -1004,10 +1023,13 @@ class TSExternsGenerator {
 
 	private function generateAbstractEnum(abstractType:AbstractType, params:Array<Type>):String {
 		var result = new StringBuf();
+		var qname = baseTypeToQname(abstractType, params, false);
+		var qnameParts = qname.split(".");
+		qnameParts.pop();
 		var packageName:String = null;
-		if (abstractType.pack.length > 0) {
-			packageName = abstractType.pack.join(".");
-			result.add('declare namespace ${packageName} {\n');
+		if (qnameParts.length > 0) {
+			packageName = qnameParts.join(".");
+			result.add('declare namespace $packageName {\n');
 		}
 		result.add(generateDocs(abstractType.doc, "\t"));
 		result.add('\texport enum ${abstractType.name}');
@@ -1329,17 +1351,7 @@ class TSExternsGenerator {
 		return "any";
 	}
 
-	private function baseTypeToQname(baseType:BaseType, params:Array<Type>, includeParams:Bool = true):String {
-		if (baseType == null) {
-			return "any";
-		}
-		var buffer = new StringBuf();
-		if (baseType.pack.length > 0) {
-			buffer.add(baseType.pack.join("."));
-			buffer.add(".");
-		}
-		buffer.add(baseType.name);
-		var qname = buffer.toString();
+	private function rewriteQname(qname:String):String {
 		if (options != null && options.renameSymbols != null) {
 			var renameSymbols = options.renameSymbols;
 			var i = 0;
@@ -1358,6 +1370,22 @@ class TSExternsGenerator {
 		if (QNAMES_TO_REWRITE.exists(qname)) {
 			qname = QNAMES_TO_REWRITE.get(qname);
 		}
+
+		return qname;
+	}
+
+	private function baseTypeToQname(baseType:BaseType, params:Array<Type>, includeParams:Bool = true):String {
+		if (baseType == null) {
+			return "any";
+		}
+		var buffer = new StringBuf();
+		if (baseType.pack.length > 0) {
+			buffer.add(baseType.pack.join("."));
+			buffer.add(".");
+		}
+		buffer.add(baseType.name);
+		var qname = buffer.toString();
+		qname = rewriteQname(qname);
 
 		if (!includeParams || params.length == 0) {
 			return qname;
@@ -1374,26 +1402,9 @@ class TSExternsGenerator {
 			return "any";
 		}
 		var qname = baseTypeToQname(baseType, params, false);
+		qname = rewriteQname(qname);
 		if (qname == "any") {
 			return qname;
-		}
-		if (options != null && options.renameSymbols != null) {
-			var renameSymbols = options.renameSymbols;
-			var i = 0;
-			while (i < renameSymbols.length) {
-				var originalName = renameSymbols[i];
-				i++;
-				var newName = renameSymbols[i];
-				i++;
-				if (originalName == qname) {
-					qname = newName;
-					break;
-				}
-			}
-		}
-
-		if (QNAMES_TO_REWRITE.exists(qname)) {
-			qname = QNAMES_TO_REWRITE.get(qname);
 		}
 
 		var foundImportMapping = false;
