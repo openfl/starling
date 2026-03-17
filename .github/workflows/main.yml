@@ -155,7 +155,7 @@ jobs:
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: starling-framework-npm
           path: starling-framework-npm
