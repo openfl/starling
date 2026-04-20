@@ -124,6 +124,8 @@ jobs:
       - name: Package Library for npm
         run: |
           npm pack
+          starling_version=$(find starling-framework-*.txt | grep -oP '\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?')
+          mv starling-framework-*.tgz starling-framework-npm-$starling_version.tgz
 
       - uses: actions/upload-artifact@v7
         with:
