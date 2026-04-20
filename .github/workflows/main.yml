@@ -128,7 +128,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: starling-framework-npm
-          path: starling-framework-*.tgz
+          path: starling-framework-npm-*.tgz
           archive: false
           if-no-files-found: error
 
@@ -157,14 +157,14 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          pattern: starling-framework-*.tgz
+          pattern: starling-framework-npm-*.tgz
           path: starling-framework-npm
 
       - name: Extract npm library
         working-directory: starling-framework-npm
         run: |
-          tar --strip-components=1 -xzf $(ls starling-framework-*.tgz)
-          rm $(ls starling-framework-*.tgz)
+          tar --strip-components=1 -xzf $(ls starling-framework-npm-*.tgz)
+          rm $(ls starling-framework-npm-*.tgz)
 
       - name: Build samples/demo_npm/as3
         working-directory: samples/demo_npm/as3
