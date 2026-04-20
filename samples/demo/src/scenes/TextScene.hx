@@ -41,7 +41,7 @@ import starling.utils.Color;
         var rightTF:TextField = new TextField(145, 80, "... or\nbottom right ...");
         rightTF.format.setTo(ttFont, ttFontSize, 0x208020);
         rightTF.format.horizontalAlign = Align.RIGHT;
-        rightTF.format.verticalAlign = Align.TOP;
+        rightTF.format.verticalAlign = Align.BOTTOM;
         rightTF.border = true;
         rightTF.x = 2 * offset + leftTF.width;
         rightTF.y = leftTF.y;
