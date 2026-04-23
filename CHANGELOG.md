@@ -1,7 +1,7 @@
 Starling Changelog
 ==================
 
-2.8.0 (??/??/2026)
+2.8.0 (04/23/2026)
 ------------------
 
 - added `MultiTextureStyle` for batching multiple textures in a single draw call (thanks to johnridges and Fancy2209!)
