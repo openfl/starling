@@ -50,7 +50,7 @@
   "devDependencies": {
     "@apache-royale/royale-js": "0.9.12",
     "brotli-webpack-plugin": "^1.1.0",
-    "compression-webpack-plugin": "^11.1.0",
+    "compression-webpack-plugin": "^12.0.0",
     "haxe": "^5.2.1",
     "hxgenjs": "kevinresol/hxgenjs",
     "typedoc": "^0.11.1",
