@@ -49,7 +49,7 @@ Getting Started (NPM)
 To use Starling with TypeScript, JavaScript, or AS3 with Apache Royale, you can install the Yeoman generator to create an empty project:
 
 ```bash
-npm install -g yo starling-framework-generator
+npm install -g yo generator-starling-framework
 mkdir StarlingProject
 cd StarlingProject
 yo starling-framework
