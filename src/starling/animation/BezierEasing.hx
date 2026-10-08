@@ -30,13 +30,6 @@ import openfl.errors.ArgumentError;
  */
 class BezierEasing
 {
-    private static inline var NEWTON_ITERATIONS:Int = 4;
-    private static inline var NEWTON_MIN_SLOPE:Float = 0.001;
-    private static inline var SUBDIVISION_PRECISION:Float = 0.0000001;
-    private static inline var SUBDIVISION_MAX_ITERATIONS:Int = 10;
-    private static inline var SPLINE_TABLE_SIZE:Int = 11;
-    private static var SAMPLE_STEP_SIZE:Float = 1.0 / (SPLINE_TABLE_SIZE - 1.0);
-
     /** Create an easing function that's defined by two control points of a bezier curve.
         *  The curve will always go directly through points 0 and 3, which are fixed at
         *  (0, 0) and (1, 1), respectively. Points 1 and 2 define the curvature of the bezier
@@ -59,86 +52,55 @@ class BezierEasing
         if (x1 == y1 && x2 == y2)
             return linearEasing;
 
-        var sampleValues:Array<Float> = []; // pre-computed samples table
+        // x(t) = ((2a * t + 3b) * t + 3c) * t, y(t) = ((ay * t + by) * t + cy) * t
+        var a:Float = (3 * x1 - 3 * x2 + 1) / 2;
+        var b:Float = x2 - 2 * x1;
+        var c:Float = x1;
+        var ay:Float = 3 * y1 - 3 * y2 + 1;
+        var by:Float = 3 * (y2 - 2 * y1);
+        var cy:Float = 3 * y1;
 
-        for (i in 0...SPLINE_TABLE_SIZE)
-            sampleValues[i] = calcBezier(i * SAMPLE_STEP_SIZE, x1, x2);
-
-        function getTForX(x:Float):Float
-        {
-            var intervalStart:Float = 0.0;
-            var currentSample:Int = 1;
-            var lastSample:Int = SPLINE_TABLE_SIZE - 1;
-
-            while (currentSample != lastSample && sampleValues[currentSample] <= x)
-            {
-                intervalStart += SAMPLE_STEP_SIZE;
-                ++currentSample;
-            }
-
-            --currentSample;
-
-            // interpolate to provide an initial guess for t
-            var dist:Float = (x - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
-            var guessForT:Float = intervalStart + dist * SAMPLE_STEP_SIZE;
-
-            var initialSlope:Float = getSlope(guessForT, x1, x2);
-            if (initialSlope >= NEWTON_MIN_SLOPE)
-                return newtonRaphsonIterate(x, guessForT, x1, x2);
-            else if (initialSlope == 0.0)
-                return guessForT;
-            else
-                return binarySubdivide(x, intervalStart, intervalStart + SAMPLE_STEP_SIZE, x1, x2);
-        }
-        
         function bezierEasing(ratio:Float):Float
         {
-            if (ratio == 0) return 0;
-            else if (ratio == 1) return 1;
-            else return calcBezier(getTForX(ratio), y1, y2);
+            // ratio outside (0, 1) saturates to 0 / 1
+            if (ratio <= 0) return 0;
+            else if (ratio >= 1) return 1;
+            else if (Math.isNaN(ratio)) return ratio;
+            var t:Float = solveTForX(ratio, a, b, c);
+            return ((ay * t + by) * t + cy) * t;
         }
         
         return bezierEasing;
     }
 
-    // Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
-    private static function calcBezier(t:Float, a1:Float, a2:Float):Float
+    // Solves x(t) = ((2a * t + 3b) * t + 3c) * t = x for t, with x in (0, 1):
+    // u = 1/t is the largest real root of x·u³ − 3c·u² − 3b·u − 2a = 0
+    private static function solveTForX(x:Float, a:Float, b:Float, c:Float):Float
     {
-        return (((1 - 3 * a2 + 3 * a1) * t + (3 * a2 - 6 * a1)) * t + (3 * a1)) * t;
-    }
-
-    // Returns dx/dt given t, x1, and x2, or dy/dt given t, y1, and y2.
-    private static function getSlope(t:Float, a1:Float, a2:Float):Float
-    {
-        return 3 * (1 - 3 * a2 + 3 * a1) * t * t + 2 * (3 * a2 - 6 * a1) * t + (3 * a1);
-    }
-
-    private static function binarySubdivide(ratio:Float, a:Float, b:Float, x1:Float, x2:Float):Float
-    {
-        var currentX:Float, t:Float, i:UInt = 0;
-
-        do
+        var j:Float = 1 / Math.max(c, Math.sqrt(x));
+        var k:Float = x * j;
+        var l:Float = k * j;
+        var s:Float = c * j;
+        var q:Float = b * l;
+        var m:Float = s * s + q;
+        var h:Float = -s * (s * s + 1.5 * q) - a * k * l;
+        var d:Float = h * h - m * m * m;
+        var v:Float;
+        if (m == 0 || d > 1e-12 * h * h)
         {
-            t = a + (b - a) / 2;
-            currentX = calcBezier(t, x1, x2) - ratio;
-            if (currentX > 0) b = t;
-            else a = t;
+            // one real root (Cardano)
+            var w:Float = h < 0 ? h - Math.sqrt(d) : h + Math.sqrt(d);
+            var u:Float = w < 0 ? Math.pow(-w, 1 / 3) : -Math.pow(w, 1 / 3);
+            v = u + m / u;
+            if (Math.isNaN(v)) v = 0; // triple root (m = h = 0)
         }
-        while (Math.abs(currentX) > SUBDIVISION_PRECISION && ++i < SUBDIVISION_MAX_ITERATIONS);
-
-        return t;
-    }
-
-    private static function newtonRaphsonIterate(x:Float, t:Float, x1:Float, x2:Float):Float
-    {
-        for (i in 0...NEWTON_ITERATIONS)
+        else
         {
-            var currentSlope:Float = getSlope(t, x1, x2);
-            if (currentSlope == 0.0) return t;
-            var currentX:Float = calcBezier(t, x1, x2) - x;
-            t -= currentX / currentSlope;
+            // three real roots, take the largest
+            var r:Float = Math.sqrt(m);
+            v = 2 * r * Math.cos(Math.acos(Math.max(-1, Math.min(1, -h / (m * r)))) / 3);
         }
-        return t;
+        return Math.min(1, k / (v + s));
     }
 
     private static function linearEasing(ratio:Float):Float { return ratio; }
