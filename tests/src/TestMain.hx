@@ -37,6 +37,7 @@ class TestMain extends Sprite {
 		runner.addCase(new tests.rendering.MeshStyleTest());
 		runner.addCase(new tests.rendering.VertexDataFormatTest());
 		runner.addCase(new tests.rendering.VertexDataTest());
+		runner.addCase(new tests.styles.MultiTextureStyleTest());
 		runner.addCase(new tests.text.TextFieldTest());
 		runner.addCase(new tests.textures.TextureAtlasTest());
 		runner.addCase(new tests.textures.TextureTest());

@@ -9,8 +9,10 @@
     <noscript
       >Please enable JavaScript in your web browser to run tests.</noscript
     >
+    <!-- Starling needs a sized canvas to create its context and render -->
+    <div id="content" style="width: 800px; height: 600px"></div>
     <script type="text/javascript">
-      lime.$scripts["::APP_FILE::"]();
+      lime.embed("::APP_FILE::", "content", 0, 0);
     </script>
   </body>
 </html>
