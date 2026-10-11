@@ -12,6 +12,7 @@ package tests.styles;
 
 import openfl.Vector;
 import openfl.display.BitmapData;
+import openfl.display3D.Context3DProfile;
 import openfl.geom.Rectangle;
 import starling.core.Starling;
 import starling.display.DisplayObject;
@@ -84,16 +85,14 @@ class MultiTextureStyleTest extends StarlingTest
 			expected.push(i);
 		}
 
-		// a batch must never reference more textures than the GPU's fragment shader can sample
-		var limit:Int = MultiTextureStyle.maxTextures;
-		var deviceLimit:Int = getDeviceTextureUnits();
-		if (deviceLimit < limit) limit = deviceLimit;
+		// a batch must never reference more textures than the profile and GPU support
+		var limit:Int = getTextureLimit();
 
 		var drawCount:Int = painter.drawCount;
 		assertColors(row, expected, count + " textures");
 		var expectedDrawCount:Int = Math.ceil(count / limit);
 		var actual:Int = painter.drawCount - drawCount;
-		Assert.equals(expectedDrawCount, actual, count + " textures (device supports " + deviceLimit +
+		Assert.equals(expectedDrawCount, actual, count + " textures (limit " + limit +
 			"): expected " + expectedDrawCount + " draw calls, got " + actual);
 	}
 
@@ -119,7 +118,7 @@ class MultiTextureStyleTest extends StarlingTest
 			var drawCount:Int = painter.drawCount;
 			assertColors(row, order, info);
 
-			var limit:Int = MultiTextureStyle.maxTextures;
+			var limit:Int = getTextureLimit();
 			var expected:Int = expectedDrawCounts[(limit > 8 ? 8 : limit) - 1];
 			var actual:Int = painter.drawCount - drawCount;
 			Assert.equals(expected, actual, info + ": expected " + expected + " draw calls, got " + actual);
@@ -438,6 +437,22 @@ class MultiTextureStyleTest extends StarlingTest
 			}
 		}
 		return _textures[index];
+	}
+
+	// The number of textures a batch may reference: 'maxTextures', limited by the profile
+	// (four in "baselineConstrained", eight in the other baseline profiles) and the GPU.
+	private function getTextureLimit():Int
+	{
+		var profile:Context3DProfile = Starling.current.profile;
+		var profileLimit:Int = 16;
+		if (profile == Context3DProfile.BASELINE_CONSTRAINED) profileLimit = 4;
+		else if (profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_EXTENDED) profileLimit = 8;
+
+		var limit:Int = MultiTextureStyle.maxTextures;
+		var deviceLimit:Int = getDeviceTextureUnits();
+		if (profileLimit < limit) limit = profileLimit;
+		if (deviceLimit < limit) limit = deviceLimit;
+		return limit;
 	}
 
 	private function getDeviceTextureUnits():Int
