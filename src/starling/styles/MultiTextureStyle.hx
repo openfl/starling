@@ -14,6 +14,7 @@ import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.geom.Matrix;
 
 import starling.core.Starling;
@@ -59,7 +60,13 @@ class MultiTextureStyle extends MeshStyle
     // and each texture after the first one counts as such a read.
     private static inline var MAX_NUM_TEXTURES_CONSTRAINED:Int = 4;
 
+    // OpenFL samples the alpha channel of compressed textures from an extra texture unit
+    // ('sampler + 4'). Batches with such a texture stay at four textures, so that those units
+    // neither overlap with the others nor exceed the GPU's limit.
+    private static inline var MAX_NUM_TEXTURES_COMPRESSED_ALPHA:Int = 4;
+
     private var _textures:Vector<Texture>;
+    private var _hasCompressedAlpha:Bool = false;
 
     private static var sMaxTextures:Int = 4;
     private static var sTextureIndexMap:Array<Int> = [];
@@ -68,7 +75,9 @@ class MultiTextureStyle extends MeshStyle
 
     /** The maximum number of textures that are batched into one draw call; values are clamped
      *  to the range <code>1 – MAX_NUM_TEXTURES</code>. In baseline profiles, each fragment
-     *  samples all textures of its batch, so higher values cost more fill rate there.
+     *  samples all textures of its batch, so higher values cost more fill rate there. With
+     *  OpenFL, batches that contain a compressed texture with an alpha channel are limited to
+     *  four textures.
      *  @default 4 */
     public static var maxTextures(get, set):Int;
     private static function get_maxTextures():Int { return sMaxTextures; }
@@ -126,6 +135,14 @@ class MultiTextureStyle extends MeshStyle
             var limit:Int = getTextureLimit();
             var maxTextures:Int = sMaxTextures < limit ? sMaxTextures : limit;
 
+            #if (lime && !flash)
+            if ((_hasCompressedAlpha || mtStyle._hasCompressedAlpha) &&
+                maxTextures > MAX_NUM_TEXTURES_COMPRESSED_ALPHA)
+            {
+                maxTextures = MAX_NUM_TEXTURES_COMPRESSED_ALPHA;
+            }
+            #end
+
             if (mtStyle.numTextures + numTexturesToAdd > maxTextures)
             {
                 var numSharedTextures:Int = 0;
@@ -164,7 +181,13 @@ class MultiTextureStyle extends MeshStyle
                 numVertices = sourceVertexData.numVertices - vertexID;
 
             if (targetVertexID == 0)
+            {
                 mtTarget._textures.length = 0;
+                mtTarget._hasCompressedAlpha = false;
+            }
+
+            if (_hasCompressedAlpha)
+                mtTarget._hasCompressedAlpha = true;
 
             for (i in 0...numTextures)
             {
@@ -209,6 +232,7 @@ class MultiTextureStyle extends MeshStyle
     {
         _textures.length = 0;
         if (target.texture != null) _textures[0] = target.texture;
+        updateCompressedAlpha();
     }
 
     /** @private */
@@ -222,7 +246,17 @@ class MultiTextureStyle extends MeshStyle
     {
         if (value != null) _textures[0] = value;
         else _textures.length = 0;
+        updateCompressedAlpha();
         return super.set_texture(value);
+    }
+
+    private function updateCompressedAlpha():Void
+    {
+        _hasCompressedAlpha = false;
+
+        for (texture in _textures)
+            if (texture.format == Context3DTextureFormat.COMPRESSED_ALPHA)
+                _hasCompressedAlpha = true;
     }
 
     // The number of textures a batch may reference with the current context: limited by the
