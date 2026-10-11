@@ -96,6 +96,45 @@ class MultiTextureStyleTest extends StarlingTest
 			"): expected " + expectedDrawCount + " draw calls, got " + actual);
 	}
 
+	#if flash
+	@Ignored("OpenFL only: it samples the alpha of compressed textures from an extra unit")
+	#end
+	@:timeout(5000)
+	public function testCompressedAlphaTextureInFullBatch(async:utest.Async):Void
+	{
+		// OpenFL samples the alpha channel of compressed textures from an extra texture unit,
+		// which must fit within the GPU's limit, too
+		var assets:starling.assets.AssetManager = new starling.assets.AssetManager();
+		assets.verbose = false;
+		assets.enqueue(["fixtures/image.atf"]);
+		assets.loadQueue(function():Void
+		{
+			if (async.timedOut) return;
+
+			new MultiTextureStyle();
+			MultiTextureStyle.maxTextures = MultiTextureStyle.MAX_NUM_TEXTURES;
+
+			var compressed:Texture = assets.getTexture("image");
+			var limit:Int = getTextureLimit();
+			var row:Sprite = new Sprite();
+			var expected:Array<Null<Int>> = [null];
+			row.addChild(createImageWithTexture(compressed, 0));
+			for (i in 1...limit)
+			{
+				row.addChild(createImage(i, i));
+				expected.push(i);
+			}
+
+			Assert.equals("compressedAlpha", Std.string(compressed.format));
+
+			try assertColors(row, expected, "compressed texture with alpha + " + (limit - 1) + " textures")
+			catch (e:Dynamic) Assert.fail("rendering failed: " + e);
+
+			assets.purge();
+			async.done();
+		});
+	}
+
 	// batching
 
 	public function testTextureOrderWithDifferentLimits():Void
