@@ -9,12 +9,13 @@
 // =================================================================================================
 
 package starling.styles;
+
 import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DProgramType;
-import openfl.errors.Error;
 import openfl.geom.Matrix;
+
 import starling.core.Starling;
 import starling.display.Mesh;
 import starling.rendering.FilterEffect;
@@ -23,463 +24,467 @@ import starling.rendering.Program;
 import starling.rendering.RenderState;
 import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
-import starling.styles.MeshStyle;
 import starling.textures.Texture;
 import starling.utils.RenderUtil;
 
-/**
-   Provides a way to batch up to 5 (baseline profiles) or 16 different textures in one draw call, at the cost of more complex custom Fragment Shaders
-   To use this, set Mesh.defaultStyle to MultiTextureStyle (ideally before Starling is initialised!)
-**/
-class MultiTextureStyle extends MeshStyle 
+/** Batches meshes that use different textures into a single draw call.
+ *
+ *  <p>Normally, Starling can only batch meshes that share the same texture. This style adds a
+ *  per-vertex texture index to the vertex data and generates a fragment shader that picks the
+ *  matching texture for each fragment, so up to <code>maxTextures</code> different textures
+ *  can be drawn in one call.</p>
+ *
+ *  <p>To use it, assign the style as the default for all meshes, ideally before Starling is
+ *  started:</p>
+ *
+ *  <listing>Mesh.defaultStyle = MultiTextureStyle;</listing>
+ */
+class MultiTextureStyle extends MeshStyle
 {
-	/** The vertex format expected by this style. */
-	public static var VERTEX_FORMAT:VertexDataFormat =
-		MeshStyle.VERTEX_FORMAT.extend("texture:float1");
-	
-	/**
-	   Maximum number of textures that can be batched.
-	   Default value is 5 (which is the absolute max with baseline profile)
-	   until <code>MultiTextureStyle.init()</code> has been called with Starling started
-	   You can call it manually if you want/need, otherwise it will be called by the
-	   first MultiTextureStyle instance created.
-	**/
-	public static var MAX_NUM_TEXTURES(get, never):Int;
-	
-	private static var __MAX_NUM_TEXTURES:Int = 5;
-	private static function get_MAX_NUM_TEXTURES():Int { return __MAX_NUM_TEXTURES; }
-	
-	private var __dirty:Bool = true;
-	private var __textures:Vector<Texture> = new Vector<Texture>();
-	
-	private static var sMaxTextures:Int = 2;
-	private static var sTextureIndexMap:Array<Int> = new Array<Int>();
-	
-	/**
-	   Maximum number of textures to be batched, default 2.
-	**/
-	public static var maxTextures(get, set):Int;
-	private static function get_maxTextures():Int { return sMaxTextures; }
-	private static function set_maxTextures(value:Int):Int
-	{
-		if (!__initDone) init();
-		
-		if (!__initDone)
-		{
-			// we don't know the profile yet, allow a max value of 16 (absolute max on non-baseline profile)
-			// that number might be reduced when we can finally check profile
-			value = value < 1 ? 1 : value > 16 ? 16 : value;
-			sMaxTextures = value;
-		}
-		else
-		{
-			value = value < 1 ? 1 : value;
-			sMaxTextures = value > __MAX_NUM_TEXTURES ? __MAX_NUM_TEXTURES : value;
-		}
-		return value;
-	}
-	
-	private static var __TEXTURE_INDEX_FACTOR:Float;
-	
-	private static var __initDone:Bool = false;
-	public static function init():Void
-	{
-		if (__initDone) return;
-		if (Starling.current == null) return;
-		
-		var isBaseline:Bool = Starling.current.profile == Context3DProfile.BASELINE ||
-							  Starling.current.profile == Context3DProfile.BASELINE_CONSTRAINED ||
-							  Starling.current.profile == Context3DProfile.BASELINE_EXTENDED;
-					   
-		if (isBaseline)
-		{
-			__MAX_NUM_TEXTURES = 5;
-			__TEXTURE_INDEX_FACTOR = 4.0;
-		}
-		else
-		{
-			__MAX_NUM_TEXTURES = 16;
-			__TEXTURE_INDEX_FACTOR = 1.0;
-		}
-		
-		__initDone = true;
-	}
+    /** The vertex format expected by this style. */
+    public static var VERTEX_FORMAT:VertexDataFormat =
+        MeshStyle.VERTEX_FORMAT.extend("texture:float1");
 
-	public function new() 
-	{
-		super();
-		
-		if (!__initDone) init();
-	}
-	
-	/** @private */
-	override public function copyFrom(meshStyle:MeshStyle):Void 
-	{
-		var otherStyle:MultiTextureStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(meshStyle, MultiTextureStyle) ? cast meshStyle : null;
-		
-		if (otherStyle != null)
-		{
-			var length:Int = otherStyle.__textures.length;
-			
-			for (i in 0...length)
-				__textures[i] = otherStyle.__textures[i];
-			__textures.length = length;
-		}
-		
-		super.copyFrom(meshStyle);
-	}
-	
-	/** @private */
-	override public function createEffect():MeshEffect 
-	{
-		return new MultiTextureEffect();
-	}
-	
-	override public function updateEffect(effect:MeshEffect, state:RenderState):Void 
-	{
-		cast(effect, MultiTextureEffect).textures = __textures;
-		
-		super.updateEffect(effect, state);
-	}
-	
-	override public function canBatchWith(meshStyle:MeshStyle):Bool 
-	{
-		var mtStyle:MultiTextureStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end(meshStyle, MultiTextureStyle) ? cast meshStyle : null;
-		
-		if (mtStyle != null)
-		{
-			var numTexturesToAdd:Int = numTextures;
-			var numTexturesHere:Int = mtStyle.numTextures;
-			
-			if (numTexturesToAdd > 0 && numTexturesHere > 0)
-			{
-				if (textureSmoothing == mtStyle.textureSmoothing &&
-					textureRepeat == mtStyle.textureRepeat)
-				{
-					if (numTexturesHere + numTexturesToAdd > sMaxTextures)
-					{
-						var numSharedTextures:Int = 0;
-						
-						for (i in 0...numTexturesToAdd)
-						{
-							if (mtStyle.getTextureIndex(getTexture(i)) != -1)
-								numSharedTextures ++;
-						}
-						return numTexturesHere + numTexturesToAdd - numSharedTextures <= sMaxTextures;
-					}
-					return true;
-				}
-			}
-			else
-			{
-				return 0 == numTexturesToAdd && 0 == numTexturesHere;
-			}
-		}
-		return false;
-	}
-	
-	override public function batchVertexData(targetStyle:MeshStyle, targetVertexID:Int = 0,
-											 matrix:Matrix = null, vertexID:Int = 0,
-											 numVertices:Int = -1):Void 
-	{
-		var count:Int;
-		
-		if (matrix != null && __dirty)
-		{
-			count = vertexData.numVertices;
-			for (i in 0...count)
-				vertexData.setFloat(i, "texture", 0);
-			__dirty = false;
-		}
-		
-		super.batchVertexData(targetStyle, targetVertexID, matrix, vertexID, numVertices);
-		
-		var mtTarget:MultiTextureStyle = cast targetStyle;
-		
-		if (mtTarget != null)
-		{
-			var dirty:Bool = false;
-			
-			count = numTextures;
-			for (i in 0...count)
-			{
-				var texture:Texture = getTexture(i);
-				var textureIndexOnTarget:Int = mtTarget.getTextureIndex(texture);
-				
-				if (-1 == textureIndexOnTarget)
-				{
-					textureIndexOnTarget = mtTarget.numTextures;
-					if (0 == textureIndexOnTarget)
-						mtTarget.texture = texture;
-					else
-						mtTarget.__textures[mtTarget.__textures.length] = texture;
-				}
-				sTextureIndexMap[i] = textureIndexOnTarget;
-				dirty = dirty || i != textureIndexOnTarget;
-			}
-			if (dirty)
-			{
-				var targetVertexData:VertexData = mtTarget.vertexData;
-				if (numVertices < 0)
-					numVertices = targetVertexData.numVertices - targetVertexID;
-				for (i in 0...numVertices)
-				{
-					var sourceTexID:Int = Math.round(targetVertexData.getFloat(targetVertexID + i,
-						"texture") * __TEXTURE_INDEX_FACTOR);
-					var targetTexID:Int = sTextureIndexMap[sourceTexID];
-					
-					if (sourceTexID != targetTexID)
-						targetVertexData.setFloat(targetVertexID + i, "texture", targetTexID / __TEXTURE_INDEX_FACTOR);
-				}
-			}
-		}
-	}
-	
-	/** @private */
-	override function onTargetAssigned(target:Mesh):Void 
-	{
-		__dirty = true;
-	}
-	
-	/** @private */
-	override function get_vertexFormat():VertexDataFormat 
-	{
-		return VERTEX_FORMAT;
-	}
-	
-	// Returns the texture's index in the shared texture list, or -1 if not
-	// in the list.
-	private function getTextureIndex(texture:Texture):Int
-	{
-		if (_textureRoot == texture) return 0;
-		var length:Int = __textures.length;
-		for (i in 0...length)
-			if (__textures[i] == texture) return i + 1;
-		return -1;
-	}
-	
-	// Returns an element of the shared texture list.
-	inline private function getTexture(index:Int):Texture
-	{
-		return index > 0 ? __textures[index - 1] : _textureRoot;
-	}
-	
-	public var numTextures(get, never):Int;
-	private function get_numTextures():Int { return _texture != null ? __textures.length + 1 : __textures.length; }
-	
+    /** The upper limit for <code>maxTextures</code>. The "standard" profiles (AGAL 2) provide
+     *  16 texture samplers (<code>fs0 – fs15</code>), the baseline profiles only eight, and
+     *  "baselineConstrained" only four. A batch never references more textures than the
+     *  current profile and GPU support. */
+    public static inline var MAX_NUM_TEXTURES:Int = 16;
+
+    // AGAL 1 provides eight texture samplers (fs0 – fs7), which is also the minimum that
+    // OpenGL ES 2 guarantees.
+    private static inline var MAX_NUM_TEXTURES_BASELINE:Int = 8;
+
+    // "baselineConstrained" rejects shaders with more than three indirect texture reads,
+    // and each texture after the first one counts as such a read.
+    private static inline var MAX_NUM_TEXTURES_CONSTRAINED:Int = 4;
+
+    private var _textures:Vector<Texture>;
+
+    private static var sMaxTextures:Int = 4;
+    private static var sTextureIndexMap:Array<Int> = [];
+    private static var sLimitContext:Context3D;
+    private static var sLimit:Int = MAX_NUM_TEXTURES_BASELINE;
+
+    /** The maximum number of textures that are batched into one draw call; values are clamped
+     *  to the range <code>1 – MAX_NUM_TEXTURES</code>. In baseline profiles, each fragment
+     *  samples all textures of its batch, so higher values cost more fill rate there.
+     *  @default 4 */
+    public static var maxTextures(get, set):Int;
+    private static function get_maxTextures():Int { return sMaxTextures; }
+    private static function set_maxTextures(value:Int):Int
+    {
+        return sMaxTextures = value < 1 ? 1 : (value > MAX_NUM_TEXTURES ? MAX_NUM_TEXTURES : value);
+    }
+
+    /** @private Kept for compatibility with Starling 2.8.0; calling it is no longer necessary. */
+    @:deprecated("MultiTextureStyle.init() is no longer necessary")
+    public static function init():Void {}
+
+    @:keep public function new()
+    {
+        super();
+        _textures = new Vector<Texture>();
+    }
+
+    /** @private */
+    override public function createEffect():MeshEffect
+    {
+        return new MultiTextureEffect();
+    }
+
+    /** @private */
+    override public function updateEffect(effect:MeshEffect, state:RenderState):Void
+    {
+        var targetEffect:MultiTextureEffect = cast effect;
+        var numTextures:Int = _textures.length;
+
+        targetEffect.clearTextures();
+
+        super.updateEffect(effect, state);
+
+        for (i in 0...numTextures)
+            targetEffect.setTextureAt(i, _textures[i]);
+    }
+
+    /** @private */
+    override public function canBatchWith(meshStyle:MeshStyle):Bool
+    {
+        var mtStyle:MultiTextureStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end
+            (meshStyle, MultiTextureStyle) ? cast meshStyle : null;
+
+        if (mtStyle != null)
+        {
+            // meshes with different sampler settings can't share a draw call
+            if (textureSmoothing != mtStyle.textureSmoothing ||
+                textureRepeat != mtStyle.textureRepeat)
+            {
+                return false;
+            }
+
+            var numTexturesToAdd:Int = _textures.length;
+            var limit:Int = getTextureLimit();
+            var maxTextures:Int = sMaxTextures < limit ? sMaxTextures : limit;
+
+            if (mtStyle.numTextures + numTexturesToAdd > maxTextures)
+            {
+                var numSharedTextures:Int = 0;
+
+                for (i in 0...numTexturesToAdd)
+                    if (mtStyle.getTextureIndex(_textures[i]) != -1)
+                        numSharedTextures++;
+
+                return mtStyle.numTextures + numTexturesToAdd - numSharedTextures
+                    <= maxTextures;
+            }
+            else return true;
+        }
+
+        return false;
+    }
+
+    /** @private */
+    override public function batchVertexData(targetStyle:MeshStyle, targetVertexID:Int=0,
+                                             matrix:Matrix=null, vertexID:Int=0,
+                                             numVertices:Int=-1):Void
+    {
+        super.batchVertexData(targetStyle, targetVertexID, matrix, vertexID, numVertices);
+
+        var mtTarget:MultiTextureStyle = #if (haxe_ver < 4.2) Std.is #else Std.isOfType #end
+            (targetStyle, MultiTextureStyle) ? cast targetStyle : null;
+
+        if (mtTarget != null)
+        {
+            var targetVertexData:VertexData = mtTarget.vertexData;
+            var sourceVertexData:VertexData = this.vertexData;
+            var numTextures:Int = _textures.length;
+            var isIdentity:Bool = true;
+
+            if (numVertices < 0)
+                numVertices = sourceVertexData.numVertices - vertexID;
+
+            if (targetVertexID == 0)
+                mtTarget._textures.length = 0;
+
+            for (i in 0...numTextures)
+            {
+                var texture:Texture = _textures[i];
+                var textureIndexOnTarget:Int = mtTarget.getTextureIndex(texture);
+
+                if (textureIndexOnTarget == -1)
+                {
+                    textureIndexOnTarget = mtTarget.numTextures;
+                    mtTarget._textures[textureIndexOnTarget] = texture;
+                }
+
+                sTextureIndexMap[i] = textureIndexOnTarget;
+                isIdentity = isIdentity && i == textureIndexOnTarget;
+            }
+
+            // The vertices were copied with their indices; that's already correct if the
+            // textures keep their positions on the target (the common case, e.g. with a
+            // single atlas or with the render cache). An untextured mesh doesn't store the
+            // index -1 in its own vertices, though.
+
+            if (numTextures == 0)
+            {
+                for (i in 0...numVertices)
+                    targetVertexData.setFloat(targetVertexID + i, "texture", -1);
+            }
+            else if (!isIdentity)
+            {
+                for (i in 0...numVertices)
+                {
+                    var sourceTexID:Int = Std.int(sourceVertexData.getFloat(vertexID + i, "texture"));
+                    if (sourceTexID != -1)
+                        targetVertexData.setFloat(targetVertexID + i, "texture",
+                            sTextureIndexMap[sourceTexID]);
+                }
+            }
+        }
+    }
+
+    /** @private */
+    override private function onTargetAssigned(target:Mesh):Void
+    {
+        _textures.length = 0;
+        if (target.texture != null) _textures[0] = target.texture;
+    }
+
+    /** @private */
+    override private function get_vertexFormat():VertexDataFormat
+    {
+        return VERTEX_FORMAT;
+    }
+
+    /** @private */
+    override private function set_texture(value:Texture):Texture
+    {
+        if (value != null) _textures[0] = value;
+        else _textures.length = 0;
+        return super.set_texture(value);
+    }
+
+    // The number of textures a batch may reference with the current context: limited by the
+    // profile and, with OpenFL, by the GPU (it reports a "standard" profile on any hardware).
+    private static function getTextureLimit():Int
+    {
+        var starling:Starling = Starling.current;
+        var context:Context3D = starling != null ? starling.context : null;
+
+        if (context == null) return MAX_NUM_TEXTURES_BASELINE;
+        if (context != sLimitContext)
+        {
+            var profile:Context3DProfile = starling.profile;
+            var limit:Int;
+
+            if (profile == Context3DProfile.BASELINE_CONSTRAINED)
+                limit = MAX_NUM_TEXTURES_CONSTRAINED;
+            else if (profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_EXTENDED)
+                limit = MAX_NUM_TEXTURES_BASELINE;
+            else
+                limit = MAX_NUM_TEXTURES;
+
+            #if (lime && !flash)
+            var gl = @:privateAccess context.gl;
+            var numTextureUnits:Int = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+            if (numTextureUnits > 0 && numTextureUnits < limit) limit = numTextureUnits;
+            #end
+
+            sLimitContext = context;
+            sLimit = limit;
+        }
+
+        return sLimit;
+    }
+
+    private function getTextureIndex(texture:Texture):Int
+    {
+        var numTextures:Int = _textures.length;
+
+        for (i in 0...numTextures)
+            if (_textures[i].root == texture.root) return i;
+
+        return -1;
+    }
+
+    /** The number of textures referenced by this style. */
+    public var numTextures(get, never):Int;
+    private function get_numTextures():Int { return _textures.length; }
 }
 
-class MultiTextureEffect extends MeshEffect
+private class MultiTextureEffect extends MeshEffect
 {
-	public static var VERTEX_FORMAT:VertexDataFormat = MultiTextureStyle.VERTEX_FORMAT;
-	
-	public var textures:Vector<Texture>;
-	
-	private var __isBaseline:Bool;
-	
-	private static var baselineTextureIndices:Vector<Float> = new Vector<Float>([
-		0.125, 0.375, 0.625, 0.875,
-		1, 0, 0, 0
-	]);
-	
-	private static var textureIndices:Vector<Float> = new Vector<Float>([
-		0.5, 1.5, 2.5, 3.5,
-		4.5, 5.5, 6.5, 7.5,
-		8.5, 9.5, 10.5, 11.5,
-		12.5, 13.5, 14.5, 15.5
-	]);
-	
-	private var _multiTexturingConstants:Vector<Float>;
-	
-	public function new()
-	{
-		super();
-		__isBaseline = Starling.current.profile == Context3DProfile.BASELINE ||
-					   Starling.current.profile == Context3DProfile.BASELINE_CONSTRAINED ||
-					   Starling.current.profile == Context3DProfile.BASELINE_EXTENDED;
-		
-		if (__isBaseline)
-		{
-			_multiTexturingConstants = baselineTextureIndices;
-		}
-		else
-		{
-			_multiTexturingConstants = textureIndices;
-		}
-	}
-	
-	override function get_programVariantName():UInt 
-	{
-		var bits:UInt = super.get_programVariantName();
-		
-		for (i in 0...textures.length)
-			bits |= RenderUtil.getTextureVariantBits(textures[i]) << (i + 4);
-		
-		return bits;
-	}
-	
-	override function createProgram():Program 
-	{
-		var length:Int = textures.length;
-		
-		if (length > 0)
-		{
-			var fragmentShader:Array<String> = new Array<String>();
-			var vertexShader:String = 
-				"m44 op, va0, vc0\n" +	// 4x4 matrix transform to output clip-space
-				"mov v0, va1\n" +		// pass texture coordinates to fragment program
-				"mul v1, va2, vc4\n" +	// multiply alpha (vc4) with color (va2), pass to fp
-				"mov v2, va3";			// pass texture sampler index to fp
-			
-			if (__isBaseline)
-			{
-				fragmentShader.push("slt ft4, v2.xxxx, fc0");
-				fragmentShader.push(FilterEffect.tex("ft0", "v0", 0, texture));
-				fragmentShader.push("min ft5, ft4.xxxx, ft0");
-				fragmentShader.push("sub ft6, fc1.xxxx, ft4");
-				fragmentShader.push(FilterEffect.tex("ft1", "v0", 1, textures[0]));
-				
-				if (length > 1)
-				{
-					fragmentShader.push("min ft6.xyz, ft6.xyz, ft4.yzw");
-					fragmentShader.push("min ft0, ft6.xxxx, ft1");
-					fragmentShader.push("add ft5, ft5, ft0");
-					fragmentShader.push(FilterEffect.tex("ft2", "v0", 2, textures[1]));
-					fragmentShader.push("min ft0, ft6.yyyy, ft2");
-					
-					if (length > 2)
-					{
-						fragmentShader.push("add ft5, ft5, ft0");
-						fragmentShader.push(FilterEffect.tex("ft3", "v0", 3, textures[2]));
-						fragmentShader.push("min ft0, ft6.zzzz, ft3");
-						
-						if (length > 3)
-						{
-							fragmentShader.push("add ft5, ft5, ft0");
-							fragmentShader.push(FilterEffect.tex("ft4", "v0", 4, textures[3]));
-							fragmentShader.push("min ft0, ft6.wwww, ft4");
-						}
-					}
-				}
-				else
-				{
-					fragmentShader.push("min ft0, ft6.xxxx, ft1");
-				}
-				fragmentShader.push("add ft5, ft5, ft0");
-				fragmentShader.push("mul oc, ft5, v1");	// multiply color with texel color
-			}
-			else
-			{
-				textures.unshift(_texture); // add base texture temporarily
-				multiTex(fragmentShader, textures);
-				textures.shift(); // remove base texture
-				
-                fragmentShader.push(
-                    "mul oc, ft0, v1" // multiply color with texel color
-                );
-			}
-			return Program.fromSource(vertexShader, fragmentShader.join("\n"),
-				   __isBaseline ? 1 : 2, !__isBaseline);
-		}
-		
-		return super.createProgram();
-	}
-	
-	private function multiTex(data:Array<String>, textures:Vector<Texture>, numTextures:Int = 0, textureOffset:Int = 0, textureRegister:String = "ft0", textureIndexSource:String = "v2.x", constantsStartIndex:Int = 0):Void
-	{
-		if (numTextures == 0) numTextures = textures.length;
-		
-		if (numTextures <= 2)
-		{
-			if (numTextures == 2)
-			{
-				checkTexIndex(data, textureOffset, textureIndexSource, constantsStartIndex);
-				data[data.length] = RenderUtil.createAGALTexOperation(textureRegister, "v0", textureOffset, textures[textureOffset]);
-				data[data.length] = "els";
-				data[data.length] = RenderUtil.createAGALTexOperation(textureRegister, "v0", textureOffset + 1, textures[textureOffset + 1]);
-				data[data.length] = "eif";
-			}
-			else
-			{
-				data[data.length] = RenderUtil.createAGALTexOperation(textureRegister, "v0", textureOffset, textures[textureOffset]);
-			}
-		}
-		else
-		{
-			var halfNumTextures:Int = Math.ceil(numTextures / 2);
-			var remainingTextures:Int = numTextures - halfNumTextures;
-			
-			checkTexIndex(data, textureOffset + halfNumTextures - 1, textureIndexSource, constantsStartIndex);
-			multiTex(data, textures, halfNumTextures, textureOffset, textureRegister, textureIndexSource, constantsStartIndex);
-			data[data.length] = "els";
-			multiTex(data, textures, remainingTextures, textureOffset + halfNumTextures, textureRegister, textureIndexSource, constantsStartIndex);
-			data[data.length] = "eif";
-		}
-	}
-	
-	private function checkTexIndex(data:Array<String>, textureNum:Int, textureIndexSource:String, constantsStartIndex:Int):Void
-	{
-		var constantIndex:Int = constantsStartIndex + Math.floor(textureNum / 4);
-		var constantSubIndex:Int = textureNum % 4;
-		var constant:String;
-		
-		switch (constantSubIndex)
-		{
-			case 0 :
-				constant = " fc" + constantIndex + ".x";
-			
-			case 1 :
-				constant = " fc" + constantIndex + ".y";
-			
-			case 2 :
-				constant = " fc" + constantIndex + ".z";
-			
-			case 3 :
-				constant = " fc" + constantIndex + ".w";
-			
-			default :
-				throw new Error("incorrect constant sub index");
-		}
-		
-		data[data.length] = "ifl " + textureIndexSource + constant;
-	}
-	
-	override function beforeDraw(context:Context3D):Void 
-	{
-		super.beforeDraw(context);
-		
-		var length:Int = textures.length;
-		
-		if (length > 0)
-		{
-			for (i in 0...length)
-			{
-				var texture:Texture = textures[i];
-				
-				RenderUtil.setSamplerStateAt(i + 1, texture.mipMapping, textureSmoothing, textureRepeat);
-				context.setTextureAt(i + 1, texture.base);
-			}
-			vertexFormat.setVertexBufferAt(3, vertexBuffer, "texture");
-			context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT,
-				0, _multiTexturingConstants, __isBaseline ? 2 : Math.ceil((length + 1) / 4));
-		}
-	}
-	
-	override function afterDraw(context:Context3D):Void 
-	{
-		var length:Int = textures.length;
-		
-		if (length > 0)
-		{
-			for (i in 0...length) context.setTextureAt(i + 1, null);
-			context.setVertexBufferAt(3, null);
-		}
-		
-		super.afterDraw(context);
-	}
-	
-	override function get_vertexFormat():VertexDataFormat 
-	{
-		return VERTEX_FORMAT;
-	}
+    private var _textures:Vector<Texture>;
+
+    // How many constant registers the per-texture bounds occupy (one register holds four bounds).
+    private static var sRegsPerBound:Int = Math.ceil(MultiTextureStyle.MAX_NUM_TEXTURES / 4);
+
+    // Fragment constant register layout: lower bounds, then upper bounds, then a "ones" vector.
+    private static var sLowerBoundsReg:Int = 0;
+    private static var sUpperBoundsReg:Int = sRegsPerBound;
+    private static var sOnesReg:Int        = 2 * sRegsPerBound;
+
+    // The active texture for a vertex is the one whose index 'k' is closest to the interpolated
+    // value in 'v2.x'. We select it via the half-open range [k - 0.5, k + 0.5) instead of a strict
+    // equality check: the rasterizer interpolates 'v2.x' with limited precision, so an exact
+    // comparison would fail on some GPUs and leave fragments untextured (flickering / artifacts).
+    private static var sLowerBounds:Vector<Float> = createBounds(-0.5);
+    private static var sUpperBounds:Vector<Float> = createBounds( 0.5);
+    private static var sOnes:Vector<Float> = Vector.ofArray([1.0, 1.0, 1.0, 1.0]);
+
+    // Program names by the variant bits of textures 8 – 15, then by those of textures 0 – 7.
+    private static var sProgramNames:Map<Int, Map<Int, String>> = new Map();
+
+    private static function createBounds(offset:Float):Vector<Float>
+    {
+        var count:Int = sRegsPerBound * 4;
+        var result:Vector<Float> = new Vector<Float>(count, true);
+
+        for (i in 0...count)
+            result[i] = i + offset;
+
+        return result;
+    }
+
+    public function new()
+    {
+        super();
+        _textures = new Vector<Texture>();
+    }
+
+    override private function createProgram():Program
+    {
+        var vertexShader:Array<String> = [
+            "m44 op, va0, vc0", // 4x4 matrix transform to output clip-space
+            "mov v0, va1     ", // pass texture coordinates to fragment program
+            "mul v1, va2, vc4", // multiply alpha (vc4) with color (va2), pass to fp
+            "mov v2, va3     "  // pass texture sampler index to fp
+        ];
+
+        var profile:Context3DProfile = Starling.current.profile;
+        var isBaseline:Bool = profile == Context3DProfile.BASELINE ||
+                              profile == Context3DProfile.BASELINE_CONSTRAINED ||
+                              profile == Context3DProfile.BASELINE_EXTENDED;
+        var agalVersion:Int = isBaseline ? 1 : 2;
+        var fragmentShader:Array<String> = isBaseline ?
+            createFragmentShaderForBaselineProfile(numTextures) :
+            createFragmentShaderForStandardProfile(numTextures);
+
+        // OpenFL's AGAL assembler rejects samplers above 'fs7' unless its limits are ignored
+        var ignoreLimits:Bool = numTextures > 8;
+
+        return Program.fromSource(vertexShader.join("\n"), fragmentShader.join("\n"),
+            agalVersion, ignoreLimits);
+    }
+
+    private function createFragmentShaderForBaselineProfile(numTextures:Int):Array<String>
+    {
+        // In baseline profile, if-statements are not available. Instead, we sample all textures
+        // and mask all but the active one to zero, using range checks (see 'sLowerBounds').
+
+        var fragmentShader:Array<String> = [];
+
+        if (numTextures == 0)
+        {
+            fragmentShader.push("mov ft4, fc" + sOnesReg); // no texture => white
+        }
+        else
+        {
+            for (i in 0...numTextures)
+            {
+                fragmentShader.push(FilterEffect.tex("ft0", "v0", i, _textures[i]));
+                fragmentShader.push("sge ft1, v2.x, " + boundReg(sLowerBoundsReg, i)); // v2.x >= i - 0.5 ?
+                fragmentShader.push("slt ft2, v2.x, " + boundReg(sUpperBoundsReg, i)); // v2.x <  i + 0.5 ?
+                fragmentShader.push("mul ft1, ft1, ft2"); // combine to a 0/1 mask for this texture
+                fragmentShader.push("mul ft0, ft0, ft1"); // keep the texel only inside the range
+                fragmentShader.push(i == 0 ? "mov ft4, ft0" : "add ft4, ft4, ft0");
+            }
+
+            // vertices without a texture carry index -1, i.e. below the first range => white
+            fragmentShader.push("slt ft0, v2.x, " + boundReg(sLowerBoundsReg, 0));
+            fragmentShader.push("add ft4, ft4, ft0");
+        }
+
+        fragmentShader.push("mul oc, ft4, v1"); // multiply color with texel color
+        return fragmentShader;
+    }
+
+    private function createFragmentShaderForStandardProfile(numTextures:Int):Array<String>
+    {
+        // In standard profile, we can pick the correct texture via if-operations, which is more
+        // efficient (fewer texture look-ups). 'ft0' starts white so untextured vertices (index -1,
+        // matching no range) are rendered as pure vertex color.
+
+        var fragmentShader:Array<String> = ["mov ft0, fc" + sOnesReg];
+
+        for (i in 0...numTextures)
+        {
+            fragmentShader.push("ifg v2.x, " + boundReg(sLowerBoundsReg, i)); // v2.x > i - 0.5 ?
+            fragmentShader.push("ifl v2.x, " + boundReg(sUpperBoundsReg, i)); // v2.x < i + 0.5 ?
+            fragmentShader.push(FilterEffect.tex("ft0", "v0", i, _textures[i]));
+            fragmentShader.push("eif");
+            fragmentShader.push("eif");
+        }
+
+        fragmentShader.push("mul oc, ft0, v1"); // multiply color with texel color
+        return fragmentShader;
+    }
+
+    // Returns the AGAL address of texture 'index's bound within the given register block,
+    // e.g. "fc0.x" or "fc1.z" – so the bounds can span more than one constant register.
+    private function boundReg(baseReg:Int, index:Int):String
+    {
+        var register:Int = baseReg + Std.int(index / 4);
+        var component:String = "xyzw".charAt(index % 4);
+        return "fc" + register + "." + component;
+    }
+
+    override private function beforeDraw(context:Context3D):Void
+    {
+        super.beforeDraw(context);
+
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, sLowerBoundsReg, sLowerBounds);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, sUpperBoundsReg, sUpperBounds);
+        context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, sOnesReg, sOnes);
+
+        vertexFormat.setVertexBufferAt(1, vertexBuffer, "texCoords");
+        vertexFormat.setVertexBufferAt(3, vertexBuffer, "texture");
+
+        for (i in 0...numTextures)
+        {
+            var texture:Texture = _textures[i];
+            RenderUtil.setSamplerStateAt(i, texture.mipMapping, textureSmoothing, textureRepeat);
+            context.setTextureAt(i, texture.base);
+        }
+    }
+
+    override private function afterDraw(context:Context3D):Void
+    {
+        for (i in 0...numTextures)
+            context.setTextureAt(i, null);
+
+        context.setVertexBufferAt(1, null);
+        context.setVertexBufferAt(3, null);
+
+        super.afterDraw(context);
+    }
+
+    override private function get_vertexFormat():VertexDataFormat
+    {
+        return MultiTextureStyle.VERTEX_FORMAT;
+    }
+
+    // Four bits per texture: with 16 textures, the variant needs 64 bits – more than the 'UInt'
+    // that 'programVariantName' can return. Thus, the program name is cached under two 32 bit
+    // halves instead: one for textures 0 – 7, one for textures 8 – 15. (Plain numbers as keys,
+    // so that looking up a name doesn't allocate anything.)
+    override private function get_programName():String
+    {
+        var numTextures:Int = _textures.length;
+        var low:Int = 0;
+        var high:Int = 0;
+
+        for (i in 0...numTextures)
+        {
+            var bits:Int = RenderUtil.getTextureVariantBits(_textures[i]);
+            if (i < 8) low  |= bits << (4 * i);
+            else       high |= bits << (4 * (i - 8));
+        }
+
+        var names:Map<Int, String> = sProgramNames.get(high);
+        if (names == null)
+        {
+            names = new Map();
+            sProgramNames.set(high, names);
+        }
+
+        var name:String = names.get(low);
+        if (name == null)
+        {
+            name = programBaseName + "#" + StringTools.hex(high) + "_" + StringTools.hex(low);
+            names.set(low, name);
+        }
+
+        return name;
+    }
+
+    override private function set_texture(value:Texture):Texture
+    {
+        if (value != null) _textures[0] = value;
+        return super.set_texture(value);
+    }
+
+    public function setTextureAt(index:Int, texture:Texture):Void
+    {
+        _textures[index] = texture;
+    }
+
+    public function clearTextures():Void
+    {
+        _textures.length = 0;
+    }
+
+    public var numTextures(get, never):Int;
+    private function get_numTextures():Int { return _textures.length; }
 }
